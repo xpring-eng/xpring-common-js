@@ -1,0 +1,15 @@
+{
+  "name": "petra",
+  "version": "0.1.0",
+  "description": "Petra provides a foundational base for XRPs SDKs.",
+  "main": "src/index.js",
+  "repository": "https://github.com/xpring-eng/petra.git",
+  "author": "Keefer Taylor | Xpring Engineering <keefer@ripple.com>",
+  "license": "MIT",
+  "dependencies": {
+    "ripple-keypairs": "^0.11.0"
+  },
+  "scripts": {
+    "debug": "node index.js"
+  }
+}
