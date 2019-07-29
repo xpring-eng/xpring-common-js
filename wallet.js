@@ -1,5 +1,23 @@
 const rippleKeyPair = require('ripple-keypairs')
-const KeyPair = require('./keypair.js')
+// const KeyPair = require('./keypair.js')
+
+/**
+ * A pair of assymetric cryptographic keys.
+ */
+class KeyPair {
+    /**
+     * Create a new key pair.
+     * 
+     * @constructor
+     * 
+     * @param {String} privateKey The private key.
+     * @param {String} publicKey The public key.
+     */
+    constructor(privateKey, publicKey) {
+      this.privateKey = privateKey
+      this.publicKey = publicKey
+    }
+}
 
 class Wallet {
     static generateWallet() {
@@ -8,8 +26,8 @@ class Wallet {
     }
 
     static walletFromSeed(seed) {
-        const rippleKeyPair = rippleKeyPair.deriveKeypair(seed);
-        return new Wallet(new KeyPair(rippleKeyPair.privateKey, rippleKeyPair.publicKey));
+        const kp = rippleKeyPair.deriveKeypair(seed);
+        return new Wallet(new KeyPair(kp.privateKey, kp.publicKey));
     }
 
     // TODO: Implement Me!
