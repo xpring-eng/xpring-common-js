@@ -1,5 +1,5 @@
-# Petra
+# Terram
 
-> Petra: The ancient greek word for Stone
+> Terram: Latin for 'ground', the solid surface of the earth.
 
-Petra provides a foundational base for the new Wallet and Exchange APIs in node js. Petra aims to be the bedrock foundation for all offline / client side business logic. 
+Terram provides a foundational base for the new Wallet and Exchange APIs in NodeJS. 
