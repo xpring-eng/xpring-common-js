@@ -1,5 +1,6 @@
-const petra = require('./petra.js')
+const terram = require('./terram.js')
 
-console.log("PETRA DEMO");
-petra.generateAddress();
-console.log("DONE")
+const wallet = terram.Wallet.generateWallet();
+console.log(wallet.getAddress());
+console.log(wallet.getPrivateKey());
+console.log(wallet.getAddress());
