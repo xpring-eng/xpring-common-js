@@ -4,8 +4,7 @@ const rippleAddressCodec = require('ripple-address-codec')
 const KeyPair = require('./keypair.js');
 
 /**
- * The result of a generating a new Wallet. This class wraps the newly generated 
- * wallet and associated mnemonic.
+ * The result of a generating a new Wallet. This class wraps the newly generated wallet and associated mnemonic.
  */
 class WalletGenerationResult {
     /**
@@ -16,7 +15,7 @@ class WalletGenerationResult {
     }
     
     /**
-     * @returns {Terram.Wallet} A reference to the newly generated wallet.
+     * @returns {Terram.Wallet} The newly generated wallet.
      */
     getWallet() {
         return this.wallet
@@ -51,7 +50,7 @@ class Wallet {
      * Generate a new wallet from a mnemonic.
      * 
      * @param {String} mnemonic The mnemonic for the wallet. 
-     * @returns {Terram.Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise nil.
+     * @returns {Terram.Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
      */
     static walletFromMnemonic(mnemonic) {
         if (!bip39.validateMnemonic(mnemonic)) {
