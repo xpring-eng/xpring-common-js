@@ -1,3 +1,4 @@
+const isHex = require('is-hex')
 const rippleKeyPair = require('ripple-keypairs')
 
 /**
@@ -62,6 +63,19 @@ class Wallet {
      */
     getSeed() {
         return this.seed;
+    }
+
+    /**
+     * Sign an arbitrary hex string.
+     * 
+     * @param {String} hex An arbitrary hex string to sign.
+     * @returns {String} A signed hex string if the input is valid, otherwise undefined.
+     */
+    sign(hex) {
+        if (!isHex(hex)) {
+            return undefined;
+        }
+        return rippleKeyPair.sign(hex, this.getPrivateKey());
     }
 }
 

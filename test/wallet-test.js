@@ -1,6 +1,18 @@
 const { assert } = require('chai')
 const Wallet = require('../wallet.js')
 
+/**
+ * Expected values for a wallet.
+ */
+const testWalletData = {
+    seed: "sp5fghtJtpUorTwvof1NpDXAzNwf5",
+    privateKey: "00D78B9735C3F26501C7337B8A5727FD53A6EFDBC6AA55984F098488561F985E23",
+    publicKey: "030D58EB48B4420B1F7B9DF55087E0E29FEF0E8468F9A6825B01CA2C361042D435",
+    address: "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1",
+    messageHex: new Buffer("test message", 'utf-8').toString('hex'),
+    signature: "30440220583A91C95E54E6A651C47BEC22744E0B101E2C4060E7B08F6341657DAD9BC3EE02207D1489C7395DB0188D3A56A977ECBA54B36FA9371B40319655B1B4429E33EF2D"
+}
+
 describe('wallet', () => {
     it('generateWallet', () => {
         // WHEN a new wallet is generated.
@@ -11,19 +23,39 @@ describe('wallet', () => {
     })
 
     it('walletFromSeed', () => {
-        // GIVEN a seed and a set of corresponding keys and address.
-        const seed = "sp5fghtJtpUorTwvof1NpDXAzNwf5"
-        const expectedPrivateKey = "00D78B9735C3F26501C7337B8A5727FD53A6EFDBC6AA55984F098488561F985E23"
-        const expectedPublicKey = "030D58EB48B4420B1F7B9DF55087E0E29FEF0E8468F9A6825B01CA2C361042D435"
-        const expectedAddresss = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1"
+        // GIVEN a seed.
+        const seed = testWalletData.seed
 
         // WHEN a wallet is generated from the seed. 
         const wallet = Wallet.generateWalletFromSeed(seed)
 
         // THEN the generated wallet has the expected properties.
         assert.equal(wallet.getSeed(), seed)
-        assert.equal(wallet.getPrivateKey(), expectedPrivateKey);
-        assert.equal(wallet.getPublicKey(), expectedPublicKey);
-        assert.equal(wallet.getAddress(), expectedAddresss);
+        assert.equal(wallet.getPrivateKey(), testWalletData.privateKey);
+        assert.equal(wallet.getPublicKey(), testWalletData.publicKey);
+        assert.equal(wallet.getAddress(), testWalletData.address);
+    })
+
+    it('sign', () => {
+        // GIVEN a wallet
+        const wallet = Wallet.generateWalletFromSeed(testWalletData.seed);
+   
+        // WHEN the wallet signs a hex message.
+        const signature = wallet.sign(testWalletData.messageHex);
+
+        // THEN the signature is as expected.
+        assert.equal(signature, testWalletData.signature);
+    })
+
+    it('sign - invalid hex', () => {
+        // GIVEN a wallet and a non-hexadecimal message.
+        const wallet = Wallet.generateWalletFromSeed(testWalletData.seed);
+        const message = "xrp";
+        
+        // WHEN the wallet signs a message.
+        const signature = wallet.sign(message);
+
+        // THEN the signature is undefined.
+        assert.notExists(signature);
     })
 })
