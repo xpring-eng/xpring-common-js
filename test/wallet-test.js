@@ -24,8 +24,6 @@ describe('wallet', () => {
         assert.equal(wallet.getPrivateKey(), expectedPrivateKey);
         assert.equal(wallet.getPublicKey(), expectedPublicKey);
         assert.equal(wallet.getAddress(), expectedAddresss);
-
-        console.log(wallet.getMnemonic())
     })
 
     it('walletFromMnemonic  - invalid mnemonic', () => {

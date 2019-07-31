@@ -1,6 +1,4 @@
 const bip39 = require('bip39');
-const crypto = require('crypto');
-const elliptic = require('elliptic')
 const rippleKeyPair = require('ripple-keypairs');
 const rippleAddressCodec = require('ripple-address-codec')
 const KeyPair = require('./keypair.js');
@@ -66,19 +64,17 @@ class Wallet {
         // The ripple-key-pair expects seeds to be passed as base58 encoded strings.
         // TODO: Update ripple-key-pair to take a hex encoded seed or drop use of the API and manually derive the keypair in Terram.
         rippleAddressCodec.encodeSeed(seed);
-        const kp = rippleKeyPair.deriveKeypair(seed);
-        return new Wallet(new KeyPair(kp.privateKey, kp.publicKey), mnemonic);
+        const keyPair = rippleKeyPair.deriveKeypair(seed);
+        return new Wallet(new KeyPair(keyPair.privateKey, keyPair.publicKey), mnemonic);
     }
 
     /**
      * Create a new Terram.Wallet object.
      * 
      * @param {Terram.KeyPair} keyPair A keypair for the wallet. 
-     * @param {String} mnemonic An optional mnemonic for the wallet.
      */
-    constructor(keyPair, seed) {
+    constructor(keyPair) {
         this.keyPair = keyPair
-        this.seed = seed
     }
 
     /**
