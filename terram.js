@@ -1,8 +1,10 @@
 const Wallet = require('./wallet.js')
 
-// TODO: Default to curve 25519
-const terram = {
-  Wallet: Wallet
+/**
+ * Terram provides a javascript foundation for XRP Wallet and Exchange APIs 
+ */
+const Terram = {
+  Wallet: Wallet,
 }
 
-module.exports = terram;
+module.exports = Terram;
