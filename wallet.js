@@ -10,9 +10,9 @@ class Wallet {
      * 
      * @returns {Terram.Wallet} A new Wallet.
      */
-    static generateWallet() {
+    static generateRandomWallet() {
         const seed = rippleKeyPair.generateSeed();
-        return Wallet.walletFromSeed(seed);
+        return Wallet.generateWalletFromSeed(seed);
     }
 
     /**
@@ -21,7 +21,7 @@ class Wallet {
      * @param {String} seed The seed for the wallet.
      * @returns {Terram.Wallet} A new Wallet from the given seed.
      */
-    static walletFromSeed(seed) {
+    static generateWalletFromSeed(seed) {
         const kp = rippleKeyPair.deriveKeypair(seed);
         return new Wallet(new KeyPair(kp.privateKey, kp.publicKey), seed);
     }
