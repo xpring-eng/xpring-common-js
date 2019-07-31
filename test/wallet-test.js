@@ -58,4 +58,56 @@ describe('wallet', () => {
         // THEN the signature is undefined.
         assert.notExists(signature);
     })
+
+    it('verify - valid signature', () => {
+        // GIVEN a wallet and a message with a valid signature
+        const wallet = Wallet.generateWalletFromSeed(testWalletData.seed);
+        const message = testWalletData.messageHex;
+        const signature = testWalletData.signature;
+        
+        // WHEN a message is verified.
+        const isValid = wallet.verify(message, signature);
+
+        // THEN the signature is deemed valid.
+        assert.isTrue(isValid);
+    })
+
+    it('verify - invalid signature', () => {
+        // GIVEN a wallet and a invalid signature
+        const wallet = Wallet.generateWalletFromSeed(testWalletData.seed);
+        const message = testWalletData.messageHex;
+        const signature = "DEADBEEF"
+        
+        // WHEN a message is verified.
+        const isValid = wallet.verify(message, signature);
+
+        // THEN the signature is deemed invalid.
+        assert.isFalse(isValid);
+    })
+
+    it('verify - bad signature', () => {
+        // GIVEN a wallet and a non hex signature.
+        const wallet = Wallet.generateWalletFromSeed(testWalletData.seed);
+        const message = testWalletData.messageHex;
+        const signature = "xrp"
+        
+        // WHEN a message is verified.
+        const isValid = wallet.verify(message, signature);
+
+        // THEN the signature is deemed invalid.
+        assert.isFalse(isValid);
+    })
+
+    it('verify - bad message', () => {
+        // GIVEN a wallet and a non hex signature.
+        const wallet = Wallet.generateWalletFromSeed(testWalletData.seed);
+        const message = "xrp"
+        const signature = testWalletData.signature;
+        
+        // WHEN a message is verified.
+        const isValid = wallet.verify(message, signature);
+
+        // THEN the signature is deemed invalid.
+        assert.isFalse(isValid);
+    })
 })

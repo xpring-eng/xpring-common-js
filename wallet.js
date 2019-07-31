@@ -77,6 +77,27 @@ class Wallet {
         }
         return rippleKeyPair.sign(hex, this.getPrivateKey());
     }
+
+    /**
+     * Verify a signature is valid for a message.
+     * 
+     * @param {String} message A message in hex format.
+     * @param {String} signature A signature in hex format.
+     * @returns {Boolean} True if the signature is valid, otherwise false.
+     */
+    verify(message, signature) {
+        if (!isHex(signature) || !isHex(message)) {
+            return false;
+        }
+
+        try {
+            return rippleKeyPair.verify(message, signature, this.getPublicKey());
+        } catch (error) {
+            // The ripple-key-pair module may throw errors for some signatures rather than returning false.
+            // If an error was thrown then the signature is definitely not valid.
+            return false;
+        }
+    }
 }
 
 module.exports = Wallet
