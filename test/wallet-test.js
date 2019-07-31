@@ -1,21 +1,88 @@
 const { assert } = require('chai')
 const { Wallet } = require('../wallet.js')
 
+/**
+ * A mapping of input and expected outputs for BIP39 and BIP44.
+ * @see https://iancoleman.io/bip39/#english
+ */
+const derivationPathTestCases = {
+    index0: {
+        mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+        derivationPath: "m/44'/144'/0'/0/0",
+        expectedPublicKey: "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE",
+        expectedPrivateKey: "0090802A50AA84EFB6CDB225F17C27616EA94048C179142FECF03F4712A07EA7A4",
+        expectedAddress: "rHsMGQEkVNJmpGWs8XUBoTBiAAbwxZN5v3"
+    },
+    index1: {
+        mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+        derivationPath: "m/44'/144'/0'/0/1",
+        expectedPublicKey: "038BF420B5271ADA2D7479358FF98A29954CF18DC25155184AEAD05796DA737E89",
+        expectedPrivateKey: "000974B4CFE004A2E6C4364CBF3510A36A352796728D0861F6B555ED7E54A70389",
+        expectedAddress: "r3AgF9mMBFtaLhKcg96weMhbbEFLZ3mx17"
+    }
+}
+
 describe('wallet', () => {
-    it('generateWallet', () => {
+    it('generateRandomWallet', () => {
         // WHEN a new wallet is generated.
-        const wallet = Wallet.generateRandomWallet();
+        const walletGenerationResult = Wallet.generateRandomWallet();
 
         // THEN the result has a mnemonic and a wallet.
-        assert(walletGenerationResult.getMnemonic());
-        assert(walletGenerationResult.getWallet());
+        assert.exists(walletGenerationResult.getMnemonic());
+        assert.exists(walletGenerationResult.getWallet());
+        assert.equal(walletGenerationResult.getDerivationPath(), Wallet.getDefaultDerivationPath());
     })
-    it('walletFromMnemonic', () => {
-        // GIVEN a menmonic and a set of corresponding keys and address.
-        const mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
-        const expectedPrivateKey = "003280340E0F49CB8AA4CC2203C566B39B6F1372B06173E4AB41753AB96863D832"
-        const expectedPublicKey = "034BB7C1E50FE8B02CAB3FFA722CF9955CE7EA44C2AC1A8CC98DE38FA884369F5F"
-        const expectedAddresss = "rJq5ce8cdbWBsysXx32rvLMV6DUxMwruMT"
+
+    it('walletFromMnemonic - derivation path index 0', () => {
+        // GIVEN a menmonic, derivation path and a set of expected outputs.
+        const testData = derivationPathTestCases.index0;
+
+        // WHEN a new wallet is generated with the mnemonic and derivation path.
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+
+        // THEN the wallet has the expected address and keys.
+        assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey);
+        assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
+        assert.equal(wallet.getAddress(), testData.expectedAddress);
+    })
+
+    it('walletFromMnemonic - derivation path index 1', () => {
+        // GIVEN a menmonic, derivation path and a set of expected outputs.
+        const testData = derivationPathTestCases.index0;
+
+        // WHEN a new wallet is generated with the mnemonic and derivation path.
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+
+        // THEN the wallet has the expected address and keys.
+        assert.equal(wallet.getPrivateKey(),testData.expectedPrivateKey);
+        assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
+        assert.equal(wallet.getAddress(), testData.expectedAddress);
+    })
+
+    it('walletFromMnemonic - no derivation path', () => {
+        // GIVEN a menmonic, derivation path and a set of expected outputs.
+        const testData = derivationPathTestCases.index0;
+
+        // WHEN a new wallet is generated with the mnemonic and an unspecified derivation path.
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic);
+
+        // THEN the wallet has the expected address and keys.
+        assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey);
+        assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
+        assert.equal(wallet.getAddress(), testData.expectedAddress);
+    })
+
+
+    it('walletFromMnemonic - invalid mnemonic', () => {
+        // GIVEN an invalid mnemonic.
+        const mnemonic = "xrp xrp xpr xpr xrp xrp xpr xpr xrp xrp xpr xpr"
+
+        // WHEN a wallet is generated from the mnemonic.
+        const wallet = Wallet.generateWalletFromMnemonic(mnemonic);
+
+        // THEN the wallet is undefined.
+        assert.isUndefined(wallet)
+    })
 
     it('walletFromSeed', () => {
         // GIVEN a seed and a set of corresponding keys and address.
@@ -33,14 +100,4 @@ describe('wallet', () => {
         assert.equal(wallet.getAddress(), expectedAddresss);
     })
 
-    it('walletFromMnemonic  - invalid mnemonic', () => {
-        // GIVEN an invalid mnemonic.
-        const mnemonic = "xrp xrp xpr xpr xrp xrp xpr xpr xrp xrp xpr xpr"
-
-        // WHEN a wallet is generated from the mnemonic.
-        const wallet = Wallet.walletFromMnemonic(mnemonic);
-
-        // THEN the wallet is undefined.
-        assert.isUndefined(wallet)
-    })
 })
