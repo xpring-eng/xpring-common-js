@@ -1,53 +1,67 @@
 const rippleKeyPair = require('ripple-keypairs')
-// const KeyPair = require('./keypair.js')
 
 /**
- * A pair of assymetric cryptographic keys.
+ * A wallet object that has an address and keypair.
  */
-class KeyPair {
-    /**
-     * Create a new key pair.
-     * 
-     * @constructor
-     * 
-     * @param {String} privateKey The private key.
-     * @param {String} publicKey The public key.
-     */
-    constructor(privateKey, publicKey) {
-      this.privateKey = privateKey
-      this.publicKey = publicKey
-    }
-}
-
 class Wallet {
-    static generateWallet() {
+    /**
+     * Generate a new wallet with a random seed.
+     * 
+     * @returns {Terram.Wallet} A new Wallet.
+     */
+    static generateRandomWallet() {
         const seed = rippleKeyPair.generateSeed();
-        return Wallet.walletFromSeed(seed);
+        return Wallet.generateWalletFromSeed(seed);
     }
 
-    static walletFromSeed(seed) {
-        const kp = rippleKeyPair.deriveKeypair(seed);
-        return new Wallet(new KeyPair(kp.privateKey, kp.publicKey));
+    /**
+     * Generate a wallet from the given seed.
+     * 
+     * @param {String} seed The seed for the wallet.
+     * @returns {Terram.Wallet} A new Wallet from the given seed.
+     */
+    static generateWalletFromSeed(seed) {
+        const keyPair = rippleKeyPair.deriveKeypair(seed);
+        return new Wallet(keyPair, seed);
     }
 
-    // TODO: Implement Me!
-    // static walletFromPrivateKey(privateKey) {
-    // }
-
-    constructor(keyPair) {
+    /**
+     * Create a new Terram.Wallet object.
+     * 
+     * @param {Terram.KeyPair} keyPair A keypair for the wallet. 
+     * @param {String} seed An optional seed.
+     */
+    constructor(keyPair, seed) {
         this.keyPair = keyPair
+        this.seed = seed
     }
 
+    /**
+     * @returns {String} A string representing the public key for the wallet.
+     */
     getPublicKey() {
         return this.keyPair.publicKey
     }
 
+    /**
+     * @returns {String} A string representing the private key for the wallet.
+     */
     getPrivateKey() {
         return this.keyPair.privateKey
     }
 
+    /**
+     * @returns {String} A string representing the address of the wallet.
+     */
     getAddress() {
         return rippleKeyPair.deriveAddress(this.getPublicKey())
+    }
+
+    /**
+     * @returns {String|undefined} The underlying seed for the wallet if the wallet was initialized from a seed, otherwise, undefined.
+     */
+    getSeed() {
+        return this.seed;
     }
 }
 
