@@ -1,7 +1,8 @@
-const Wallet = require('./wallet.js')
+const utils = require('./utils.js');
+const Wallet = require('./wallet.js');
 
-// TODO: Default to curve 25519
 const terram = {
+  utils: utils,
   Wallet: Wallet
 }
 
