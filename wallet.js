@@ -1,5 +1,4 @@
 const rippleKeyPair = require('ripple-keypairs')
-const KeyPair = require('./keypair.js')
 
 /**
  * A wallet object that has an address and keypair.
@@ -22,8 +21,8 @@ class Wallet {
      * @returns {Terram.Wallet} A new Wallet from the given seed.
      */
     static generateWalletFromSeed(seed) {
-        const kp = rippleKeyPair.deriveKeypair(seed);
-        return new Wallet(new KeyPair(kp.privateKey, kp.publicKey), seed);
+        const keyPair = rippleKeyPair.deriveKeypair(seed);
+        return new Wallet(keyPair, seed);
     }
 
     /**

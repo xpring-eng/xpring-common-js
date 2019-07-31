@@ -4,7 +4,7 @@ const Wallet = require('../wallet.js')
 describe('wallet', () => {
     it('generateWallet', () => {
         // WHEN a new wallet is generated.
-        const wallet = Wallet.generateWallet();
+        const wallet = Wallet.generateRandomWallet();
 
         // THE resulting object is defined.
         assert(wallet);        
@@ -12,13 +12,13 @@ describe('wallet', () => {
 
     it('walletFromSeed', () => {
         // GIVEN a seed and a set of corresponding keys and address.
-        const seed = "snLWQiYoYA1RYunsXLKw7cyPTWcCh"
-        const expectedPrivateKey = "001AA5BE720986A9CF40EF034104E799B9F0E8864EAB5ED52C903E6F69FD362ABC"
-        const expectedPublicKey = "02E2A881409C0075580E5A42E9C6023B08468DCE4817D3DF4E44194C8DB78DA579"
-        const expectedAddresss = "rGXvBeBA4d3KX5P1Qz2gb6L4EoqMEtkWc"
+        const seed = "sp5fghtJtpUorTwvof1NpDXAzNwf5"
+        const expectedPrivateKey = "00D78B9735C3F26501C7337B8A5727FD53A6EFDBC6AA55984F098488561F985E23"
+        const expectedPublicKey = "030D58EB48B4420B1F7B9DF55087E0E29FEF0E8468F9A6825B01CA2C361042D435"
+        const expectedAddresss = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1"
 
         // WHEN a wallet is generated from the seed. 
-        const wallet = Wallet.walletFromSeed(seed)
+        const wallet = Wallet.generateWalletFromSeed(seed)
 
         // THEN the generated wallet has the expected properties.
         assert.equal(wallet.getSeed(), seed)
