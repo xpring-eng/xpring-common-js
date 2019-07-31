@@ -69,7 +69,7 @@ class Wallet {
      * Sign an arbitrary hex string.
      * 
      * @param {String} hex An arbitrary hex string to sign.
-     * @returns {String} A signed hex string if the input is valid, otherwise undefined.
+     * @returns {String} A signature in hexadecimal format if the input was valid, otherwise undefined.
      */
     sign(hex) {
         if (!isHex(hex)) {

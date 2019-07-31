@@ -37,7 +37,7 @@ describe('wallet', () => {
     })
 
     it('sign', () => {
-        // GIVEN a wallet
+        // GIVEN a wallet.
         const wallet = Wallet.generateWalletFromSeed(testWalletData.seed);
    
         // WHEN the wallet signs a hex message.
@@ -60,7 +60,7 @@ describe('wallet', () => {
     })
 
     it('verify - valid signature', () => {
-        // GIVEN a wallet and a message with a valid signature
+        // GIVEN a wallet and a message with a valid signature.
         const wallet = Wallet.generateWalletFromSeed(testWalletData.seed);
         const message = testWalletData.messageHex;
         const signature = testWalletData.signature;
@@ -73,7 +73,7 @@ describe('wallet', () => {
     })
 
     it('verify - invalid signature', () => {
-        // GIVEN a wallet and a invalid signature
+        // GIVEN a wallet and a invalid signature.
         const wallet = Wallet.generateWalletFromSeed(testWalletData.seed);
         const message = testWalletData.messageHex;
         const signature = "DEADBEEF"
