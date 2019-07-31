@@ -8,7 +8,7 @@ const rippleKeyPair = require('ripple-keypairs');
 const defaultDerivationPath = "m/44'/144'/0'/0/0"
 
 /**
- * The result of a generating a new Wallet. This class wraps the newly generated wallet and associated mnemonic.
+ * The result of a generating a new Wallet. This class wraps the newly generated wallet and associated artifacts.
  */
 class WalletGenerationResult {
     /**
@@ -19,14 +19,14 @@ class WalletGenerationResult {
     }
 
     /**
-     * @returns {String} The derivation path used. 
+     * @returns {String} The derivation path associated with the generated wallet. 
      */
     getDerivationPath() {
         return this.derivationPath;
     }
     
     /**
-     * @returns {Terram.Wallet} The newly generated wallet.
+     * @returns {Terram.Wallet} The generated wallet.
      */
     getWallet() {
         return this.wallet;
@@ -34,7 +34,7 @@ class WalletGenerationResult {
 
     /**
      * @param {String} mnemonic The mnemonic of the new wallet.
-     * @param {String} derivationPath The derivation path used.
+     * @param {String} derivationPath The derivation path of the new wallet.
      * @param {Terram.Wallet} The new wallet.
      */
     constructor(mnemonic, derivationPath, wallet) {
@@ -56,7 +56,8 @@ class Wallet {
     }
 
     /**
-     * Generate a new wallet with a random mnemonic.
+     * Generate a new wallet hierarchical deterministic wallet with a random mnemonic and
+     * default derivation path.
      * 
      * @returns {Terram.WalletGenerationResult} The result of generating a new wallet.
      */
@@ -68,10 +69,10 @@ class Wallet {
     }
 
     /**
-     * Generate a new wallet from a mnemonic.
+     * Generate a new hierarchical deterministic wallet from a mnemonic and derivation path.
      * 
      * @param {String} mnemonic The mnemonic for the wallet. 
-     * @param {String} derivationPath The BIP44 derivation path to use. If undefined, the default path is used.
+     * @param {String} derivationPath The derivation path to use. If undefined, the default path is used.
      * @returns {Terram.Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
      */
     static generateWalletFromMnemonic(mnemonic, derivationPath) {
@@ -93,6 +94,8 @@ class Wallet {
 
     /**
      * Generate a wallet from the given seed.
+     * 
+     * @note This method is provided for legacy compatibility purposes. Prefer to use hierarchical deterministic wallets.
      * 
      * @param {String} seed The seed for the wallet.
      * @returns {Terram.Wallet} A new Wallet from the given seed.
