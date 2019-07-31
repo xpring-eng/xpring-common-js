@@ -1,7 +1,6 @@
 const bip39 = require('bip39');
-const rippleKeyPair = require('ripple-keypairs');
 const rippleAddressCodec = require('ripple-address-codec')
-const KeyPair = require('./keypair.js');
+const rippleKeyPair = require('ripple-keypairs');
 
 /**
  * The result of a generating a new Wallet. This class wraps the newly generated wallet and associated mnemonic.
@@ -40,7 +39,7 @@ class Wallet {
      * 
      * @returns {Terram.WalletGenerationResult} The result of generating a new wallet.
      */
-    static generateWallet() {    
+    static generateRandomWallet() {
         const mnemonic = bip39.generateMnemonic();
         const wallet = Wallet.walletFromMnemonic(mnemonic);
         return new WalletGenerationResult(mnemonic, wallet);
@@ -101,4 +100,4 @@ class Wallet {
 module.exports = {
     Wallet: Wallet,
     WalletGenerationResult: WalletGenerationResult
-}
+};
