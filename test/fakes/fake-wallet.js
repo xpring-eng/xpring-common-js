@@ -1,7 +1,7 @@
 const Wallet = require('../../wallet.js');
 
 /**
- * A fake wallet that signs with the given signature.
+ * A fake wallet which always produces the given signature.
  */
 class FakeWallet extends Wallet {
     /**

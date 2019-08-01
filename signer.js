@@ -32,7 +32,7 @@ class SigningResult {
 }
 
 /**
- * Provides abstractions around signing objects.
+ * Abstracts details of signing.
  */
 class Signer {
     /**
