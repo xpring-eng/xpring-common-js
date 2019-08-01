@@ -43,7 +43,7 @@ class Signer {
      * @returns
      */
     static sign(operation, wallet) {
-        const operationHex = "deadbeef";
+        const operationHex = "DEADBEEF";
         const signatureHex = wallet.sign(operationHex);
         return new SigningResult(operationHex, signatureHex);
     }
