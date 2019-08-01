@@ -40,10 +40,10 @@ class Signer {
      * 
      * @param {Object} operation The object to sign.
      * @param {Terram.Wallet} wallet The wallet to sign the object with.
-     * @returns
+     * @returns {Terram.SigningResult} A property bag of artifacts from the signing operation.
      */
     static sign(operation, wallet) {
-        const operationHex = "DEADBEEF";
+        const operationHex = rippleCodec.encodeForSigning(operation);
         const signatureHex = wallet.sign(operationHex);
         return new SigningResult(operationHex, signatureHex);
     }
