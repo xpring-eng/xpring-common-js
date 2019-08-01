@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "Payment.proto";
+import "XRPAmount.proto";
+
+// A class encompassing all transactions.
+// Next field: 
+message Transaction {
+    // The account originating the transaction.
+    string account = 1;
+
+    // The fee attached to the transaction.
+    XRPAmount fee = 2;
+
+    // The sequence number for the transaction.
+    uint64 sequence = 3;
+
+    // Data specific to a the type of transaction being submitted.
+    oneof transactionData {
+        Payment payment = 4;
+    }
+}

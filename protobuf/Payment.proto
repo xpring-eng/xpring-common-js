@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+import "FiatAmount.proto";
+import "XRPAmount.proto";
+
+// Payment transaction specific information.
+// Next field: 3
+message Payment {
+    // The amount of currency to pay, in either fiat or XRP.
+    oneof amount {
+        XRPAmount xrpAmount = 1;
+        FiatAmount fiatAmount = 2;
+    }
+
+    // The destination of the payment.
+    string destination = 3;
+}
