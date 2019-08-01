@@ -4,7 +4,7 @@ import "FiatAmount.proto";
 import "XRPAmount.proto";
 
 // Payment transaction specific information.
-// Next field: 3
+// Next field: 4
 message Payment {
     // The amount of currency to pay, in either fiat or XRP.
     oneof amount {

@@ -4,7 +4,7 @@ import "Payment.proto";
 import "XRPAmount.proto";
 
 // A class encompassing all transactions.
-// Next field: 
+// Next field: 5.
 message Transaction {
     // The account originating the transaction.
     string account = 1;
