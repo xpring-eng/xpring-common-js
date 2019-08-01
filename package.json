@@ -9,6 +9,7 @@
   "dependencies": {
     "chai": "^4.2.0",
     "mocha": "^6.2.0",
+    "ripple-binary-codec": "^0.2.2",
     "ripple-keypairs": "^0.11.0"
   },
   "scripts": {
