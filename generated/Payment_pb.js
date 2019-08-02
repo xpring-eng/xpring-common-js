@@ -53,8 +53,8 @@ proto.Payment.oneofGroups_ = [[1,2]];
  */
 proto.Payment.AmountCase = {
   AMOUNT_NOT_SET: 0,
-  XRPAMOUNT: 1,
-  FIATAMOUNT: 2
+  XRP_AMOUNT: 1,
+  FIAT_AMOUNT: 2
 };
 
 /**
@@ -93,8 +93,8 @@ proto.Payment.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Payment.toObject = function(includeInstance, msg) {
   var f, obj = {
-    xrpamount: (f = msg.getXrpamount()) && XRPAmount_pb.XRPAmount.toObject(includeInstance, f),
-    fiatamount: (f = msg.getFiatamount()) && FiatAmount_pb.FiatAmount.toObject(includeInstance, f),
+    xrpAmount: (f = msg.getXrpAmount()) && XRPAmount_pb.XRPAmount.toObject(includeInstance, f),
+    fiatAmount: (f = msg.getFiatAmount()) && FiatAmount_pb.FiatAmount.toObject(includeInstance, f),
     destination: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
@@ -135,12 +135,12 @@ proto.Payment.deserializeBinaryFromReader = function(msg, reader) {
     case 1:
       var value = new XRPAmount_pb.XRPAmount;
       reader.readMessage(value,XRPAmount_pb.XRPAmount.deserializeBinaryFromReader);
-      msg.setXrpamount(value);
+      msg.setXrpAmount(value);
       break;
     case 2:
       var value = new FiatAmount_pb.FiatAmount;
       reader.readMessage(value,FiatAmount_pb.FiatAmount.deserializeBinaryFromReader);
-      msg.setFiatamount(value);
+      msg.setFiatAmount(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
@@ -175,7 +175,7 @@ proto.Payment.prototype.serializeBinary = function() {
  */
 proto.Payment.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getXrpamount();
+  f = message.getXrpAmount();
   if (f != null) {
     writer.writeMessage(
       1,
@@ -183,7 +183,7 @@ proto.Payment.serializeBinaryToWriter = function(message, writer) {
       XRPAmount_pb.XRPAmount.serializeBinaryToWriter
     );
   }
-  f = message.getFiatamount();
+  f = message.getFiatAmount();
   if (f != null) {
     writer.writeMessage(
       2,
@@ -202,17 +202,17 @@ proto.Payment.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional XRPAmount xrpAmount = 1;
+ * optional XRPAmount xrp_amount = 1;
  * @return {?proto.XRPAmount}
  */
-proto.Payment.prototype.getXrpamount = function() {
+proto.Payment.prototype.getXrpAmount = function() {
   return /** @type{?proto.XRPAmount} */ (
     jspb.Message.getWrapperField(this, XRPAmount_pb.XRPAmount, 1));
 };
 
 
 /** @param {?proto.XRPAmount|undefined} value */
-proto.Payment.prototype.setXrpamount = function(value) {
+proto.Payment.prototype.setXrpAmount = function(value) {
   jspb.Message.setOneofWrapperField(this, 1, proto.Payment.oneofGroups_[0], value);
 };
 
@@ -220,8 +220,8 @@ proto.Payment.prototype.setXrpamount = function(value) {
 /**
  * Clears the message field making it undefined.
  */
-proto.Payment.prototype.clearXrpamount = function() {
-  this.setXrpamount(undefined);
+proto.Payment.prototype.clearXrpAmount = function() {
+  this.setXrpAmount(undefined);
 };
 
 
@@ -229,23 +229,23 @@ proto.Payment.prototype.clearXrpamount = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Payment.prototype.hasXrpamount = function() {
+proto.Payment.prototype.hasXrpAmount = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
 
 /**
- * optional FiatAmount fiatAmount = 2;
+ * optional FiatAmount fiat_amount = 2;
  * @return {?proto.FiatAmount}
  */
-proto.Payment.prototype.getFiatamount = function() {
+proto.Payment.prototype.getFiatAmount = function() {
   return /** @type{?proto.FiatAmount} */ (
     jspb.Message.getWrapperField(this, FiatAmount_pb.FiatAmount, 2));
 };
 
 
 /** @param {?proto.FiatAmount|undefined} value */
-proto.Payment.prototype.setFiatamount = function(value) {
+proto.Payment.prototype.setFiatAmount = function(value) {
   jspb.Message.setOneofWrapperField(this, 2, proto.Payment.oneofGroups_[0], value);
 };
 
@@ -253,8 +253,8 @@ proto.Payment.prototype.setFiatamount = function(value) {
 /**
  * Clears the message field making it undefined.
  */
-proto.Payment.prototype.clearFiatamount = function() {
-  this.setFiatamount(undefined);
+proto.Payment.prototype.clearFiatAmount = function() {
+  this.setFiatAmount(undefined);
 };
 
 
@@ -262,7 +262,7 @@ proto.Payment.prototype.clearFiatamount = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Payment.prototype.hasFiatamount = function() {
+proto.Payment.prototype.hasFiatAmount = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 

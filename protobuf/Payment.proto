@@ -8,8 +8,8 @@ import "XRPAmount.proto";
 message Payment {
     // The amount of currency to pay, in either fiat or XRP.
     oneof amount {
-        XRPAmount xrpAmount = 1;
-        FiatAmount fiatAmount = 2;
+        XRPAmount xrp_amount = 1;
+        FiatAmount fiat_amount = 2;
     }
 
     // The destination of the payment.
