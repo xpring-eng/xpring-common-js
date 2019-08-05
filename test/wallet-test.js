@@ -45,7 +45,6 @@ describe('wallet', () => {
         assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
         assert.equal(wallet.getAddress(), testData.expectedAddress);
     })
-
     it('walletFromMnemonic - derivation path index 1', () => {
         // GIVEN a menmonic, derivation path and a set of expected outputs.
         const testData = derivationPathTestCases.index1;
