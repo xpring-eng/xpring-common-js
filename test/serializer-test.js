@@ -16,7 +16,10 @@ const tx_json = {
 };
 
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 describe('serializer', () => {
     it('serializes', () => {
         const paymentAmount = new XRPAmount();
