@@ -88,7 +88,7 @@ class Wallet {
         
         const seed = bip39.mnemonicToSeedSync(mnemonic);
         const masterNode = bip32.fromSeedBuffer(seed)
-        const keyPair = masterNode.derivePath(Wallet.getDefaultDerivationPath()).keyPair.getKeyPairs()
+        const keyPair = masterNode.derivePath(derivationPath).keyPair.getKeyPairs()
         return new Wallet(keyPair);
     }
 

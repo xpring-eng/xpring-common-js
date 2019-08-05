@@ -48,7 +48,7 @@ describe('wallet', () => {
 
     it('walletFromMnemonic - derivation path index 1', () => {
         // GIVEN a menmonic, derivation path and a set of expected outputs.
-        const testData = derivationPathTestCases.index0;
+        const testData = derivationPathTestCases.index1;
 
         // WHEN a new wallet is generated with the mnemonic and derivation path.
         const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
