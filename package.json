@@ -1,15 +1,25 @@
 {
-  "name": "petra",
+  "name": "terram",
   "version": "0.1.0",
-  "description": "Petra provides a foundational base for XRPs SDKs.",
+  "description": "Terram provides a foundational base for XRPs SDKs.",
   "main": "index.js",
-  "repository": "https://github.com/xpring-eng/petra.git",
+  "repository": "https://github.com/xpring-eng/terram.git",
   "author": "Keefer Taylor | Xpring Engineering <keefer@ripple.com>",
   "license": "MIT",
+  "directories": {
+    "tests": "tests"
+  },
+  "files": [
+    "*.js",
+    "test/*.js"
+  ],
   "dependencies": {
+    "bip39": "^3.0.2",
     "chai": "^4.2.0",
     "is-hex": "^1.1.3",
     "mocha": "^6.2.0",
+    "ripple-address-codec": "^2.0.1",
+    "ripple-bip32": "0.0.3",
     "ripple-keypairs": "^0.11.0"
   },
   "scripts": {
