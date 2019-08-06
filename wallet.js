@@ -23,7 +23,7 @@ class Wallet {
      * Generate a new wallet hierarchical deterministic wallet with a random mnemonic and
      * default derivation path.
      * 
-     * @returns {Terram.WalletGenerationResult} The result of generating a new wallet.
+     * @returns {Terram.Wallet} The result of generating a new wallet.
      */
     static generateRandomWallet() {
         const mnemonic = bip39.generateMnemonic();
