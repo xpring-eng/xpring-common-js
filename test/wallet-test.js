@@ -1,13 +1,15 @@
 const { assert } = require('chai')
 const Wallet = require('../wallet.js')
+const utils = require('../utils.js')
 
 describe('wallet', () => {
     it('generateWallet', () => {
         // WHEN a new wallet is generated.
         const wallet = Wallet.generateRandomWallet();
 
-        // THE resulting object is defined.
+        // THE resulting object is defined and has a valid address.
         assert(wallet);        
+        assert.isTrue(utils.isValidAddress(wallet.getAddress()));
     })
 
     it('walletFromSeed', () => {
@@ -25,5 +27,6 @@ describe('wallet', () => {
         assert.equal(wallet.getPrivateKey(), expectedPrivateKey);
         assert.equal(wallet.getPublicKey(), expectedPublicKey);
         assert.equal(wallet.getAddress(), expectedAddresss);
+        assert.isTrue(utils.isValidAddress(wallet.getAddress()));
     })
 })
