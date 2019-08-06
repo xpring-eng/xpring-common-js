@@ -8,10 +8,10 @@ class Serializer {
     /**
      * Convert a transaction to a JSON representation.
      * 
-     * @param {proto.Transaction} transaction A transaction protocol buffer to convert.
-     * @returns {Object} The JSON representation of the given transaction.
+     * @param {proto.Transaction} transaction A transaction to convert.
+     * @returns {Object} The Transaction as JSON.
      */
-    static serializeTransaction(transaction) {
+    static transactionToJSON(transaction) {
         // Serialize the protocol buffer to a JSON representation.
         var object = transaction.toObject();
 
@@ -23,11 +23,14 @@ class Serializer {
         object.Fee = this.xrpAmountToJSON(transaction.getFee());
         delete object.fee;
 
+        // Delete any data in the transaction data case.
+        delete object.payment;
+
         // Convert additional transaction data.
         const transactionDataCase = transaction.getTransactionDataCase();
         switch (transactionDataCase) {
             case Transaction.TransactionDataCase.PAYMENT:
-                this.convertPaymentData(transaction.getPayment(), object);
+                Object.assign(object, this.paymentToJSON(transaction.getPayment()));
                 break;
         }
 
@@ -35,24 +38,62 @@ class Serializer {
     }
 
     /**
+     * Convert a Payment proto to a JSON representation.
      * 
-     * @param {proto.Payment} paymentData 
-     * @param {*} object 
+     * @param {proto.Payment} payment The Payment to convert. 
+     * @returns {Object} The Payment as JSON. 
      */
-    static convertPaymentData(paymentData, object) {
-        object.TransactionType = "Payment";
-        object.Destination = paymentData.getDestination();
-        
-        const amountCase = paymentData.getAmountCase();
+    static paymentToJSON(payment) {
+        const json = {
+            TransactionType: "Payment",
+            Destination: payment.getDestination()
+        };
+
+        const amountCase = payment.getAmountCase();
         switch (amountCase) {
             case Payment.AmountCase.FIAT_AMOUNT:
-                object.Amount = this.fiatAmountToJSON(paymentData.getFiatAmount());
+                json.Amount = this.fiatAmountToJSON(payment.getFiatAmount());
                 break;
             case Payment.AmountCase.XRP_AMOUNT:
-                object.Amount = this.xrpAmountToJSON(paymentData.getXrpAmount());
+                    json.Amount = this.xrpAmountToJSON(payment.getXrpAmount());
                 break;
         }
-        delete object.payment
+        return json;
+    }
+
+    /**
+     * Convert a FiatAmount proto to a JSON representation.
+     * 
+     * @param {proto.FiatAmount} fiatAmount The FiatAmount to convert.
+     * @returns {Object} The FiatAmount as JSON.
+     */
+    static fiatAmountToJSON(fiatAmount) {
+        const json = fiatAmount.toObject();
+        json.currency = this.currencyToJSON(fiatAmount.getCurrency());
+        return json;
+    }
+
+    /**
+     * Convert a Currency enum to a JSON representation.
+     *  
+     * @param {proto.FiatAmount.Currency} currency The Currency to convert.
+     * @returns {String} The Currency as JSON.
+     */
+    static currencyToJSON(currency) {
+        switch (currency) {
+            case proto.FiatAmount.Currency.USD:
+                return "USD";
+        }
+    }
+
+    /**
+     * Convert an XRPAmount proto to a JSON representation.
+     * 
+     * @param {proto.XRPAmount} xrpAmount The XRPAmount to convert.
+     * @return {String} The XRPAmount as JSON.
+     */
+    static xrpAmountToJSON(xrpAmount) {
+        return xrpAmount.getDrops() + "";
     }
 
     /**
@@ -69,40 +110,6 @@ class Serializer {
         delete object[oldPropertyName];        
     }
 
-    /**
-     * Convert a FiatAmount proto to a JSON representation.
-     * 
-     * @param {proto.FiatAmount} fiatAmount The FiatAmount to convert.
-     * @returns {Object} The FiatAmount as JSON.
-     */
-    static fiatAmountToJSON(fiatAmount) {
-        const json = fiatAmount.toObject();
-        json.currency = this.currencyValueToJSON(fiatAmount.getCurrency());
-        return json;
-    }
-
-    /**
-     * Convert a Currency enum to a JSON representation.
-     *  
-     * @param {proto.FiatAmount.Currency} currency The Currency to convert.
-     * @returns {String} The Currency as JSON.
-     */
-    static currencyValueToJSON(currency) {
-        switch (currency) {
-            case proto.FiatAmount.Currency.USD:
-                return "USD";
-        }
-    }
-
-    /**
-     * Convert an XRPAmount proto to a JSON representation.
-     * 
-     * @param {proto.XRPAmount} xrpAmount The XRPAmount to convert.
-     * @return {String} The XRPAmount as JSON.
-     */
-    static xrpAmountToJSON(xrpAmount) {
-        return xrpAmount.getDrops() + "";
-    }
 }
 
 module.exports = Serializer;
