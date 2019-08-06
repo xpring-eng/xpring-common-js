@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-// A representation of an amount of XRP.
-// Next field: 2
-message XRPAmount {
-    // The number of drops of XRP.
-    uint64 drops = 1;
-}
