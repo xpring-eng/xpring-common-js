@@ -6,9 +6,9 @@ const { Transaction } = require('./generated/Transaction_pb.js');
  */
 class Serializer {
     /**
-     * Convert a transaction to a JSON representation.
+     * Convert a Transaction to a JSON representation.
      * 
-     * @param {proto.Transaction} transaction A transaction to convert.
+     * @param {proto.Transaction} transaction A Transaction to convert.
      * @returns {Object} The Transaction as JSON.
      */
     static transactionToJSON(transaction) {
@@ -38,7 +38,7 @@ class Serializer {
     }
 
     /**
-     * Convert a Payment proto to a JSON representation.
+     * Convert a Payment to a JSON representation.
      * 
      * @param {proto.Payment} payment The Payment to convert. 
      * @returns {Object} The Payment as JSON. 
@@ -62,7 +62,7 @@ class Serializer {
     }
 
     /**
-     * Convert a FiatAmount proto to a JSON representation.
+     * Convert a FiatAmount amount to a JSON representation.
      * 
      * @param {proto.FiatAmount} fiatAmount The FiatAmount to convert.
      * @returns {Object} The FiatAmount as JSON.
@@ -87,7 +87,7 @@ class Serializer {
     }
 
     /**
-     * Convert an XRPAmount proto to a JSON representation.
+     * Convert an XRPAmount to a JSON representation.
      * 
      * @param {proto.XRPAmount} xrpAmount The XRPAmount to convert.
      * @return {String} The XRPAmount as JSON.
@@ -109,7 +109,6 @@ class Serializer {
         object[newPropertyName] = object[oldPropertyName];
         delete object[oldPropertyName];        
     }
-
 }
 
 module.exports = Serializer;
