@@ -1,5 +1,6 @@
 const { assert } = require('chai')
 const Wallet = require('../wallet.js')
+const utils = require('../utils.js')
 
 /**
  * Expected values for a wallet.
@@ -18,8 +19,9 @@ describe('wallet', () => {
         // WHEN a new wallet is generated.
         const wallet = Wallet.generateRandomWallet();
 
-        // THE resulting object is defined.
+        // THE resulting object is defined and has a valid address.
         assert(wallet);        
+        assert.isTrue(utils.isValidAddress(wallet.getAddress()));
     })
 
     it('walletFromSeed', () => {
