@@ -7,12 +7,13 @@ const { Transaction } = require('./generated/Transaction_pb.js');
 class Serializer {
     static serializeTransaction(transaction) {
         var object = transaction.toObject();
+
         this.convertPropertyName("account", "Account", object);
-
-        this.convertPropertyName("fee", "Fee", object);
-        this.convertXRPAmount("Fee", object);
-
         this.convertPropertyName("sequence", "Sequence", object);
+
+        object.Fee = this.xrpAmountToJSON(transaction.getFee());
+        delete object.fee;
+
 
         const transactionDataCase = transaction.getTransactionDataCase();
         switch (transactionDataCase) {
@@ -35,7 +36,7 @@ class Serializer {
                 // TODO: Implement me.
                 break;
             case Payment.AmountCase.XRP_AMOUNT:
-                object.Amount = paymentData.getXrpAmount().getDrops() + "";
+                object.Amount = this.xrpAmountToJSON(paymentData.getXrpAmount());
                 break;
         }
 
@@ -58,8 +59,8 @@ class Serializer {
         delete object[oldPropertyName];        
     }
 
-    static convertXRPAmount(xrpAmountField, object) {
-        object[xrpAmountField] = object[xrpAmountField].drops + ""; 
+    static xrpAmountToJSON(xrpAmount) {
+        return xrpAmount.getDrops() + "";
     }
 }
 
