@@ -32,7 +32,7 @@ describe('serializer', () => {
         transaction.setPayment(payment);
         
         // WHEN the transaction is serialized to JSON.
-        const serialized = Serializer.serializeTransaction(transaction);
+        const serialized = Serializer.transactionToJSON(transaction);
 
         // THEN the result is as expected.
         const expectedJSON = {
@@ -74,7 +74,7 @@ describe('serializer', () => {
         transaction.setPayment(payment);
         
         // WHEN the transaction is serialized to JSON.
-        const serialized = Serializer.serializeTransaction(transaction);
+        const serialized = Serializer.transactionToJSON(transaction);
 
         // THEN the result is as expected.
         const expectedJSON = {
