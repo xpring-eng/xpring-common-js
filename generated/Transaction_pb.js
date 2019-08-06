@@ -51,16 +51,16 @@ proto.Transaction.oneofGroups_ = [[4]];
 /**
  * @enum {number}
  */
-proto.Transaction.TransactiondataCase = {
-  TRANSACTIONDATA_NOT_SET: 0,
+proto.Transaction.TransactionDataCase = {
+  TRANSACTION_DATA_NOT_SET: 0,
   PAYMENT: 4
 };
 
 /**
- * @return {proto.Transaction.TransactiondataCase}
+ * @return {proto.Transaction.TransactionDataCase}
  */
-proto.Transaction.prototype.getTransactiondataCase = function() {
-  return /** @type {proto.Transaction.TransactiondataCase} */(jspb.Message.computeOneofCase(this, proto.Transaction.oneofGroups_[0]));
+proto.Transaction.prototype.getTransactionDataCase = function() {
+  return /** @type {proto.Transaction.TransactionDataCase} */(jspb.Message.computeOneofCase(this, proto.Transaction.oneofGroups_[0]));
 };
 
 

@@ -66,13 +66,8 @@ proto.SignedTransaction.prototype.toObject = function(opt_includeInstance) {
 proto.SignedTransaction.toObject = function(includeInstance, msg) {
   var f, obj = {
     transaction: (f = msg.getTransaction()) && Transaction_pb.Transaction.toObject(includeInstance, f),
-<<<<<<< HEAD
-    transactionsignaturehex: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    publickeyhex: jspb.Message.getFieldWithDefault(msg, 3, "")
-=======
     transactionSignatureHex: jspb.Message.getFieldWithDefault(msg, 2, ""),
     publicKeyHex: jspb.Message.getFieldWithDefault(msg, 3, "")
->>>>>>> protos
   };
 
   if (includeInstance) {
@@ -116,19 +111,11 @@ proto.SignedTransaction.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-<<<<<<< HEAD
-      msg.setTransactionsignaturehex(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPublickeyhex(value);
-=======
       msg.setTransactionSignatureHex(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setPublicKeyHex(value);
->>>>>>> protos
       break;
     default:
       reader.skipField();
@@ -167,22 +154,14 @@ proto.SignedTransaction.serializeBinaryToWriter = function(message, writer) {
       Transaction_pb.Transaction.serializeBinaryToWriter
     );
   }
-<<<<<<< HEAD
-  f = message.getTransactionsignaturehex();
-=======
   f = message.getTransactionSignatureHex();
->>>>>>> protos
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-<<<<<<< HEAD
-  f = message.getPublickeyhex();
-=======
   f = message.getPublicKeyHex();
->>>>>>> protos
   if (f.length > 0) {
     writer.writeString(
       3,
@@ -226,53 +205,31 @@ proto.SignedTransaction.prototype.hasTransaction = function() {
 
 
 /**
-<<<<<<< HEAD
- * optional string transactionSignatureHex = 2;
- * @return {string}
- */
-proto.SignedTransaction.prototype.getTransactionsignaturehex = function() {
-=======
  * optional string transaction_signature_hex = 2;
  * @return {string}
  */
 proto.SignedTransaction.prototype.getTransactionSignatureHex = function() {
->>>>>>> protos
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-<<<<<<< HEAD
-proto.SignedTransaction.prototype.setTransactionsignaturehex = function(value) {
-=======
 proto.SignedTransaction.prototype.setTransactionSignatureHex = function(value) {
->>>>>>> protos
   jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
-<<<<<<< HEAD
- * optional string publicKeyHex = 3;
- * @return {string}
- */
-proto.SignedTransaction.prototype.getPublickeyhex = function() {
-=======
  * optional string public_key_hex = 3;
  * @return {string}
  */
 proto.SignedTransaction.prototype.getPublicKeyHex = function() {
->>>>>>> protos
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-<<<<<<< HEAD
-proto.SignedTransaction.prototype.setPublickeyhex = function(value) {
-=======
 proto.SignedTransaction.prototype.setPublicKeyHex = function(value) {
->>>>>>> protos
   jspb.Message.setProto3StringField(this, 3, value);
 };
 

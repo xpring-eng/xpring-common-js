@@ -202,11 +202,7 @@ proto.Payment.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
-<<<<<<< HEAD
- * optional XRPAmount xrp_amount = 1;
-=======
  * optional XRPAmount XRP_amount = 1;
->>>>>>> protos
  * @return {?proto.XRPAmount}
  */
 proto.Payment.prototype.getXrpAmount = function() {
