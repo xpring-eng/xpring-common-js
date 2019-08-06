@@ -1,35 +1,5 @@
-const Wallet = require('./wallet.js');
+const { Transaction } = require('./generated/Transaction_pb.js');
 const rippleCodec = require('ripple-binary-codec');
-
-/**
- * Artifacts from the signing process.
- */
-class SigningResult {
-    /**
-     * Construct a new SigningResult.
-     * 
-     * @param {String} operationHex The hexadecimal representation of the operation.
-     * @param {String} signatureHex The hexadecimal representation of the signature.
-     */
-    constructor(operationHex, signatureHex) {
-        this.operationHex = operationHex;
-        this.signatureHex = signatureHex;
-    }
-
-    /**
-     * @returns The hex representation of the operation.
-     */
-    getOperationHex() {
-        return this.operationHex;
-    }
-
-    /**
-     * @returns The hex representation of the signature.
-     */
-    getSignatureHex() {
-        return this.signatureHex;
-    }
-}
 
 /**
  * Abstracts details of signing.
@@ -38,18 +8,15 @@ class Signer {
     /**
      * Encode the given object to hex and sign it.
      * 
-     * @param {Object} operation The object to sign.
+     * @param {Terram.Transaction} transaction The transaction to sign.
      * @param {Terram.Wallet} wallet The wallet to sign the object with.
-     * @returns {Terram.SigningResult} A property bag of artifacts from the signing operation.
+     * @returns {Terram.SignedTransaction} A signed transaction.
      */
-    static sign(operation, wallet) {
-        const operationHex = rippleCodec.encodeForSigning(operation);
+    static signTransaction(operation, wallet) {
+        const operationHex = rippleCodec.encodeForSigning(operation.toObject());
         const signatureHex = wallet.sign(operationHex);
         return new SigningResult(operationHex, signatureHex);
     }
 }
 
-module.exports = {
-    Signer: Signer,
-    SigningResult: SigningResult
-}
+module.exports = Signer;

@@ -1,6 +1,6 @@
-const { assert } = require('chai');
-const { Signer } = require('../signer.js');
 const FakeWallet = require('./fakes/fake-wallet.js');
+const Signer = require('../signer.js');
+const { assert } = require('chai');
 
 const testData = {
     transactionJSON: {
@@ -32,7 +32,7 @@ describe('signer', () => {
         const expectedOperationHex = testData.transactionHex;
 
         // WHEN the operation is signed with the wallet.
-        const signingResult = Signer.sign(operation, wallet);
+        const signingResult = Signer.signTransaction(operation, wallet);
 
         // THEN the signing artifacts are as expected.
         assert.equal(signingResult.getOperationHex(), expectedOperationHex);
