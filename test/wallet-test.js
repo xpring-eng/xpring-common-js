@@ -1,5 +1,6 @@
 const { assert } = require('chai')
 const Wallet = require('../wallet.js')
+const utils = require('../utils.js')
 
 /**
  * A mapping of input and expected outputs for BIP39 and BIP44.
