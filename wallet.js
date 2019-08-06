@@ -8,43 +8,6 @@ const rippleKeyPair = require('ripple-keypairs');
 const defaultDerivationPath = "m/44'/144'/0'/0/0"
 
 /**
- * The result of a generating a new Wallet. This class wraps the newly generated wallet and associated artifacts.
- */
-class WalletGenerationResult {
-    /**
-     * @returns {String} The mnemonic associated with the generated wallet.
-     */
-    getMnemonic() {
-        return this.mnemonic;
-    }
-
-    /**
-     * @returns {String} The derivation path associated with the generated wallet. 
-     */
-    getDerivationPath() {
-        return this.derivationPath;
-    }
-    
-    /**
-     * @returns {Terram.Wallet} The generated wallet.
-     */
-    getWallet() {
-        return this.wallet;
-    }
-
-    /**
-     * @param {String} mnemonic The mnemonic of the new wallet.
-     * @param {String} derivationPath The derivation path of the new wallet.
-     * @param {Terram.Wallet} The new wallet.
-     */
-    constructor(mnemonic, derivationPath, wallet) {
-        this.mnemonic = mnemonic;
-        this.derivationPath = derivationPath;
-        this.wallet = wallet;
-    }
-}
-
-/**
  * A wallet object that has an address and keypair.
  */
 class Wallet {
@@ -64,8 +27,7 @@ class Wallet {
     static generateRandomWallet() {
         const mnemonic = bip39.generateMnemonic();
         const derivationPath = Wallet.getDefaultDerivationPath();
-        const wallet = Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
-        return new WalletGenerationResult(mnemonic, derivationPath, wallet);
+        return Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
     }
 
     /**
@@ -89,29 +51,20 @@ class Wallet {
         const seed = bip39.mnemonicToSeedSync(mnemonic);
         const masterNode = bip32.fromSeedBuffer(seed)
         const keyPair = masterNode.derivePath(derivationPath).keyPair.getKeyPairs()
-        return new Wallet(keyPair);
-    }
-
-    /**
-     * Generate a wallet from the given seed.
-     * 
-     * @note This method is provided for legacy compatibility purposes. Prefer to use hierarchical deterministic wallets.
-     * 
-     * @param {String} seed The seed for the wallet.
-     * @returns {Terram.Wallet} A new Wallet from the given seed.
-     */
-    static generateWalletFromSeed(seed) {
-        const keyPair = rippleKeyPair.deriveKeypair(seed);
-        return new Wallet(keyPair);
+        return new Wallet(keyPair, mnemonic, derivationPath);
     }
 
     /**
      * Create a new Terram.Wallet object.
      * 
-     * @param {Terram.KeyPair} keyPair A keypair for the wallet. 
+     * @param {Terram.KeyPair} keyPair A keypair for the wallet.
+     * @param {String} mnemonic The mnemonic associated with the generated wallet.
+     * @param {String} derivationPath The derivation path associated with the generated wallet.      *  
      */
-    constructor(keyPair) {
-        this.keyPair = keyPair
+    constructor(keyPair, mnemonic, derivationPath) {
+        this.keyPair = keyPair;
+        this.mnemonic = mnemonic;
+        this.derivationPath = derivationPath;
     }
 
     /**
@@ -134,9 +87,20 @@ class Wallet {
     getAddress() {
         return rippleKeyPair.deriveAddress(this.getPublicKey())
     }
+
+    /**
+     * @returns {String} The mnemonic associated with the generated wallet.
+     */
+    getMnemonic() {
+        return this.mnemonic;
+    }
+
+    /**
+     * @returns {String} The derivation path associated with the generated wallet. 
+     */
+    getDerivationPath() {
+        return this.derivationPath;
+    }
 }
 
-module.exports = {
-    Wallet: Wallet,
-    WalletGenerationResult: WalletGenerationResult
-};
+module.exports = Wallet;

@@ -1,5 +1,5 @@
 const { assert } = require('chai')
-const { Wallet } = require('../wallet.js')
+const Wallet = require('../wallet.js')
 
 /**
  * A mapping of input and expected outputs for BIP39 and BIP44.
@@ -25,12 +25,11 @@ const derivationPathTestCases = {
 describe('wallet', () => {
     it('generateRandomWallet', () => {
         // WHEN a new wallet is generated.
-        const walletGenerationResult = Wallet.generateRandomWallet();
+        const wallet = Wallet.generateRandomWallet();
 
-        // THEN the result has a mnemonic and a wallet.
-        assert.exists(walletGenerationResult.getMnemonic());
-        assert.exists(walletGenerationResult.getWallet());
-        assert.equal(walletGenerationResult.getDerivationPath(), Wallet.getDefaultDerivationPath());
+        // THEN the result exists and has the default derivation path.
+        assert.exists(wallet);
+        assert.equal(wallet.getDerivationPath(), Wallet.getDefaultDerivationPath());
     })
 
     it('walletFromMnemonic - derivation path index 0', () => {
@@ -44,6 +43,8 @@ describe('wallet', () => {
         assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey);
         assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
         assert.equal(wallet.getAddress(), testData.expectedAddress);
+        assert.equal(wallet.getMnemonic(), testData.mnemonic);
+        assert.equal(wallet.getDerivationPath(), testData.derivationPath);
     })
     it('walletFromMnemonic - derivation path index 1', () => {
         // GIVEN a menmonic, derivation path and a set of expected outputs.
@@ -56,6 +57,8 @@ describe('wallet', () => {
         assert.equal(wallet.getPrivateKey(),testData.expectedPrivateKey);
         assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
         assert.equal(wallet.getAddress(), testData.expectedAddress);
+        assert.equal(wallet.getMnemonic(), testData.mnemonic);
+        assert.equal(wallet.getDerivationPath(), testData.derivationPath);
     })
 
     it('walletFromMnemonic - no derivation path', () => {
@@ -65,10 +68,12 @@ describe('wallet', () => {
         // WHEN a new wallet is generated with the mnemonic and an unspecified derivation path.
         const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic);
 
-        // THEN the wallet has the expected address and keys.
+        // THEN the wallet has the expected address and keys from the input mnemonic at the default derivation path.
         assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey);
         assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
         assert.equal(wallet.getAddress(), testData.expectedAddress);
+        assert.equal(wallet.getMnemonic(), testData.mnemonic);
+        assert.equal(wallet.getDerivationPath(), Wallet.getDefaultDerivationPath());
     })
 
 
@@ -82,21 +87,4 @@ describe('wallet', () => {
         // THEN the wallet is undefined.
         assert.isUndefined(wallet)
     })
-
-    it('walletFromSeed', () => {
-        // GIVEN a seed and a set of corresponding keys and address.
-        const seed = "sp5fghtJtpUorTwvof1NpDXAzNwf5"
-        const expectedPrivateKey = "00D78B9735C3F26501C7337B8A5727FD53A6EFDBC6AA55984F098488561F985E23"
-        const expectedPublicKey = "030D58EB48B4420B1F7B9DF55087E0E29FEF0E8468F9A6825B01CA2C361042D435"
-        const expectedAddresss = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1"
-
-        // WHEN a wallet is generated from the seed. 
-        const wallet = Wallet.generateWalletFromSeed(seed)
-
-        // THEN the generated wallet has the expected properties.
-        assert.equal(wallet.getPrivateKey(), expectedPrivateKey);
-        assert.equal(wallet.getPublicKey(), expectedPublicKey);
-        assert.equal(wallet.getAddress(), expectedAddresss);
-    })
-
 })
