@@ -3,6 +3,7 @@ const Wallet = require('../wallet.js')
 const utils = require('../utils.js')
 
 /**
+
  * Expected values for a wallet.
  */
 const testWalletData = {
@@ -15,13 +16,42 @@ const testWalletData = {
 }
 
 describe('wallet', () => {
-    it('generateWallet', () => {
+    it('generateRandomWallet', () => {
         // WHEN a new wallet is generated.
         const wallet = Wallet.generateRandomWallet();
 
-        // THE resulting object is defined and has a valid address.
-        assert(wallet);        
-        assert.isTrue(utils.isValidAddress(wallet.getAddress()));
+        // THEN the result exists and has the default derivation path.
+        assert.exists(wallet);
+        assert.equal(wallet.getDerivationPath(), Wallet.getDefaultDerivationPath());
+    })
+
+    it('walletFromMnemonic - derivation path index 0', () => {
+        // GIVEN a menmonic, derivation path and a set of expected outputs.
+        const testData = derivationPathTestCases.index0;
+
+        // WHEN a new wallet is generated with the mnemonic and derivation path.
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+
+        // THEN the wallet has the expected address and keys.
+        assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey);
+        assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
+        assert.equal(wallet.getAddress(), testData.expectedAddress);
+        assert.equal(wallet.getMnemonic(), testData.mnemonic);
+        assert.equal(wallet.getDerivationPath(), testData.derivationPath);
+    })
+    it('walletFromMnemonic - derivation path index 1', () => {
+        // GIVEN a menmonic, derivation path and a set of expected outputs.
+        const testData = derivationPathTestCases.index1;
+
+        // WHEN a new wallet is generated with the mnemonic and derivation path.
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+
+        // THEN the wallet has the expected address and keys.
+        assert.equal(wallet.getPrivateKey(),testData.expectedPrivateKey);
+        assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
+        assert.equal(wallet.getAddress(), testData.expectedAddress);
+        assert.equal(wallet.getMnemonic(), testData.mnemonic);
+        assert.equal(wallet.getDerivationPath(), testData.derivationPath);
     })
 
     it('walletFromSeed', () => {

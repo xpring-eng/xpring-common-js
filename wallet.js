@@ -1,40 +1,71 @@
+const bip32 = require("ripple-bip32");
+const bip39 = require('bip39');
 const isHex = require('is-hex')
-const rippleKeyPair = require('ripple-keypairs')
+const rippleKeyPair = require('ripple-keypairs');
+
+/**
+ * The default derivation path to use with BIP44.
+ */
+const defaultDerivationPath = "m/44'/144'/0'/0/0"
 
 /**
  * A wallet object that has an address and keypair.
  */
 class Wallet {
     /**
-     * Generate a new wallet with a random seed.
-     * 
-     * @returns {Terram.Wallet} A new Wallet.
+     * @returns {String} The default derivation path.
      */
-    static generateRandomWallet() {
-        const seed = rippleKeyPair.generateSeed();
-        return Wallet.generateWalletFromSeed(seed);
+    static getDefaultDerivationPath() {
+        return defaultDerivationPath;
     }
 
     /**
-     * Generate a wallet from the given seed.
+     * Generate a new wallet hierarchical deterministic wallet with a random mnemonic and
+     * default derivation path.
      * 
-     * @param {String} seed The seed for the wallet.
-     * @returns {Terram.Wallet} A new Wallet from the given seed.
+     * @returns {Terram.WalletGenerationResult} The result of generating a new wallet.
      */
-    static generateWalletFromSeed(seed) {
-        const keyPair = rippleKeyPair.deriveKeypair(seed);
-        return new Wallet(keyPair, seed);
+    static generateRandomWallet() {
+        const mnemonic = bip39.generateMnemonic();
+        const derivationPath = Wallet.getDefaultDerivationPath();
+        return Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
+    }
+
+    /**
+     * Generate a new hierarchical deterministic wallet from a mnemonic and derivation path.
+     * 
+     * @param {String} mnemonic The mnemonic for the wallet. 
+     * @param {String} derivationPath The derivation path to use. If undefined, the default path is used.
+     * @returns {Terram.Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
+     */
+    static generateWalletFromMnemonic(mnemonic, derivationPath) {
+        // Use default derivation path if derivation path is unspecified.
+        if (derivationPath == undefined) {
+            derivationPath = Wallet.getDefaultDerivationPath();
+        }
+
+        // Validate mnemonic and path are valid.
+        if (!bip39.validateMnemonic(mnemonic)) {
+            return undefined;
+        }
+        
+        const seed = bip39.mnemonicToSeedSync(mnemonic);
+        const masterNode = bip32.fromSeedBuffer(seed)
+        const keyPair = masterNode.derivePath(derivationPath).keyPair.getKeyPairs()
+        return new Wallet(keyPair, mnemonic, derivationPath);
     }
 
     /**
      * Create a new Terram.Wallet object.
      * 
-     * @param {Terram.KeyPair} keyPair A keypair for the wallet. 
-     * @param {String} seed An optional seed.
+     * @param {Terram.KeyPair} keyPair A keypair for the wallet.
+     * @param {String} mnemonic The mnemonic associated with the generated wallet.
+     * @param {String} derivationPath The derivation path associated with the generated wallet.      *  
      */
-    constructor(keyPair, seed) {
-        this.keyPair = keyPair
-        this.seed = seed
+    constructor(keyPair, mnemonic, derivationPath) {
+        this.keyPair = keyPair;
+        this.mnemonic = mnemonic;
+        this.derivationPath = derivationPath;
     }
 
     /**
@@ -59,10 +90,17 @@ class Wallet {
     }
 
     /**
-     * @returns {String|undefined} The underlying seed for the wallet if the wallet was initialized from a seed, otherwise, undefined.
+     * @returns {String} The mnemonic associated with the generated wallet.
      */
-    getSeed() {
-        return this.seed;
+    getMnemonic() {
+        return this.mnemonic;
+    }
+
+    /**
+     * @returns {String} The derivation path associated with the generated wallet. 
+     */
+    getDerivationPath() {
+        return this.derivationPath;
     }
 
     /**
@@ -100,4 +138,4 @@ class Wallet {
     }
 }
 
-module.exports = Wallet
+module.exports = Wallet;
