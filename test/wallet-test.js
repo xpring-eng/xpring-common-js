@@ -2,7 +2,7 @@ const { assert } = require('chai')
 const Wallet = require('../wallet.js')
 const utils = require('../utils.js')
 
-/** 
+/**
  * A mapping of input and expected outputs for BIP39 and BIP44.
  * @see https://iancoleman.io/bip39/#english
  */
@@ -160,7 +160,7 @@ describe('wallet', () => {
     })
 
     it('verify - bad message', () => {
-        // GIVEN a wallet and a non hex signature.
+        // GIVEN a wallet and a non hex message.
         const testData = derivationPathTestCases.index0;
         const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
         const message = "xrp";
