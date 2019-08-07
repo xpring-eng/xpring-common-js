@@ -3,7 +3,6 @@ const Wallet = require('../wallet.js')
 const utils = require('../utils.js')
 
 /**
-
  * A mapping of input and expected outputs for BIP39 and BIP44.
  * @see https://iancoleman.io/bip39/#english
  */
