@@ -4,7 +4,7 @@ const utils = require('./utils.js');
 /**
  * Terram provides a javascript foundation for XRP Wallet and Exchange APIs.
  */
-const terram = {
+const Terram = {
   Wallet: Wallet,
   utils: utils
 }

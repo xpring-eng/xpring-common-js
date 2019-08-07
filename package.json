@@ -24,6 +24,15 @@
   },
   "scripts": {
     "pretest": "./scripts/regenerate_protos.sh",
-    "test": "mocha"
+    "test": "nyc --all mocha --check-leaks"
+  },
+  "nyc": {
+    "all": true,
+    "check-coverage": true,
+    "check-leaks": true,
+    "exclude": [ "generated/*.js", "test/**/*.js"]
+  },
+  "devDependencies": {
+    "nyc": "14.1.1"
   }
 }
