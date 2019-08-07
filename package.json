@@ -23,13 +23,15 @@
     "ripple-keypairs": "^0.11.0"
   },
   "scripts": {
-    "pretest": "./scripts/regenerate_protos.sh && eslint ./",
+    "precommit": "eslint ./",
+    "pretest": "./scripts/regenerate_protos.sh",
     "test": "mocha"
   },
   "devDependencies": {
     "eslint": "5.16.0",
     "eslint-config-airbnb-base": "13.2.0",
     "eslint-plugin-import": "2.18.2",
-    "eslint-plugin-mocha": "6.0.0"
+    "eslint-plugin-mocha": "6.0.0",
+    "husky": "3.0.2"
   }
 }
