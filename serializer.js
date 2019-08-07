@@ -23,7 +23,7 @@ class Serializer {
         object.Fee = this.xrpAmountToJSON(transaction.getFee());
         delete object.fee;
 
-        // Delete any data in the transaction data case.
+        // Delete all fields from the transaction data one of before they get rewritten below. 
         delete object.payment;
 
         // Convert additional transaction data.
