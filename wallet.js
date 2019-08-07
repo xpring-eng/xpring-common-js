@@ -17,14 +17,14 @@ class Wallet {
    */
   static getDefaultDerivationPath() {
     return defaultDerivationPath;
-  }  
+  }
 
   /**
-     * Generate a new wallet hierarchical deterministic wallet with a random mnemonic and
-     * default derivation path.
-     * 
-     * @returns {Terram.Wallet} The result of generating a new wallet.
-     */
+   * Generate a new wallet hierarchical deterministic wallet with a random mnemonic and
+   * default derivation path.
+   *
+   * @returns {Terram.Wallet} The result of generating a new wallet.
+   */
   static generateRandomWallet() {
     const mnemonic = bip39.generateMnemonic();
     const derivationPath = Wallet.getDefaultDerivationPath();
@@ -32,12 +32,12 @@ class Wallet {
   }
 
   /**
-     * Generate a new hierarchical deterministic wallet from a mnemonic and derivation path.
-     * 
-     * @param {String} mnemonic The mnemonic for the wallet. 
-     * @param {String} derivationPath The derivation path to use. If undefined, the default path is used.
-     * @returns {Terram.Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
-     */
+   * Generate a new hierarchical deterministic wallet from a mnemonic and derivation path.
+   *
+   * @param {String} mnemonic The mnemonic for the wallet.
+   * @param {String} derivationPath The derivation path to use. If undefined, the default path is used.
+   * @returns {Terram.Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
+   */
   static generateWalletFromMnemonic(mnemonic, derivationPath) {
     // Use default derivation path if derivation path is unspecified.
     if (derivationPath == undefined) {
@@ -48,7 +48,7 @@ class Wallet {
     if (!bip39.validateMnemonic(mnemonic)) {
       return undefined;
     }
-        
+
     const seed = bip39.mnemonicToSeedSync(mnemonic);
     const masterNode = bip32.fromSeedBuffer(seed);
     const keyPair = masterNode.derivePath(derivationPath).keyPair.getKeyPairs();
@@ -57,11 +57,11 @@ class Wallet {
 
   /**
    * Create a new Terram.Wallet object.
-   * 
+   *
    * @param {Terram.KeyPair} keyPair A keypair for the wallet.
-    * @param {String} mnemonic The mnemonic associated with the generated wallet.
-     * @param {String} derivationPath The derivation path associated with the generated wallet.      *  
-     */
+   * @param {String} mnemonic The mnemonic associated with the generated wallet.
+   * @param {String} derivationPath The derivation path associated with the generated wallet.      *
+   */
   constructor(keyPair, mnemonic, derivationPath) {
     this.keyPair = keyPair;
     this.mnemonic = mnemonic;
@@ -69,46 +69,46 @@ class Wallet {
   }
 
   /**
-     * @returns {String} A string representing the public key for the wallet.
-     */
+   * @returns {String} A string representing the public key for the wallet.
+   */
   getPublicKey() {
     return this.keyPair.publicKey;
   }
 
   /**
-     * @returns {String} A string representing the private key for the wallet.
-     */
+   * @returns {String} A string representing the private key for the wallet.
+   */
   getPrivateKey() {
     return this.keyPair.privateKey;
   }
 
   /**
-     * @returns {String} A string representing the address of the wallet.
-     */
+   * @returns {String} A string representing the address of the wallet.
+   */
   getAddress() {
     return rippleKeyPair.deriveAddress(this.getPublicKey());
   }
 
   /**
-     * @returns {String} The mnemonic associated with the generated wallet.
-     */
+   * @returns {String} The mnemonic associated with the generated wallet.
+   */
   getMnemonic() {
     return this.mnemonic;
   }
 
   /**
-     * @returns {String} The derivation path associated with the generated wallet. 
-     */
+   * @returns {String} The derivation path associated with the generated wallet.
+   */
   getDerivationPath() {
     return this.derivationPath;
   }
 
   /**
-     * Sign an arbitrary hex string.
-     * 
-     * @param {String} hex An arbitrary hex string to sign.
-     * @returns {String} A signature in hexadecimal format if the input was valid, otherwise undefined.
-     */
+   * Sign an arbitrary hex string.
+   *
+   * @param {String} hex An arbitrary hex string to sign.
+   * @returns {String} A signature in hexadecimal format if the input was valid, otherwise undefined.
+   */
   sign(hex) {
     if (!isHex(hex)) {
       return undefined;
@@ -117,12 +117,12 @@ class Wallet {
   }
 
   /**
-     * Verify a signature is valid for a message.
-     * 
-     * @param {String} message A message in hex format.
-     * @param {String} signature A signature in hex format.
-     * @returns {Boolean} True if the signature is valid, otherwise false.
-     */
+   * Verify a signature is valid for a message.
+   *
+   * @param {String} message A message in hex format.
+   * @param {String} signature A signature in hex format.
+   * @returns {Boolean} True if the signature is valid, otherwise false.
+   */
   verify(message, signature) {
     if (!isHex(signature) || !isHex(message)) {
       return false;

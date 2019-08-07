@@ -24,7 +24,6 @@ describe("utils", function() {
     assert.isFalse(validAddress);
   });
 
-
   it("isValidAddress() - Invalid Checksum", function() {
     // GIVEN a base58check address which fails checksumming.
     const address = "rU6K7V3Po4sBBBBBaU29sesqs2qTQJWDw1";
@@ -47,10 +46,10 @@ describe("utils", function() {
     assert.isFalse(validAddress);
   });
 
-
   it("isValidAddress() - Too Long", function() {
     // GIVEN a base58check address which has invalid characters.
-    const address = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
+    const address =
+      "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
 
     // WHEN the address is validated.
     const validAddress = utils.isValidAddress(address);
