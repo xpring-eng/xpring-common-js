@@ -1,3 +1,5 @@
+"use strict";
+
 const Wallet = require("./wallet.js");
 const utils = require("./utils.js");
 
