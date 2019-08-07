@@ -1,5 +1,5 @@
 const { assert } = require("chai");
-const utils = require("../utils.js");
+const { utils } = require("../index.js");
 
 describe("utils", function() {
   it("isValidAddress() - Valid Address", function() {
