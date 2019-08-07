@@ -28,6 +28,20 @@
     "pretest": "./scripts/regenerate_protos.sh",
     "test": "nyc --all mocha --check-leaks"
   },
+  "devDependencies": {
+    "eslint": "5.16.0",
+    "eslint-config-airbnb-base": "13.2.0",
+    "eslint-plugin-import": "2.18.2",
+    "eslint-plugin-mocha": "6.0.0",
+    "husky": "3.0.2",
+    "nyc": "14.1.1",
+    "prettier": "1.18.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "eslint ./ --fix && prettier '**/*.js' --write"
+    }
+  },
   "nyc": {
     "all": true,
     "check-coverage": true,
@@ -36,8 +50,5 @@
       "generated/*.js",
       "test/**/*.js"
     ]
-  },
-  "devDependencies": {
-    "nyc": "14.1.1"
   }
 }
