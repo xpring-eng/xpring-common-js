@@ -38,6 +38,15 @@
         "strict": [
             "error",
             "global"
-        ]
+        ],
+        "class-methods-use-this": [ "error" ],
+        "default-case": ["error"],
+        "eqeqeq": ["error"],
+        "no-eval": ["error"],
+        "no-magic-numbers": ["error"],
+        "require-await": ["error"],
+        "no-shadow": ["error"],
+        "global-require": ["error"],
+        "eol-last": ["error", "always"]
     }
 }

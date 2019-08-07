@@ -42,7 +42,7 @@ class Wallet {
    */
   static generateWalletFromMnemonic(mnemonic, derivationPath) {
     // Use default derivation path if derivation path is unspecified.
-    if (derivationPath == undefined) {
+    if (derivationPath === undefined) {
       derivationPath = Wallet.getDefaultDerivationPath();
     }
 
