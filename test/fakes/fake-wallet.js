@@ -9,11 +9,14 @@ class FakeWallet extends Wallet {
      * 
      * @param {String} signature The signature this wallet will produce.
      */
-    constructor(signature) {    
-        super(
-            "00D78B9735C3F26501C7337B8A5727FD53A6EFDBC6AA55984F098488561F985E23",
-            "030D58EB48B4420B1F7B9DF55087E0E29FEF0E8468F9A6825B01CA2C361042D435"   
-        );
+    constructor(signature) {
+        const mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+        const derivationPath = Wallet.getDefaultDerivationPath();
+        const keyPair = {
+            publicKey: "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE",
+            privateKey: "0090802A50AA84EFB6CDB225F17C27616EA94048C179142FECF03F4712A07EA7A4"
+        }
+        super(keyPair, mnemonic, derivationPath);
 
         this.signature = signature;
     }
