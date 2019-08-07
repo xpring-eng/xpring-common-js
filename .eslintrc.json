@@ -47,6 +47,7 @@
         "require-await": ["error"],
         "no-shadow": ["error"],
         "global-require": ["error"],
-        "eol-last": ["error", "always"]
+        "eol-last": ["error", "always"],
+        "sort-imports": ["error"]
     }
 }
