@@ -55,7 +55,7 @@ class Serializer {
                 json.Amount = this.fiatAmountToJSON(payment.getFiatAmount());
                 break;
             case Payment.AmountCase.XRP_AMOUNT:
-                    json.Amount = this.xrpAmountToJSON(payment.getXrpAmount());
+                json.Amount = this.xrpAmountToJSON(payment.getXrpAmount());
                 break;
         }
         return json;
