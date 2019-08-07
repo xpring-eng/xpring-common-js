@@ -1,7 +1,7 @@
 const bip32 = require("ripple-bip32");
 const bip39 = require('bip39');
-const isHex = require('is-hex')
-const rippleKeyPair = require('ripple-keypairs')
+const isHex = require('is-hex');
+const rippleKeyPair = require('ripple-keypairs');
 
 /**
  * The default derivation path to use with BIP44.
