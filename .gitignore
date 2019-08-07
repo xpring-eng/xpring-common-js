@@ -1,3 +1,7 @@
+# Ignore generated files.
+generated/*
+
+# Ignore files from VSCode.
 *.vscode
 *.code-workspace
 
