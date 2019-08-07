@@ -23,7 +23,6 @@
     "ripple-keypairs": "^0.11.0"
   },
   "scripts": {
-    "precommit": "eslint ./",
     "pretest": "./scripts/regenerate_protos.sh",
     "test": "mocha"
   },
@@ -34,5 +33,13 @@
     "eslint-plugin-mocha": "6.0.0",
     "husky": "3.0.2",
     "prettier": "1.18.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": [
+        "eslint ./",
+        "prettier '**/*.js' --write"
+      ]
+    }
   }
 }
