@@ -1,12 +1,12 @@
 const bip32 = require("ripple-bip32");
-const bip39 = require('bip39');
-const isHex = require('is-hex');
-const rippleKeyPair = require('ripple-keypairs');
+const bip39 = require("bip39");
+const isHex = require("is-hex");
+const rippleKeyPair = require("ripple-keypairs");
 
 /**
  * The default derivation path to use with BIP44.
  */
-const defaultDerivationPath = "m/44'/144'/0'/0/0"
+const defaultDerivationPath = "m/44'/144'/0'/0/0";
 
 /**
  * A wallet object that has an address and keypair.
@@ -50,8 +50,8 @@ class Wallet {
         }
         
         const seed = bip39.mnemonicToSeedSync(mnemonic);
-        const masterNode = bip32.fromSeedBuffer(seed)
-        const keyPair = masterNode.derivePath(derivationPath).keyPair.getKeyPairs()
+        const masterNode = bip32.fromSeedBuffer(seed);
+        const keyPair = masterNode.derivePath(derivationPath).keyPair.getKeyPairs();
         return new Wallet(keyPair, mnemonic, derivationPath);
     }
 
@@ -72,21 +72,21 @@ class Wallet {
      * @returns {String} A string representing the public key for the wallet.
      */
     getPublicKey() {
-        return this.keyPair.publicKey
+        return this.keyPair.publicKey;
     }
 
     /**
      * @returns {String} A string representing the private key for the wallet.
      */
     getPrivateKey() {
-        return this.keyPair.privateKey
+        return this.keyPair.privateKey;
     }
 
     /**
      * @returns {String} A string representing the address of the wallet.
      */
     getAddress() {
-        return rippleKeyPair.deriveAddress(this.getPublicKey())
+        return rippleKeyPair.deriveAddress(this.getPublicKey());
     }
 
     /**
