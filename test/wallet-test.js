@@ -12,7 +12,10 @@ const derivationPathTestCases = {
         derivationPath: "m/44'/144'/0'/0/0",
         expectedPublicKey: "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE",
         expectedPrivateKey: "0090802A50AA84EFB6CDB225F17C27616EA94048C179142FECF03F4712A07EA7A4",
-        expectedAddress: "rHsMGQEkVNJmpGWs8XUBoTBiAAbwxZN5v3"
+        expectedAddress: "rHsMGQEkVNJmpGWs8XUBoTBiAAbwxZN5v3",
+        messageHex: new Buffer("test message", 'utf-8').toString('hex'),
+        expectedSignature: "3045022100E10177E86739A9C38B485B6AA04BF2B9AA00E79189A1132E7172B70F400ED1170220566BD64AA3F01DDE8D99DFFF0523D165E7DD2B9891ABDA1944E2F3A52CCCB83A"
+    
     },
     index1: {
         mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
@@ -47,6 +50,7 @@ describe('wallet', () => {
         assert.equal(wallet.getMnemonic(), testData.mnemonic);
         assert.equal(wallet.getDerivationPath(), testData.derivationPath);
     })
+
     it('walletFromMnemonic - derivation path index 1', () => {
         // GIVEN a menmonic, derivation path and a set of expected outputs.
         const testData = derivationPathTestCases.index1;
@@ -77,7 +81,6 @@ describe('wallet', () => {
         assert.equal(wallet.getDerivationPath(), Wallet.getDefaultDerivationPath());
     })
 
-
     it('walletFromMnemonic - invalid mnemonic', () => {
         // GIVEN an invalid mnemonic.
         const mnemonic = "xrp xrp xpr xpr xrp xrp xpr xpr xrp xrp xpr xpr"
@@ -87,5 +90,153 @@ describe('wallet', () => {
 
         // THEN the wallet is undefined.
         assert.isUndefined(wallet)
+    })
+
+    it('sign', () => {
+        // GIVEN a wallet.
+        const testData = derivationPathTestCases.index0;
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+   
+        // WHEN the wallet signs a hex message.
+        const signature = wallet.sign(testData.messageHex);
+
+        // THEN the signature is as expected.
+        assert.equal(signature, testData.expectedSignature);
+    })
+
+    it('sign - invalid hex', () => {
+        // GIVEN a wallet and a non-hexadecimal message.
+        const testData = derivationPathTestCases.index0;
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+        const message = "xrp";
+        
+        // WHEN the wallet signs a message.
+        const signature = wallet.sign(message);
+
+        // THEN the signature is undefined.
+        assert.notExists(signature);
+    })
+
+    it('sign - undefined message', () => {
+        // GIVEN a wallet.
+        const testData = derivationPathTestCases.index0;
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+        const message = "xrp";
+        
+        // WHEN the wallet signs an undefined message.
+        const signature = wallet.sign(undefined);
+
+        // THEN the signature is undefined.
+        assert.notExists(signature);
+    })
+
+    it('verify - valid signature', () => {
+        // GIVEN a wallet and a message with a valid signature.
+        const testData = derivationPathTestCases.index0;
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+        const message = testData.messageHex;
+        const signature = testData.expectedSignature;
+        
+        // WHEN a message is verified.
+        const isValid = wallet.verify(message, signature);
+
+        // THEN the signature is deemed valid.
+        assert.isTrue(isValid);
+    })
+
+    it('verify - invalid signature', () => {
+        // GIVEN a wallet and a invalid signature.
+        const testData = derivationPathTestCases.index0;
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+        const message = testData.messageHex;
+        const signature = "DEADBEEF"
+        
+        // WHEN a message is verified.
+        const isValid = wallet.verify(message, signature);
+
+        // THEN the signature is deemed invalid.
+        assert.isFalse(isValid);
+    })
+
+    it('verify - bad signature', () => {
+        // GIVEN a wallet and a non hex signature.
+        const testData = derivationPathTestCases.index0;
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+        const message = testData.messageHex;
+        const signature = "xrp";
+        
+        // WHEN a message is verified.
+        const isValid = wallet.verify(message, signature);
+
+        // THEN the signature is deemed invalid.
+        assert.isFalse(isValid);
+    })
+
+    it('verify - bad message', () => {
+        // GIVEN a wallet and a non hex message.
+        const testData = derivationPathTestCases.index0;
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+        const message = "xrp";
+        const signature = testData.expectedSignature;
+        
+        // WHEN a message is verified.
+        const isValid = wallet.verify(message, signature);
+
+        // THEN the signature is deemed invalid.
+        assert.isFalse(isValid);
+    });
+    
+    it('verify - undefined message', () => {
+        // GIVEN a wallet and a message.
+        const testData = derivationPathTestCases.index0;
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+        const message = testData.messageHex;
+        
+        // WHEN an undefined signature is verified.
+        const isValid = wallet.verify(message, undefined);
+
+        // THEN the signature is deemed invalid.
+        assert.isFalse(isValid);
+    });
+
+    it('verify - undefined signature', () => {
+        // GIVEN a wallet and a signature.
+        const testData = derivationPathTestCases.index0;
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+        const signature = testData.expectedSignature;
+        
+        // WHEN an undefined message is verified.
+        const isValid = wallet.verify(undefined, signature);
+
+        // THEN the signature is deemed invalid.
+        assert.isFalse(isValid);
+    });
+
+    it('signs and verifies an empty message', () => {
+        // GIVEN a wallet and an empty message.
+        const testData = derivationPathTestCases.index0;
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+        const message = "";
+
+        // WHEN the message is verified.
+        const signature = wallet.sign(message);
+        const isValid = wallet.verify(message, signature);
+
+        // THEN the signature is deemed valid.
+        assert.isTrue(isValid);
+    })
+
+    it('fails to verify a bad signature on an empty string.', () => {
+        // GIVEN a wallet and an empty message and an incorrect signature.
+        const testData = derivationPathTestCases.index0;
+        const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic, testData.derivationPath);
+        const message = "";
+        const signature = "DEADBEEF";
+
+        // WHEN the message is verified.
+        const isValid = wallet.verify(message, signature);
+
+        // THEN the signature is deemed invalid.
+        assert.isFalse(isValid);
     })
 })

@@ -1,5 +1,6 @@
-const bip39 = require('bip39');
 const bip32 = require("ripple-bip32");
+const bip39 = require('bip39');
+const isHex = require('is-hex');
 const rippleKeyPair = require('ripple-keypairs');
 
 /**
@@ -22,7 +23,7 @@ class Wallet {
      * Generate a new wallet hierarchical deterministic wallet with a random mnemonic and
      * default derivation path.
      * 
-     * @returns {Terram.WalletGenerationResult} The result of generating a new wallet.
+     * @returns {Terram.Wallet} The result of generating a new wallet.
      */
     static generateRandomWallet() {
         const mnemonic = bip39.generateMnemonic();
@@ -100,6 +101,40 @@ class Wallet {
      */
     getDerivationPath() {
         return this.derivationPath;
+    }
+
+    /**
+     * Sign an arbitrary hex string.
+     * 
+     * @param {String} hex An arbitrary hex string to sign.
+     * @returns {String} A signature in hexadecimal format if the input was valid, otherwise undefined.
+     */
+    sign(hex) {
+        if (!isHex(hex)) {
+            return undefined;
+        }
+        return rippleKeyPair.sign(hex, this.getPrivateKey());
+    }
+
+    /**
+     * Verify a signature is valid for a message.
+     * 
+     * @param {String} message A message in hex format.
+     * @param {String} signature A signature in hex format.
+     * @returns {Boolean} True if the signature is valid, otherwise false.
+     */
+    verify(message, signature) {
+        if (!isHex(signature) || !isHex(message)) {
+            return false;
+        }
+
+        try {
+            return rippleKeyPair.verify(message, signature, this.getPublicKey());
+        } catch (error) {
+            // The ripple-key-pair module may throw errors for some signatures rather than returning false.
+            // If an error was thrown then the signature is definitely not valid.
+            return false;
+        }
     }
 }
 
