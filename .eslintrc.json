@@ -48,6 +48,7 @@
         "no-shadow": ["error"],
         "global-require": ["error"],
         "eol-last": ["error", "always"],
-        "sort-imports": ["error"]
+        "sort-imports": ["error"],
+        "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
     }
 }
