@@ -1,4 +1,3 @@
-# poke
 version: 2.1
 orbs:
   protobuf: izumin5210/protobuf@0.1.0
