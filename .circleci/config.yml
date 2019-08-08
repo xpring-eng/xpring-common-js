@@ -32,7 +32,10 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: npm test
+      - run: nyc npm test
+      - run:
+          name: Generate Code Coverage
+          command: nyc report --reporter=text-lcov > coverage.lcov
 
       - codecov/upload:
-          file: ./coverage/coverage.json
+          file: coverage.lcov
