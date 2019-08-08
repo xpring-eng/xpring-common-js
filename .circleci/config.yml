@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   protobuf: izumin5210/protobuf@0.1.0
+  codecov: codecov/codecov@1.0.2
 jobs:
   build:
     docker:
@@ -31,5 +32,7 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      # run tests!
       - run: npm test
+
+      - codecov/upload:
+          file: ./coverage/coverage.json
