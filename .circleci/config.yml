@@ -27,7 +27,9 @@ jobs:
             - v1-dependencies-
 
       - run: npm install
-
+      - run:
+          name: "Install protoc"
+          command: sudo apt install protobuf-compiler
       - save_cache:
           paths:
             - node_modules
