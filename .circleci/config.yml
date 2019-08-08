@@ -29,7 +29,7 @@ jobs:
       - protobuf/install
       - run:
           name: "Install dependencies"
-          command: npm -g i nyc
+          command: sudo npm -g i nyc
       - save_cache:
           paths:
             - node_modules
