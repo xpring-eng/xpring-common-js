@@ -1,8 +1,9 @@
-version: 2
+version: 2.1
+orbs:
+  protobuf: izumin5210/protobuf@0.1.0
 jobs:
   build:
     docker:
-      # specify the version you desire here
       - image: circleci/node:7.10
 
     working_directory: ~/repo
@@ -24,13 +25,7 @@ jobs:
             - v1-dependencies-
 
       - run: npm install
-      - run:
-          name: "Install protoc"
-          command: |
-            curl -OL https://github.com/google/protobuf/releases/download/v3.2.0/protoc-3.2.0-linux-x86_64.zip
-            unzip protoc-3.2.0-linux-x86_64.zip -d protoc3
-            sudo mv protoc3/bin/* /usr/local/bin/
-            sudo mv protoc3/include/* /usr/local/include/
+      - protobuf/install
       - save_cache:
           paths:
             - node_modules
