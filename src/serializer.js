@@ -35,7 +35,7 @@ class Serializer {
     case Transaction.TransactionDataCase.PAYMENT:
       Object.assign(object, this.paymentToJSON(transaction.getPayment()));
       break;
-    default: 
+    default:
       return undefined;
     }
 
@@ -62,7 +62,7 @@ class Serializer {
     case Payment.AmountCase.XRP_AMOUNT:
       json.Amount = this.xrpAmountToJSON(payment.getXrpAmount());
       break;
-    default: 
+    default:
       return undefined;
     }
     return json;
@@ -90,7 +90,7 @@ class Serializer {
     switch (currency) {
     case FiatAmount.Currency.USD:
       return "USD";
-    default: 
+    default:
       return undefined;
     }
   }

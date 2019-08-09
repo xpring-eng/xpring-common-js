@@ -5,7 +5,7 @@ const { SignedTransaction } = require("../generated/SignedTransaction_pb.js");
 const rippleCodec = require("ripple-binary-codec");
 
 /**
- * Abstracts details of signing.
+ * Abstracts the details of signing.
  */
 class Signer {
   /**
