@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   protobuf: izumin5210/protobuf@0.1.0
+  codecov: codecov/codecov@1.0.2
 jobs:
   build:
     docker:
@@ -26,10 +27,18 @@ jobs:
 
       - run: npm install
       - protobuf/install
+      - run:
+          name: "Install dependencies"
+          command: sudo npm -g i nyc
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      # run tests!
-      - run: npm test
+      - run: nyc npm test
+      - run:
+          name: Generate Code Coverage
+          command: nyc report --reporter=text-lcov > coverage.lcov
+
+      - codecov/upload:
+          file: coverage.lcov

@@ -1,3 +1,5 @@
+"use strict";
+
 const addressCodec = require("ripple-address-codec");
 
 const utils = {

@@ -1,3 +1,5 @@
+"use strict";
+
 const Signer = require("./signer.js");
 const Wallet = require("./wallet.js");
 const utils = require("./utils.js");
