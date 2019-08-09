@@ -1,7 +1,7 @@
 "use strict";
 
 const { assert } = require("chai");
-const { utils } = require("../index.js");
+const { utils } = require("../src/index.js");
 
 describe("utils", function() {
   it("isValidAddress() - Valid Address", function() {

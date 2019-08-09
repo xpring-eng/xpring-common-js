@@ -1,8 +1,8 @@
 "use strict";
 
-const addressCodec = require("ripple-address-codec");
+var addressCodec = require("ripple-address-codec");
 
-const utils = {
+var utils = {
   isValidAddress: function(address) {
     return addressCodec.isValidAddress(address);
   }

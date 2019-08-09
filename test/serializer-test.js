@@ -1,6 +1,8 @@
+"use strict";
+
 const { FiatAmount } = require("../generated/FiatAmount_pb.js");
 const { Payment } = require("../generated/Payment_pb.js");
-const Serializer = require("../serializer.js");
+const Serializer = require("../src/serializer.js");
 const { Transaction } = require("../generated/Transaction_pb.js");
 const { XRPAmount } = require("../generated/XRPAmount_pb.js");
 const { assert } = require("chai");
@@ -22,12 +24,12 @@ describe("serializer", function() {
     payment.setXrpAmount(paymentAmount);
 
     const transactionFee = new XRPAmount();
-    transactionFee.setDrops(10);
+    transactionFee.setDrops(fee);
 
     const transaction = new Transaction();
     transaction.setAccount(account);
     transaction.setFee(transactionFee);
-    transaction.setSequence(1);
+    transaction.setSequence(sequence);
     transaction.setPayment(payment);
 
     // WHEN the transaction is serialized to JSON.
