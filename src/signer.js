@@ -1,5 +1,7 @@
+"use strict";
+
 const Serializer = require("./serializer.js");
-const { SignedTransaction } = require("./generated/SignedTransaction_pb.js");
+const { SignedTransaction } = require("../generated/SignedTransaction_pb.js");
 const rippleCodec = require("ripple-binary-codec");
 
 /**
@@ -14,7 +16,7 @@ class Signer {
    * @returns {Terram.SignedTransaction} A signed transaction.
    */
   static signTransaction(transaction, wallet) {
-    if (transaction == undefined || wallet == undefined) {
+    if (transaction === undefined || wallet === undefined) {
       return undefined;
     }
 
