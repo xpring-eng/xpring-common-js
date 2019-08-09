@@ -32,11 +32,11 @@ class Serializer {
     // Convert additional transaction data.
     const transactionDataCase = transaction.getTransactionDataCase();
     switch (transactionDataCase) {
-    case Transaction.TransactionDataCase.PAYMENT:
-      Object.assign(object, this.paymentToJSON(transaction.getPayment()));
-      break;
-    default:
-      return undefined;
+      case Transaction.TransactionDataCase.PAYMENT:
+        Object.assign(object, this.paymentToJSON(transaction.getPayment()));
+        break;
+      default:
+        return undefined;
     }
 
     return object;
@@ -56,14 +56,14 @@ class Serializer {
 
     const amountCase = payment.getAmountCase();
     switch (amountCase) {
-    case Payment.AmountCase.FIAT_AMOUNT:
-      json.Amount = this.fiatAmountToJSON(payment.getFiatAmount());
-      break;
-    case Payment.AmountCase.XRP_AMOUNT:
-      json.Amount = this.xrpAmountToJSON(payment.getXrpAmount());
-      break;
-    default:
-      return undefined;
+      case Payment.AmountCase.FIAT_AMOUNT:
+        json.Amount = this.fiatAmountToJSON(payment.getFiatAmount());
+        break;
+      case Payment.AmountCase.XRP_AMOUNT:
+        json.Amount = this.xrpAmountToJSON(payment.getXrpAmount());
+        break;
+      default:
+        return undefined;
     }
     return json;
   }
@@ -88,10 +88,10 @@ class Serializer {
    */
   static currencyToJSON(currency) {
     switch (currency) {
-    case FiatAmount.Currency.USD:
-      return "USD";
-    default:
-      return undefined;
+      case FiatAmount.Currency.USD:
+        return "USD";
+      default:
+        return undefined;
     }
   }
 
