@@ -1,4 +1,6 @@
-const Wallet = require("../../wallet.js");
+"use strict";
+
+const { Wallet } = require("../../src/index.js");
 
 /**
  * A fake wallet which always produces the given signature.

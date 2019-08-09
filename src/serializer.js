@@ -1,6 +1,8 @@
-const { Payment } = require("./generated/Payment_pb.js");
-const { Transaction } = require("./generated/Transaction_pb.js");
-const { FiatAmount } = require("./generated/FiatAmount_pb.js");
+"use strict";
+
+const { Payment } = require("../generated/Payment_pb.js");
+const { Transaction } = require("../generated/Transaction_pb.js");
+const { FiatAmount } = require("../generated/FiatAmount_pb.js");
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -30,9 +32,11 @@ class Serializer {
     // Convert additional transaction data.
     const transactionDataCase = transaction.getTransactionDataCase();
     switch (transactionDataCase) {
-      case Transaction.TransactionDataCase.PAYMENT:
-        Object.assign(object, this.paymentToJSON(transaction.getPayment()));
-        break;
+    case Transaction.TransactionDataCase.PAYMENT:
+      Object.assign(object, this.paymentToJSON(transaction.getPayment()));
+      break;
+    default:
+      return undefined;
     }
 
     return object;
@@ -52,12 +56,14 @@ class Serializer {
 
     const amountCase = payment.getAmountCase();
     switch (amountCase) {
-      case Payment.AmountCase.FIAT_AMOUNT:
-        json.Amount = this.fiatAmountToJSON(payment.getFiatAmount());
-        break;
-      case Payment.AmountCase.XRP_AMOUNT:
-        json.Amount = this.xrpAmountToJSON(payment.getXrpAmount());
-        break;
+    case Payment.AmountCase.FIAT_AMOUNT:
+      json.Amount = this.fiatAmountToJSON(payment.getFiatAmount());
+      break;
+    case Payment.AmountCase.XRP_AMOUNT:
+      json.Amount = this.xrpAmountToJSON(payment.getXrpAmount());
+      break;
+    default:
+      return undefined;
     }
     return json;
   }
@@ -82,8 +88,10 @@ class Serializer {
    */
   static currencyToJSON(currency) {
     switch (currency) {
-      case FiatAmount.Currency.USD:
-        return "USD";
+    case FiatAmount.Currency.USD:
+      return "USD";
+    default:
+      return undefined;
     }
   }
 

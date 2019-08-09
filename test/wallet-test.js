@@ -1,5 +1,5 @@
 const { assert } = require("chai");
-const { Wallet } = require("../index.js");
+const { Wallet } = require("../src/index.js");
 
 /**
  * A mapping of input and expected outputs for BIP39 and BIP44.
