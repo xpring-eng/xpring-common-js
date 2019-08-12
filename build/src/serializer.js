@@ -1,7 +1,8 @@
 "use strict";
-const { Payment } = require("../generated/Payment_pb.js");
-const { Transaction } = require("../generated/Transaction_pb.js");
-const { FiatAmount } = require("../generated/FiatAmount_pb.js");
+Object.defineProperty(exports, "__esModule", { value: true });
+const Payment_pb_1 = require("../generated/Payment_pb");
+const Transaction_pb_1 = require("../generated/Transaction_pb");
+const FiatAmount_pb_1 = require("../generated/FiatAmount_pb");
 class Serializer {
     static transactionToJSON(transaction) {
         var object = transaction.toObject();
@@ -12,7 +13,7 @@ class Serializer {
         delete object.payment;
         const transactionDataCase = transaction.getTransactionDataCase();
         switch (transactionDataCase) {
-            case Transaction.TransactionDataCase.PAYMENT:
+            case Transaction_pb_1.Transaction.TransactionDataCase.PAYMENT:
                 Object.assign(object, this.paymentToJSON(transaction.getPayment()));
                 break;
             default:
@@ -27,10 +28,10 @@ class Serializer {
         };
         const amountCase = payment.getAmountCase();
         switch (amountCase) {
-            case Payment.AmountCase.FIAT_AMOUNT:
+            case Payment_pb_1.Payment.AmountCase.FIAT_AMOUNT:
                 json.Amount = this.fiatAmountToJSON(payment.getFiatAmount());
                 break;
-            case Payment.AmountCase.XRP_AMOUNT:
+            case Payment_pb_1.Payment.AmountCase.XRP_AMOUNT:
                 json.Amount = this.xrpAmountToJSON(payment.getXrpAmount());
                 break;
             default:
@@ -45,7 +46,7 @@ class Serializer {
     }
     static currencyToJSON(currency) {
         switch (currency) {
-            case FiatAmount.Currency.USD:
+            case FiatAmount_pb_1.FiatAmount.Currency.USD:
                 return "USD";
             default:
                 return undefined;
