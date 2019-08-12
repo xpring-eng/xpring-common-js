@@ -1,7 +1,7 @@
 
 
 const { assert } = require("chai");
-const { utils } = require("../src/index.js");
+const { Utils } = require("../build/index.js");
 
 describe("utils", function() {
   it("isValidAddress() - Valid Address", function() {
@@ -9,7 +9,7 @@ describe("utils", function() {
     const address = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
 
     // WHEN the address is validated.
-    const validAddress = utils.isValidAddress(address);
+    const validAddress = Utils.isValidAddress(address);
 
     // THEN the address is deemed valid.
     assert.isTrue(validAddress);
@@ -20,7 +20,7 @@ describe("utils", function() {
     const address = "1EAG1MwmzkG6gRZcYqcRMfC17eMt8TDTit";
 
     // WHEN the address is validated.
-    const validAddress = utils.isValidAddress(address);
+    const validAddress = Utils.isValidAddress(address);
 
     // THEN the address is deemed invalid.
     assert.isFalse(validAddress);
@@ -31,7 +31,7 @@ describe("utils", function() {
     const address = "rU6K7V3Po4sBBBBBaU29sesqs2qTQJWDw1";
 
     // WHEN the address is validated.
-    const validAddress = utils.isValidAddress(address);
+    const validAddress = Utils.isValidAddress(address);
 
     // THEN the address is deemed invalid.
     assert.isFalse(validAddress);
@@ -42,7 +42,7 @@ describe("utils", function() {
     const address = "rU6K7V3Po4sBBBBBaU@#$%qs2qTQJWDw1";
 
     // WHEN the address is validated.
-    const validAddress = utils.isValidAddress(address);
+    const validAddress = Utils.isValidAddress(address);
 
     // THEN the address is deemed invalid.
     assert.isFalse(validAddress);
@@ -54,7 +54,7 @@ describe("utils", function() {
       "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
 
     // WHEN the address is validated.
-    const validAddress = utils.isValidAddress(address);
+    const validAddress = Utils.isValidAddress(address);
 
     // THEN the address is deemed invalid.
     assert.isFalse(validAddress);
@@ -65,7 +65,7 @@ describe("utils", function() {
     const address = "rU6K7V3Po4s2qTQJWDw1";
 
     // WHEN the address is validated.
-    const validAddress = utils.isValidAddress(address);
+    const validAddress = Utils.isValidAddress(address);
 
     // THEN the address is deemed invalid.
     assert.isFalse(validAddress);

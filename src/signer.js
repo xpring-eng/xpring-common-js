@@ -1,4 +1,4 @@
-
+"use strict"
 
 const Serializer = require("./serializer.js");
 const { SignedTransaction } = require("../generated/SignedTransaction_pb.js");

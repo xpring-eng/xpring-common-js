@@ -28,7 +28,7 @@
     "typescript": "3.5.3"
   },
   "scripts": {
-    "pretest": "./scripts/regenerate_protos.sh",
+    "pretest": "./scripts/regenerate_protos.sh && tsc",
     "test": "nyc --all mocha --check-leaks"
   },
   "devDependencies": {
