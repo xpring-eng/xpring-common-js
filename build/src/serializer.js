@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Payment_pb_1 = require("../generated/Payment_pb");
 const Transaction_pb_1 = require("../generated/Transaction_pb");
 const FiatAmount_pb_1 = require("../generated/FiatAmount_pb");
+from;
+"../generated/FiatAmount_pb";
 class Serializer {
     static transactionToJSON(transaction) {
         var object = transaction.toObject();
@@ -60,5 +62,5 @@ class Serializer {
         delete object[oldPropertyName];
     }
 }
-module.exports = Serializer;
+exports.default = Serializer;
 //# sourceMappingURL=serializer.js.map

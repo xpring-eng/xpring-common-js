@@ -3,8 +3,7 @@ import { Transaction } from "../generated/Transaction_pb";
 import { FiatAmount } from "../generated/FiatAmount_pb";
 import { SignedTransaction } from "../generated/SignedTransaction_pb";
 import { XRPAmount } from "../generated/XRPAmount_pb";
-import { FiatAmount.CurrencyMap } from "../generated/FiatAmount_pb";
-import { SERVFAIL } from "dns";
+import * as fiatAmount from "../generated/FiatAmount_pb";
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -88,7 +87,7 @@ class Serializer {
    * @param {proto.FiatAmount.Currency} currency The Currency to convert.
    * @returns {String} The Currency as JSON.
    */
-  static currencyToJSON(currency): string | undefined {
+  static currencyToJSON(currency: Currency): string | undefined {
     switch (currency) {
     case FiatAmount.Currency.USD:
       return "USD";
