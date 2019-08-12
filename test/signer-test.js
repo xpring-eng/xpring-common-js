@@ -1,6 +1,6 @@
 
 
-const FakeWallet = require("./fakes/fake-wallet.js");
+const FakeWallet = require("../build/fake-wallet.js");
 const { Payment } = require("../generated/Payment_pb.js");
 const Signer = require("../src/signer.js");
 const { Transaction } = require("../generated/Transaction_pb.js");

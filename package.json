@@ -14,6 +14,7 @@
     "test/*.js"
   ],
   "dependencies": {
+    "@types/google-protobuf": "3.7.1",
     "@typescript-eslint/eslint-plugin": "1.13.0",
     "@typescript-eslint/parser": "1.13.0",
     "bip39": "^3.0.2",
@@ -25,6 +26,7 @@
     "ripple-binary-codec": "^0.2.2",
     "ripple-bip32": "0.0.3",
     "ripple-keypairs": "^0.11.0",
+    "ts-protoc-gen": "0.10.0",
     "typescript": "3.5.3"
   },
   "scripts": {
