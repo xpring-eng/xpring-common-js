@@ -14,6 +14,8 @@
     "test/*.js"
   ],
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "1.13.0",
+    "@typescript-eslint/parser": "1.13.0",
     "bip39": "^3.0.2",
     "chai": "^4.2.0",
     "google-protobuf": "3.9.1",
@@ -22,7 +24,8 @@
     "ripple-address-codec": "^2.0.1",
     "ripple-binary-codec": "^0.2.2",
     "ripple-bip32": "0.0.3",
-    "ripple-keypairs": "^0.11.0"
+    "ripple-keypairs": "^0.11.0",
+    "typescript": "3.5.3"
   },
   "scripts": {
     "pretest": "./scripts/regenerate_protos.sh",

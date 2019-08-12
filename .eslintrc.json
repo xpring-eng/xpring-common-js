@@ -15,8 +15,10 @@
     "parserOptions": {
         "ecmaVersion": 2018
     },
+    "parser": "@typescript-eslint/parser",
     "plugins": [
-        "mocha"
+        "mocha",
+        "@typescript-eslint"
     ],
     "rules": {
         "indent": [

@@ -1,5 +1,6 @@
 "use strict";
 
+
 const FakeWallet = require("./fakes/fake-wallet.js");
 const { Payment } = require("../generated/Payment_pb.js");
 const Signer = require("../src/signer.js");

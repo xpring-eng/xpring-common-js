@@ -1,1 +1,5 @@
+# Do not lint generated files.
 generated/*.js
+
+# Do not lint compiled typescript files.
+build/*.js
