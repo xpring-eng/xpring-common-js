@@ -1,4 +1,4 @@
-"use strict";
+
 
 const { FiatAmount } = require("../generated/FiatAmount_pb.js");
 const { Payment } = require("../generated/Payment_pb.js");

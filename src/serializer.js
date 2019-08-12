@@ -1,4 +1,4 @@
-"use strict";
+
 
 const { Payment } = require("../generated/Payment_pb.js");
 const { Transaction } = require("../generated/Transaction_pb.js");

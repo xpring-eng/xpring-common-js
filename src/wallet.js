@@ -1,4 +1,4 @@
-"use strict";
+
 
 const bip32 = require("ripple-bip32");
 const bip39 = require("bip39");

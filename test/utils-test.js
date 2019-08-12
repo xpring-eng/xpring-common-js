@@ -1,4 +1,4 @@
-"use strict";
+
 
 const { assert } = require("chai");
 const { utils } = require("../src/index.js");

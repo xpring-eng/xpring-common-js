@@ -1,4 +1,3 @@
-"use strict";
 
 
 const FakeWallet = require("./fakes/fake-wallet.js");

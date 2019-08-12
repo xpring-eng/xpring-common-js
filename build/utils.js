@@ -1,4 +1,3 @@
-
 Object.defineProperty(exports, "__esModule", { value: true });
 var addressCodec = require("ripple-address-codec");
 class Utils {

@@ -1,4 +1,4 @@
-"use strict";
+
 
 const Signer = require("./signer.js");
 const Wallet = require("./wallet.js");

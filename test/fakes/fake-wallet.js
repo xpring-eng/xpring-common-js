@@ -1,4 +1,4 @@
-"use strict";
+
 
 const Wallet = require("../../src/wallet.js");
 
