@@ -1,10 +1,10 @@
-import FakeWallet from "./fakes/fake-wallet"
-import { Payment } from "../generated/Payment_pb"
-import Signer from "../src/signer"
-import { Transaction } from "../generated/Transaction_pb"
-import { XRPAmount } from "../generated/XRPAmount_pb"
-import { assert } from 'chai';
-import 'mocha';
+import FakeWallet from "./fakes/fake-wallet";
+import { Payment } from "../generated/Payment_pb";
+import Signer from "../src/signer";
+import { Transaction } from "../generated/Transaction_pb";
+import { XRPAmount } from "../generated/XRPAmount_pb";
+import { assert } from "chai";
+import "mocha";
 
 const isHex = require("is-hex");
 
@@ -40,14 +40,17 @@ describe("signer", function(): void {
 
     // WHEN the transaction is signed with the wallet.
     const signedTransaction = Signer.signTransaction(transaction, wallet);
-    
+
     // THEN the signing artifacts are as expected.
     assert.exists(signedTransaction);
 
     assert.isTrue(isHex(signedTransaction!.getTransactionSignatureHex()));
     assert.isTrue(isHex(signedTransaction!.getPublicKeyHex()));
 
-    assert.equal(signedTransaction!.getTransactionSignatureHex(), fakeSignature);
+    assert.equal(
+      signedTransaction!.getTransactionSignatureHex(),
+      fakeSignature
+    );
     assert.equal(signedTransaction!.getPublicKeyHex(), wallet.getPublicKey());
 
     assert.deepEqual(

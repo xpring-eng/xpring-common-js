@@ -1,7 +1,7 @@
-"use strict"
+"use strict";
 
-import Serializer from "./serializer"
-import { SignedTransaction } from "../generated/SignedTransaction_pb"
+import Serializer from "./serializer";
+import { SignedTransaction } from "../generated/SignedTransaction_pb";
 import { Transaction } from "../generated/Transaction_pb";
 import Wallet from "wallet";
 
@@ -18,7 +18,10 @@ class Signer {
    * @param {Terram.Wallet} wallet The wallet to sign the transaction with.
    * @returns {Terram.SignedTransaction} A signed transaction.
    */
-  public static signTransaction(transaction: Transaction, wallet: Wallet): SignedTransaction | undefined {
+  public static signTransaction(
+    transaction: Transaction,
+    wallet: Wallet
+  ): SignedTransaction | undefined {
     if (transaction === undefined || wallet === undefined) {
       return undefined;
     }

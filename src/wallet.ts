@@ -8,8 +8,8 @@ const rippleKeyPair = require("ripple-keypairs");
  */
 const defaultDerivationPath = "m/44'/144'/0'/0/0";
 
-/** 
- * An object which holds a pair of public and private keys 
+/**
+ * An object which holds a pair of public and private keys
  */
 export interface KeyPair {
   publicKey: string;
@@ -46,7 +46,10 @@ class Wallet {
    * @param {String} derivationPath The derivation path to use. If undefined, the default path is used.
    * @returns {Terram.Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
-  public static generateWalletFromMnemonic(mnemonic: string, derivationPath = Wallet.getDefaultDerivationPath()): Wallet | undefined {
+  public static generateWalletFromMnemonic(
+    mnemonic: string,
+    derivationPath = Wallet.getDefaultDerivationPath()
+  ): Wallet | undefined {
     // Validate mnemonic and path are valid.
     if (!bip39.validateMnemonic(mnemonic)) {
       return undefined;
@@ -65,8 +68,11 @@ class Wallet {
    * @param {String} mnemonic The mnemonic associated with the generated wallet.
    * @param {String} derivationPath The derivation path associated with the generated wallet.
    */
-  public constructor(private readonly keyPair: KeyPair, private readonly mnemonic: string, private readonly derivationPath: string) {
-  }
+  public constructor(
+    private readonly keyPair: KeyPair,
+    private readonly mnemonic: string,
+    private readonly derivationPath: string
+  ) {}
 
   /**
    * @returns {String} A string representing the public key for the wallet.

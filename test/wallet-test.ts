@@ -1,6 +1,6 @@
-import Wallet from '../src/wallet';
-import { assert } from 'chai';
-import 'mocha';
+import Wallet from "../src/wallet";
+import { assert } from "chai";
+import "mocha";
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
@@ -38,10 +38,13 @@ describe("wallet", function(): void {
   it("generateRandomWallet", function(): void {
     // WHEN a new wallet is generated.
     const wallet = Wallet.generateRandomWallet();
-    
+
     // THEN the result exists and has the default derivation path.
     assert.exists(wallet);
-    assert.equal(wallet!.getDerivationPath(), Wallet.getDefaultDerivationPath());
+    assert.equal(
+      wallet!.getDerivationPath(),
+      Wallet.getDefaultDerivationPath()
+    );
   });
 
   it("walletFromMnemonic - derivation path index 0", function(): void {

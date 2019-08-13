@@ -1,11 +1,11 @@
-import { Currency } from "../generated/Currency_pb"
-import { FiatAmount } from "../generated/FiatAmount_pb"
-import { Payment } from "../generated/Payment_pb"
-import Serializer from "../src/serializer"
-import { Transaction } from "../generated/Transaction_pb"
-import { XRPAmount } from "../generated/XRPAmount_pb"
-import { assert } from 'chai';
-import 'mocha';
+import { Currency } from "../generated/Currency_pb";
+import { FiatAmount } from "../generated/FiatAmount_pb";
+import { Payment } from "../generated/Payment_pb";
+import Serializer from "../src/serializer";
+import { Transaction } from "../generated/Transaction_pb";
+import { XRPAmount } from "../generated/XRPAmount_pb";
+import { assert } from "chai";
+import "mocha";
 
 describe("serializer", function(): void {
   it("serializes a payment in XRP", function(): void {
@@ -59,7 +59,7 @@ describe("serializer", function(): void {
     const paymentAmount = new FiatAmount();
     paymentAmount.setIssuer(issuer);
     paymentAmount.setValue(value);
-    paymentAmount.setCurrency(Currency.USD)
+    paymentAmount.setCurrency(Currency.USD);
 
     const payment = new Payment();
     payment.setDestination(destination);

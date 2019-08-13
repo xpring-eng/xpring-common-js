@@ -17,9 +17,11 @@ class Serializer {
    * @param {proto.Transaction} transaction A Transaction to convert.
    * @returns {Object} The Transaction as JSON.
    */
-  public static transactionToJSON(transaction: Transaction): object | undefined {
+  public static transactionToJSON(
+    transaction: Transaction
+  ): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
-    var object: any = transaction.toObject()
+    var object: any = transaction.toObject();
 
     // Convert fields to upper case.
     this.convertPropertyName("account", "Account", object);
@@ -116,10 +118,12 @@ class Serializer {
    * @param {proto.FiatAmount.Currency} currency The Currency to convert.
    * @returns {String} The Currency as JSON.
    */
-  private static currencyToJSON(currency: CurrencyMap[keyof CurrencyMap]): string {
+  private static currencyToJSON(
+    currency: CurrencyMap[keyof CurrencyMap]
+  ): string {
     switch (currency) {
       case Currency.USD:
-        return "USD"
+        return "USD";
     }
   }
 
@@ -142,7 +146,11 @@ class Serializer {
    * @param {String} newPropertyName The new property name.
    * @param {Object} object The object on which the conversion is performed.
    */
-  private static convertPropertyName(oldPropertyName: string, newPropertyName: string, object: any): void {
+  private static convertPropertyName(
+    oldPropertyName: string,
+    newPropertyName: string,
+    object: any
+  ): void {
     object[newPropertyName] = object[oldPropertyName];
     delete object[oldPropertyName];
   }

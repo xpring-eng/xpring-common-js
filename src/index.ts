@@ -8,7 +8,7 @@ import Utils from "./utils";
 class Terram {
   public static readonly Signer = Signer;
   public static readonly Utils = Utils;
-  public static readonly  Wallet = Wallet;
+  public static readonly Wallet = Wallet;
 }
 
 export default Terram;
