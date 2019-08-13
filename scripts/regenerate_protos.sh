@@ -13,10 +13,10 @@ PROTOC_GEN_TS_PATH="./node_modules/.bin/protoc-gen-ts"
 OUT_DIR="./generated"
  
 protoc \
-    --proto_path=$PWD/terram-protos/ \
+    --proto_path=$PWD/terram-protos/models \
     --plugin="protoc-gen-ts=${PROTOC_GEN_TS_PATH}" \
     --js_out="import_style=commonjs,binary:${OUT_DIR}" \
     --ts_out="${OUT_DIR}" \
-    $PWD/terram-protos/*.proto
+    $PWD/terram-protos/models/*.proto
 
 echo "All done!"
