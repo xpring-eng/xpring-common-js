@@ -1,6 +1,6 @@
 "use strict";
 const { assert } = require("chai");
-const { Wallet } = require("../src/index.js");
+const { Wallet } = require("../build/src/index.js");
 const derivationPathTestCases = {
     index0: {
         mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",

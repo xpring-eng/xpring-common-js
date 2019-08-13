@@ -16,5 +16,10 @@
     "paths": {
       "ripple-keypairs": ["./types/ripple-keypairs"]
     }
-  }
+  },
+  "include": [
+    "src/**/*",
+    "generated/*",
+    "test/fakes"
+  ],
 }

@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Payment_pb_1 = require("../generated/Payment_pb");
 const Transaction_pb_1 = require("../generated/Transaction_pb");
-const Currency_pb_1 = require("../generated/Currency_pb");
 class Serializer {
     static transactionToJSON(transaction) {
         var object = transaction.toObject();
@@ -42,11 +41,7 @@ class Serializer {
                 if (fiatAmount == undefined) {
                     return undefined;
                 }
-                const jsonFiatAmount = this.fiatAmountToJSON(fiatAmount);
-                if (jsonFiatAmount == undefined) {
-                    return undefined;
-                }
-                json.Amount = jsonFiatAmount;
+                json.Amount = this.fiatAmountToJSON(fiatAmount);
                 break;
             case Payment_pb_1.Payment.AmountCase.XRP_AMOUNT:
                 const xrpAmount = payment.getXrpAmount();
@@ -62,18 +57,11 @@ class Serializer {
     }
     static fiatAmountToJSON(fiatAmount) {
         const json = fiatAmount.toObject();
-        const currency = fiatAmount.getCurrency();
-        if (currency == undefined) {
-            return undefined;
-        }
-        json.currency = fiatAmount.getCurrency();
+        json.currency = this.currencyToJSON(fiatAmount.getCurrency());
         return json;
     }
     static currencyToJSON(currency) {
-        switch (Currency_pb_1.Currency[currency]) {
-            case Currency_pb_1.Currency.USD:
-                return "USD";
-        }
+        return "USD";
     }
     static xrpAmountToJSON(xrpAmount) {
         return xrpAmount.getDrops() + "";

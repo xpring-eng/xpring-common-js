@@ -1,8 +1,8 @@
 
 
-const FakeWallet = require("../build/fake-wallet.js");
+const FakeWallet = require("../build/test/fakes/fake-wallet.js");
 const { Payment } = require("../generated/Payment_pb.js");
-const Signer = require("../src/signer.js");
+const Signer = require("../build/src/signer.js");
 const { Transaction } = require("../generated/Transaction_pb.js");
 const { XRPAmount } = require("../generated/XRPAmount_pb.js");
 const { assert } = require("chai");

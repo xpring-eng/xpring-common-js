@@ -1,9 +1,8 @@
-/// <reference path="../generated/FiatAmount_pb.d.ts" />
-
 import { Payment } from "../generated/Payment_pb";
 import { Transaction } from "../generated/Transaction_pb";
 import { FiatAmount } from "../generated/FiatAmount_pb";
 import { XRPAmount } from "../generated/XRPAmount_pb";
+import { Currency, CurrencyMap } from "../generated/Currency_pb";
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -71,7 +70,12 @@ class Serializer {
       if (fiatAmount == undefined) {
         return undefined;
       }
-      json.Amount = this.fiatAmountToJSON(fiatAmount);
+
+      const jsonFiatAmount = this.fiatAmountToJSON(fiatAmount);
+      if (jsonFiatAmount == undefined) {
+        return undefined;
+      }
+      json.Amount = jsonFiatAmount;
       break;
     case Payment.AmountCase.XRP_AMOUNT:
       const xrpAmount = payment.getXrpAmount();
@@ -92,9 +96,15 @@ class Serializer {
    * @param {proto.FiatAmount} fiatAmount The FiatAmount to convert.
    * @returns {Object} The FiatAmount as JSON.
    */
-  static fiatAmountToJSON(fiatAmount: FiatAmount): object {
+  static fiatAmountToJSON(fiatAmount: FiatAmount): object | undefined {
     const json: any = fiatAmount.toObject();
-    json.currency = this.currencyToJSON(fiatAmount.getCurrency());
+
+    const currency = fiatAmount.getCurrency();
+    if (currency == undefined) {
+      return undefined;
+    }
+
+    json.currency = fiatAmount.getCurrency();
     return json;
   }
 
@@ -104,16 +114,11 @@ class Serializer {
    * @param {proto.FiatAmount.Currency} currency The Currency to convert.
    * @returns {String} The Currency as JSON.
    */
-  static currencyToJSON(currency: any): string {
-    // TODO: Implement correctly.
-    return "USD";
-    // const currency = FiatAmount.CurrencyMap[currency]
-    // switch (currency) {
-    // case FiatAmount.CurrencyMap.USD:
-    //   return "USD";
-    // default:
-    //   return undefined;
-    // }
+  static currencyToJSON(currency: keyof CurrencyMap): string {
+    switch (Currency[currency]) {
+      case Currency.USD:
+        return "USD"
+    }
   }
 
   /**

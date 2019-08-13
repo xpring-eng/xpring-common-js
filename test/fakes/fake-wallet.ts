@@ -1,4 +1,4 @@
-const Wallet = require("../../src/wallet");
+import Wallet from "../../src/wallet"
 
 /**
  * A keypair to default to.

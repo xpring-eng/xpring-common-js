@@ -1,6 +1,6 @@
 "use strict";
 const { assert } = require("chai");
-const { Utils } = require("../build/index.js");
+const { Utils } = require("../build/src/index.js");
 describe("utils", function () {
     it("isValidAddress() - Valid Address", function () {
         const address = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";

@@ -2,9 +2,8 @@
 var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
-var Currency_pb = require('./Currency_pb.js');
-goog.object.extend(proto, Currency_pb);
 goog.exportSymbol('proto.FiatAmount', null, global);
+goog.exportSymbol('proto.FiatAmount.Currency', null, global);
 proto.FiatAmount = function (opt_data) {
     jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -78,6 +77,9 @@ proto.FiatAmount.serializeBinaryToWriter = function (message, writer) {
     if (f.length > 0) {
         writer.writeString(3, f);
     }
+};
+proto.FiatAmount.Currency = {
+    USD: 0
 };
 proto.FiatAmount.prototype.getCurrency = function () {
     return (jspb.Message.getFieldWithDefault(this, 1, 0));

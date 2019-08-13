@@ -2,7 +2,7 @@
 
 const { FiatAmount } = require("../generated/FiatAmount_pb.js");
 const { Payment } = require("../generated/Payment_pb.js");
-const Serializer = require("../src/serializer.js");
+const Serializer = require("../build/src/serializer.js");
 const { Transaction } = require("../generated/Transaction_pb.js");
 const { XRPAmount } = require("../generated/XRPAmount_pb.js");
 const { assert } = require("chai");
