@@ -30,7 +30,7 @@
   },
   "scripts": {
     "pretest": "./scripts/regenerate_protos.sh && tsc",
-    "test": "nyc --all mocha --check-leaks"
+    "test": "nyc mocha"
   },
   "devDependencies": {
     "@types/chai": "4.2.0",
@@ -44,6 +44,7 @@
     "mocha": "6.2.0",
     "nyc": "14.1.1",
     "prettier": "1.18.2",
+    "source-map-support": "0.5.13",
     "ts-node": "8.3.0"
   },
   "husky": {
@@ -52,12 +53,15 @@
     }
   },
   "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
     "all": true,
     "check-coverage": true,
-    "check-leaks": true,
-    "exclude": [
-      "generated/*.js",
-      "test/**/*.js"
-    ]
+    "check-leaks": true
   }
 }
