@@ -46,12 +46,7 @@ class Wallet {
    * @param {String} derivationPath The derivation path to use. If undefined, the default path is used.
    * @returns {Terram.Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
-  static generateWalletFromMnemonic(mnemonic: string, derivationPath: string): Wallet | undefined {
-    // Use default derivation path if derivation path is unspecified.
-    if (derivationPath === undefined) {
-      derivationPath = Wallet.getDefaultDerivationPath();
-    }
-
+  static generateWalletFromMnemonic(mnemonic: string, derivationPath = Wallet.getDefaultDerivationPath()): Wallet | undefined {
     // Validate mnemonic and path are valid.
     if (!bip39.validateMnemonic(mnemonic)) {
       return undefined;

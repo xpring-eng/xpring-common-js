@@ -1,7 +1,6 @@
-
-
-const { assert } = require("chai");
-const { Utils } = require("../build/src/index.js");
+import Utils from '../src/utils';
+import { assert } from 'chai';
+import 'mocha';
 
 describe("utils", function() {
   it("isValidAddress() - Valid Address", function() {

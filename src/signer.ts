@@ -39,4 +39,4 @@ class Signer {
   }
 }
 
-module.exports = Signer;
+export default Signer;

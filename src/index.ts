@@ -1,6 +1,6 @@
-const Signer = require("../src/signer");
-const Wallet = require("./wallet");
-const Utils = require("./utils");
+import Signer from "../src/signer";
+import Wallet from "./wallet";
+import Utils from "./utils";
 
 /**
  * Terram provides a javascript foundation for the Xpring Platform.
