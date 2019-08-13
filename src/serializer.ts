@@ -3,6 +3,7 @@ import { Transaction } from "../generated/Transaction_pb";
 import { FiatAmount } from "../generated/FiatAmount_pb";
 import { XRPAmount } from "../generated/XRPAmount_pb";
 import { Currency, CurrencyMap } from "../generated/Currency_pb";
+import * as jspb from "google-protobuf";
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -104,7 +105,7 @@ class Serializer {
       return undefined;
     }
 
-    json.currency = fiatAmount.getCurrency();
+    json.currency = this.currencyToJSON(currency);
     return json;
   }
 
@@ -114,8 +115,8 @@ class Serializer {
    * @param {proto.FiatAmount.Currency} currency The Currency to convert.
    * @returns {String} The Currency as JSON.
    */
-  static currencyToJSON(currency: keyof CurrencyMap): string {
-    switch (Currency[currency]) {
+  static currencyToJSON(currency: CurrencyMap[keyof CurrencyMap]): string {
+    switch (currency) {
       case Currency.USD:
         return "USD"
     }

@@ -7,7 +7,6 @@ import { Transaction } from "../generated/Transaction_pb"
 import { XRPAmount } from "../generated/XRPAmount_pb"
 import { assert } from 'chai';
 import 'mocha';
-import { SignedTransaction } from "../generated/SignedTransaction_pb";
 
 describe("signer", function() {
   it("sign", function() {
