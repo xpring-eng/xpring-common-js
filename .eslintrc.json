@@ -14,7 +14,8 @@
         "SharedArrayBuffer": "readonly"
     },
     "parserOptions": {
-        "ecmaVersion": 2018
+        "ecmaVersion": 2018,
+        "project": "tsconfig.json"
     },
     "parser": "@typescript-eslint/parser",
     "plugins": [
@@ -22,47 +23,17 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "indent": [
-            "error",
-            2
-        ],
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
-        "quotes": [
-            "error",
-            "double"
-        ],
-        "semi": [
-            "error",
-            "always"
-        ],
-        "strict": [
-            "error",
-            "global"
-        ],
-        "class-methods-use-this": [ "error" ],
-        "default-case": ["error"],
-        "eqeqeq": ["error"],
-        "no-eval": ["error"],
-        "no-magic-numbers": ["error"],
-        "require-await": ["error"],
-        "no-shadow": ["error"],
-        "global-require": ["error"],
-        "eol-last": ["error", "always"],
-        "sort-imports": ["error"],
-        "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
         "@typescript-eslint/consistent-type-definitions": [ "error"],
         "@typescript-eslint/indent": ["error", 2],
         "@typescript-eslint/no-floating-promises": [ "error" ],
         "@typescript-eslint/no-for-in-array": ["error"],
         "@typescript-eslint/no-magic-numbers": [ "error" ],
         "@typescript-eslint/no-misused-promises": [ "error" ],
-        "@typescript-eslint/no-require-imports": [ "error" ],
         "@typescript-eslint/no-this-alias": [ "error" ],
         "@typescript-eslint/prefer-readonly": [ "error" ],
         "@typescript-eslint/promise-function-async": [ "error" ],
-        "@typescript-eslint/require-await": [ "error" ]g
+        "@typescript-eslint/require-await": [ "error" ],
+        "@typescript-eslint/no-parameter-properties": [ "off" ],
+        "@typescript-eslint/no-var-requires": [ "off" ]        
     }
 }

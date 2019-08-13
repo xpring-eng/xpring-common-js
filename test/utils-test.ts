@@ -2,8 +2,8 @@ import Utils from '../src/utils';
 import { assert } from 'chai';
 import 'mocha';
 
-describe("utils", function() {
-  it("isValidAddress() - Valid Address", function() {
+describe("utils", function(): void {
+  it("isValidAddress() - Valid Address", function(): void {
     // GIVEN a valid address.
     const address = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
 
@@ -14,7 +14,7 @@ describe("utils", function() {
     assert.isTrue(validAddress);
   });
 
-  it("isValidAddress() - Wrong Alphabet", function() {
+  it("isValidAddress() - Wrong Alphabet", function(): void {
     // GIVEN a base58check address encoded in the wrong alphabet.
     const address = "1EAG1MwmzkG6gRZcYqcRMfC17eMt8TDTit";
 
@@ -25,7 +25,7 @@ describe("utils", function() {
     assert.isFalse(validAddress);
   });
 
-  it("isValidAddress() - Invalid Checksum", function() {
+  it("isValidAddress() - Invalid Checksum", function(): void {
     // GIVEN a base58check address which fails checksumming.
     const address = "rU6K7V3Po4sBBBBBaU29sesqs2qTQJWDw1";
 
@@ -36,7 +36,7 @@ describe("utils", function() {
     assert.isFalse(validAddress);
   });
 
-  it("isValidAddress() - Invalid Characters", function() {
+  it("isValidAddress() - Invalid Characters", function(): void {
     // GIVEN a base58check address which has invalid characters.
     const address = "rU6K7V3Po4sBBBBBaU@#$%qs2qTQJWDw1";
 
@@ -47,7 +47,7 @@ describe("utils", function() {
     assert.isFalse(validAddress);
   });
 
-  it("isValidAddress() - Too Long", function() {
+  it("isValidAddress() - Too Long", function(): void {
     // GIVEN a base58check address which has invalid characters.
     const address =
       "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
@@ -59,7 +59,7 @@ describe("utils", function() {
     assert.isFalse(validAddress);
   });
 
-  it("isValidAddress() - Too Short", function() {
+  it("isValidAddress() - Too Short", function(): void {
     // GIVEN a base58check address which has invalid characters.
     const address = "rU6K7V3Po4s2qTQJWDw1";
 

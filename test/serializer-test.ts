@@ -7,8 +7,8 @@ import { XRPAmount } from "../generated/XRPAmount_pb"
 import { assert } from 'chai';
 import 'mocha';
 
-describe("serializer", function() {
-  it("serializes a payment in XRP", function() {
+describe("serializer", function(): void {
+  it("serializes a payment in XRP", function(): void {
     // GIVEN a transaction which represents a payment denominated in Fiat.
     const value = 1000;
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
@@ -47,7 +47,7 @@ describe("serializer", function() {
     assert.deepEqual(serialized, expectedJSON);
   });
 
-  it("serializes a payment in Fiat", function() {
+  it("serializes a payment in Fiat", function(): void {
     // GIVEN a transaction which represents a payment denominated in fiat.
     const issuer = "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59";
     const value = "153.75";

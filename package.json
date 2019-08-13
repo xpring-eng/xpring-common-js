@@ -45,11 +45,12 @@
     "nyc": "14.1.1",
     "prettier": "1.18.2",
     "source-map-support": "0.5.13",
-    "ts-node": "8.3.0"
+    "ts-node": "8.3.0",
+    "typescript-eslint-parser": "22.0.0"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "eslint ./ --fix && prettier '**/*.js' --write"
+      "pre-commit": "eslint **/*.ts --fix && prettier '**/*.js' --write"
     }
   },
   "nyc": {

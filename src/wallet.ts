@@ -11,9 +11,9 @@ const defaultDerivationPath = "m/44'/144'/0'/0/0";
 /** 
  * An object which holds a pair of public and private keys 
  */
-interface KeyPair {
-  publicKey: string
-  privateKey: string
+export interface KeyPair {
+  publicKey: string;
+  privateKey: string;
 }
 
 /**
@@ -23,7 +23,7 @@ class Wallet {
   /**
    * @returns {String} The default derivation path.
    */
-  static getDefaultDerivationPath(): string {
+  public static getDefaultDerivationPath(): string {
     return defaultDerivationPath;
   }
 
@@ -33,7 +33,7 @@ class Wallet {
    *
    * @returns {Terram.Wallet} The result of generating a new wallet.
    */
-  static generateRandomWallet(): Wallet | undefined {
+  public static generateRandomWallet(): Wallet | undefined {
     const mnemonic = bip39.generateMnemonic();
     const derivationPath = Wallet.getDefaultDerivationPath();
     return Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
@@ -46,7 +46,7 @@ class Wallet {
    * @param {String} derivationPath The derivation path to use. If undefined, the default path is used.
    * @returns {Terram.Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
-  static generateWalletFromMnemonic(mnemonic: string, derivationPath = Wallet.getDefaultDerivationPath()): Wallet | undefined {
+  public static generateWalletFromMnemonic(mnemonic: string, derivationPath = Wallet.getDefaultDerivationPath()): Wallet | undefined {
     // Validate mnemonic and path are valid.
     if (!bip39.validateMnemonic(mnemonic)) {
       return undefined;
@@ -65,41 +65,41 @@ class Wallet {
    * @param {String} mnemonic The mnemonic associated with the generated wallet.
    * @param {String} derivationPath The derivation path associated with the generated wallet.
    */
-  constructor(private keyPair: KeyPair, private mnemonic: string, private derivationPath: string) {
+  public constructor(private readonly keyPair: KeyPair, private readonly mnemonic: string, private readonly derivationPath: string) {
   }
 
   /**
    * @returns {String} A string representing the public key for the wallet.
    */
-  getPublicKey(): string {
+  public getPublicKey(): string {
     return this.keyPair.publicKey;
   }
 
   /**
    * @returns {String} A string representing the private key for the wallet.
    */
-  getPrivateKey(): string {
+  public getPrivateKey(): string {
     return this.keyPair.privateKey;
   }
 
   /**
    * @returns {String} A string representing the address of the wallet.
    */
-  getAddress(): string {
+  public getAddress(): string {
     return rippleKeyPair.deriveAddress(this.getPublicKey());
   }
 
   /**
    * @returns {String} The mnemonic associated with the generated wallet.
    */
-  getMnemonic(): string {
+  public getMnemonic(): string {
     return this.mnemonic;
   }
 
   /**
    * @returns {String} The derivation path associated with the generated wallet.
    */
-  getDerivationPath(): string {
+  public getDerivationPath(): string {
     return this.derivationPath;
   }
 
@@ -109,7 +109,7 @@ class Wallet {
    * @param {String} hex An arbitrary hex string to sign.
    * @returns {String} A signature in hexadecimal format if the input was valid, otherwise undefined.
    */
-  sign(hex: string): string | undefined {
+  public sign(hex: string): string | undefined {
     if (!isHex(hex)) {
       return undefined;
     }
@@ -123,7 +123,7 @@ class Wallet {
    * @param {String} signature A signature in hex format.
    * @returns {Boolean} True if the signature is valid, otherwise false.
    */
-  verify(message: string, signature: string): boolean {
+  public verify(message: string, signature: string): boolean {
     if (!isHex(signature) || !isHex(message)) {
       return false;
     }

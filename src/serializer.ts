@@ -3,7 +3,9 @@ import { Transaction } from "../generated/Transaction_pb";
 import { FiatAmount } from "../generated/FiatAmount_pb";
 import { XRPAmount } from "../generated/XRPAmount_pb";
 import { Currency, CurrencyMap } from "../generated/Currency_pb";
-import * as jspb from "google-protobuf";
+
+/* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -15,7 +17,7 @@ class Serializer {
    * @param {proto.Transaction} transaction A Transaction to convert.
    * @returns {Object} The Transaction as JSON.
    */
-  static transactionToJSON(transaction: Transaction): Object | undefined {
+  public static transactionToJSON(transaction: Transaction): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
     var object: any = transaction.toObject()
 
@@ -37,15 +39,14 @@ class Serializer {
     // Convert additional transaction data.
     const transactionDataCase = transaction.getTransactionDataCase();
     switch (transactionDataCase) {
-    case Transaction.TransactionDataCase.PAYMENT:
-      const payment = transaction.getPayment();
-      if (payment == undefined) {
-        return undefined;
+      case Transaction.TransactionDataCase.PAYMENT: {
+        const payment = transaction.getPayment();
+        if (payment == undefined) {
+          return undefined;
+        }
+        Object.assign(object, this.paymentToJSON(payment));
+        break;
       }
-      Object.assign(object, this.paymentToJSON(payment));
-      break;
-    default:
-      return undefined;
     }
 
     return object;
@@ -57,7 +58,7 @@ class Serializer {
    * @param {proto.Payment} payment The Payment to convert.
    * @returns {Object} The Payment as JSON.
    */
-  static paymentToJSON(payment: Payment): object | undefined {
+  private static paymentToJSON(payment: Payment): object | undefined {
     const json = {
       TransactionType: "Payment",
       Destination: payment.getDestination(),
@@ -66,27 +67,27 @@ class Serializer {
 
     const amountCase = payment.getAmountCase();
     switch (amountCase) {
-    case Payment.AmountCase.FIAT_AMOUNT:
-      const fiatAmount = payment.getFiatAmount();
-      if (fiatAmount == undefined) {
-        return undefined;
-      }
+      case Payment.AmountCase.FIAT_AMOUNT: {
+        const fiatAmount = payment.getFiatAmount();
+        if (fiatAmount == undefined) {
+          return undefined;
+        }
 
-      const jsonFiatAmount = this.fiatAmountToJSON(fiatAmount);
-      if (jsonFiatAmount == undefined) {
-        return undefined;
+        const jsonFiatAmount = this.fiatAmountToJSON(fiatAmount);
+        if (jsonFiatAmount == undefined) {
+          return undefined;
+        }
+        json.Amount = jsonFiatAmount;
+        break;
       }
-      json.Amount = jsonFiatAmount;
-      break;
-    case Payment.AmountCase.XRP_AMOUNT:
-      const xrpAmount = payment.getXrpAmount();
-      if (xrpAmount == undefined) {
-        return undefined;
+      case Payment.AmountCase.XRP_AMOUNT: {
+        const xrpAmount = payment.getXrpAmount();
+        if (xrpAmount == undefined) {
+          return undefined;
+        }
+        json.Amount = this.xrpAmountToJSON(xrpAmount);
+        break;
       }
-      json.Amount = this.xrpAmountToJSON(xrpAmount);
-      break;
-    default:
-      return undefined;
     }
     return json;
   }
@@ -97,7 +98,7 @@ class Serializer {
    * @param {proto.FiatAmount} fiatAmount The FiatAmount to convert.
    * @returns {Object} The FiatAmount as JSON.
    */
-  static fiatAmountToJSON(fiatAmount: FiatAmount): object | undefined {
+  private static fiatAmountToJSON(fiatAmount: FiatAmount): object | undefined {
     const json: any = fiatAmount.toObject();
 
     const currency = fiatAmount.getCurrency();
@@ -115,7 +116,7 @@ class Serializer {
    * @param {proto.FiatAmount.Currency} currency The Currency to convert.
    * @returns {String} The Currency as JSON.
    */
-  static currencyToJSON(currency: CurrencyMap[keyof CurrencyMap]): string {
+  private static currencyToJSON(currency: CurrencyMap[keyof CurrencyMap]): string {
     switch (currency) {
       case Currency.USD:
         return "USD"
@@ -128,7 +129,7 @@ class Serializer {
    * @param {proto.XRPAmount} xrpAmount The XRPAmount to convert.
    * @return {String} The XRPAmount as JSON.
    */
-  static xrpAmountToJSON(xrpAmount: XRPAmount): string {
+  private static xrpAmountToJSON(xrpAmount: XRPAmount): string {
     return xrpAmount.getDrops() + "";
   }
 
@@ -141,7 +142,7 @@ class Serializer {
    * @param {String} newPropertyName The new property name.
    * @param {Object} object The object on which the conversion is performed.
    */
-  static convertPropertyName(oldPropertyName: string, newPropertyName: string, object: any): void {
+  private static convertPropertyName(oldPropertyName: string, newPropertyName: string, object: any): void {
     object[newPropertyName] = object[oldPropertyName];
     delete object[oldPropertyName];
   }

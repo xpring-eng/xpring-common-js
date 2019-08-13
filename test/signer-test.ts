@@ -1,5 +1,3 @@
-const isHex = require("is-hex");
-
 import FakeWallet from "./fakes/fake-wallet"
 import { Payment } from "../generated/Payment_pb"
 import Signer from "../src/signer"
@@ -8,8 +6,12 @@ import { XRPAmount } from "../generated/XRPAmount_pb"
 import { assert } from 'chai';
 import 'mocha';
 
-describe("signer", function() {
-  it("sign", function() {
+const isHex = require("is-hex");
+
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
+describe("signer", function(): void {
+  it("sign", function(): void {
     // GIVEN an transaction and a wallet and expected signing artifacts.
     const fakeSignature = "DEADBEEF";
     const wallet = new FakeWallet(fakeSignature);

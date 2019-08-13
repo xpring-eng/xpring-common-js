@@ -18,7 +18,7 @@ class Signer {
    * @param {Terram.Wallet} wallet The wallet to sign the transaction with.
    * @returns {Terram.SignedTransaction} A signed transaction.
    */
-  static signTransaction(transaction: Transaction, wallet: Wallet): SignedTransaction | undefined {
+  public static signTransaction(transaction: Transaction, wallet: Wallet): SignedTransaction | undefined {
     if (transaction === undefined || wallet === undefined) {
       return undefined;
     }
