@@ -1,4 +1,3 @@
-
 const Signer = require("../src/signer");
 const Wallet = require("./wallet");
 const Utils = require("./utils");

@@ -2,21 +2,26 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Payment_pb_1 = require("../generated/Payment_pb");
 const Transaction_pb_1 = require("../generated/Transaction_pb");
-const FiatAmount_pb_1 = require("../generated/FiatAmount_pb");
-from;
-"../generated/FiatAmount_pb";
 class Serializer {
     static transactionToJSON(transaction) {
         var object = transaction.toObject();
         this.convertPropertyName("account", "Account", object);
         this.convertPropertyName("sequence", "Sequence", object);
-        object.Fee = this.xrpAmountToJSON(transaction.getFee());
+        const txFee = transaction.getFee();
+        if (txFee == undefined) {
+            return undefined;
+        }
+        object["Fee"] = this.xrpAmountToJSON(txFee);
         delete object.fee;
         delete object.payment;
         const transactionDataCase = transaction.getTransactionDataCase();
         switch (transactionDataCase) {
             case Transaction_pb_1.Transaction.TransactionDataCase.PAYMENT:
-                Object.assign(object, this.paymentToJSON(transaction.getPayment()));
+                const payment = transaction.getPayment();
+                if (payment == undefined) {
+                    return undefined;
+                }
+                Object.assign(object, this.paymentToJSON(payment));
                 break;
             default:
                 return undefined;
@@ -26,15 +31,24 @@ class Serializer {
     static paymentToJSON(payment) {
         const json = {
             TransactionType: "Payment",
-            Destination: payment.getDestination()
+            Destination: payment.getDestination(),
+            Amount: {}
         };
         const amountCase = payment.getAmountCase();
         switch (amountCase) {
             case Payment_pb_1.Payment.AmountCase.FIAT_AMOUNT:
-                json.Amount = this.fiatAmountToJSON(payment.getFiatAmount());
+                const fiatAmount = payment.getFiatAmount();
+                if (fiatAmount == undefined) {
+                    return undefined;
+                }
+                json.Amount = this.fiatAmountToJSON(fiatAmount);
                 break;
             case Payment_pb_1.Payment.AmountCase.XRP_AMOUNT:
-                json.Amount = this.xrpAmountToJSON(payment.getXrpAmount());
+                const xrpAmount = payment.getXrpAmount();
+                if (xrpAmount == undefined) {
+                    return undefined;
+                }
+                json.Amount = this.xrpAmountToJSON(xrpAmount);
                 break;
             default:
                 return undefined;
@@ -47,12 +61,7 @@ class Serializer {
         return json;
     }
     static currencyToJSON(currency) {
-        switch (currency) {
-            case FiatAmount_pb_1.FiatAmount.Currency.USD:
-                return "USD";
-            default:
-                return undefined;
-        }
+        return "USD";
     }
     static xrpAmountToJSON(xrpAmount) {
         return xrpAmount.getDrops() + "";

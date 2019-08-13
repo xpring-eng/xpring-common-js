@@ -26,6 +26,9 @@ class Signer {
     const transactionJSON = Serializer.transactionToJSON(transaction);
     const transactionHex = rippleCodec.encodeForSigning(transactionJSON);
     const signatureHex = wallet.sign(transactionHex);
+    if (signatureHex == undefined) {
+      return undefined;
+    }
 
     const signedTransaction = new SignedTransaction();
     signedTransaction.setTransaction(transaction);

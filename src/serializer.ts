@@ -1,9 +1,9 @@
+/// <reference path="../generated/FiatAmount_pb.d.ts" />
+
 import { Payment } from "../generated/Payment_pb";
 import { Transaction } from "../generated/Transaction_pb";
 import { FiatAmount } from "../generated/FiatAmount_pb";
-import { SignedTransaction } from "../generated/SignedTransaction_pb";
 import { XRPAmount } from "../generated/XRPAmount_pb";
-import * as fiatAmount from "../generated/FiatAmount_pb";
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -17,14 +17,18 @@ class Serializer {
    */
   static transactionToJSON(transaction: Transaction): Object | undefined {
     // Serialize the protocol buffer to a JSON representation.
-    var object = transaction.toObject();
+    var object: any = transaction.toObject()
 
     // Convert fields to upper case.
     this.convertPropertyName("account", "Account", object);
     this.convertPropertyName("sequence", "Sequence", object);
 
     // Convert XRP denominated fee field.
-    object.Fee = this.xrpAmountToJSON(transaction.getFee());
+    const txFee = transaction.getFee();
+    if (txFee == undefined) {
+      return undefined;
+    }
+    object["Fee"] = this.xrpAmountToJSON(txFee);
     delete object.fee;
 
     // Delete all fields from the transaction data one of before they get rewritten below.
@@ -34,7 +38,11 @@ class Serializer {
     const transactionDataCase = transaction.getTransactionDataCase();
     switch (transactionDataCase) {
     case Transaction.TransactionDataCase.PAYMENT:
-      Object.assign(object, this.paymentToJSON(transaction.getPayment()));
+      const payment = transaction.getPayment();
+      if (payment == undefined) {
+        return undefined;
+      }
+      Object.assign(object, this.paymentToJSON(payment));
       break;
     default:
       return undefined;
@@ -52,16 +60,25 @@ class Serializer {
   static paymentToJSON(payment: Payment): object | undefined {
     const json = {
       TransactionType: "Payment",
-      Destination: payment.getDestination()
+      Destination: payment.getDestination(),
+      Amount: {}
     };
 
     const amountCase = payment.getAmountCase();
     switch (amountCase) {
     case Payment.AmountCase.FIAT_AMOUNT:
-      json.Amount = this.fiatAmountToJSON(payment.getFiatAmount());
+      const fiatAmount = payment.getFiatAmount();
+      if (fiatAmount == undefined) {
+        return undefined;
+      }
+      json.Amount = this.fiatAmountToJSON(fiatAmount);
       break;
     case Payment.AmountCase.XRP_AMOUNT:
-      json.Amount = this.xrpAmountToJSON(payment.getXrpAmount());
+      const xrpAmount = payment.getXrpAmount();
+      if (xrpAmount == undefined) {
+        return undefined;
+      }
+      json.Amount = this.xrpAmountToJSON(xrpAmount);
       break;
     default:
       return undefined;
@@ -76,7 +93,7 @@ class Serializer {
    * @returns {Object} The FiatAmount as JSON.
    */
   static fiatAmountToJSON(fiatAmount: FiatAmount): object {
-    const json = fiatAmount.toObject();
+    const json: any = fiatAmount.toObject();
     json.currency = this.currencyToJSON(fiatAmount.getCurrency());
     return json;
   }
@@ -87,13 +104,16 @@ class Serializer {
    * @param {proto.FiatAmount.Currency} currency The Currency to convert.
    * @returns {String} The Currency as JSON.
    */
-  static currencyToJSON(currency: Currency): string | undefined {
-    switch (currency) {
-    case FiatAmount.Currency.USD:
-      return "USD";
-    default:
-      return undefined;
-    }
+  static currencyToJSON(currency: any): string {
+    // TODO: Implement correctly.
+    return "USD";
+    // const currency = FiatAmount.CurrencyMap[currency]
+    // switch (currency) {
+    // case FiatAmount.CurrencyMap.USD:
+    //   return "USD";
+    // default:
+    //   return undefined;
+    // }
   }
 
   /**
@@ -115,7 +135,7 @@ class Serializer {
    * @param {String} newPropertyName The new property name.
    * @param {Object} object The object on which the conversion is performed.
    */
-  static convertPropertyName(oldPropertyName: string, newPropertyName: string, object: object): void {
+  static convertPropertyName(oldPropertyName: string, newPropertyName: string, object: any): void {
     object[newPropertyName] = object[oldPropertyName];
     delete object[oldPropertyName];
   }
