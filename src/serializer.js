@@ -3,7 +3,6 @@
 const { Currency } = require("../generated/Currency_pb.js");
 const { Payment } = require("../generated/Payment_pb.js");
 const { Transaction } = require("../generated/Transaction_pb.js");
-const { FiatAmount } = require("../generated/FiatAmount_pb.js");
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
