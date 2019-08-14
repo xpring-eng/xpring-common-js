@@ -1,5 +1,6 @@
 "use strict";
 
+const { Currency } = require("../generated/Currency_pb.js");
 const { FiatAmount } = require("../generated/FiatAmount_pb.js");
 const { Payment } = require("../generated/Payment_pb.js");
 const Serializer = require("../src/serializer.js");
@@ -59,7 +60,7 @@ describe("serializer", function() {
     const paymentAmount = new FiatAmount();
     paymentAmount.setIssuer(issuer);
     paymentAmount.setValue(value);
-    paymentAmount.setCurrency(FiatAmount.Currency.USD);
+    paymentAmount.setCurrency(Currency.USD);
 
     const payment = new Payment();
     payment.setDestination(destination);
