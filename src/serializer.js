@@ -1,5 +1,6 @@
 "use strict";
 
+const { Currency } = require("../generated/Currency_pb.js");
 const { Payment } = require("../generated/Payment_pb.js");
 const { Transaction } = require("../generated/Transaction_pb.js");
 const { FiatAmount } = require("../generated/FiatAmount_pb.js");
@@ -88,7 +89,7 @@ class Serializer {
    */
   static currencyToJSON(currency) {
     switch (currency) {
-      case FiatAmount.Currency.USD:
+      case Currency.USD:
         return "USD";
       default:
         return undefined;
