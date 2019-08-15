@@ -1,7 +1,10 @@
 "use strict";
 
-const Serializer = require("./serializer.js");
-const { SignedTransaction } = require("../generated/SignedTransaction_pb.js");
+import Serializer from "./serializer";
+import { SignedTransaction } from "../generated/SignedTransaction_pb";
+import { Transaction } from "../generated/Transaction_pb";
+import Wallet from "wallet";
+
 const rippleCodec = require("ripple-binary-codec");
 
 /**
@@ -15,7 +18,10 @@ class Signer {
    * @param {Terram.Wallet} wallet The wallet to sign the transaction with.
    * @returns {Terram.SignedTransaction} A signed transaction.
    */
-  static signTransaction(transaction, wallet) {
+  public static signTransaction(
+    transaction: Transaction,
+    wallet: Wallet
+  ): SignedTransaction | undefined {
     if (transaction === undefined || wallet === undefined) {
       return undefined;
     }
@@ -23,6 +29,9 @@ class Signer {
     const transactionJSON = Serializer.transactionToJSON(transaction);
     const transactionHex = rippleCodec.encodeForSigning(transactionJSON);
     const signatureHex = wallet.sign(transactionHex);
+    if (signatureHex == undefined) {
+      return undefined;
+    }
 
     const signedTransaction = new SignedTransaction();
     signedTransaction.setTransaction(transaction);
@@ -33,4 +42,4 @@ class Signer {
   }
 }
 
-module.exports = Signer;
+export default Signer;

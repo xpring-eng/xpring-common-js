@@ -2,10 +2,10 @@
 
 var addressCodec = require("ripple-address-codec");
 
-var utils = {
-  isValidAddress: function(address) {
+class Utils {
+  public static isValidAddress(address: string): boolean {
     return addressCodec.isValidAddress(address);
   }
-};
+}
 
-module.exports = utils;
+export default Utils;

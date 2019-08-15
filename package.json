@@ -14,41 +14,56 @@
     "test/*.js"
   ],
   "dependencies": {
+    "@types/google-protobuf": "3.7.1",
+    "@typescript-eslint/eslint-plugin": "1.13.0",
+    "@typescript-eslint/parser": "1.13.0",
     "bip39": "^3.0.2",
-    "chai": "^4.2.0",
     "google-protobuf": "3.9.1",
     "is-hex": "^1.1.3",
-    "mocha": "^6.2.0",
     "ripple-address-codec": "^2.0.1",
     "ripple-binary-codec": "^0.2.2",
     "ripple-bip32": "0.0.3",
-    "ripple-keypairs": "^0.11.0"
+    "ripple-keypairs": "^0.11.0",
+    "ts-protoc-gen": "0.10.0",
+    "typescript": "3.5.3"
   },
   "scripts": {
-    "pretest": "./scripts/regenerate_protos.sh",
-    "test": "nyc --all mocha --check-leaks"
+    "pretest": "./scripts/regenerate_protos.sh && tsc",
+    "test": "nyc mocha"
   },
   "devDependencies": {
+    "@types/chai": "4.2.0",
+    "@types/mocha": "5.2.7",
+    "chai": "4.2.0",
     "eslint": "5.16.0",
     "eslint-config-airbnb-base": "13.2.0",
+    "eslint-config-prettier": "6.0.0",
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-mocha": "6.0.0",
+    "eslint-plugin-prettier": "3.1.0",
     "husky": "3.0.2",
+    "mocha": "6.2.0",
     "nyc": "14.1.1",
-    "prettier": "1.18.2"
+    "prettier": "1.18.2",
+    "source-map-support": "0.5.13",
+    "ts-node": "8.3.0",
+    "typescript-eslint-parser": "22.0.0"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "eslint ./ --fix && prettier '**/*.js' --write"
+      "pre-commit": "eslint **/*.ts --fix && prettier '**/*.ts' --write"
     }
   },
   "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
     "all": true,
     "check-coverage": true,
-    "check-leaks": true,
-    "exclude": [
-      "generated/*.js",
-      "test/**/*.js"
-    ]
+    "check-leaks": true
   }
 }

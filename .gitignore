@@ -1,6 +1,9 @@
 # Ignore generated files.
 generated/*
 
+# Ignore files compiled from typescript.
+build/*
+
 # Ignore files from VSCode.
 *.vscode
 *.code-workspace
