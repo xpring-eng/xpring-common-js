@@ -16,9 +16,9 @@ describe("signer", function(): void {
     const fakeSignature = "DEADBEEF";
     const wallet = new FakeWallet(fakeSignature);
 
-    const value = 1000;
+    const value = "1000";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
-    const fee = 10;
+    const fee = "10";
     const sequence = 1;
     const account = "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ";
 

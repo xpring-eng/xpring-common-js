@@ -10,9 +10,9 @@ import "mocha";
 describe("serializer", function(): void {
   it("serializes a payment in XRP", function(): void {
     // GIVEN a transaction which represents a payment denominated in Fiat.
-    const value = 1000;
+    const value = "1000";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
-    const fee = 10;
+    const fee = "10";
     const sequence = 1;
     const account = "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ";
 
@@ -40,7 +40,7 @@ describe("serializer", function(): void {
       Account: account,
       Amount: value + "",
       Destination: destination,
-      Fee: fee + "",
+      Fee: fee,
       Sequence: sequence,
       TransactionType: "Payment"
     };
@@ -52,7 +52,7 @@ describe("serializer", function(): void {
     const issuer = "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59";
     const value = "153.75";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
-    const fee = 10;
+    const fee = "10";
     const sequence = 1;
     const account = "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ";
 
@@ -86,7 +86,7 @@ describe("serializer", function(): void {
         issuer: issuer
       },
       Destination: destination,
-      Fee: fee + "",
+      Fee: fee,
       Sequence: sequence,
       TransactionType: "Payment"
     };
