@@ -4,6 +4,9 @@ generated/*
 # Ignore files compiled from typescript.
 build/*
 
+# Ignore webpack output.
+dist/*
+
 # Ignore files from VSCode.
 *.vscode
 *.code-workspace
