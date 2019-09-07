@@ -29,7 +29,8 @@
   },
   "scripts": {
     "pretest": "./scripts/regenerate_protos.sh && tsc",
-    "test": "nyc mocha"
+    "test": "nyc mocha",
+    "webpack": "./scripts/regenerate_protos.sh && tsc && npx webpack"
   },
   "devDependencies": {
     "@types/chai": "4.2.0",
