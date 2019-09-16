@@ -1,9 +1,9 @@
-import { Currency } from "../generated/Currency_pb";
-import { FiatAmount } from "../generated/FiatAmount_pb";
-import { Payment } from "../generated/Payment_pb";
+import { Currency } from "../generated/currency_pb";
+import { FiatAmount } from "../generated/fiat_amount_pb";
+import { Payment } from "../generated/payment_pb";
 import Serializer from "../src/serializer";
-import { Transaction } from "../generated/Transaction_pb";
-import { XRPAmount } from "../generated/XRPAmount_pb";
+import { Transaction } from "../generated/transaction_pb";
+import { XRPAmount } from "../generated/xrp_amount_pb";
 import { assert } from "chai";
 import "mocha";
 

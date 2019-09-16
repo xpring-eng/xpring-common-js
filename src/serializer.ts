@@ -1,8 +1,8 @@
-import { Payment } from "../generated/Payment_pb";
-import { Transaction } from "../generated/Transaction_pb";
-import { FiatAmount } from "../generated/FiatAmount_pb";
-import { XRPAmount } from "../generated/XRPAmount_pb";
-import { Currency, CurrencyMap } from "../generated/Currency_pb";
+import { Payment } from "../generated/payment_pb";
+import { Transaction } from "../generated/transaction_pb";
+import { FiatAmount } from "../generated/fiat_amount_pb";
+import { XRPAmount } from "../generated/xrp_amount_pb";
+import { Currency, CurrencyMap } from "../generated/currency_pb";
 
 /* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */
 /* eslint-disable @typescript-eslint/no-explicit-any */
