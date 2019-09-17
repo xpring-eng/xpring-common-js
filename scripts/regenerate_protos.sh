@@ -14,8 +14,8 @@ grpc_tools_node_protoc \
     --js_out=import_style=commonjs,binary:$OUT_DIR \
     --grpc_out=$OUT_DIR \
     --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` \
-     --proto_path=$PWD/terram-protos/proto \
-     $PWD/terram-protos/**/*.proto
+    --proto_path=$PWD/terram-protos/proto \
+    $PWD/terram-protos/**/*.proto
 
 # Generate tyepscript declaration files.
 protoc \
