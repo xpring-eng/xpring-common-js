@@ -60,7 +60,10 @@ class Wallet {
     const node = masterNode.derivePath(derivationPath);
     const publicKey = Wallet.hexFromBuffer(node.publicKey);
     const privateKey = Wallet.hexFromBuffer(node.privateKey);
-    const keyPair: KeyPair = {publicKey: publicKey, privateKey: "00" + privateKey};
+    const keyPair: KeyPair = {
+      publicKey: publicKey,
+      privateKey: "00" + privateKey
+    };
     return new Wallet(keyPair, mnemonic, derivationPath);
   }
 
@@ -147,7 +150,7 @@ class Wallet {
   }
 
   private static hexFromBuffer(buffer: Buffer): string {
-    return buffer.toString('hex').toUpperCase();
+    return buffer.toString("hex").toUpperCase();
   }
 }
 
