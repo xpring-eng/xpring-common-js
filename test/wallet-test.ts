@@ -55,7 +55,10 @@ describe("wallet", function(): void {
 
     // THEN the result exists and has the default derivation path.
     assert.exists(wallet);
-    assert.equal(wallet!.getMnemonic(), "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
+    assert.equal(
+      wallet!.getMnemonic(),
+      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+    );
     assert.equal(
       wallet!.getDerivationPath(),
       Wallet.getDefaultDerivationPath()
