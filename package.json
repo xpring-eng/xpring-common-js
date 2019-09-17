@@ -19,6 +19,7 @@
     "@typescript-eslint/parser": "1.13.0",
     "bip39": "^3.0.2",
     "google-protobuf": "3.9.1",
+    "grpc": "1.23.3",
     "is-hex": "^1.1.3",
     "ripple-address-codec": "^2.0.1",
     "ripple-binary-codec": "^0.2.2",
@@ -28,9 +29,9 @@
     "typescript": "3.5.3"
   },
   "scripts": {
-    "pretest": "./scripts/regenerate_protos.sh && tsc",
+    "pretest": "./terram/scripts/regenerate_protos.sh && tsc",
     "test": "nyc mocha",
-    "webpack": "./scripts/regenerate_protos.sh && tsc && npx webpack"
+    "webpack": "./terram/scripts/regenerate_protos.sh && tsc && npx webpack"
   },
   "devDependencies": {
     "@types/chai": "4.2.0",
