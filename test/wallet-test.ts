@@ -49,10 +49,13 @@ describe("wallet", function(): void {
 
   it("generateRandomWallet - entropy", function(): void {
     // WHEN a new wallet is generated with entropy.
-    const wallet = Wallet.generateRandomWallet("0123456789ABCDEF0123456789ABCDEF");
+    const wallet = Wallet.generateRandomWallet(
+      "00000000000000000000000000000000"
+    );
 
     // THEN the result exists and has the default derivation path.
     assert.exists(wallet);
+    assert.equal(wallet!.getMnemonic(), "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
     assert.equal(
       wallet!.getDerivationPath(),
       Wallet.getDefaultDerivationPath()
