@@ -30,11 +30,18 @@ class Wallet {
   /**
    * Generate a new wallet hierarchical deterministic wallet with a random mnemonic and
    * default derivation path.
-   *
+   * 
+   * Secure random number generation is used when entropy is ommitted and when the runtime environment has the necessary support. Otherwise, an error is thrown. Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
+   * 
+   * @param  {string|undefined} entropy A optional hex string of entropy.
    * @returns {Terram.Wallet} The result of generating a new wallet.
    */
-  public static generateRandomWallet(): Wallet | undefined {
-    const mnemonic = bip39.generateMnemonic();
+  public static generateRandomWallet(entropy: string | undefined = undefined): Wallet | undefined {
+    if (entropy && !isHex(entropy)) {
+      return undefined;
+    }
+
+    const mnemonic = entropy == undefined ? bip39.generateMnemonic() : bip39.entropyToMnemonic(entropy);
     const derivationPath = Wallet.getDefaultDerivationPath();
     return Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
   }
