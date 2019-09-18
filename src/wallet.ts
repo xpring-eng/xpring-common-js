@@ -98,7 +98,7 @@ class Wallet {
 
   public static generateWalletFromSeed(seed: string): Wallet {
     const keyPair = rippleKeyPair.deriveKeypair(seed);
-    return new Wallet(keyPair, "PLACEHOLDER", "PLACEHOLDER");
+    return new Wallet(keyPair);
   }
 
   /**
