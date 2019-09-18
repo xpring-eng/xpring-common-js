@@ -96,6 +96,11 @@ class Wallet {
     return new Wallet(keyPair);
   }
 
+  public static generateWalletFromSeed(seed: string): Wallet {
+    const keyPair = rippleKeyPair.deriveKeypair(seed);
+    return new Wallet(keyPair);
+  }
+
   /**
    * Create a new Terram.Wallet object.
    *
