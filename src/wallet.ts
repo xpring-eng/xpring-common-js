@@ -9,6 +9,20 @@ const rippleKeyPair = require("ripple-keypairs");
 const defaultDerivationPath = "m/44'/144'/0'/0/0";
 
 /**
+ * An object which contains artifacts from generating a new wallet.
+ */
+export interface WalletGenerationResult {
+  /** The newly generated Wallet. */
+  wallet: Wallet;
+
+  /** The mnemonic used to generate the wallet. */
+  mnemonic: string;
+
+  /** The derivation path used to generate the wallet. */
+  derivationPath: string;
+}
+
+/**
  * An object which holds a pair of public and private keys
  */
 export interface KeyPair {
@@ -34,11 +48,11 @@ class Wallet {
    * Secure random number generation is used when entropy is ommitted and when the runtime environment has the necessary support. Otherwise, an error is thrown. Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
    *
    * @param  {string|undefined} entropy A optional hex string of entropy.
-   * @returns {Terram.Wallet} The result of generating a new wallet.
+   * @returns {Terram.WalletGenerationResult} Artifacts from the wallet generation..
    */
-  public static generateRandomWallet(
-    entropy: string | undefined = undefined
-  ): Wallet | undefined {
+   public static generateRandomWallet(
+     entropy: string | undefined = undefined
+   ): WalletGenerationResult | undefined {
     if (entropy && !isHex(entropy)) {
       return undefined;
     }
@@ -48,7 +62,10 @@ class Wallet {
         ? bip39.generateMnemonic()
         : bip39.entropyToMnemonic(entropy);
     const derivationPath = Wallet.getDefaultDerivationPath();
-    return Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
+    const wallet = Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
+    return wallet == undefined
+      ? undefined
+      : { wallet: wallet, mnemonic: mnemonic, derivationPath: derivationPath };
   }
 
   /**
@@ -76,21 +93,15 @@ class Wallet {
       publicKey: publicKey,
       privateKey: "00" + privateKey
     };
-    return new Wallet(keyPair, mnemonic, derivationPath);
+    return new Wallet(keyPair);
   }
 
   /**
    * Create a new Terram.Wallet object.
    *
    * @param {Terram.KeyPair} keyPair A keypair for the wallet.
-   * @param {String} mnemonic The mnemonic associated with the generated wallet.
-   * @param {String} derivationPath The derivation path associated with the generated wallet.
    */
-  public constructor(
-    private readonly keyPair: KeyPair,
-    private readonly mnemonic: string,
-    private readonly derivationPath: string
-  ) {}
+  public constructor(private readonly keyPair: KeyPair) {}
 
   /**
    * @returns {String} A string representing the public key for the wallet.
@@ -111,20 +122,6 @@ class Wallet {
    */
   public getAddress(): string {
     return rippleKeyPair.deriveAddress(this.getPublicKey());
-  }
-
-  /**
-   * @returns {String} The mnemonic associated with the generated wallet.
-   */
-  public getMnemonic(): string {
-    return this.mnemonic;
-  }
-
-  /**
-   * @returns {String} The derivation path associated with the generated wallet.
-   */
-  public getDerivationPath(): string {
-    return this.derivationPath;
   }
 
   /**

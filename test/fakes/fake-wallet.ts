@@ -25,13 +25,8 @@ class FakeWallet extends Wallet {
    *
    * @param {String} signature The signature this wallet will produce.
    */
-  constructor(
-    private signature: string,
-    keyPair = defaultKeyPair,
-    mnemonic = defaultMnemonic,
-    derivationPath = Wallet.getDefaultDerivationPath()
-  ) {
-    super(keyPair, mnemonic, derivationPath);
+  constructor(private signature: string, keyPair = defaultKeyPair) {
+    super(keyPair);
   }
 
   /**
