@@ -112,7 +112,7 @@ describe("wallet", function(): void {
   it("walletFromSeed", function(): void {
     // GIVEN a seed.
     const seed = "snYP7oArxKepd3GPDcrjMsJYiJeJB";
-  
+
     // WHEN a wallet is generated from the seed.
     const wallet = Wallet.generateWalletFromSeed(seed);
 
