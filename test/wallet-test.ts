@@ -109,6 +109,17 @@ describe("wallet", function(): void {
     assert.isUndefined(wallet);
   });
 
+  it("walletFromSeed", function(): void {
+    // GIVEN a seed.
+    const seed = "snYP7oArxKepd3GPDcrjMsJYiJeJB";
+  
+    // WHEN a wallet is generated from the seed.
+    const wallet = Wallet.generateWalletFromSeed(seed);
+
+    // THEN the wallet has the expected address.
+    assert.equal(wallet.getAddress(), "rByLcEZ7iwTBAK8FfjtpFuT7fCzt4kF4r2");
+  });
+
   it("sign", function(): void {
     // GIVEN a wallet.
     const testData = derivationPathTestCases.index0;
