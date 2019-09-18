@@ -50,8 +50,10 @@ class Wallet {
   public static generateRandomWallet(): WalletGenerationResult | undefined {
     const mnemonic = bip39.generateMnemonic();
     const derivationPath = Wallet.getDefaultDerivationPath();
-    const wallet =  Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
-    return wallet == undefined ? undefined : { wallet: wallet, mnemonic: mnemonic, derivationPath: derivationPath }
+    const wallet = Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
+    return wallet == undefined
+      ? undefined
+      : { wallet: wallet, mnemonic: mnemonic, derivationPath: derivationPath };
   }
 
   /**
@@ -81,9 +83,7 @@ class Wallet {
    *
    * @param {Terram.KeyPair} keyPair A keypair for the wallet.
    */
-  public constructor(
-    private readonly keyPair: KeyPair,
-  ) {}
+  public constructor(private readonly keyPair: KeyPair) {}
 
   /**
    * @returns {String} A string representing the public key for the wallet.

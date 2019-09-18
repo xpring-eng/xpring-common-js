@@ -42,7 +42,10 @@ describe("wallet", function(): void {
     // THEN the wallet generation artifacts exist and have the default derivation path.
     assert.exists(walletGenerationResult!.wallet);
     assert.exists(walletGenerationResult!.mnemonic);
-    assert.equal(walletGenerationResult!.derivationPath, Wallet.getDefaultDerivationPath());
+    assert.equal(
+      walletGenerationResult!.derivationPath,
+      Wallet.getDefaultDerivationPath()
+    );
   });
 
   it("walletFromMnemonic - derivation path index 0", function(): void {
