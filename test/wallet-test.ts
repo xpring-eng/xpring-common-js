@@ -37,14 +37,41 @@ const derivationPathTestCases = {
 describe("wallet", function(): void {
   it("generateRandomWallet", function(): void {
     // WHEN a new wallet is generated.
-    const wallet = Wallet.generateRandomWallet();
+    const walletGenerationResult = Wallet.generateRandomWallet();
 
-    // THEN the result exists and has the default derivation path.
-    assert.exists(wallet);
+    // THEN the wallet generation artifacts exist and have the default derivation path.
+    assert.exists(walletGenerationResult!.wallet);
+    assert.exists(walletGenerationResult!.mnemonic);
     assert.equal(
-      wallet!.getDerivationPath(),
+      walletGenerationResult!.derivationPath,
       Wallet.getDefaultDerivationPath()
     );
+  });
+
+  it("generateRandomWallet - entropy", function(): void {
+    // WHEN a new wallet is generated with entropy.
+    const walletGenerationResult = Wallet.generateRandomWallet(
+      "00000000000000000000000000000000"
+    );
+
+    // THEN the result exists and has the default derivation path.
+    assert.exists(walletGenerationResult);
+    assert.equal(
+      walletGenerationResult!.mnemonic,
+      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+    );
+    assert.equal(
+      walletGenerationResult!.derivationPath,
+      Wallet.getDefaultDerivationPath()
+    );
+  });
+
+  it("generateRandomWallet - invalid entropy", function(): void {
+    // WHEN a new wallet is generated with invalid hexadecimal entropy.
+    const walletGenerationResult = Wallet.generateRandomWallet("xrp");
+
+    // THEN the result exists and has the default derivation path.
+    assert.isUndefined(walletGenerationResult);
   });
 
   it("walletFromMnemonic - derivation path index 0", function(): void {
@@ -61,8 +88,6 @@ describe("wallet", function(): void {
     assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey);
     assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
     assert.equal(wallet.getAddress(), testData.expectedAddress);
-    assert.equal(wallet.getMnemonic(), testData.mnemonic);
-    assert.equal(wallet.getDerivationPath(), testData.derivationPath);
   });
 
   it("walletFromMnemonic - derivation path index 1", function(): void {
@@ -79,8 +104,6 @@ describe("wallet", function(): void {
     assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey);
     assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
     assert.equal(wallet.getAddress(), testData.expectedAddress);
-    assert.equal(wallet.getMnemonic(), testData.mnemonic);
-    assert.equal(wallet.getDerivationPath(), testData.derivationPath);
   });
 
   it("walletFromMnemonic - no derivation path", function(): void {
@@ -94,8 +117,6 @@ describe("wallet", function(): void {
     assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey);
     assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
     assert.equal(wallet.getAddress(), testData.expectedAddress);
-    assert.equal(wallet.getMnemonic(), testData.mnemonic);
-    assert.equal(wallet.getDerivationPath(), Wallet.getDefaultDerivationPath());
   });
 
   it("walletFromMnemonic - invalid mnemonic", function(): void {
