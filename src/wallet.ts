@@ -1,4 +1,4 @@
-const bip32 = require("ripple-bip32");
+const bip32 = require("bip32");
 const bip39 = require("bip39");
 const isHex = require("is-hex");
 const rippleKeyPair = require("ripple-keypairs");
@@ -56,8 +56,14 @@ class Wallet {
     }
 
     const seed = bip39.mnemonicToSeedSync(mnemonic);
-    const masterNode = bip32.fromSeedBuffer(seed);
-    const keyPair = masterNode.derivePath(derivationPath).keyPair.getKeyPairs();
+    const masterNode = bip32.fromSeed(seed);
+    const node = masterNode.derivePath(derivationPath);
+    const publicKey = Wallet.hexFromBuffer(node.publicKey);
+    const privateKey = Wallet.hexFromBuffer(node.privateKey);
+    const keyPair: KeyPair = {
+      publicKey: publicKey,
+      privateKey: "00" + privateKey
+    };
     return new Wallet(keyPair, mnemonic, derivationPath);
   }
 
@@ -141,6 +147,10 @@ class Wallet {
       // If an error was thrown then the signature is definitely not valid.
       return false;
     }
+  }
+
+  private static hexFromBuffer(buffer: Buffer): string {
+    return buffer.toString("hex").toUpperCase();
   }
 }
 
