@@ -28,10 +28,8 @@ class FakeWallet extends Wallet {
   constructor(
     private signature: string,
     keyPair = defaultKeyPair,
-    mnemonic = defaultMnemonic,
-    derivationPath = Wallet.getDefaultDerivationPath()
   ) {
-    super(keyPair, mnemonic, derivationPath);
+    super(keyPair);
   }
 
   /**

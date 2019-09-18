@@ -9,6 +9,20 @@ const rippleKeyPair = require("ripple-keypairs");
 const defaultDerivationPath = "m/44'/144'/0'/0/0";
 
 /**
+ * An object which contains artifacts from generating a new wallet.
+ */
+export interface WalletGenerationResult {
+  /** The newly generated Wallet. */
+  wallet: Wallet;
+
+  /** The mnemonic used to generate the wallet. */
+  mnemonic: string;
+
+  /** The derivation path used to generate the wallet. */
+  derivationPath: string;
+}
+
+/**
  * An object which holds a pair of public and private keys
  */
 export interface KeyPair {
@@ -31,12 +45,13 @@ class Wallet {
    * Generate a new wallet hierarchical deterministic wallet with a random mnemonic and
    * default derivation path.
    *
-   * @returns {Terram.Wallet} The result of generating a new wallet.
+   * @returns {Terram.WalletGenerationResult} Artifacts from the wallet generation..
    */
-  public static generateRandomWallet(): Wallet | undefined {
+  public static generateRandomWallet(): WalletGenerationResult | undefined {
     const mnemonic = bip39.generateMnemonic();
     const derivationPath = Wallet.getDefaultDerivationPath();
-    return Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
+    const wallet =  Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
+    return wallet == undefined ? undefined : { wallet: wallet, mnemonic: mnemonic, derivationPath: derivationPath }
   }
 
   /**
@@ -58,20 +73,16 @@ class Wallet {
     const seed = bip39.mnemonicToSeedSync(mnemonic);
     const masterNode = bip32.fromSeedBuffer(seed);
     const keyPair = masterNode.derivePath(derivationPath).keyPair.getKeyPairs();
-    return new Wallet(keyPair, mnemonic, derivationPath);
+    return new Wallet(keyPair);
   }
 
   /**
    * Create a new Terram.Wallet object.
    *
    * @param {Terram.KeyPair} keyPair A keypair for the wallet.
-   * @param {String} mnemonic The mnemonic associated with the generated wallet.
-   * @param {String} derivationPath The derivation path associated with the generated wallet.
    */
   public constructor(
     private readonly keyPair: KeyPair,
-    private readonly mnemonic: string,
-    private readonly derivationPath: string
   ) {}
 
   /**
@@ -93,20 +104,6 @@ class Wallet {
    */
   public getAddress(): string {
     return rippleKeyPair.deriveAddress(this.getPublicKey());
-  }
-
-  /**
-   * @returns {String} The mnemonic associated with the generated wallet.
-   */
-  public getMnemonic(): string {
-    return this.mnemonic;
-  }
-
-  /**
-   * @returns {String} The derivation path associated with the generated wallet.
-   */
-  public getDerivationPath(): string {
-    return this.derivationPath;
   }
 
   /**
