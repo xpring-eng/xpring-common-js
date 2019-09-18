@@ -50,9 +50,9 @@ class Wallet {
    * @param  {string|undefined} entropy A optional hex string of entropy.
    * @returns {Terram.WalletGenerationResult} Artifacts from the wallet generation..
    */
-   public static generateRandomWallet(
-     entropy: string | undefined = undefined
-   ): WalletGenerationResult | undefined {
+  public static generateRandomWallet(
+    entropy: string | undefined = undefined
+  ): WalletGenerationResult | undefined {
     if (entropy && !isHex(entropy)) {
       return undefined;
     }
