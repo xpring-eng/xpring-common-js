@@ -29,9 +29,10 @@
     "typescript": "3.5.3"
   },
   "scripts": {
+    "clean": "rm -rf ./generated ./dist ./build",
     "pretest": "./scripts/regenerate_protos.sh && tsc",
     "test": "nyc mocha",
-    "webpack": "./scripts/regenerate_protos.sh && tsc && npx webpack"
+    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && rm ./generated/*grpc_pb.* && tsc && npx webpack"
   },
   "devDependencies": {
     "@types/chai": "4.2.0",
