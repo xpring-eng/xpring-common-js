@@ -48,6 +48,32 @@ describe("wallet", function(): void {
     );
   });
 
+  it("generateRandomWallet - entropy", function(): void {
+    // WHEN a new wallet is generated with entropy.
+    const walletGenerationResult = Wallet.generateRandomWallet(
+      "00000000000000000000000000000000"
+    );
+
+    // THEN the result exists and has the default derivation path.
+    assert.exists(walletGenerationResult);
+    assert.equal(
+      walletGenerationResult!.mnemonic,
+      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+    );
+    assert.equal(
+      walletGenerationResult!.derivationPath,
+      Wallet.getDefaultDerivationPath()
+    );
+  });
+
+  it("generateRandomWallet - invalid entropy", function(): void {
+    // WHEN a new wallet is generated with invalid hexadecimal entropy.
+    const walletGenerationResult = Wallet.generateRandomWallet("xrp");
+
+    // THEN the result exists and has the default derivation path.
+    assert.isUndefined(walletGenerationResult);
+  });
+
   it("walletFromMnemonic - derivation path index 0", function(): void {
     // GIVEN a menmonic, derivation path and a set of expected outputs.
     const testData = derivationPathTestCases.index0;

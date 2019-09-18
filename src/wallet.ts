@@ -1,4 +1,4 @@
-const bip32 = require("ripple-bip32");
+const bip32 = require("bip32");
 const bip39 = require("bip39");
 const isHex = require("is-hex");
 const rippleKeyPair = require("ripple-keypairs");
@@ -45,10 +45,22 @@ class Wallet {
    * Generate a new wallet hierarchical deterministic wallet with a random mnemonic and
    * default derivation path.
    *
+   * Secure random number generation is used when entropy is ommitted and when the runtime environment has the necessary support. Otherwise, an error is thrown. Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
+   *
+   * @param  {string|undefined} entropy A optional hex string of entropy.
    * @returns {Terram.WalletGenerationResult} Artifacts from the wallet generation..
    */
-  public static generateRandomWallet(): WalletGenerationResult | undefined {
-    const mnemonic = bip39.generateMnemonic();
+   public static generateRandomWallet(
+     entropy: string | undefined = undefined
+   ): WalletGenerationResult | undefined {
+    if (entropy && !isHex(entropy)) {
+      return undefined;
+    }
+
+    const mnemonic =
+      entropy == undefined
+        ? bip39.generateMnemonic()
+        : bip39.entropyToMnemonic(entropy);
     const derivationPath = Wallet.getDefaultDerivationPath();
     const wallet = Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
     return wallet == undefined
@@ -73,8 +85,14 @@ class Wallet {
     }
 
     const seed = bip39.mnemonicToSeedSync(mnemonic);
-    const masterNode = bip32.fromSeedBuffer(seed);
-    const keyPair = masterNode.derivePath(derivationPath).keyPair.getKeyPairs();
+    const masterNode = bip32.fromSeed(seed);
+    const node = masterNode.derivePath(derivationPath);
+    const publicKey = Wallet.hexFromBuffer(node.publicKey);
+    const privateKey = Wallet.hexFromBuffer(node.privateKey);
+    const keyPair: KeyPair = {
+      publicKey: publicKey,
+      privateKey: "00" + privateKey
+    };
     return new Wallet(keyPair);
   }
 
@@ -138,6 +156,10 @@ class Wallet {
       // If an error was thrown then the signature is definitely not valid.
       return false;
     }
+  }
+
+  private static hexFromBuffer(buffer: Buffer): string {
+    return buffer.toString("hex").toUpperCase();
   }
 }
 
