@@ -17,6 +17,7 @@
     "@types/google-protobuf": "3.7.1",
     "@typescript-eslint/eslint-plugin": "1.13.0",
     "@typescript-eslint/parser": "1.13.0",
+    "bip32": "2.0.4",
     "bip39": "^3.0.2",
     "google-protobuf": "3.9.1",
     "grpc": "1.23.3",
@@ -24,7 +25,6 @@
     "is-hex": "^1.1.3",
     "ripple-address-codec": "^2.0.1",
     "ripple-binary-codec": "^0.2.2",
-    "ripple-bip32": "0.0.3",
     "ripple-keypairs": "^0.11.0",
     "typescript": "3.5.3"
   },
