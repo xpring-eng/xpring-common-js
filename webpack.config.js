@@ -1,5 +1,5 @@
 module.exports = {
-  entry: './build/src/index.js',
+  entry: './build/src/index.webpack.js',
   output: {
     filename: 'bundled.js',
     libraryTarget: 'var',
