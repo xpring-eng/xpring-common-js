@@ -69,7 +69,7 @@ class Wallet {
    * @param {String} derivationPath The derivation path associated with the generated wallet.
    */
   public constructor(
-    private readonly keyPair: KeyPair,
+    public readonly keyPair: KeyPair,
     private readonly mnemonic: string,
     private readonly derivationPath: string
   ) {}
