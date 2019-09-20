@@ -15,6 +15,7 @@ describe("serializer", function(): void {
     const fee = "10";
     const sequence = 1;
     const account = "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ";
+    const publicKey = "testPublicKey";
 
     const paymentAmount = new XRPAmount();
     paymentAmount.setDrops(value);
@@ -31,6 +32,7 @@ describe("serializer", function(): void {
     transaction.setFee(transactionFee);
     transaction.setSequence(sequence);
     transaction.setPayment(payment);
+    transaction.setSigningPublicKeyHex(publicKey);
 
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction);
@@ -42,7 +44,8 @@ describe("serializer", function(): void {
       Destination: destination,
       Fee: fee,
       Sequence: sequence,
-      TransactionType: "Payment"
+      TransactionType: "Payment",
+      SigningPubKey: publicKey
     };
     assert.deepEqual(serialized, expectedJSON);
   });
@@ -55,6 +58,7 @@ describe("serializer", function(): void {
     const fee = "10";
     const sequence = 1;
     const account = "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ";
+    const publicKey = "testPublicKey";
 
     const paymentAmount = new FiatAmount();
     paymentAmount.setIssuer(issuer);
@@ -73,6 +77,7 @@ describe("serializer", function(): void {
     transaction.setFee(transactionFee);
     transaction.setSequence(sequence);
     transaction.setPayment(payment);
+    transaction.setSigningPublicKeyHex(publicKey);
 
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction);
@@ -88,7 +93,8 @@ describe("serializer", function(): void {
       Destination: destination,
       Fee: fee,
       Sequence: sequence,
-      TransactionType: "Payment"
+      TransactionType: "Payment",
+      SigningPubKey: publicKey
     };
     assert.deepEqual(serialized, expectedJSON);
   });

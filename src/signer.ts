@@ -26,18 +26,21 @@ class Signer {
       return undefined;
     }
 
-    const transactionJSON = Serializer.transactionToJSON(transaction);
+    var transactionJSON = Serializer.transactionToJSON(transaction);
+    if (transactionJSON === undefined) {
+      return undefined;
+    }
     const transactionHex = rippleCodec.encodeForSigning(transactionJSON);
+    
     const signatureHex = wallet.sign(transactionHex);
     if (signatureHex == undefined) {
       return undefined;
     }
-
+    
     const signedTransaction = new SignedTransaction();
     signedTransaction.setTransaction(transaction);
     signedTransaction.setTransactionSignatureHex(signatureHex);
-    signedTransaction.setPublicKeyHex(wallet.getPublicKey());
-
+    
     return signedTransaction;
   }
 }
