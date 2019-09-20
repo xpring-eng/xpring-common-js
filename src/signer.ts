@@ -30,31 +30,17 @@ class Signer {
     if (transactionJSON === undefined) {
       return undefined;
     }
-    // const txJSON = rippleCodec.sign(transactionJSON, wallet.keyPair);
-    // console.log("New TXJSON: " + JSON.stringify(txJSON));
-    const FULL_CANONICAL_SIGNATURE = 0x80000000;
-
-    // transactionJSON.Flags |= FULL_CANONICAL_SIGNATURE;
-    // transactionJSON.Flags >>>= 0;
-    // transactionJSON.SigningPubKey = wallet.getPublicKey();
-
-    console.log("DEBUG:");
-    console.log("TX JSON: " + JSON.stringify(transactionJSON));
-
     const transactionHex = rippleCodec.encodeForSigning(transactionJSON);
-    console.log("TX HEX: " + transactionHex);
-
+    
     const signatureHex = wallet.sign(transactionHex);
     if (signatureHex == undefined) {
       return undefined;
     }
-    console.log("SIG HEX: " + signatureHex);
-
+    
     const signedTransaction = new SignedTransaction();
     signedTransaction.setTransaction(transaction);
     signedTransaction.setTransactionSignatureHex(signatureHex);
-    // signedTransaction.setPublicKeyHex(wallet.getPublicKey());
-
+    
     return signedTransaction;
   }
 }
