@@ -59,6 +59,4 @@ class Signer {
   }
 }
 
-
-
 export default Signer;
