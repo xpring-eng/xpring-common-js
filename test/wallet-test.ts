@@ -138,8 +138,19 @@ describe("wallet", function(): void {
     const wallet = Wallet.generateWalletFromSeed(seed);
 
     // THEN the wallet has the expected address.
-    assert.equal(wallet.getAddress(), "rByLcEZ7iwTBAK8FfjtpFuT7fCzt4kF4r2");
+    assert.equal(wallet!.getAddress(), "rByLcEZ7iwTBAK8FfjtpFuT7fCzt4kF4r2");
   });
+
+  it("walletFromSeed - invalid seed", function(): void {
+    // GIVEN an invalid seed.
+    const seed = "xrp"
+
+    // WHEN a wallet is generated from the seed.
+    const wallet = Wallet.generateWalletFromSeed(seed)
+
+    // THEN the wallet is undefined.
+    assert.isUndefined(wallet);
+  })
 
   it("sign", function(): void {
     // GIVEN a wallet.

@@ -84,9 +84,19 @@ class Wallet {
     return new Wallet(publicKey, "00" + privateKey);
   }
 
-  public static generateWalletFromSeed(seed: string): Wallet {
-    const keyPair = rippleKeyPair.deriveKeypair(seed);
-    return new Wallet(keyPair.publicKey, keyPair.privateKey);
+ /**
+  * Generate a new wallet from the given seed.
+  *
+  * @param {string} seed The seed for the wallet.
+  * @returns {Terram.Wallet|undefined} A new wallet from the given seed, or undefined if the seed was invalid.
+  */
+  public static generateWalletFromSeed(seed: string): Wallet | undefined {
+    try {
+      const keyPair = rippleKeyPair.deriveKeypair(seed);
+      return new Wallet(keyPair.publicKey, keyPair.privateKey);
+    } catch (exception) {
+      return undefined;
+    }
   }
 
   /**
