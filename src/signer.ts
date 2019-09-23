@@ -31,16 +31,16 @@ class Signer {
       return undefined;
     }
     const transactionHex = rippleCodec.encodeForSigning(transactionJSON);
-    
+
     const signatureHex = wallet.sign(transactionHex);
     if (signatureHex == undefined) {
       return undefined;
     }
-    
+
     const signedTransaction = new SignedTransaction();
     signedTransaction.setTransaction(transaction);
     signedTransaction.setTransactionSignatureHex(signatureHex);
-    
+
     return signedTransaction;
   }
 }
