@@ -17,15 +17,14 @@ class Serializer {
    * @param {proto.Transaction} transaction A Transaction to convert.
    * @returns {Object} The Transaction as JSON.
    */
-  public static transactionToJSON(
-    transaction: Transaction
-  ): object | undefined {
+  public static transactionToJSON(transaction: Transaction): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
     var object: any = transaction.toObject();
 
-    // Convert fields to upper case.
+    // Convert fields names where direct conversion is possible.
     this.convertPropertyName("account", "Account", object);
     this.convertPropertyName("sequence", "Sequence", object);
+    this.convertPropertyName("signingPublicKeyHex", "SigningPubKey", object);
 
     // Convert XRP denominated fee field.
     const txFee = transaction.getFee();

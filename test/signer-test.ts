@@ -45,13 +45,11 @@ describe("signer", function(): void {
     assert.exists(signedTransaction);
 
     assert.isTrue(isHex(signedTransaction!.getTransactionSignatureHex()));
-    assert.isTrue(isHex(signedTransaction!.getPublicKeyHex()));
 
     assert.equal(
       signedTransaction!.getTransactionSignatureHex(),
       fakeSignature
     );
-    assert.equal(signedTransaction!.getPublicKeyHex(), wallet.getPublicKey());
 
     assert.deepEqual(
       signedTransaction!.getTransaction()!.toObject(),
