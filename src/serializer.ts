@@ -17,7 +17,9 @@ class Serializer {
    * @param {proto.Transaction} transaction A Transaction to convert.
    * @returns {Object} The Transaction as JSON.
    */
-  public static transactionToJSON(transaction: Transaction): object | undefined {
+  public static transactionToJSON(
+    transaction: Transaction
+  ): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
     var object: any = transaction.toObject();
 

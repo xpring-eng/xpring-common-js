@@ -23,14 +23,6 @@ export interface WalletGenerationResult {
 }
 
 /**
- * An object which holds a pair of public and private keys
- */
-export interface KeyPair {
-  publicKey: string;
-  privateKey: string;
-}
-
-/**
  * A wallet object that has an address and keypair.
  */
 class Wallet {
@@ -89,37 +81,37 @@ class Wallet {
     const node = masterNode.derivePath(derivationPath);
     const publicKey = Wallet.hexFromBuffer(node.publicKey);
     const privateKey = Wallet.hexFromBuffer(node.privateKey);
-    const keyPair: KeyPair = {
-      publicKey: publicKey,
-      privateKey: "00" + privateKey
-    };
-    return new Wallet(keyPair);
+    return new Wallet(publicKey, "00" + privateKey);
   }
 
   public static generateWalletFromSeed(seed: string): Wallet {
     const keyPair = rippleKeyPair.deriveKeypair(seed);
-    return new Wallet(keyPair);
+    return new Wallet(keyPair.publicKey, keyPair.privateKey);
   }
 
   /**
    * Create a new Terram.Wallet object.
    *
-   * @param {Terram.KeyPair} keyPair A keypair for the wallet.
+   * @param {string} publicKey The public key for the wallet.
+   * @param {string} privateKey The private key for the wallet.
    */
-  public constructor(private readonly keyPair: KeyPair) {}
+  public constructor(
+    private readonly publicKey: string,
+    private readonly privateKey: string
+  ) {}
 
   /**
    * @returns {String} A string representing the public key for the wallet.
    */
   public getPublicKey(): string {
-    return this.keyPair.publicKey;
+    return this.publicKey;
   }
 
   /**
    * @returns {String} A string representing the private key for the wallet.
    */
   public getPrivateKey(): string {
-    return this.keyPair.privateKey;
+    return this.privateKey;
   }
 
   /**
