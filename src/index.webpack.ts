@@ -13,14 +13,17 @@ function fromHexString(hexString: string): Uint8Array {
 }
 
 function toHexString(bytes: Uint8Array): string {
-  return bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+  return bytes.reduce(
+    (str, byte) => str + byte.toString(16).padStart(2, "0"),
+    ""
+  );
 }
 
 function makeTransaction(): Transaction {
   const hex = "180C";
   const bytes = fromHexString(hex);
   const transaction = Transaction.deserializeBinary(bytes);
-  console.log("Called make Tx")
+  console.log("Called make Tx");
   console.log("HEX: " + hex);
   console.log("BYTES: " + bytes);
   console.log("TX: " + JSON.stringify(transaction.toObject()));

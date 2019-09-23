@@ -95,7 +95,10 @@ class Wallet {
    * @param {string} publicKey The public key for the wallet.
    * @param {string} privateKey The private key for the wallet.
    */
-  public constructor(private readonly publicKey: string, private readonly privateKey: string) {}
+  public constructor(
+    private readonly publicKey: string,
+    private readonly privateKey: string
+  ) {}
 
   /**
    * @returns {String} A string representing the public key for the wallet.
