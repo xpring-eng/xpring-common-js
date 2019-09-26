@@ -6,9 +6,9 @@ import Utils from "./utils";
 import grpc from "grpc";
 
 /**
- * Terram provides a JavaScript foundation for the Xpring Platform.
+ * Exported classes.
  */
-class Terram {
+class XpringCommon {
   public static readonly SignedTransaction = SignedTransaction;
   public static readonly Signer = Signer;
   public static readonly Transaction = Transaction;
@@ -17,4 +17,4 @@ class Terram {
   public static readonly grpc = grpc;
 }
 
-export default Terram;
+export default XpringCommon;

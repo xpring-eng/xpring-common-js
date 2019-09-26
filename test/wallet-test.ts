@@ -143,14 +143,14 @@ describe("wallet", function(): void {
 
   it("walletFromSeed - invalid seed", function(): void {
     // GIVEN an invalid seed.
-    const seed = "xrp"
+    const seed = "xrp";
 
     // WHEN a wallet is generated from the seed.
-    const wallet = Wallet.generateWalletFromSeed(seed)
+    const wallet = Wallet.generateWalletFromSeed(seed);
 
     // THEN the wallet is undefined.
     assert.isUndefined(wallet);
-  })
+  });
 
   it("sign", function(): void {
     // GIVEN a wallet.

@@ -40,7 +40,7 @@ class Wallet {
    * Secure random number generation is used when entropy is ommitted and when the runtime environment has the necessary support. Otherwise, an error is thrown. Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
    *
    * @param  {string|undefined} entropy A optional hex string of entropy.
-   * @returns {Terram.WalletGenerationResult} Artifacts from the wallet generation..
+   * @returns {WalletGenerationResult} Artifacts from the wallet generation..
    */
   public static generateRandomWallet(
     entropy: string | undefined = undefined
@@ -63,9 +63,9 @@ class Wallet {
   /**
    * Generate a new hierarchical deterministic wallet from a mnemonic and derivation path.
    *
-   * @param {String} mnemonic The mnemonic for the wallet.
-   * @param {String} derivationPath The derivation path to use. If undefined, the default path is used.
-   * @returns {Terram.Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
+   * @param {string} mnemonic The mnemonic for the wallet.
+   * @param {string} derivationPath The derivation path to use. If undefined, the default path is used.
+   * @returns {Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
   public static generateWalletFromMnemonic(
     mnemonic: string,
@@ -84,12 +84,12 @@ class Wallet {
     return new Wallet(publicKey, "00" + privateKey);
   }
 
- /**
-  * Generate a new wallet from the given seed.
-  *
-  * @param {string} seed The seed for the wallet.
-  * @returns {Terram.Wallet|undefined} A new wallet from the given seed, or undefined if the seed was invalid.
-  */
+  /**
+   * Generate a new wallet from the given seed.
+   *
+   * @param {string} seed The seed for the wallet.
+   * @returns {Wallet|undefined} A new wallet from the given seed, or undefined if the seed was invalid.
+   */
   public static generateWalletFromSeed(seed: string): Wallet | undefined {
     try {
       const keyPair = rippleKeyPair.deriveKeypair(seed);
@@ -100,7 +100,7 @@ class Wallet {
   }
 
   /**
-   * Create a new Terram.Wallet object.
+   * Create a new Wallet object.
    *
    * @param {string} publicKey The public key for the wallet.
    * @param {string} privateKey The private key for the wallet.
