@@ -7,7 +7,7 @@ Developers who want to access the Xpring platform should use one of the followin
 - [XpringJS](http://github.com/xpring-eng/xpring-js): A JavaScript interface for the Xpring Platform
 - [XpringKit](http://github.com/xpring-eng/xpringkit): A Swift interface for the Xpring Platform
 
-Developers who are looking for low level cryptographic functions in the Xpring Platform likely want to use this library.
+Developers who are looking for low-level cryptographic functions in the Xpring Platform likely want to use this library.
 
 ## Overview
 Xpring Common JS is composed of several classes:
