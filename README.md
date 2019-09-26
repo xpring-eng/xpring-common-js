@@ -13,16 +13,16 @@ Developers who are looking for low level cryptographic functions in the Xpring P
 Xpring Common JS is composed of several classes:
 - `Wallet`:  Provides key management, address derivation, and signing / verify functionality.
 - `Signer`: Provides utility functions for signing transactions.
-- `Serializer`: Provides functionality for serializing Terram model objects for signing.
+- `Serializer`: Provides functionality for serializing Xpring Common JS model objects for signing.
 - `Utils`: Provides common utility functions.
 
 ## Development
-To get set up on Terram, open a terminal and run the following commands: 
+To get set up on Xpring Common JS, open a terminal and run the following commands: 
 
 ```shell
 # Clone repository
-$ git clone https://github.com/xpring-eng/terram.git
-$ cd terram
+$ git clone https://github.com/xpring-eng/xpring-common-js.git
+$ cd xpring-common-js
 
 # Pull submodules
 $ git submodule init
