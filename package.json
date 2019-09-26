@@ -1,10 +1,10 @@
 {
-  "name": "terram",
-  "version": "0.1.0",
-  "description": "Terram provides a foundational base for XRPs SDKs.",
-  "main": "index.js",
-  "repository": "https://github.com/xpring-eng/terram.git",
-  "author": "Keefer Taylor | Xpring Engineering <keefer@ripple.com>",
+  "name": "xpring-common-js",
+  "version": "1.0.0",
+  "description": "Common JavaScript for use within the Xpring Platform",
+  "main": "src/index.js",
+  "repository": "https://github.com/xpring-eng/xpring-common-js.git",
+  "author": "Xpring Engineering",
   "license": "MIT",
   "directories": {
     "tests": "tests"

@@ -5,9 +5,9 @@ import Wallet from "./wallet";
 import Utils from "./utils";
 
 /**
- * Terram provides a JavaScript foundation for the Xpring Platform.
+ * Common classes.
  */
-class Terram {
+class XpringCommon {
   public static readonly SignedTransaction = SignedTransaction;
   public static readonly Signer = Signer;
   public static readonly Transaction = Transaction;
@@ -15,4 +15,4 @@ class Terram {
   public static readonly Wallet = Wallet;
 }
 
-export default Terram;
+export default XpringCommon;

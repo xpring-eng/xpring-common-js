@@ -14,9 +14,9 @@ class Signer {
   /**
    * Encode the given object to hex and sign it.
    *
-   * @param {Terram.Transaction} transaction The transaction to sign.
-   * @param {Terram.Wallet} wallet The wallet to sign the transaction with.
-   * @returns {Terram.SignedTransaction} A signed transaction.
+   * @param {Transaction} transaction The transaction to sign.
+   * @param {Wallet} wallet The wallet to sign the transaction with.
+   * @returns {SignedTransaction} A signed transaction.
    */
   public static signTransaction(
     transaction: Transaction,
