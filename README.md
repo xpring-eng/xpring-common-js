@@ -17,7 +17,7 @@ Xpring Common JS is composed of several classes:
 - `Utils`: Provides common utility functions.
 
 ## Development
-To get set up on Terram, run the following: 
+To get set up on Terram, open a terminal and run the following commands: 
 
 ```shell
 # Clone repository
