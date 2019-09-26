@@ -29,14 +29,16 @@ $ git submodule init
 $ git submodule update --remote
 
 # Install Protocol Buffers
+# OSX
 $ brew install protobuf
+# Linux
+$ sudo apt install protobuf-compiler
 
 # Install GRPC
-$ brew tap grpc/grpc
-$ brew install grpc
+$ npm -g i nyc grpc-tools
 
 # Install required modules.
-$ npm i 
+$ npm i
 
 # Run tests (And generate intermediate code artifacts)
 $ npm test
