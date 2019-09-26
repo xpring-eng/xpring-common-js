@@ -3,7 +3,7 @@
 # Xpring Common JS
 Xpring Common JS provides JavaScript based common functionality to all client side libraries in the Xpring Platform. 
 
-Developers should use one of the following top-level libraries for accessing the Xpring Platform:
+Developers who want to access the Xpring platform should use one of the following top-level libraries:
 - [XpringJS](http://github.com/xpring-eng/xpring-js): A JavaScript interface for the Xpring Platform
 - [XpringKit](http://github.com/xpring-eng/xpringkit): A Swift interface for the Xpring Platform
 
