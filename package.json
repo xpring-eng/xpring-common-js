@@ -1,6 +1,6 @@
 {
   "name": "@xpring-eng/xpring-common-js",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Common JavaScript for use within the Xpring Platform",
   "main": "build/src/index.js",
   "repository": "https://github.com/xpring-eng/xpring-common-js.git",
@@ -31,7 +31,7 @@
     "clean": "rm -rf ./generated ./dist ./build",
     "pretest": "./scripts/regenerate_protos.sh && tsc",
     "test": "nyc mocha",
-    "prepublist": "npm test && tsc -d && cp generated/*.d.ts",
+    "prepublishOnly": "npm test && tsc -d && cp generated/*.d.ts build/generated/",
     "webpack": "npm run clean && ./scripts/regenerate_protos.sh && rm ./generated/*grpc_pb.* && tsc && npx webpack"
   },
   "devDependencies": {
