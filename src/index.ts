@@ -27,5 +27,5 @@ export { WalletGenerationResult } from "./wallet";
 export { default as Utils } from "./utils";
 export { credentials as grpcCredentials } from "grpc";
 export { ServerCredentials as grpcServerCredentials } from "grpc";
-export { Server as grpcServer } from "grpc"
+export { Server as grpcServer } from "grpc";
 export { default as Serializer } from "./serializer";
