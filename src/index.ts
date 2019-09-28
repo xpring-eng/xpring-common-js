@@ -26,3 +26,4 @@ export { default as Wallet } from "./wallet";
 export { WalletGenerationResult } from "./wallet";
 export { default as Utils } from "./utils";
 export { default as grpc } from "grpc";
+export { default as Serializer } from './serializer'
