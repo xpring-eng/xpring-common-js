@@ -25,4 +25,5 @@ export { Transaction } from "../generated/transaction_pb";
 export { default as Wallet } from "./wallet";
 export { WalletGenerationResult } from "./wallet";
 export { default as Utils } from "./utils";
-export { default as grpc } from "grpc";
+export { credentials as grpcCredentials }  from "grpc";
+export { credentials as grpcServerCredentials }  from "grpc";
