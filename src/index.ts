@@ -29,4 +29,3 @@ export { credentials as grpcCredentials } from "grpc";
 export { ServerCredentials as grpcServerCredentials } from "grpc";
 export { Server as grpcServer } from "grpc";
 export { default as Serializer } from "./serializer";
-
