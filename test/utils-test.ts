@@ -91,4 +91,38 @@ describe("utils", function(): void {
     // THEN the address is deemed invalid.
     assert.isFalse(validAddress);
   });
+
+  it("encodeXAddress() - Address and Tag", function(): void {
+    // GIVEN a valid classic address and a tag. 
+    const address = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
+    const tag = 12345
+
+    // WHEN they are encoded to an x-address.
+    const xAddress = Utils.encodeXAddress(address, tag);
+
+    // THEN the result is as expected.
+    assert.strictEqual(xAddress, "XVfC9CTCJh6GN2x8bnrw3LtdbqiVCUvtU3HnooQDgBnUpQT");
+  });
+
+  it("encodeXAddress() - Address Only", function(): void {
+    // GIVEN a valid classic address.
+    const address = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
+
+    // WHEN it is encoded to an x-address.
+    const xAddress = Utils.encodeXAddress(address, undefined);
+
+    // THEN the result is as expected.
+    assert.strictEqual(xAddress, "XVfC9CTCJh6GN2x8bnrw3LtdbqiVCUFyQVMzRrMGUZpokKH");
+  });
+
+  it("encodeXAddress() - Invalid Address", function(): void {
+    // GIVEN an invalid address.
+    const address = "xrp";
+
+    // WHEN it is encoded to an x-address.
+    const xAddress = Utils.encodeXAddress(address, undefined);
+
+    // THEN the result is undefined.
+    assert.isUndefined(xAddress);
+  });
 });

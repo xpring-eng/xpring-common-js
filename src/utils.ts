@@ -20,6 +20,25 @@ class Utils {
   }
 
   /**
+   * Encode the given classic address and tag into an x-address.
+   * 
+   * @see https://xrpaddress.info/
+   * 
+   * @param classicAddress A classic address to encode.
+   * @param tag An optional tag to encode.
+   * @returns A new x-address if inputs were valid, otherwise undefined.
+   */
+  public static encodeXAddress(classicAddress: string, tag: number|undefined): string|undefined {
+    if (!addressCodec.isValidClassicAddress(classicAddress)) {
+      return undefined;
+    }
+
+    // Xpring Common JS's API takes a string|undefined while the underlying address library wants string|false.
+    const shimTagParameter = tag != undefined ? tag : false;
+    return addressCodec.classicAddressToXAddress(classicAddress, shimTagParameter)
+  }
+
+  /**
    * Convert the given byte array to a hexadecimal string.
    *
    * @param bytes An array of bytes
