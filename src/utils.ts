@@ -6,7 +6,7 @@ class Utils {
   /**
    * Validate that the given string is a valid address on the XRP Ledger.
    *
-   * This function returns true for both x-addresses and classic addresses.
+   * This function returns true for both X-addresses and classic addresses.
    * @see https://xrpaddress.info/
    *
    * @param address An address to check.
