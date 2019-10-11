@@ -3,9 +3,20 @@ import { assert } from "chai";
 import "mocha";
 
 describe("utils", function(): void {
-  it("isValidAddress() - Valid Address", function(): void {
-    // GIVEN a valid address.
+  it("isValidAddress() - Valid Classic Address", function(): void {
+    // GIVEN a valid classic address.
     const address = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
+
+    // WHEN the address is validated.
+    const validAddress = Utils.isValidAddress(address);
+
+    // THEN the address is deemed valid.
+    assert.isTrue(validAddress);
+  });
+
+  it("isValidAddress() - Valid X-Address", function(): void {
+    // GIVEN a valid X-address.
+    const address = "XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi";
 
     // WHEN the address is validated.
     const validAddress = Utils.isValidAddress(address);
@@ -25,9 +36,20 @@ describe("utils", function(): void {
     assert.isFalse(validAddress);
   });
 
-  it("isValidAddress() - Invalid Checksum", function(): void {
-    // GIVEN a base58check address which fails checksumming.
+  it("isValidAddress() - Invalid Classic Address Checksum", function(): void {
+    // GIVEN a classic address which fails checksumming in base58 encoding.
     const address = "rU6K7V3Po4sBBBBBaU29sesqs2qTQJWDw1";
+
+    // WHEN the address is validated.
+    const validAddress = Utils.isValidAddress(address);
+
+    // THEN the address is deemed invalid.
+    assert.isFalse(validAddress);
+  });
+
+  it("isValidAddress() - Invalid X-Address Checksum", function(): void {
+    // GIVEN an X-address which fails checksumming in base58 encoding.
+    const address = "XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHI";
 
     // WHEN the address is validated.
     const validAddress = Utils.isValidAddress(address);
