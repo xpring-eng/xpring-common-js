@@ -17,8 +17,8 @@ describe("utils", function(): void {
     assert.isTrue(validAddress);
   });
 
-  it("isValidAddress() - Valid X Address", function(): void {
-    // GIVEN a valid x-address.
+  it("isValidAddress() - Valid X-Address", function(): void {
+    // GIVEN a valid X-address.
     const address = "XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi";
 
     // WHEN the address is validated.
@@ -50,8 +50,8 @@ describe("utils", function(): void {
     assert.isFalse(validAddress);
   });
 
-  it("isValidAddress() - Invalid X Address Checksum", function(): void {
-    // GIVEN a classic address which fails checksumming in base58 encoding.
+  it("isValidAddress() - Invalid X-Address Checksum", function(): void {
+    // GIVEN an X-address which fails checksumming in base58 encoding.
     const address = "XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHI";
 
     // WHEN the address is validated.
