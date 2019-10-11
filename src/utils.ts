@@ -10,7 +10,7 @@ export interface ClassicAddress {
   address: string;
 
   /** An optional tag. */
-  tag: number | undefined;
+  tag?: number;
 }
 
 class Utils {
@@ -48,7 +48,7 @@ class Utils {
     }
 
     // Xpring Common JS's API takes a string|undefined while the underlying address library wants string|false.
-    const shimTagParameter = tag != undefined ? tag : false;
+    const shimTagParameter = tag !== undefined ? tag : false;
     return addressCodec.classicAddressToXAddress(
       classicAddress,
       shimTagParameter
@@ -71,7 +71,7 @@ class Utils {
     let shimClassicAddress = addressCodec.xAddressToClassicAddress(xAddress);
     return {
       address: shimClassicAddress.classicAddress,
-      tag: shimClassicAddress.tag != false ? shimClassicAddress.tag : undefined
+      tag: shimClassicAddress.tag !== false ? shimClassicAddress.tag : undefined
     };
   }
 
