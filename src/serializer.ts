@@ -3,9 +3,17 @@ import { Transaction } from "../generated/transaction_pb";
 import { FiatAmount } from "../generated/fiat_amount_pb";
 import { XRPAmount } from "../generated/xrp_amount_pb";
 import { Currency } from "../generated/currency_pb";
+import Utils from "./utils";
 
 /* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+interface PaymentJSON {
+  Amount: object | string;
+  Destination: string;
+  DestinationTag?: number | undefined;
+  TransactionType: string;
+}
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -62,11 +70,22 @@ class Serializer {
    * @returns {Object} The Payment as JSON.
    */
   private static paymentToJSON(payment: Payment): object | undefined {
-    const json = {
-      TransactionType: "Payment",
-      Destination: payment.getDestination(),
-      Amount: {}
+    const json: PaymentJSON = {
+      Amount: {},
+      Destination: "",
+      DestinationTag: 0,
+      TransactionType: "Payment"
     };
+
+    // If an x-address was able to be decoded, add the components to the json.
+    const decodedXAddress = Utils.decodeXAddress(payment.getDestination());
+    if (decodedXAddress === undefined) {
+      json.Destination = payment.getDestination();
+      delete json.DestinationTag;
+    } else {
+      json.Destination = decodedXAddress.address;
+      json.DestinationTag = decodedXAddress.tag;
+    }
 
     const amountCase = payment.getAmountCase();
     switch (amountCase) {
