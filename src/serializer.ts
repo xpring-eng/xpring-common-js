@@ -79,7 +79,7 @@ class Serializer {
 
     // If an x-address was able to be decoded, add the components to the json.
     const decodedXAddress = Utils.decodeXAddress(payment.getDestination());
-    if (decodedXAddress === undefined) {
+    if (!decodedXAddress) {
       json.Destination = payment.getDestination();
       delete json.DestinationTag;
     } else {

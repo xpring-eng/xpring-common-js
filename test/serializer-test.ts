@@ -40,7 +40,7 @@ describe("serializer", function(): void {
     // THEN the result is as expected.
     const expectedJSON = {
       Account: account,
-      Amount: value + "",
+      Amount: value.toString(),
       Destination: destination,
       Fee: fee,
       Sequence: sequence,
@@ -82,7 +82,7 @@ describe("serializer", function(): void {
     // THEN the result is as expected.
     const expectedJSON = {
       Account: account,
-      Amount: value + "",
+      Amount: value.toString(),
       Destination: "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1",
       DestinationTag: 12345,
       Fee: fee,
@@ -125,7 +125,7 @@ describe("serializer", function(): void {
     // THEN the result is as expected.
     const expectedJSON = {
       Account: account,
-      Amount: value + "",
+      Amount: value.toString(),
       Destination: "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1",
       DestinationTag: undefined,
       Fee: fee,
