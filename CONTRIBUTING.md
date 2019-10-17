@@ -8,7 +8,7 @@ We're thrilled you're interested and your help is greatly appreciated. Contribut
 
 <img src="architecture.png" alt="Architecture Diagram of Xpring SDK"/>
 
-This library is made up of [protocol buffers](https://developers.google.com/protocol-buffers) which form common model objects for Xpring SDK. There are also [gRPC service definitions](https://grpc.io), which form a network interface for  Xpring SDK.
+This library is made up of TypeScript which is compiled to an npm module which provides common functionality for Xpring SDK.
 
 This library is widely consumed, including by:
 - [Language Specific Libraries in Xpring SDK](https://github.com/xpring-eng/xpring-sdk#client-side-libraries)
