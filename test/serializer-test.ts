@@ -127,7 +127,6 @@ describe("serializer", function(): void {
       Account: account,
       Amount: value.toString(),
       Destination: "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1",
-      DestinationTag: undefined,
       Fee: fee,
       Sequence: sequence,
       TransactionType: "Payment",

@@ -73,7 +73,6 @@ class Serializer {
     const json: PaymentJSON = {
       Amount: {},
       Destination: "",
-      DestinationTag: 0,
       TransactionType: "Payment"
     };
 
@@ -84,7 +83,9 @@ class Serializer {
       delete json.DestinationTag;
     } else {
       json.Destination = decodedXAddress.address;
-      json.DestinationTag = decodedXAddress.tag;
+      if (decodedXAddress.tag) {
+        json.DestinationTag = decodedXAddress.tag;
+      }
     }
 
     const amountCase = payment.getAmountCase();
