@@ -11,7 +11,7 @@ import Utils from "./utils";
 interface PaymentJSON {
   Amount: object | string;
   Destination: string;
-  DestinationTag?: number | undefined;
+  DestinationTag?: number;
   TransactionType: string;
 }
 
