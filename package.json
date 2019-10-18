@@ -1,8 +1,8 @@
 {
   "name": "xpring-common-js",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Common JavaScript for use within the Xpring Platform",
-  "main": "src/index.js",
+  "main": "build/src/index.js",
   "repository": "https://github.com/xpring-eng/xpring-common-js.git",
   "author": "Xpring Engineering",
   "license": "MIT",
@@ -10,8 +10,7 @@
     "tests": "tests"
   },
   "files": [
-    "*.js",
-    "test/*.js"
+    "build/**/*"
   ],
   "dependencies": {
     "@types/google-protobuf": "3.7.1",
@@ -23,8 +22,8 @@
     "grpc": "1.23.3",
     "grpc_tools_node_protoc_ts": "2.5.4",
     "is-hex": "^1.1.3",
-    "ripple-address-codec": "^2.0.1",
-    "ripple-binary-codec": "^0.2.2",
+    "ripple-address-codec": "4.0.0",
+    "ripple-binary-codec": "0.2.4",
     "ripple-keypairs": "^0.11.0",
     "typescript": "3.5.3"
   },
@@ -32,7 +31,8 @@
     "clean": "rm -rf ./generated ./dist ./build",
     "pretest": "./scripts/regenerate_protos.sh && tsc",
     "test": "nyc mocha",
-    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && rm ./generated/*grpc_pb.* && tsc && npx webpack"
+    "prepublishOnly": "npm test && tsc -d && mkdir -p build/generated && cp generated/* build/generated/",
+    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && tsc && rm ./generated/*grpc_pb.* && mkdir -p build/generated && cp generated/* build/generated/ && npx webpack"
   },
   "devDependencies": {
     "@types/chai": "4.2.0",
