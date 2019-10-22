@@ -8,7 +8,7 @@ We're thrilled you're interested and your help is greatly appreciated. Contribut
 
 <img src="architecture.png" alt="Architecture Diagram of Xpring SDK"/>
 
-This library is made up of TypeScript which is compiled to an npm module which provides common functionality for Xpring SDK.
+This is a TypeScript library that is compiled to an `npm` module, which provides common functionality for Xpring SDK across all languages.
 
 This library is widely consumed, including by:
 - [Language Specific Libraries in Xpring SDK](https://github.com/xpring-eng/xpring-sdk#client-side-libraries)
