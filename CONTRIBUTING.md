@@ -16,13 +16,14 @@ This library is widely consumed, including by:
 
 If you make a code change to this library, you are more than likely adding a new feature in one or more dependent libraries. Your [pull requests](#requirements-for-a-successful-pull-request) for all code changes should document how the new fields and functionality will be used.
 
-## Requirements for a Successful Pull request
+## Requirements for a Successful Pull Request
 
-- Continuous integration tests pass on pull request.
-- Documentation in pull request about how the new functionality will be used in client libraries.
-- Pull request is free of lint errors. Please run `eslint` before opening a pull request.
-- Pull Requests are [marked as drafts](https://github.blog/2019-02-14-introducing-draft-pull-requests/) until they are ready for review.
-- Text and comments of pull request adhere to the [code of conduct](CODE_OF_CONDUCT.md) for this repository.
+Before being considered for review or merging, each pull request must:
+- Pass continuous integration tests.
+- Document how the new functionality will be used in client libraries.
+- Be free of lint errors. Please run `eslint` before sending a pull request.
+- Be [marked as drafts](https://github.blog/2019-02-14-introducing-draft-pull-requests/) until they are ready for review.
+- Adhere to the [code of conduct](CODE_OF_CONDUCT.md) for this repository.
 
 ## Building The Library
 
