@@ -1,9 +1,9 @@
 [![CircleCI](https://img.shields.io/circleci/build/github/xpring-eng/xpring-common-js/master?style=flat-square&token=0ed9e0790d44d163a5bf2793724fc85d98c3845b)](https://circleci.com/gh/xpring-eng/xpring-common-js/tree/master) [![CodeCov](https://img.shields.io/codecov/c/github/xpring-eng/xpring-common-js/master?style=flat-square&token=08b799e2895a4dd6add40c4621880c1a)]((https://codecov.io/gh/xpring-eng/xpring-common-js))
 [![CircleCI](https://img.shields.io/circleci/build/github/xpring-eng/xpring-common-js/master?style=flat-square&token=0ed9e0790d44d163a5bf2793724fc85d98c3845b)](https://circleci.com/gh/xpring-eng/xpring-common-js/tree/master) [![CodeCob](https://img.shields.io/codecov/c/github/xpring-eng/xpring-common-js/master?style=flat-square&token=08b799e2895a4dd6add40c4621880c1a)]((https://codecov.io/gh/xpring-eng/xpring-common-js))
 
-# Xpring Common JavaScipt
+# Xpring Common JavaScript
 
-Xpring Common JavaScript Library provides common JavaScript functionality to all client-side libraries in [Xpring SDK](https://github.com/xpring-eng/xpring-sdk). This library is built to be consumed as a dependency to other libraries, rather than as a standalone library.
+Xpring Common JavaScript Library provides common JavaScript functionality to all client side libraries in [Xpring SDK](https://github.com/xpring-eng/xpring-sdk). This library is built to be consumed as a dependency to other libraries, rather than a standalone library.
 
 Developers probably want to use one of the language specific libraries for [Xpring SDK](https://github.com/xpring-eng/xpring-sdk#client-side-libraries), rather than consuming this library directly. However, developers with specific requirements for interacting with Xpring SDK may want to depend on this library.
 
