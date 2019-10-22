@@ -8,7 +8,7 @@ We're thrilled you're interested and your help is greatly appreciated. Contribut
 
 <img src="architecture.png" alt="Architecture Diagram of Xpring SDK"/>
 
-This library is made up of TypeScript which is compiled to an npm module which provides common functionality for Xpring SDK.
+This is a TypeScript library that is compiled to an `npm` module, which provides common functionality for Xpring SDK across all languages.
 
 This library is widely consumed, including by:
 - [Language Specific Libraries in Xpring SDK](https://github.com/xpring-eng/xpring-sdk#client-side-libraries)
@@ -16,13 +16,14 @@ This library is widely consumed, including by:
 
 If you make a code change to this library, you are more than likely adding a new feature in one or more dependent libraries. Your [pull requests](#requirements-for-a-successful-pull-request) for all code changes should document how the new fields and functionality will be used.
 
-## Requirements for a Successful Pull request
+## Requirements for a Successful Pull Request
 
-- Continuous integration tests pass on pull request.
-- Documentation in pull request about how the new functionality will be used in client libraries.
-- Pull request is free of lint errors. Please run `eslint` before sending a pull request.
-- Pull Requests are [marked as drafts](https://github.blog/2019-02-14-introducing-draft-pull-requests/) until they are ready for review.
-- Text and comments of pull request adhere to the [code of conduct](CODE_OF_CONDUCT.md) for this repository.
+Before being considered for review or merging, each pull request must:
+- Pass continuous integration tests.
+- Document how the new functionality will be used in client libraries.
+- Be free of lint errors. Please run `eslint` before sending a pull request.
+- Be [marked as drafts](https://github.blog/2019-02-14-introducing-draft-pull-requests/) until they are ready for review.
+- Adhere to the [code of conduct](CODE_OF_CONDUCT.md) for this repository.
 
 ## Building The Library
 
