@@ -20,7 +20,7 @@ If you make a code change to this library, you are more than likely adding a new
 
 - Continuous integration tests pass on pull request.
 - Documentation in pull request about how the new functionality will be used in client libraries.
-- Pull request is free of lint errors. Please run `eslint` before sending a pull request.
+- Pull request is free of lint errors. Please run `eslint` before opening a pull request.
 - Pull Requests are [marked as drafts](https://github.blog/2019-02-14-introducing-draft-pull-requests/) until they are ready for review.
 - Text and comments of pull request adhere to the [code of conduct](CODE_OF_CONDUCT.md) for this repository.
 
