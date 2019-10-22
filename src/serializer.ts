@@ -83,7 +83,7 @@ class Serializer {
       delete json.DestinationTag;
     } else {
       json.Destination = decodedXAddress.address;
-      if (decodedXAddress.tag) {
+      if (decodedXAddress.tag !== undefined) {
         json.DestinationTag = decodedXAddress.tag;
       }
     }
