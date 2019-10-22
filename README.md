@@ -3,7 +3,7 @@
 
 # Xpring Common JavaScipt
 
-Xpring Common JavaScript Library provides common JavaScript functionality to all client side libraries in [Xpring SDK](https://github.com/xpring-eng/xpring-sdk). This library is built to be consumed as a dependency to other libraries, rather than a standalone library.
+Xpring Common JavaScript Library provides common JavaScript functionality to all client-side libraries in [Xpring SDK](https://github.com/xpring-eng/xpring-sdk). This library is built to be consumed as a dependency to other libraries, rather than as a standalone library.
 
 Developers probably want to use one of the language specific libraries for [Xpring SDK](https://github.com/xpring-eng/xpring-sdk#client-side-libraries), rather than consuming this library directly. However, developers with specific requirements for interacting with Xpring SDK may want to depend on this library.
 
