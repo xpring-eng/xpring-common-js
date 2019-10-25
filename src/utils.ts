@@ -1,6 +1,6 @@
 "use strict";
 
-import { createHash } from 'crypto'
+import { createHash } from "crypto";
 
 const addressCodec = require("ripple-address-codec");
 const isHex = require("is-hex");
@@ -85,7 +85,9 @@ class Utils {
    * @returns An encoded hexadecimal string.
    */
   public static toHex(bytes: Uint8Array): string {
-    return Buffer.from(bytes).toString("hex").toUpperCase();
+    return Buffer.from(bytes)
+      .toString("hex")
+      .toUpperCase();
   }
 
   /**
@@ -100,16 +102,20 @@ class Utils {
 
   /**
    * Convert the given transaction blob to a transaction hash.
-   * 
+   *
    * @param transactionBlobHex A hexadecimal encoded transaction blob.
    * @returns A hex encoded hash if the input was valid, otherwise undefined.
    */
-  public static transactionBlobToTransactionHash(transactionBlobHex: string): string|undefined {
+  public static transactionBlobToTransactionHash(
+    transactionBlobHex: string
+  ): string | undefined {
     if (!isHex(transactionBlobHex)) {
-      return undefined
+      return undefined;
     }
 
-    const prefixedTransactionBlob = this.toBytes("54584E00" + transactionBlobHex);
+    const prefixedTransactionBlob = this.toBytes(
+      "54584E00" + transactionBlobHex
+    );
     const hash = this.sha512Half(prefixedTransactionBlob);
     return this.toHex(hash);
   }
@@ -122,10 +128,15 @@ class Utils {
    */
   private static sha512Half(bytes: Uint8Array): Uint8Array {
     const sha512 = createHash("sha512");
-    const hashHex = sha512.update(bytes).digest('hex').toUpperCase();
+    const hashHex = sha512
+      .update(bytes)
+      .digest("hex")
+      .toUpperCase();
     const hash = this.toBytes(hashHex);
 
+    /* eslint-disable @typescript-eslint/no-magic-numbers */
     return hash.slice(0, hash.length / 2);
+    /* eslint-enable @typescript-eslint/no-magic-numbers */
   }
 }
 
