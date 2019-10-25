@@ -39,7 +39,7 @@ class Utils {
    * @returns True if the address is a valid X-address, otherwise false.
    */
   public static isValidXAddress(address: string): string {
-    return addressCodec.isValidXAddress(address)
+    return addressCodec.isValidXAddress(address);
   }
 
   /**
@@ -51,7 +51,7 @@ class Utils {
    * @returns True if the address is a valid classic address, otherwise false.
    */
   public static isValidClassicAddress(address: string): string {
-    return addressCodec.isValidClassicAddress(address)
+    return addressCodec.isValidClassicAddress(address);
   }
 
   /**

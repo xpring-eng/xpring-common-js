@@ -179,7 +179,7 @@ describe("utils", function(): void {
 
     // THEN the address is reported as valid.
     assert.isTrue(isValid);
-  })
+  });
 
   it("isValidXAddress() - Classic Address", function(): void {
     // GIVEN a valid classic address.
@@ -190,7 +190,7 @@ describe("utils", function(): void {
 
     // THEN the address is reported as invalid.
     assert.isFalse(isValid);
-  })
+  });
 
   it("isValidXAddress() - Invalid Address", function(): void {
     // GIVEN an invalid address.
@@ -201,7 +201,7 @@ describe("utils", function(): void {
 
     // THEN the address is reported as invalid.
     assert.isFalse(isValid);
-  })
+  });
 
   it("isValidClassicAddress() - Valid X-Address", function(): void {
     // GIVEN a valid X-Address.
@@ -212,7 +212,7 @@ describe("utils", function(): void {
 
     // THEN the address is reported as valid.
     assert.isFalse(isValid);
-  })
+  });
 
   it("isValidClassicAddress() - Classic Address", function(): void {
     // GIVEN a valid classic address.
@@ -223,7 +223,7 @@ describe("utils", function(): void {
 
     // THEN the address is reported as invalid.
     assert.isTrue(isValid);
-  })
+  });
 
   it("isValidClassicAddress() - Invalid Address", function(): void {
     // GIVEN an invalid address.
@@ -234,5 +234,5 @@ describe("utils", function(): void {
 
     // THEN the address is reported as invalid.
     assert.isFalse(isValid);
-  })
+  });
 });
