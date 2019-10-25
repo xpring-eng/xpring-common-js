@@ -75,6 +75,14 @@ class Utils {
     };
   }
 
+  public static isValidXAddress(address: string): string {
+    return addressCodec.isValidXAddress(address)
+  }
+
+  public static isValidClassicAddress(address: string): string {
+    return addressCodec.isValidClassicAddress(address)
+  }
+
   /**
    * Convert the given byte array to a hexadecimal string.
    *
