@@ -210,7 +210,7 @@ describe("utils", function(): void {
     // WHEN the address is validated for being a classic address.
     const isValid = Utils.isValidClassicAddress(address);
 
-    // THEN the address is reported as valid.
+    // THEN the address is reported as invalid.
     assert.isFalse(isValid);
   });
 
@@ -221,7 +221,7 @@ describe("utils", function(): void {
     // WHEN the address is validated for being a classic address.
     const isValid = Utils.isValidClassicAddress(address);
 
-    // THEN the address is reported as invalid.
+    // THEN the address is reported as valid.
     assert.isTrue(isValid);
   });
 
