@@ -31,6 +31,30 @@ class Utils {
   }
 
   /**
+   * Validate if the given string is a valid X-address on the XRP Ledger.
+   *
+   * @see https://xrpaddress.info/
+   *
+   * @param address An address to check.
+   * @returns True if the address is a valid X-address, otherwise false.
+   */
+  public static isValidXAddress(address: string): string {
+    return addressCodec.isValidXAddress(address)
+  }
+
+  /**
+   * Validate if the given string is a valid classic address on the XRP Ledger.
+   *
+   * @see https://xrpaddress.info/
+   *
+   * @param address An address to check.
+   * @returns True if the address is a valid classic address, otherwise false.
+   */
+  public static isValidClassicAddress(address: string): string {
+    return addressCodec.isValidClassicAddress(address)
+  }
+
+  /**
    * Encode the given classic address and tag into an x-address.
    *
    * @see https://xrpaddress.info/
@@ -73,14 +97,6 @@ class Utils {
       address: shimClassicAddress.classicAddress,
       tag: shimClassicAddress.tag !== false ? shimClassicAddress.tag : undefined
     };
-  }
-
-  public static isValidXAddress(address: string): string {
-    return addressCodec.isValidXAddress(address)
-  }
-
-  public static isValidClassicAddress(address: string): string {
-    return addressCodec.isValidClassicAddress(address)
   }
 
   /**
