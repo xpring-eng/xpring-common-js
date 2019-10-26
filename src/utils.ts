@@ -135,7 +135,7 @@ class Utils {
     const hash = this.toBytes(hashHex);
 
     /* eslint-disable @typescript-eslint/no-magic-numbers */
-    return hash.slice(0, hash.length / 2);
+    return hash.slice(0, 32);
     /* eslint-enable @typescript-eslint/no-magic-numbers */
   }
 }
