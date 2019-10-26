@@ -170,6 +170,73 @@ describe("utils", function(): void {
     assert.isUndefined(xAddress);
   });
 
+  it("isValidXAddress() - Valid X-Address", function(): void {
+    // GIVEN a valid X-Address.
+    const address = "XVfC9CTCJh6GN2x8bnrw3LtdbqiVCUvtU3HnooQDgBnUpQT";
+
+    // WHEN the address is validated for being an X-Address.
+    const isValid = Utils.isValidXAddress(address);
+
+    // THEN the address is reported as valid.
+    assert.isTrue(isValid);
+  });
+
+  it("isValidXAddress() - Classic Address", function(): void {
+    // GIVEN a valid classic address.
+    const address = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
+
+    // WHEN the address is validated for being an X-Address.
+    const isValid = Utils.isValidXAddress(address);
+
+    // THEN the address is reported as invalid.
+    assert.isFalse(isValid);
+  });
+
+  it("isValidXAddress() - Invalid Address", function(): void {
+    // GIVEN an invalid address.
+    const address = "xrp";
+
+    // WHEN the address is validated for being an X-Address.
+    const isValid = Utils.isValidXAddress(address);
+
+    // THEN the address is reported as invalid.
+    assert.isFalse(isValid);
+  });
+
+  it("isValidClassicAddress() - Valid X-Address", function(): void {
+    // GIVEN a valid X-Address.
+    const address = "XVfC9CTCJh6GN2x8bnrw3LtdbqiVCUvtU3HnooQDgBnUpQT";
+
+    // WHEN the address is validated for being a classic address.
+    const isValid = Utils.isValidClassicAddress(address);
+
+    // THEN the address is reported as invalid.
+    assert.isFalse(isValid);
+  });
+
+  it("isValidClassicAddress() - Classic Address", function(): void {
+    // GIVEN a valid classic address.
+    const address = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
+
+    // WHEN the address is validated for being a classic address.
+    const isValid = Utils.isValidClassicAddress(address);
+
+    // THEN the address is reported as valid.
+    assert.isTrue(isValid);
+  });
+
+  it("isValidClassicAddress() - Invalid Address", function(): void {
+    // GIVEN an invalid address.
+    const address = "xrp";
+
+    // WHEN the address is validated for being a classic address.
+    const isValid = Utils.isValidClassicAddress(address);
+
+    // THEN the address is reported as invalid.
+    assert.isFalse(isValid);
+  });
+  
+  
   it("transactionBlobHex() - Valid transaction blob", function(): void {
     // GIVEN a transaction blob.
     const transactionBlobHex =
