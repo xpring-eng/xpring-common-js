@@ -15,7 +15,7 @@ export interface ClassicAddress {
 
 class Utils {
   /**
-   * Validate that the given string is a valid address on the XRP Ledger.
+   * Validate that the given string is a valid address for the XRP Ledger.
    *
    * This function returns true for both X-addresses and classic addresses.
    * @see https://xrpaddress.info/
@@ -28,6 +28,30 @@ class Utils {
       addressCodec.isValidClassicAddress(address) ||
       addressCodec.isValidXAddress(address)
     );
+  }
+
+  /**
+   * Validate whether the given string is a valid X-address for the XRP Ledger.
+   *
+   * @see https://xrpaddress.info/
+   *
+   * @param address An address to check.
+   * @returns True if the address is a valid X-address, otherwise false.
+   */
+  public static isValidXAddress(address: string): string {
+    return addressCodec.isValidXAddress(address);
+  }
+
+  /**
+   * Validate whether the given string is a valid classic address for the XRP Ledger.
+   *
+   * @see https://xrpaddress.info/
+   *
+   * @param address An address to check.
+   * @returns True if the address is a valid classic address, otherwise false.
+   */
+  public static isValidClassicAddress(address: string): string {
+    return addressCodec.isValidClassicAddress(address);
   }
 
   /**
