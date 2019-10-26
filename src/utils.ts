@@ -15,7 +15,7 @@ export interface ClassicAddress {
 
 class Utils {
   /**
-   * Validate that the given string is a valid address on the XRP Ledger.
+   * Validate that the given string is a valid address for the XRP Ledger.
    *
    * This function returns true for both X-addresses and classic addresses.
    * @see https://xrpaddress.info/
@@ -31,7 +31,7 @@ class Utils {
   }
 
   /**
-   * Validate if the given string is a valid X-address on the XRP Ledger.
+   * Validate whether the given string is a valid X-address for the XRP Ledger.
    *
    * @see https://xrpaddress.info/
    *
@@ -43,7 +43,7 @@ class Utils {
   }
 
   /**
-   * Validate if the given string is a valid classic address on the XRP Ledger.
+   * Validate whether the given string is a valid classic address for the XRP Ledger.
    *
    * @see https://xrpaddress.info/
    *
