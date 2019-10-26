@@ -6,6 +6,13 @@ const addressCodec = require("ripple-address-codec");
 const isHex = require("is-hex");
 
 /**
+ * A prefex applied when hashing a signed transaction blob.
+ *
+ * @see https://xrpl.org/basic-data-types.html#hashes
+ */
+const signedTransactionPrefixHex = "54584E00";
+
+/**
  * A simple property bag which contains components of a classic address. Components contained in this object are neither sanitized or validated.
  */
 export interface ClassicAddress {
@@ -114,7 +121,7 @@ class Utils {
     }
 
     const prefixedTransactionBlob = this.toBytes(
-      "54584E00" + transactionBlobHex
+      signedTransactionPrefixHex + transactionBlobHex
     );
     const hash = this.sha512Half(prefixedTransactionBlob);
     return this.toHex(hash);
