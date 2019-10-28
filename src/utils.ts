@@ -1,6 +1,16 @@
 "use strict";
 
-var addressCodec = require("ripple-address-codec");
+import { createHash } from "crypto";
+
+const addressCodec = require("ripple-address-codec");
+const isHex = require("is-hex");
+
+/**
+ * A prefex applied when hashing a signed transaction blob.
+ *
+ * @see https://xrpl.org/basic-data-types.html#hashes
+ */
+const signedTransactionPrefixHex = "54584E00";
 
 /**
  * A simple property bag which contains components of a classic address. Components contained in this object are neither sanitized or validated.
@@ -106,7 +116,9 @@ class Utils {
    * @returns An encoded hexadecimal string.
    */
   public static toHex(bytes: Uint8Array): string {
-    return Buffer.from(bytes).toString("hex");
+    return Buffer.from(bytes)
+      .toString("hex")
+      .toUpperCase();
   }
 
   /**
@@ -117,6 +129,45 @@ class Utils {
    */
   public static toBytes(hex: string): Uint8Array {
     return Uint8Array.from(Buffer.from(hex, "hex"));
+  }
+
+  /**
+   * Convert the given transaction blob to a transaction hash.
+   *
+   * @param transactionBlobHex A hexadecimal encoded transaction blob.
+   * @returns A hex encoded hash if the input was valid, otherwise undefined.
+   */
+  public static transactionBlobToTransactionHash(
+    transactionBlobHex: string
+  ): string | undefined {
+    if (!isHex(transactionBlobHex)) {
+      return undefined;
+    }
+
+    const prefixedTransactionBlob = this.toBytes(
+      signedTransactionPrefixHex + transactionBlobHex
+    );
+    const hash = this.sha512Half(prefixedTransactionBlob);
+    return this.toHex(hash);
+  }
+
+  /**
+   * Compute the SHA512 half hash of the given bytes.
+   *
+   * @param input The input to hash.
+   * @returns The hash of the input.
+   */
+  private static sha512Half(bytes: Uint8Array): Uint8Array {
+    const sha512 = createHash("sha512");
+    const hashHex = sha512
+      .update(bytes)
+      .digest("hex")
+      .toUpperCase();
+    const hash = this.toBytes(hashHex);
+
+    /* eslint-disable @typescript-eslint/no-magic-numbers */
+    return hash.slice(0, 32);
+    /* eslint-enable @typescript-eslint/no-magic-numbers */
   }
 }
 
