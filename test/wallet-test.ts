@@ -17,7 +17,7 @@ const derivationPathTestCases = {
       "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE",
     expectedPrivateKey:
       "0090802A50AA84EFB6CDB225F17C27616EA94048C179142FECF03F4712A07EA7A4",
-    expectedAddress: "rHsMGQEkVNJmpGWs8XUBoTBiAAbwxZN5v3",
+    expectedAddress: "XVMFQQBMhdouRqhPMuawgBMN1AVFTofPAdRsXG5RkPtUPNQ",
     messageHex: new Buffer("test message", "utf-8").toString("hex"),
     expectedSignature:
       "3045022100E10177E86739A9C38B485B6AA04BF2B9AA00E79189A1132E7172B70F400ED1170220566BD64AA3F01DDE8D99DFFF0523D165E7DD2B9891ABDA1944E2F3A52CCCB83A"
@@ -30,7 +30,7 @@ const derivationPathTestCases = {
       "038BF420B5271ADA2D7479358FF98A29954CF18DC25155184AEAD05796DA737E89",
     expectedPrivateKey:
       "000974B4CFE004A2E6C4364CBF3510A36A352796728D0861F6B555ED7E54A70389",
-    expectedAddress: "r3AgF9mMBFtaLhKcg96weMhbbEFLZ3mx17"
+    expectedAddress: "X7uRz9jfzHUFEjZTZ7rMVzFuTGZTHWcmkKjvGkNqVbfMhca"
   }
 };
 
@@ -138,7 +138,7 @@ describe("wallet", function(): void {
     const wallet = Wallet.generateWalletFromSeed(seed);
 
     // THEN the wallet has the expected address.
-    assert.equal(wallet!.getAddress(), "rByLcEZ7iwTBAK8FfjtpFuT7fCzt4kF4r2");
+    assert.equal(wallet!.getAddress(), "XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8");
   });
 
   it("walletFromSeed - invalid seed", function(): void {
