@@ -6,9 +6,10 @@ import { Transaction } from "../generated/transaction_pb";
 import { XRPAmount } from "../generated/xrp_amount_pb";
 import { assert } from "chai";
 import "mocha";
+import Utils from "../src/utils";
 
 describe("serializer", function(): void {
-  it("serializes a payment in XRP", function(): void {
+  it("serializes a payment in XRP from a classic address", function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const value = "1000";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
@@ -48,6 +49,112 @@ describe("serializer", function(): void {
       SigningPubKey: publicKey
     };
     assert.deepEqual(serialized, expectedJSON);
+  });
+  
+  it("serializes a payment in XRP from an X-Address with no tag", function(): void {
+    // GIVEN a transaction which represents a payment denominated in XRP.
+    const value = "1000";
+    const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
+    const fee = "10";
+    const sequence = 1;
+    const account = "XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc";
+    const publicKey = "testPublicKey";
+
+    const paymentAmount = new XRPAmount();
+    paymentAmount.setDrops(value);
+
+    const payment = new Payment();
+    payment.setDestination(destination);
+    payment.setXrpAmount(paymentAmount);
+
+    const transactionFee = new XRPAmount();
+    transactionFee.setDrops(fee);
+
+    const transaction = new Transaction();
+    transaction.setAccount(account);
+    transaction.setFee(transactionFee);
+    transaction.setSequence(sequence);
+    transaction.setPayment(payment);
+    transaction.setSigningPublicKeyHex(publicKey);
+
+    // WHEN the transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction);
+
+    // THEN the result is as expected.
+    const expectedJSON = {
+      Account: Utils.decodeXAddress(account)!.address,
+      Amount: value.toString(),
+      Destination: destination,
+      Fee: fee,
+      Sequence: sequence,
+      TransactionType: "Payment",
+      SigningPubKey: publicKey
+    };
+    assert.deepEqual(serialized, expectedJSON);
+  });
+
+  it("fails to serializes a payment in XRP from an X-Address with a tag", function(): void {
+    // GIVEN a transaction which represents a payment denominated in XRP.
+    const value = "1000";
+    const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
+    const fee = "10";
+    const sequence = 1;
+    const account = "XVPcpSm47b1CZkf5AkKM9a84dQHe3mTAxgxfLw2qYoe7Boa";
+    const publicKey = "testPublicKey";
+
+    const paymentAmount = new XRPAmount();
+    paymentAmount.setDrops(value);
+
+    const payment = new Payment();
+    payment.setDestination(destination);
+    payment.setXrpAmount(paymentAmount);
+
+    const transactionFee = new XRPAmount();
+    transactionFee.setDrops(fee);
+
+    const transaction = new Transaction();
+    transaction.setAccount(account);
+    transaction.setFee(transactionFee);
+    transaction.setSequence(sequence);
+    transaction.setPayment(payment);
+    transaction.setSigningPublicKeyHex(publicKey);
+
+    // WHEN the transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction);
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized);
+  });
+
+  it("fails to serializes a payment in XRP when account is undefined", function(): void {
+    // GIVEN a transaction which represents a payment denominated in XRP.
+    const value = "1000";
+    const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
+    const fee = "10";
+    const sequence = 1;
+    const publicKey = "testPublicKey";
+
+    const paymentAmount = new XRPAmount();
+    paymentAmount.setDrops(value);
+
+    const payment = new Payment();
+    payment.setDestination(destination);
+    payment.setXrpAmount(paymentAmount);
+
+    const transactionFee = new XRPAmount();
+    transactionFee.setDrops(fee);
+
+    const transaction = new Transaction();
+    transaction.setFee(transactionFee);
+    transaction.setSequence(sequence);
+    transaction.setPayment(payment);
+    transaction.setSigningPublicKeyHex(publicKey);
+
+    // WHEN the transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction);
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized);
   });
 
   it("serializes a payment to an X-address with a tag in XRP", function(): void {

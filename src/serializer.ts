@@ -4,6 +4,7 @@ import { FiatAmount } from "../generated/fiat_amount_pb";
 import { XRPAmount } from "../generated/xrp_amount_pb";
 import { Currency } from "../generated/currency_pb";
 import Utils from "./utils";
+import { decode } from "punycode";
 
 /* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -32,10 +33,31 @@ class Serializer {
     var object: any = transaction.toObject();
 
     // Convert fields names where direct conversion is possible.
-    this.convertPropertyName("account", "Account", object);
     this.convertPropertyName("sequence", "Sequence", object);
     this.convertPropertyName("signingPublicKeyHex", "SigningPubKey", object);
 
+    // Convert account field, handling X-Addresses if needed.
+    const account = transaction.getAccount();
+    if (account == undefined || !Utils.isValidAddress(account)) {
+      return undefined;      
+    }
+    var normalizedAccount = account;
+    if (Utils.isValidXAddress(account)) {
+      const decodedClassicAddress = Utils.decodeXAddress(account);
+      if (decodedClassicAddress == undefined) {
+        return undefined;
+      }
+      
+      // Accounts cannot have a tag.
+      if (decodedClassicAddress.tag) {
+        return undefined;
+      }
+
+      normalizedAccount = decodedClassicAddress.address;
+    }
+    object["Account"] = normalizedAccount;
+    delete object.account;
+  
     // Convert XRP denominated fee field.
     const txFee = transaction.getFee();
     if (txFee == undefined) {
