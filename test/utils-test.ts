@@ -235,8 +235,7 @@ describe("utils", function(): void {
     // THEN the address is reported as invalid.
     assert.isFalse(isValid);
   });
-  
-  
+
   it("transactionBlobHex() - Valid transaction blob", function(): void {
     // GIVEN a transaction blob.
     const transactionBlobHex =

@@ -138,7 +138,10 @@ describe("wallet", function(): void {
     const wallet = Wallet.generateWalletFromSeed(seed);
 
     // THEN the wallet has the expected address.
-    assert.equal(wallet!.getAddress(), "XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8");
+    assert.equal(
+      wallet!.getAddress(),
+      "XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8"
+    );
   });
 
   it("walletFromSeed - invalid seed", function(): void {

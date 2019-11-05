@@ -133,7 +133,7 @@ class Wallet {
     const classicAddress = rippleKeyPair.deriveAddress(this.getPublicKey());
     const xAddress = Utils.encodeXAddress(classicAddress, undefined);
     if (xAddress == undefined) {
-      throw new Error("Unknown address error");
+      throw new Error("Unknown error deriving address");
     }
     return xAddress;
   }
