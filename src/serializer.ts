@@ -139,9 +139,11 @@ class Serializer {
    * @param {proto.FiatAmount.Currency} currency The Currency to convert.
    * @returns {String} The Currency as JSON.
    */
-  private static currencyToJSON(currency: Currency): string {
+  private static currencyToJSON(currency: Currency): string | undefined {
     switch (currency) {
-      case Currency.USD:
+      case Currency.CURRENCY_INVALID:
+        return undefined;
+      case Currency.CURRENCY_USD:
         return "USD";
     }
   }

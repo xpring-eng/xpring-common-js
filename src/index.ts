@@ -15,8 +15,8 @@ export {
 } from "../generated/submit_signed_transaction_response_pb";
 export { XRPAmount } from "../generated/xrp_amount_pb";
 export {
-  XRPLedgerClient,
-  XRPLedgerService
+  XRPLedgerAPIClient,
+  XRPLedgerAPIService
 } from "../generated/xrp_ledger_grpc_pb";
 export { SignedTransaction } from "../generated/signed_transaction_pb";
 export { default as Signer } from "../src/signer";

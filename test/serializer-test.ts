@@ -148,7 +148,7 @@ describe("serializer", function(): void {
     const paymentAmount = new FiatAmount();
     paymentAmount.setIssuer(issuer);
     paymentAmount.setValue(value);
-    paymentAmount.setCurrency(Currency.USD);
+    paymentAmount.setCurrency(Currency.CURRENCY_USD);
 
     const payment = new Payment();
     payment.setDestination(destination);
