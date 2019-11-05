@@ -4,7 +4,6 @@ import { FiatAmount } from "../generated/fiat_amount_pb";
 import { XRPAmount } from "../generated/xrp_amount_pb";
 import { Currency } from "../generated/currency_pb";
 import Utils from "./utils";
-import { decode } from "punycode";
 
 /* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */
 /* eslint-disable @typescript-eslint/no-explicit-any */
