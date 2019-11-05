@@ -1,3 +1,5 @@
+import Utils from "./utils";
+
 const bip32 = require("bip32");
 const bip39 = require("bip39");
 const isHex = require("is-hex");
@@ -128,7 +130,12 @@ class Wallet {
    * @returns {String} A string representing the address of the wallet.
    */
   public getAddress(): string {
-    return rippleKeyPair.deriveAddress(this.getPublicKey());
+    const classicAddress = rippleKeyPair.deriveAddress(this.getPublicKey());
+    const xAddress = Utils.encodeXAddress(classicAddress, undefined);
+    if (xAddress == undefined) {
+      throw new Error("Unknown error deriving address");
+    }
+    return xAddress;
   }
 
   /**

@@ -1,45 +1,28 @@
-[![CircleCI](https://img.shields.io/circleci/build/github/xpring-eng/xpring-common-js/master?style=flat-square&token=0ed9e0790d44d163a5bf2793724fc85d98c3845b)](https://circleci.com/gh/xpring-eng/xpring-common-js/tree/master) [![CodeCob](https://img.shields.io/codecov/c/github/xpring-eng/xpring-common-js/master?style=flat-square&token=08b799e2895a4dd6add40c4621880c1a)]((https://codecov.io/gh/xpring-eng/xpring-common-js))
+[![CircleCI](https://img.shields.io/circleci/build/github/xpring-eng/xpring-common-js/master?style=flat-square&token=0ed9e0790d44d163a5bf2793724fc85d98c3845b)](https://circleci.com/gh/xpring-eng/xpring-common-js/tree/master) [![CodeCov](https://img.shields.io/codecov/c/github/xpring-eng/xpring-common-js/master?style=flat-square&token=08b799e2895a4dd6add40c4621880c1a)]((https://codecov.io/gh/xpring-eng/xpring-common-js))
 
-# Xpring Common JS
-Xpring Common JS provides JavaScript based common functionality to all client side libraries in the Xpring Platform. 
+# Xpring Common JavaScript
 
-Developers who want to access the Xpring platform should use one of the following top-level libraries:
-- [XpringJS](http://github.com/xpring-eng/xpring-js): A JavaScript interface for the Xpring Platform
-- [XpringKit](http://github.com/xpring-eng/xpringkit): A Swift interface for the Xpring Platform
+Xpring Common JavaScript Library provides common JavaScript functionality to all client side libraries in [Xpring SDK](https://github.com/xpring-eng/xpring-sdk). This library is built to be consumed as a dependency to other libraries, rather than a standalone library.
 
-Developers who are looking for low-level cryptographic functions in the Xpring Platform likely want to use this library.
+Developers probably want to use one of the language specific libraries for [Xpring SDK](https://github.com/xpring-eng/xpring-sdk#client-side-libraries), rather than consuming this library directly. However, developers with specific requirements for interacting with Xpring SDK may want to depend on this library.
 
 ## Overview
-Xpring Common JS is composed of several classes:
+Xpring Common JavaScript is composed of several classes:
 - `Wallet`:  Provides key management, address derivation, and signing / verify functionality.
 - `Signer`: Provides utility functions for signing transactions.
-- `Serializer`: Provides functionality for serializing Xpring Common JS model objects for signing.
+- `Serializer`: Provides functionality for serializing Xpring Common JavaScript model objects for signing.
 - `Utils`: Provides common utility functions.
 
-## Development
-To get set up on Xpring Common JS, open a terminal and run the following commands: 
+# Contributing
 
-```shell
-# Clone repository
-$ git clone https://github.com/xpring-eng/xpring-common-js.git
-$ cd xpring-common-js
+Pull requests are welcome! To get started with building this library and opening pull requests, please see [contributing.md](CONTRIBUTING.md).
 
-# Pull submodules
-$ git submodule init
-$ git submodule update --remote
+Thank you to all the users who have contributed to this library!
 
-# Install Protocol Buffers
-# OSX
-$ brew install protobuf
-# Linux
-$ sudo apt install protobuf-compiler
+<a href="https://github.com/xpring-eng/xpring-common-js/graphs/contributors">
+  <img src="https://contributors-img.firebaseapp.com/image?repo=xpring-eng/xpring-common-js" />
+</a>
 
-# Install GRPC
-$ npm -g i nyc grpc-tools
+# License
 
-# Install required modules.
-$ npm i
-
-# Run tests (And generate intermediate code artifacts)
-$ npm test
-```
+Xpring SDK is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
