@@ -8,6 +8,8 @@ import { assert } from "chai";
 import "mocha";
 import Utils from "../src/utils";
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 describe("serializer", function(): void {
   it("serializes a payment in XRP from a classic address", function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
@@ -50,7 +52,7 @@ describe("serializer", function(): void {
     };
     assert.deepEqual(serialized, expectedJSON);
   });
-  
+
   it("serializes a payment in XRP from an X-Address with no tag", function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const value = "1000";

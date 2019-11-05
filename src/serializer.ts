@@ -39,7 +39,7 @@ class Serializer {
     // Convert account field, handling X-Addresses if needed.
     const account = transaction.getAccount();
     if (account == undefined || !Utils.isValidAddress(account)) {
-      return undefined;      
+      return undefined;
     }
     var normalizedAccount = account;
     if (Utils.isValidXAddress(account)) {
@@ -47,7 +47,7 @@ class Serializer {
       if (decodedClassicAddress == undefined) {
         return undefined;
       }
-      
+
       // Accounts cannot have a tag.
       if (decodedClassicAddress.tag) {
         return undefined;
@@ -57,7 +57,7 @@ class Serializer {
     }
     object["Account"] = normalizedAccount;
     delete object.account;
-  
+
     // Convert XRP denominated fee field.
     const txFee = transaction.getFee();
     if (txFee == undefined) {
