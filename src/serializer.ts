@@ -32,13 +32,35 @@ class Serializer {
     var object: any = transaction.toObject();
 
     // Convert fields names where direct conversion is possible.
-    this.convertPropertyName("account", "Account", object);
     this.convertPropertyName("sequence", "Sequence", object);
     this.convertPropertyName("signingPublicKeyHex", "SigningPubKey", object);
 
+    // Convert account field, handling X-Addresses if needed.
+    const account = transaction.getAccount();
+    if (!account || !Utils.isValidAddress(account)) {
+      return undefined;
+    }
+    
+    var normalizedAccount = account;
+    if (Utils.isValidXAddress(account)) {
+      const decodedClassicAddress = Utils.decodeXAddress(account);
+      if (!decodedClassicAddress) {
+        return undefined;
+      }
+
+      // Accounts cannot have a tag.
+      if (decodedClassicAddress.tag !== undefined) {
+        return undefined;
+      }
+
+      normalizedAccount = decodedClassicAddress.address;
+    }
+    object["Account"] = normalizedAccount;
+    delete object.account;
+
     // Convert XRP denominated fee field.
     const txFee = transaction.getFee();
-    if (txFee == undefined) {
+    if (txFee === undefined) {
       return undefined;
     }
     object["Fee"] = this.xrpAmountToJSON(txFee);
@@ -52,7 +74,7 @@ class Serializer {
     switch (transactionDataCase) {
       case Transaction.TransactionDataCase.PAYMENT: {
         const payment = transaction.getPayment();
-        if (payment == undefined) {
+        if (payment === undefined) {
           return undefined;
         }
         Object.assign(object, this.paymentToJSON(payment));
@@ -92,12 +114,12 @@ class Serializer {
     switch (amountCase) {
       case Payment.AmountCase.FIAT_AMOUNT: {
         const fiatAmount = payment.getFiatAmount();
-        if (fiatAmount == undefined) {
+        if (fiatAmount === undefined) {
           return undefined;
         }
 
         const jsonFiatAmount = this.fiatAmountToJSON(fiatAmount);
-        if (jsonFiatAmount == undefined) {
+        if (jsonFiatAmount === undefined) {
           return undefined;
         }
         json.Amount = jsonFiatAmount;
@@ -105,7 +127,7 @@ class Serializer {
       }
       case Payment.AmountCase.XRP_AMOUNT: {
         const xrpAmount = payment.getXrpAmount();
-        if (xrpAmount == undefined) {
+        if (xrpAmount === undefined) {
           return undefined;
         }
         json.Amount = this.xrpAmountToJSON(xrpAmount);
@@ -125,7 +147,7 @@ class Serializer {
     const json: any = fiatAmount.toObject();
 
     const currency = fiatAmount.getCurrency();
-    if (currency == undefined) {
+    if (currency === undefined) {
       return undefined;
     }
 

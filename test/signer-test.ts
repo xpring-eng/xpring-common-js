@@ -17,10 +17,10 @@ describe("signer", function(): void {
     const wallet = new FakeWallet(fakeSignature);
 
     const value = "1000";
-    const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
+    const destination = "XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc";
     const fee = "10";
     const sequence = 1;
-    const account = "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ";
+    const account = "X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4";
 
     const paymentAmount = new XRPAmount();
     paymentAmount.setDrops(value);
