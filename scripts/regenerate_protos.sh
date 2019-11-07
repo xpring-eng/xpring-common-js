@@ -4,10 +4,10 @@ set -e -o pipefail
 
 echo "Regenerating Protocol Buffers"
 
-mkdir -p ./generated
+mkdir -p ./build/generated
 
 # Directory to write generated code to (.js and .d.ts files)
-OUT_DIR="./generated"
+OUT_DIR="./build/generated"
 
 # Generate node code.
 grpc_tools_node_protoc \

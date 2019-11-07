@@ -9,31 +9,28 @@
   "directories": {
     "tests": "tests"
   },
-  "files": [
-    "build/**/*"
-  ],
   "dependencies": {
-    "@types/google-protobuf": "3.7.1",
-    "@typescript-eslint/eslint-plugin": "1.13.0",
-    "@typescript-eslint/parser": "1.13.0",
     "bip32": "2.0.4",
     "bip39": "^3.0.2",
     "google-protobuf": "3.9.1",
     "grpc": "1.24.2",
-    "grpc_tools_node_protoc_ts": "2.5.4",
     "ripple-address-codec": "4.0.0",
     "ripple-binary-codec": "0.2.4",
-    "ripple-keypairs": "^0.11.0",
-    "typescript": "3.5.3"
+    "ripple-keypairs": "^0.11.0"
   },
   "scripts": {
     "clean": "rm -rf ./generated ./dist ./build",
     "pretest": "./scripts/regenerate_protos.sh && tsc",
-    "test": "nyc mocha",
-    "prepublishOnly": "npm test && tsc -d && mkdir -p build/generated && cp generated/* build/generated/",
-    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && tsc && mkdir -p build/generated && cp generated/* build/generated/ && npx webpack"
+    "lint": "eslint **/*.ts",
+    "lint:fix": "eslint **/*.ts --fix",
+    "test": "npm run lint && nyc mocha",
+    "prepublishOnly": "npm test && tsc -d",
+    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && tsc && npx webpack"
   },
   "devDependencies": {
+    "@types/google-protobuf": "3.7.1",
+    "@typescript-eslint/eslint-plugin": "1.13.0",
+    "@typescript-eslint/parser": "1.13.0",
     "@types/chai": "4.2.0",
     "@types/mocha": "5.2.7",
     "chai": "4.2.0",
@@ -43,20 +40,16 @@
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-mocha": "6.0.0",
     "eslint-plugin-prettier": "3.1.0",
-    "husky": "3.0.2",
     "mocha": "6.2.2",
     "nyc": "14.1.1",
     "prettier": "1.18.2",
     "source-map-support": "0.5.13",
     "ts-node": "8.3.0",
+    "typescript": "3.5.3",
     "typescript-eslint-parser": "22.0.0",
     "webpack": "4.39.3",
+    "grpc_tools_node_protoc_ts": "2.5.4",
     "webpack-cli": "3.3.8"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "eslint **/*.ts --fix && prettier '**/*.ts' --write"
-    }
   },
   "nyc": {
     "extension": [

@@ -38,6 +38,7 @@ jobs:
       - run: npm run webpack
 
       - run: nyc npm test
+      
       - run:
           name: Generate Code Coverage
           command: nyc report --reporter=text-lcov > coverage.lcov

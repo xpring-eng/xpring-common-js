@@ -1,8 +1,8 @@
-import { Payment } from "../generated/payment_pb";
-import { Transaction } from "../generated/transaction_pb";
-import { FiatAmount } from "../generated/fiat_amount_pb";
-import { XRPAmount } from "../generated/xrp_amount_pb";
-import { Currency } from "../generated/currency_pb";
+import { Payment } from "../build/generated/payment_pb";
+import { Transaction } from "../build/generated/transaction_pb";
+import { FiatAmount } from "../build/generated/fiat_amount_pb";
+import { XRPAmount } from "../build/generated/xrp_amount_pb";
+import { Currency } from "../build/generated/currency_pb";
 import Utils from "./utils";
 
 /* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */

@@ -1,9 +1,9 @@
 import FakeWallet from "./fakes/fake-wallet";
-import { Payment } from "../generated/payment_pb";
+import { Payment } from "../build/generated/payment_pb";
 import Signer from "../src/signer";
-import { Transaction } from "../generated/transaction_pb";
+import { Transaction } from "../build/generated/transaction_pb";
 import Utils from "../src/utils";
-import { XRPAmount } from "../generated/xrp_amount_pb";
+import { XRPAmount } from "../build/generated/xrp_amount_pb";
 import { assert } from "chai";
 import "mocha";
 
