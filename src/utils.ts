@@ -34,7 +34,6 @@ class Utils {
    * @returns True if the address is valid, otherwise false.
    */
   public static isValidAddress(address: string): boolean {
-    console.log("Hey, we hit the linked version.");
     return (
       addressCodec.isValidClassicAddress(address) ||
       addressCodec.isValidXAddress(address)
