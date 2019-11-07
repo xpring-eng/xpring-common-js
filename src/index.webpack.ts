@@ -1,6 +1,6 @@
-import { SignedTransaction } from "../generated/signed_transaction_pb";
+import { SignedTransaction } from "../build/generated/signed_transaction_pb";
 import Signer from "../src/signer";
-import { Transaction } from "../generated/transaction_pb";
+import { Transaction } from "../build/generated/transaction_pb";
 import Wallet from "./wallet";
 import Utils from "./utils";
 
