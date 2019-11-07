@@ -1,22 +1,22 @@
-export { AccountInfo } from "../build/generated/account_info_pb";
-export { Currency } from "../build/generated/currency_pb";
-export { Fee } from "../build/generated/fee_pb";
-export { FiatAmount } from "../build/generated/fiat_amount_pb";
+export { AccountInfo } from "../generated/account_info_pb";
+export { Currency } from "../generated/currency_pb";
+export { Fee } from "../generated/fee_pb";
+export { FiatAmount } from "../generated/fiat_amount_pb";
 export {
   GetAccountInfoRequest
-} from "../build/generated/get_account_info_request_pb";
-export { GetFeeRequest } from "../build/generated/get_fee_request_pb";
-export { Payment } from "../build/generated/payment_pb";
+} from "../generated/get_account_info_request_pb";
+export { GetFeeRequest } from "../generated/get_fee_request_pb";
+export { Payment } from "../generated/payment_pb";
 export {
   SubmitSignedTransactionRequest
-} from "../build/generated/submit_signed_transaction_request_pb";
+} from "../generated/submit_signed_transaction_request_pb";
 export {
   SubmitSignedTransactionResponse
-} from "../build/generated/submit_signed_transaction_response_pb";
-export { XRPAmount } from "../build/generated/xrp_amount_pb";
-export { SignedTransaction } from "../build/generated/signed_transaction_pb";
+} from "../generated/submit_signed_transaction_response_pb";
+export { XRPAmount } from "../generated/xrp_amount_pb";
+export { SignedTransaction } from "../generated/signed_transaction_pb";
 export { default as Signer } from "../src/signer";
-export { Transaction } from "../build/generated/transaction_pb";
+export { Transaction } from "../generated/transaction_pb";
 
 export { default as Wallet } from "./wallet";
 export { WalletGenerationResult } from "./wallet";
@@ -27,7 +27,7 @@ export { default as Serializer } from "./serializer";
 export {
   XRPLedgerAPIClient,
   XRPLedgerAPIService
-} from "../build/generated/xrp_ledger_grpc_pb";
+} from "../bud/generated/xrp_ledger_grpc_pb";
 export { credentials as grpcCredentials } from "grpc";
 export { ServerCredentials as grpcServerCredentials } from "grpc";
 export { Server as grpcServer } from "grpc";
