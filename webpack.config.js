@@ -6,6 +6,7 @@ module.exports = {
     library: 'EntryPoint'
   },
   externals: {
-    'grpc': 'grpc'
+    'grpc': '{}',
+    '../generated/xrp_ledger_grpc_pb': '{}',
   }
 };
