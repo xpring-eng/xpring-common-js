@@ -32,7 +32,7 @@
     "pretest": "./scripts/regenerate_protos.sh && tsc",
     "test": "nyc mocha",
     "prepublishOnly": "npm test && tsc -d && mkdir -p build/generated && cp generated/* build/generated/",
-    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && tsc && rm ./generated/*grpc_pb.* && mkdir -p build/generated && cp generated/* build/generated/ && npx webpack"
+    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && tsc && mkdir -p build/generated && cp generated/* build/generated/ && npx webpack"
   },
   "devDependencies": {
     "@types/chai": "4.2.0",

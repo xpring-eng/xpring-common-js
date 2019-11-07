@@ -35,6 +35,8 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
+      - run: npm run webpack
+
       - run: nyc npm test
       - run:
           name: Generate Code Coverage
