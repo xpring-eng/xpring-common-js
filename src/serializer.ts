@@ -40,7 +40,7 @@ class Serializer {
     if (!account || !Utils.isValidAddress(account)) {
       return undefined;
     }
-    
+
     var normalizedAccount = account;
     if (Utils.isValidXAddress(account)) {
       const decodedClassicAddress = Utils.decodeXAddress(account);
