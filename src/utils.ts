@@ -3,7 +3,6 @@
 import { createHash } from "crypto";
 
 const addressCodec = require("ripple-address-codec");
-const isHex = require("is-hex");
 
 /**
  * A prefex applied when hashing a signed transaction blob.
@@ -140,7 +139,7 @@ class Utils {
   public static transactionBlobToTransactionHash(
     transactionBlobHex: string
   ): string | undefined {
-    if (!isHex(transactionBlobHex)) {
+    if (!Utils.isHex(transactionBlobHex)) {
       return undefined;
     }
 
@@ -168,6 +167,17 @@ class Utils {
     /* eslint-disable @typescript-eslint/no-magic-numbers */
     return hash.slice(0, 32);
     /* eslint-enable @typescript-eslint/no-magic-numbers */
+  }
+
+  /**
+   * Check if the given string is valid hex.
+   *
+   * @param input The input to check.
+   * @returns true if the input is valid hex, otherwise false.
+   */
+  public static isHex(input: string) {
+    const hexRegEx = /([0-9]|[a-f])/gim;
+    return (input.match(hexRegEx) || []).length === input.length;
   }
 }
 

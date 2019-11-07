@@ -29,11 +29,13 @@ jobs:
       - protobuf/install
       - run:
           name: "Install dependencies"
-          command: sudo npm -g i nyc grpc-tools
+          command: sudo npm -g i nyc grpc-tools npx
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run: npm run webpack
 
       - run: nyc npm test
       

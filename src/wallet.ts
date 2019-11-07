@@ -2,7 +2,6 @@ import Utils from "./utils";
 
 const bip32 = require("bip32");
 const bip39 = require("bip39");
-const isHex = require("is-hex");
 const rippleKeyPair = require("ripple-keypairs");
 
 /**
@@ -47,7 +46,7 @@ class Wallet {
   public static generateRandomWallet(
     entropy: string | undefined = undefined
   ): WalletGenerationResult | undefined {
-    if (entropy && !isHex(entropy)) {
+    if (entropy && !Utils.isHex(entropy)) {
       return undefined;
     }
 
@@ -145,7 +144,7 @@ class Wallet {
    * @returns {String} A signature in hexadecimal format if the input was valid, otherwise undefined.
    */
   public sign(hex: string): string | undefined {
-    if (!isHex(hex)) {
+    if (!Utils.isHex(hex)) {
       return undefined;
     }
     return rippleKeyPair.sign(hex, this.getPrivateKey());
@@ -159,7 +158,7 @@ class Wallet {
    * @returns {Boolean} True if the signature is valid, otherwise false.
    */
   public verify(message: string, signature: string): boolean {
-    if (!isHex(signature) || !isHex(message)) {
+    if (!Utils.isHex(signature) || !Utils.isHex(message)) {
       return false;
     }
 
