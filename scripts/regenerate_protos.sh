@@ -4,10 +4,9 @@ set -e -o pipefail
 
 echo "Regenerating Protocol Buffers"
 
-
 # Directory to write generated code to (.js and .d.ts files)
-TS_OUT_DIR="./build/generated"
-JS_OUT_DIR="./src/generated"
+JS_OUT_DIR="./build/generated"
+TS_OUT_DIR="./generated"
 
 mkdir -p $TS_OUT_DIR
 mkdir -p $JS_OUT_DIR
