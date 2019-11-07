@@ -27,7 +27,7 @@ export { default as Serializer } from "./serializer";
 export {
   XRPLedgerAPIClient,
   XRPLedgerAPIService
-} from "../bud/generated/xrp_ledger_grpc_pb";
+} from "../generated/xrp_ledger_grpc_pb";
 export { credentials as grpcCredentials } from "grpc";
 export { ServerCredentials as grpcServerCredentials } from "grpc";
 export { Server as grpcServer } from "grpc";
