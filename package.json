@@ -22,6 +22,7 @@
     "ripple-keypairs": "^0.11.0"
   },
   "scripts": {
+    "build": "tsc -d",
     "clean": "rm -rf ./generated ./dist ./build",
     "pretest": "./scripts/regenerate_protos.sh && tsc",
     "lint": "eslint **/*.ts",

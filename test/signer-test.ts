@@ -18,7 +18,7 @@ describe("signer", function(): void {
     const value = "1000";
     const destination = "XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc";
     const fee = "10";
-    const sequence = 1;
+    const sequence = 4;
     const account = "X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4";
 
     const paymentAmount = new XRPAmount();
