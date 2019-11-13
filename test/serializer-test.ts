@@ -7,7 +7,6 @@ import { XRPAmount } from "../build/generated/xrp_amount_pb";
 import { assert } from "chai";
 import "mocha";
 import Utils from "../src/utils";
-const rippleCodec = require("ripple-binary-codec");
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
