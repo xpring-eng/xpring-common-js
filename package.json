@@ -32,7 +32,7 @@
     "webpack": "npm run clean && ./scripts/regenerate_protos.sh && tsc && npx webpack"
   },
   "devDependencies": {
-    "@types/chai": "4.2.4",
+    "@types/chai": "4.2.5",
     "@types/google-protobuf": "3.7.2",
     "@types/mocha": "5.2.7",
     "@typescript-eslint/eslint-plugin": "1.13.0",
@@ -47,9 +47,9 @@
     "grpc_tools_node_protoc_ts": "2.5.7",
     "mocha": "6.2.2",
     "nyc": "14.1.1",
-    "prettier": "1.18.2",
+    "prettier": "1.19.1",
     "source-map-support": "0.5.16",
-    "ts-node": "8.4.1",
+    "ts-node": "8.5.0",
     "typescript": "3.7.2",
     "typescript-eslint-parser": "22.0.0",
     "webpack": "4.41.2",
