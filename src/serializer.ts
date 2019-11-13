@@ -34,7 +34,11 @@ class Serializer {
     // Convert fields names where direct conversion is possible.
     this.convertPropertyName("sequence", "Sequence", object);
     this.convertPropertyName("signingPublicKeyHex", "SigningPubKey", object);
-    this.convertPropertyName("lastLedgerSequence", "LastLedgerSequence", object);
+    this.convertPropertyName(
+      "lastLedgerSequence",
+      "LastLedgerSequence",
+      object
+    );
 
     // Convert account field, handling X-Addresses if needed.
     const account = transaction.getAccount();
