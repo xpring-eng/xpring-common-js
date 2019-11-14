@@ -2,9 +2,7 @@ export { AccountInfo } from "../generated/account_info_pb";
 export { Currency } from "../generated/currency_pb";
 export { Fee } from "../generated/fee_pb";
 export { FiatAmount } from "../generated/fiat_amount_pb";
-export {
-  GetLatestValidatedLedgerSequenceRequest
-} from "../generated/get_latest_validated_ledger_sequence_request_pb";
+export { GetLatestValidatedLedgerSequenceRequest } from "../generated/get_latest_validated_ledger_sequence_request_pb";
 export {
   GetAccountInfoRequest
 } from "../generated/get_account_info_request_pb";
