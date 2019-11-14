@@ -16,9 +16,11 @@ describe("serializer", function(): void {
     const value = "1000";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
     const fee = "10";
+    const lastLedgerSequence = 20;
     const sequence = 1;
     const account = "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ";
-    const publicKey = "testPublicKey";
+    const publicKey =
+      "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE";
 
     const paymentAmount = new XRPAmount();
     paymentAmount.setDrops(value);
@@ -36,6 +38,7 @@ describe("serializer", function(): void {
     transaction.setSequence(sequence);
     transaction.setPayment(payment);
     transaction.setSigningPublicKeyHex(publicKey);
+    transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction);
@@ -46,6 +49,7 @@ describe("serializer", function(): void {
       Amount: value.toString(),
       Destination: destination,
       Fee: fee,
+      LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
       TransactionType: "Payment",
       SigningPubKey: publicKey
@@ -58,9 +62,11 @@ describe("serializer", function(): void {
     const value = "1000";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
     const fee = "10";
+    const lastLedgerSequence = 20;
     const sequence = 1;
     const account = "XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc";
-    const publicKey = "testPublicKey";
+    const publicKey =
+      "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE";
 
     const paymentAmount = new XRPAmount();
     paymentAmount.setDrops(value);
@@ -78,6 +84,7 @@ describe("serializer", function(): void {
     transaction.setSequence(sequence);
     transaction.setPayment(payment);
     transaction.setSigningPublicKeyHex(publicKey);
+    transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction);
@@ -88,6 +95,7 @@ describe("serializer", function(): void {
       Amount: value.toString(),
       Destination: destination,
       Fee: fee,
+      LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
       TransactionType: "Payment",
       SigningPubKey: publicKey
@@ -100,9 +108,11 @@ describe("serializer", function(): void {
     const value = "1000";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
     const fee = "10";
+    const lastLedgerSequence = 20;
     const sequence = 1;
     const account = "XVPcpSm47b1CZkf5AkKM9a84dQHe3mTAxgxfLw2qYoe7Boa";
-    const publicKey = "testPublicKey";
+    const publicKey =
+      "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE";
 
     const paymentAmount = new XRPAmount();
     paymentAmount.setDrops(value);
@@ -120,6 +130,7 @@ describe("serializer", function(): void {
     transaction.setSequence(sequence);
     transaction.setPayment(payment);
     transaction.setSigningPublicKeyHex(publicKey);
+    transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction);
@@ -133,8 +144,10 @@ describe("serializer", function(): void {
     const value = "1000";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
     const fee = "10";
+    const lastLedgerSequence = 20;
     const sequence = 1;
-    const publicKey = "testPublicKey";
+    const publicKey =
+      "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE";
 
     const paymentAmount = new XRPAmount();
     paymentAmount.setDrops(value);
@@ -151,6 +164,7 @@ describe("serializer", function(): void {
     transaction.setSequence(sequence);
     transaction.setPayment(payment);
     transaction.setSigningPublicKeyHex(publicKey);
+    transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction);
@@ -164,9 +178,11 @@ describe("serializer", function(): void {
     const value = "1000";
     const destination = "XVfC9CTCJh6GN2x8bnrw3LtdbqiVCUvtU3HnooQDgBnUpQT";
     const fee = "10";
+    const lastLedgerSequence = 20;
     const sequence = 1;
     const account = "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ";
-    const publicKey = "testPublicKey";
+    const publicKey =
+      "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE";
 
     const paymentAmount = new XRPAmount();
     paymentAmount.setDrops(value);
@@ -184,6 +200,7 @@ describe("serializer", function(): void {
     transaction.setSequence(sequence);
     transaction.setPayment(payment);
     transaction.setSigningPublicKeyHex(publicKey);
+    transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction);
@@ -195,6 +212,7 @@ describe("serializer", function(): void {
       Destination: "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1",
       DestinationTag: 12345,
       Fee: fee,
+      LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
       TransactionType: "Payment",
       SigningPubKey: publicKey
@@ -207,9 +225,11 @@ describe("serializer", function(): void {
     const value = "1000";
     const destination = "XVfC9CTCJh6GN2x8bnrw3LtdbqiVCUFyQVMzRrMGUZpokKH";
     const fee = "10";
+    const lastLedgerSequence = 20;
     const sequence = 1;
     const account = "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ";
-    const publicKey = "testPublicKey";
+    const publicKey =
+      "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE";
 
     const paymentAmount = new XRPAmount();
     paymentAmount.setDrops(value);
@@ -227,6 +247,7 @@ describe("serializer", function(): void {
     transaction.setSequence(sequence);
     transaction.setPayment(payment);
     transaction.setSigningPublicKeyHex(publicKey);
+    transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction);
@@ -237,6 +258,7 @@ describe("serializer", function(): void {
       Amount: value.toString(),
       Destination: "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1",
       Fee: fee,
+      LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
       TransactionType: "Payment",
       SigningPubKey: publicKey
@@ -250,9 +272,11 @@ describe("serializer", function(): void {
     const value = "153.75";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
     const fee = "10";
+    const lastLedgerSequence = 20;
     const sequence = 1;
     const account = "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ";
-    const publicKey = "testPublicKey";
+    const publicKey =
+      "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE";
 
     const paymentAmount = new FiatAmount();
     paymentAmount.setIssuer(issuer);
@@ -272,6 +296,7 @@ describe("serializer", function(): void {
     transaction.setSequence(sequence);
     transaction.setPayment(payment);
     transaction.setSigningPublicKeyHex(publicKey);
+    transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction);
@@ -286,6 +311,7 @@ describe("serializer", function(): void {
       },
       Destination: destination,
       Fee: fee,
+      LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
       TransactionType: "Payment",
       SigningPubKey: publicKey
