@@ -47,7 +47,7 @@ class Utils {
    * @param address An address to check.
    * @returns True if the address is a valid X-address, otherwise false.
    */
-  public static isValidXAddress(address: string): string {
+  public static isValidXAddress(address: string): boolean {
     return addressCodec.isValidXAddress(address);
   }
 
