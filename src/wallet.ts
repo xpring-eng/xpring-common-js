@@ -78,6 +78,20 @@ class Wallet {
     }
 
     const seed = bip39.mnemonicToSeedSync(mnemonic);
+    return this.generateHDWalletFromSeed(seed, derivationPath);
+  }
+
+  /**
+   * Generate a new hierarchical deterministic wallet from a seed and derivation path.
+   * 
+   * @param {string} seed The seed for the wallet.
+   * @param {string} derivationPath The derivation path to use. If undefined, the default path is used.
+   * @returns {Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
+   */
+  public static generateHDWalletFromSeed(
+    seed: string,
+    derivationPath = Wallet.getDefaultDerivationPath()
+  ): Wallet | undefined {
     const masterNode = bip32.fromSeed(seed);
     const node = masterNode.derivePath(derivationPath);
     const publicKey = Wallet.hexFromBuffer(node.publicKey);
