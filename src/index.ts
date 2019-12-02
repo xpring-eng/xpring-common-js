@@ -19,6 +19,7 @@ export { Transaction } from "../generated/transaction_pb";
 export { default as Wallet } from "./wallet";
 export { WalletGenerationResult } from "./wallet";
 export { default as Utils } from "./utils";
+export { ClassicAddress } from "./utils";
 export { default as Serializer } from "./serializer";
 
 /** Note: gRPC related items are stubbed in the browser by WebPack. */
