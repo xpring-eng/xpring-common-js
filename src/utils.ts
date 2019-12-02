@@ -59,7 +59,7 @@ class Utils {
    * @param address An address to check.
    * @returns True if the address is a valid classic address, otherwise false.
    */
-  public static isValidClassicAddress(address: string): string {
+  public static isValidClassicAddress(address: string): boolean {
     return addressCodec.isValidClassicAddress(address);
   }
 
