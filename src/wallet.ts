@@ -83,7 +83,7 @@ class Wallet {
 
   /**
    * Generate a new hierarchical deterministic wallet from a seed and derivation path.
-   * 
+   *
    * @param {string} seed The seed for the wallet.
    * @param {string} derivationPath The derivation path to use. If undefined, the default path is used.
    * @returns {Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
