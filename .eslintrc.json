@@ -7,8 +7,7 @@
     "extends": [ 
         "eslint:recommended",
         "plugin:mocha/recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:prettier/recommended"
+        "plugin:@typescript-eslint/recommended"
     ],
     "globals": {
         "Atomics": "readonly",
@@ -21,11 +20,9 @@
     "parser": "@typescript-eslint/parser",
     "plugins": [
         "mocha",
-        "prettier",
         "@typescript-eslint"        
     ],
     "rules": {
-        "prettier/prettier": [ "error" ],
         "@typescript-eslint/consistent-type-definitions": [ "error"],
         "@typescript-eslint/indent": ["error", 2],
         "@typescript-eslint/no-floating-promises": [ "error" ],
