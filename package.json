@@ -15,7 +15,7 @@
   "dependencies": {
     "bip32": "2.0.4",
     "bip39": "^3.0.2",
-    "google-protobuf": "3.11.0",
+    "google-protobuf": "3.11.1",
     "grpc": "1.24.2",
     "ripple-address-codec": "4.0.0",
     "ripple-binary-codec": "0.2.4",
