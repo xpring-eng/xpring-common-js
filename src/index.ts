@@ -34,9 +34,14 @@ export { default as Serializer } from "./serializer";
 
 /** Note: gRPC related items are stubbed in the browser by WebPack. */
 export {
-  XRPLedgerAPIClient,
-  XRPLedgerAPIService
-} from "../generated/xrp_ledger_grpc_pb";
-export { credentials as grpcCredentials } from "grpc";
-export { ServerCredentials as grpcServerCredentials } from "grpc";
-export { Server as grpcServer } from "grpc";
+  XRPLedgerAPIClient
+//  , XRPLedgerAPIService
+} from "../generated/xrp_ledger_grpc_web_pb";
+
+// export {
+//   XRPLedgerAPIClient,
+//   XRPLedgerAPIService
+// } from "../generated/xrp_ledger_grpc_web_pb";
+// export { credentials as grpcCredentials } from "grpc-web";
+// export { ServerCredentials as grpcServerCredentials } from "grpc-web";
+// export { Server as grpcServer } from "grpc-web";
