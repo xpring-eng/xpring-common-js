@@ -14,8 +14,10 @@ mkdir -p $JS_OUT_DIR
 protoc --proto_path=$PWD/xpring-common-protocol-buffers/proto \
     --js_out=import_style=commonjs:$JS_OUT_DIR \
     --js_out=import_style=commonjs:$TS_OUT_DIR \
+    --grpc-web_out=import_style=commonjs+dts,mode=grpcwebtext:$JS_OUT_DIR \
+    --grpc-web_out=import_style=commonjs+dts,mode=grpcwebtext:$TS_OUT_DIR \
     $PWD/xpring-common-protocol-buffers/**/*.proto
-
+#
 #
 # # Generate node code.
 # grpc_tools_node_protoc \
