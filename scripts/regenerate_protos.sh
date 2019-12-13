@@ -12,7 +12,7 @@ mkdir -p $TS_OUT_DIR
 mkdir -p $JS_OUT_DIR
 
 # Generate node code.
-grpc_tools_node_protoc \
+$PWD/node_modules/grpc-tools/bin/protoc \
     --js_out=import_style=commonjs,binary:$TS_OUT_DIR \
     --js_out=import_style=commonjs,binary:$JS_OUT_DIR \
     --grpc_out=$TS_OUT_DIR \
@@ -22,7 +22,7 @@ grpc_tools_node_protoc \
     $PWD/xpring-common-protocol-buffers/**/*.proto
 
 # Generate tyepscript declaration files.
-protoc \
+$PWD/node_modules/grpc-tools/bin/protoc \
     --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts \
     --ts_out=$TS_OUT_DIR \
     --ts_out=$JS_OUT_DIR \
