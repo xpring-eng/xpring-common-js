@@ -34,7 +34,7 @@
     "webpack": "npm run clean && ./scripts/regenerate_protos.sh && tsc && npx webpack"
   },
   "devDependencies": {
-    "@types/chai": "4.2.6",
+    "@types/chai": "4.2.7",
     "@types/mocha": "5.2.7",
     "@typescript-eslint/eslint-plugin": "1.13.0",
     "@typescript-eslint/parser": "1.13.0",
