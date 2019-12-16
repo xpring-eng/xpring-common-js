@@ -40,11 +40,13 @@ class Wallet {
    *
    * Secure random number generation is used when entropy is ommitted and when the runtime environment has the necessary support. Otherwise, an error is thrown. Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
    *
-   * @param  {string|undefined} entropy A optional hex string of entropy.
-   * @returns {WalletGenerationResult} Artifacts from the wallet generation.
+   * @param entropy A optional hex string of entropy.
+   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @returns Artifacts from the wallet generation.
    */
   public static generateRandomWallet(
-    entropy: string | undefined = undefined
+    entropy: string | undefined = undefined,
+    test: boolean = false
   ): WalletGenerationResult | undefined {
     if (entropy && !Utils.isHex(entropy)) {
       return undefined;
@@ -55,7 +57,7 @@ class Wallet {
         ? bip39.generateMnemonic()
         : bip39.entropyToMnemonic(entropy);
     const derivationPath = Wallet.getDefaultDerivationPath();
-    const wallet = Wallet.generateWalletFromMnemonic(mnemonic, derivationPath);
+    const wallet = Wallet.generateWalletFromMnemonic(mnemonic, derivationPath, test);
     return wallet == undefined
       ? undefined
       : { wallet: wallet, mnemonic: mnemonic, derivationPath: derivationPath };
@@ -64,13 +66,15 @@ class Wallet {
   /**
    * Generate a new hierarchical deterministic wallet from a mnemonic and derivation path.
    *
-   * @param {string} mnemonic The given mnemonic for the wallet.
-   * @param {string} derivationPath The given derivation path to use. If undefined, the default path is used.
-   * @returns {Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
+   * @param mnemonic The given mnemonic for the wallet.
+   * @param derivationPath The given derivation path to use. If undefined, the default path is used.
+   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @returns A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
   public static generateWalletFromMnemonic(
     mnemonic: string,
-    derivationPath = Wallet.getDefaultDerivationPath()
+    derivationPath = Wallet.getDefaultDerivationPath(),
+    test: boolean = false
   ): Wallet | undefined {
     // Validate mnemonic and path are valid.
     if (!bip39.validateMnemonic(mnemonic)) {
@@ -78,37 +82,43 @@ class Wallet {
     }
 
     const seed = bip39.mnemonicToSeedSync(mnemonic);
-    return this.generateHDWalletFromSeed(seed, derivationPath);
+    return this.generateHDWalletFromSeed(seed, derivationPath, test);
   }
 
   /**
    * Generate a new hierarchical deterministic wallet from a seed and derivation path.
    *
-   * @param {string} seed The given seed for the wallet.
-   * @param {string} derivationPath The given derivation path to use. If undefined, the default path is used.
-   * @returns {Wallet|undefined} A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
+   * @param seed The given seed for the wallet.
+   * @param derivationPath The given derivation path to use. If undefined, the default path is used.
+   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @returns A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
   public static generateHDWalletFromSeed(
     seed: string,
-    derivationPath = Wallet.getDefaultDerivationPath()
+    derivationPath = Wallet.getDefaultDerivationPath(),
+    test: boolean = false
   ): Wallet | undefined {
     const masterNode = bip32.fromSeed(seed);
     const node = masterNode.derivePath(derivationPath);
     const publicKey = Wallet.hexFromBuffer(node.publicKey);
     const privateKey = Wallet.hexFromBuffer(node.privateKey);
-    return new Wallet(publicKey, "00" + privateKey);
+    return new Wallet(publicKey, "00" + privateKey, test);
   }
 
   /**
    * Generate a new wallet from the given seed.
    *
-   * @param {string} seed The given seed for the wallet.
-   * @returns {Wallet|undefined} A new wallet from the given seed, or undefined if the seed was invalid.
+   * @param seed The given seed for the wallet.
+   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @returns A new wallet from the given seed, or undefined if the seed was invalid.
    */
-  public static generateWalletFromSeed(seed: string): Wallet | undefined {
+  public static generateWalletFromSeed(
+    seed: string,     
+    test: boolean = false
+  ): Wallet | undefined {
     try {
       const keyPair = rippleKeyPair.deriveKeypair(seed);
-      return new Wallet(keyPair.publicKey, keyPair.privateKey);
+      return new Wallet(keyPair.publicKey, keyPair.privateKey, test);
     } catch (exception) {
       return undefined;
     }
@@ -117,12 +127,14 @@ class Wallet {
   /**
    * Create a new Wallet object.
    *
-   * @param {string} publicKey The given public key for the wallet.
-   * @param {string} privateKey The given private key for the wallet.
+   * @param publicKey The given public key for the wallet.
+   * @param privateKey The given private key for the wallet.
+   * @param test Whether the address is for use on a test network, defaults to `false`.
    */
   public constructor(
     private readonly publicKey: string,
-    private readonly privateKey: string
+    private readonly privateKey: string,
+    private readonly test: boolean = false
   ) {}
 
   /**
@@ -144,7 +156,7 @@ class Wallet {
    */
   public getAddress(): string {
     const classicAddress = rippleKeyPair.deriveAddress(this.getPublicKey());
-    const xAddress = Utils.encodeXAddress(classicAddress, undefined);
+    const xAddress = Utils.encodeXAddress(classicAddress, undefined, this.test);
     if (xAddress == undefined) {
       throw new Error("Unknown error deriving address");
     }
