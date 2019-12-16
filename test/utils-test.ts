@@ -145,7 +145,7 @@ describe("utils", function(): void {
     // Then the decoded address and tag as are expected.
     assert.strictEqual(classicAddress!.address, "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1");
     assert.strictEqual(classicAddress!.tag, 12345);
-    assert.strictEqual(classicAddress!.isTestNet, false);
+    assert.strictEqual(classicAddress!.test, false);
   });
 
 
@@ -159,7 +159,7 @@ describe("utils", function(): void {
     // Then the decoded address and tag as are expected.
     assert.strictEqual(classicAddress!.address, "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1");
     assert.strictEqual(classicAddress!.tag, 12345);
-    assert.strictEqual(classicAddress!.isTestNet, true);
+    assert.strictEqual(classicAddress!.test, true);
   });
 
   it("decodeXAddress() - Valid Address without Tag", function(): void {
