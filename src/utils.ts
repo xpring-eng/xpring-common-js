@@ -20,6 +20,9 @@ export interface ClassicAddress {
 
   /** An optional tag. */
   tag?: number;
+
+  /** A boolean indicating whether this address is for use on a test network. */
+  test: boolean;
 }
 
 class Utils {
@@ -107,7 +110,8 @@ class Utils {
     let shimClassicAddress = addressCodec.xAddressToClassicAddress(xAddress);
     return {
       address: shimClassicAddress.classicAddress,
-      tag: shimClassicAddress.tag !== false ? shimClassicAddress.tag : undefined
+      tag: shimClassicAddress.tag !== false ? shimClassicAddress.tag : undefined,
+      test: shimClassicAddress.test
     };
   }
 

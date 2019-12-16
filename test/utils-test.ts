@@ -152,16 +152,31 @@ describe("utils", function(): void {
     assert.isUndefined(xAddress);
   });
 
-  it("decodeXAddress() - Valid Address with Tag", function(): void {
+  it("decodeXAddress() - Valid Mainnet Address with Tag", function(): void {
     // GIVEN an x-address that encodes an address and a tag.
     const address = "XVfC9CTCJh6GN2x8bnrw3LtdbqiVCUvtU3HnooQDgBnUpQT";
 
     // WHEN it is decoded to an classic address
-    const xAddress = Utils.decodeXAddress(address);
+    const classicAddress = Utils.decodeXAddress(address);
 
     // Then the decoded address and tag as are expected.
-    assert.strictEqual(xAddress!.address, "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1");
-    assert.strictEqual(xAddress!.tag, 12345);
+    assert.strictEqual(classicAddress!.address, "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1");
+    assert.strictEqual(classicAddress!.tag, 12345);
+    assert.strictEqual(classicAddress!.test, false);
+  });
+
+
+  it("decodeXAddress() - Valid Testnet Address with Tag", function(): void {
+    // GIVEN an x-address that encodes an address and a tag.
+    const address = "TVsBZmcewpEHgajPi1jApLeYnHPJw82v9JNYf7dkGmWphmh";
+
+    // WHEN it is decoded to an classic address
+    const classicAddress = Utils.decodeXAddress(address);
+
+    // Then the decoded address and tag as are expected.
+    assert.strictEqual(classicAddress!.address, "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1");
+    assert.strictEqual(classicAddress!.tag, 12345);
+    assert.strictEqual(classicAddress!.test, true);
   });
 
   it("decodeXAddress() - Valid Address without Tag", function(): void {
@@ -169,11 +184,11 @@ describe("utils", function(): void {
     const address = "XVfC9CTCJh6GN2x8bnrw3LtdbqiVCUFyQVMzRrMGUZpokKH";
 
     // WHEN it is decoded to an classic address
-    const xAddress = Utils.decodeXAddress(address);
+    const classicAddress = Utils.decodeXAddress(address);
 
     // Then the decoded address and tag as are expected.
-    assert.strictEqual(xAddress!.address, "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1");
-    assert.isUndefined(xAddress!.tag);
+    assert.strictEqual(classicAddress!.address, "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1");
+    assert.isUndefined(classicAddress!.tag);
   });
 
   it("decodeXAddress() - Invalid Address", function(): void {
@@ -181,10 +196,10 @@ describe("utils", function(): void {
     const address = "xrp";
 
     // WHEN it is decoded to an classic address
-    const xAddress = Utils.decodeXAddress(address);
+    const classicAddress = Utils.decodeXAddress(address);
 
     // Then the decoded address is undefined.
-    assert.isUndefined(xAddress);
+    assert.isUndefined(classicAddress);
   });
 
   it("isValidXAddress() - Valid X-Address", function(): void {
