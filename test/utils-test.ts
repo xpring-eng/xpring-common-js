@@ -99,10 +99,10 @@ describe("utils", function(): void {
     // GIVEN a valid classic address on MainNet and a tag.
     const address = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
     const tag = 12345;
-    const isTestNet = false;
+    const isTest = false;
 
     // WHEN they are encoded to an x-address.
-    const xAddress = Utils.encodeXAddress(address, tag, isTestNet);
+    const xAddress = Utils.encodeXAddress(address, tag, isTest);
 
     // THEN the result is as expected.
     assert.strictEqual(
@@ -115,10 +115,10 @@ describe("utils", function(): void {
     // GIVEN a valid classic address on TestNet and a tag.
     const address = "rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1";
     const tag = 12345;
-    const isTestNet = true;
+    const isTest = true;
 
     // WHEN they are encoded to an x-address.
-    const xAddress = Utils.encodeXAddress(address, tag, isTestNet);
+    const xAddress = Utils.encodeXAddress(address, tag, isTest);
 
     // THEN the result is as expected.
     assert.strictEqual(
