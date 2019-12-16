@@ -21,8 +21,8 @@ export interface ClassicAddress {
   /** An optional tag. */
   tag?: number;
 
-  /** A boolean indicating whether this address is on TestNet. */
-  isTestNet: boolean;
+  /** A boolean indicating whether this address is for use on a test network. */
+  test: boolean;
 }
 
 class Utils {
@@ -108,7 +108,7 @@ class Utils {
     return {
       address: shimClassicAddress.classicAddress,
       tag: shimClassicAddress.tag !== false ? shimClassicAddress.tag : undefined,
-      isTestNet: shimClassicAddress.test
+      test: shimClassicAddress.test
     };
   }
 
