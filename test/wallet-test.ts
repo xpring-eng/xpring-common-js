@@ -17,7 +17,8 @@ const derivationPathTestCases = {
       "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE",
     expectedPrivateKey:
       "0090802A50AA84EFB6CDB225F17C27616EA94048C179142FECF03F4712A07EA7A4",
-    expectedAddress: "XVMFQQBMhdouRqhPMuawgBMN1AVFTofPAdRsXG5RkPtUPNQ",
+    expectedMainNetAddress: "XVMFQQBMhdouRqhPMuawgBMN1AVFTofPAdRsXG5RkPtUPNQ",
+    expectedTestNetAddress: "TVHLFWLKvbMv1LFzd6FA2Bf9MPpcy4mRto4VFAAxLuNpvdW",
     messageHex: new Buffer("test message", "utf-8").toString("hex"),
     expectedSignature:
       "3045022100E10177E86739A9C38B485B6AA04BF2B9AA00E79189A1132E7172B70F400ED1170220566BD64AA3F01DDE8D99DFFF0523D165E7DD2B9891ABDA1944E2F3A52CCCB83A"
@@ -36,7 +37,7 @@ const derivationPathTestCases = {
 
 describe("wallet", function(): void {
   it("generateRandomWallet", function(): void {
-    // WHEN a new wallet is generated.
+    // WHEN a new wallet is generated for use on mainnet
     const walletGenerationResult = Wallet.generateRandomWallet();
 
     // THEN the wallet generation artifacts exist and have the default derivation path.
@@ -48,8 +49,8 @@ describe("wallet", function(): void {
     );
   });
 
-  it("generateRandomWallet - entropy", function(): void {
-    // WHEN a new wallet is generated with entropy.
+  it("generateRandomWallet - entropy and mainnet", function(): void {
+    // WHEN a new wallet is generated with entropy on MainNet.
     const walletGenerationResult = Wallet.generateRandomWallet(
       "00000000000000000000000000000000"
     );
@@ -64,6 +65,31 @@ describe("wallet", function(): void {
       walletGenerationResult!.derivationPath,
       Wallet.getDefaultDerivationPath()
     );
+    assert.equal(
+      walletGenerationResult!.wallet.getAddress(), "XVMFQQBMhdouRqhPMuawgBMN1AVFTofPAdRsXG5RkPtUPNQ"
+    )
+  });
+
+  it("generateRandomWallet - entropy and testnet", function(): void {
+    // WHEN a new wallet is generated with entropy on TestNet
+    const walletGenerationResult = Wallet.generateRandomWallet(
+      "00000000000000000000000000000000",
+      true
+    );
+
+    // THEN the result exists and has the default derivation path.
+    assert.exists(walletGenerationResult);
+    assert.equal(
+      walletGenerationResult!.mnemonic,
+      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+    );
+    assert.equal(
+      walletGenerationResult!.derivationPath,
+      Wallet.getDefaultDerivationPath()
+    );
+    assert.equal(
+      walletGenerationResult!.wallet.getAddress(), "TVHLFWLKvbMv1LFzd6FA2Bf9MPpcy4mRto4VFAAxLuNpvdW"
+    )
   });
 
   it("generateRandomWallet - invalid entropy", function(): void {
@@ -74,11 +100,11 @@ describe("wallet", function(): void {
     assert.isUndefined(walletGenerationResult);
   });
 
-  it("walletFromMnemonic - derivation path index 0", function(): void {
+  it("walletFromMnemonic - derivation path index 0 - MainNet", function(): void {
     // GIVEN a menmonic, derivation path and a set of expected outputs.
     const testData = derivationPathTestCases.index0;
 
-    // WHEN a new wallet is generated with the mnemonic and derivation path.
+    // WHEN a new wallet is generated on MainNet with the mnemonic and derivation path.
     const wallet = Wallet.generateWalletFromMnemonic(
       testData.mnemonic,
       testData.derivationPath
@@ -87,7 +113,24 @@ describe("wallet", function(): void {
     // THEN the wallet has the expected address and keys.
     assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey);
     assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
-    assert.equal(wallet.getAddress(), testData.expectedAddress);
+    assert.equal(wallet.getAddress(), testData.expectedMainNetAddress);
+  });
+
+  it("walletFromMnemonic - derivation path index 0, TestNet", function(): void {
+    // GIVEN a menmonic, derivation path and a set of expected outputs.
+    const testData = derivationPathTestCases.index0;
+
+    // WHEN a new wallet is generated on TestNet with the mnemonic and derivation path.
+    const wallet = Wallet.generateWalletFromMnemonic(
+      testData.mnemonic,
+      testData.derivationPath,
+      true
+    )!;
+
+    // THEN the wallet has the expected address and keys.
+    assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey);
+    assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
+    assert.equal(wallet.getAddress(), testData.expectedTestNetAddress);
   });
 
   it("walletFromMnemonic - derivation path index 1", function(): void {
@@ -116,7 +159,7 @@ describe("wallet", function(): void {
     // THEN the wallet has the expected address and keys from the input mnemonic at the default derivation path.
     assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey);
     assert.equal(wallet.getPublicKey(), testData.expectedPublicKey);
-    assert.equal(wallet.getAddress(), testData.expectedAddress);
+    assert.equal(wallet.getAddress(), testData.expectedMainNetAddress);
   });
 
   it("walletFromMnemonic - invalid mnemonic", function(): void {
@@ -130,17 +173,33 @@ describe("wallet", function(): void {
     assert.isUndefined(wallet);
   });
 
-  it("walletFromSeed", function(): void {
-    // GIVEN a seed.
+  it("walletFromSeed - MainNet", function(): void {
+    // GIVEN a seed used to generate a wallet on MainNet
     const seed = "snYP7oArxKepd3GPDcrjMsJYiJeJB";
+    const isTestNet = false;
 
     // WHEN a wallet is generated from the seed.
-    const wallet = Wallet.generateWalletFromSeed(seed);
+    const wallet = Wallet.generateWalletFromSeed(seed, isTestNet);
 
     // THEN the wallet has the expected address.
     assert.equal(
       wallet!.getAddress(),
       "XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8"
+    );
+  });
+
+  it("walletFromSeed - TestNet", function(): void {
+    // GIVEN a seed used to generate a wallet on TestNet
+    const seed = "snYP7oArxKepd3GPDcrjMsJYiJeJB";
+    const isTestNet = true;
+
+    // WHEN a wallet is generated from the seed.
+    const wallet = Wallet.generateWalletFromSeed(seed, isTestNet);
+
+    // THEN the wallet has the expected address.
+    assert.equal(
+      wallet!.getAddress(),
+      "T7zFmeZo6uLHP4Vd21TpXjrTBk487ZQPGVQsJ1mKWGCD5rq"
     );
   });
 
