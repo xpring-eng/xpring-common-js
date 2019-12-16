@@ -70,11 +70,13 @@ class Utils {
    *
    * @param classicAddress A classic address to encode.
    * @param tag An optional tag to encode.
+   * @param isTestNet Whether the address is for use on TestNet, defaults to `false`.
    * @returns A new x-address if inputs were valid, otherwise undefined.
    */
   public static encodeXAddress(
     classicAddress: string,
-    tag: number | undefined
+    tag: number | undefined,
+    isTestNet: boolean = false
   ): string | undefined {
     if (!addressCodec.isValidClassicAddress(classicAddress)) {
       return undefined;
@@ -84,7 +86,8 @@ class Utils {
     const shimTagParameter = tag !== undefined ? tag : false;
     return addressCodec.classicAddressToXAddress(
       classicAddress,
-      shimTagParameter
+      shimTagParameter,
+      isTestNet
     );
   }
 
