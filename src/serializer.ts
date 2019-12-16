@@ -1,8 +1,6 @@
 import { Payment } from "../generated/payment_pb";
 import { Transaction } from "../generated/transaction_pb";
-import { FiatAmount } from "../generated/fiat_amount_pb";
 import { XRPAmount } from "../generated/xrp_amount_pb";
-import { Currency } from "../generated/currency_pb";
 import Utils from "./utils";
 
 /* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */
@@ -118,17 +116,7 @@ class Serializer {
     const amountCase = payment.getAmountCase();
     switch (amountCase) {
       case Payment.AmountCase.FIAT_AMOUNT: {
-        const fiatAmount = payment.getFiatAmount();
-        if (fiatAmount === undefined) {
-          return undefined;
-        }
-
-        const jsonFiatAmount = this.fiatAmountToJSON(fiatAmount);
-        if (jsonFiatAmount === undefined) {
-          return undefined;
-        }
-        json.Amount = jsonFiatAmount;
-        break;
+        return undefined;
       }
       case Payment.AmountCase.XRP_AMOUNT: {
         const xrpAmount = payment.getXrpAmount();
@@ -142,38 +130,6 @@ class Serializer {
     return json;
   }
 
-  /**
-   * Convert a FiatAmount amount to a JSON representation.
-   *
-   * @param {proto.FiatAmount} fiatAmount The FiatAmount to convert.
-   * @returns {Object} The FiatAmount as JSON.
-   */
-  private static fiatAmountToJSON(fiatAmount: FiatAmount): object | undefined {
-    const json: any = fiatAmount.toObject();
-
-    const currency = fiatAmount.getCurrency();
-    if (currency === undefined) {
-      return undefined;
-    }
-
-    json.currency = this.currencyToJSON(currency);
-    return json;
-  }
-
-  /**
-   * Convert a Currency enum to a JSON representation.
-   *
-   * @param {proto.FiatAmount.Currency} currency The Currency to convert.
-   * @returns {String} The Currency as JSON.
-   */
-  private static currencyToJSON(currency: Currency): string | undefined {
-    switch (currency) {
-      case Currency.CURRENCY_INVALID:
-        return undefined;
-      case Currency.CURRENCY_USD:
-        return "USD";
-    }
-  }
 
   /**
    * Convert an XRPAmount to a JSON representation.
