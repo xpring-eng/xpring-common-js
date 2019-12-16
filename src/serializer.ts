@@ -1,8 +1,10 @@
-import { Payment } from "../generated/payment_pb";
-import { Transaction } from "../generated/transaction_pb";
-import { FiatAmount } from "../generated/fiat_amount_pb";
-import { XRPAmount } from "../generated/xrp_amount_pb";
-import { Currency } from "../generated/currency_pb";
+// import { Payment } from "../generated/payment_pb";
+// import { Transaction } from "../generated/transaction_pb";
+// import { FiatAmount } from "../generated/fiat_amount_pb";
+// import { XRPAmount } from "../generated/xrp_amount_pb";
+// import { Currency } from "../generated/currency_pb";
+
+import { Transaction } from "../generated/transaction_pb"
 import Utils from "./utils";
 
 /* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */
@@ -28,180 +30,182 @@ class Serializer {
   public static transactionToJSON(
     transaction: Transaction
   ): object | undefined {
-    // Serialize the protocol buffer to a JSON representation.
-    var object: any = transaction.toObject();
-
-    // Convert fields names where direct conversion is possible.
-    this.convertPropertyName("sequence", "Sequence", object);
-    this.convertPropertyName("signingPublicKeyHex", "SigningPubKey", object);
-    this.convertPropertyName(
-      "lastLedgerSequence",
-      "LastLedgerSequence",
-      object
-    );
-
-    // Convert account field, handling X-Addresses if needed.
-    const account = transaction.getAccount();
-    if (!account || !Utils.isValidAddress(account)) {
-      return undefined;
-    }
-
-    var normalizedAccount = account;
-    if (Utils.isValidXAddress(account)) {
-      const decodedClassicAddress = Utils.decodeXAddress(account);
-      if (!decodedClassicAddress) {
-        return undefined;
-      }
-
-      // Accounts cannot have a tag.
-      if (decodedClassicAddress.tag !== undefined) {
-        return undefined;
-      }
-
-      normalizedAccount = decodedClassicAddress.address;
-    }
-    object["Account"] = normalizedAccount;
-    delete object.account;
-
-    // Convert XRP denominated fee field.
-    const txFee = transaction.getFee();
-    if (txFee === undefined) {
-      return undefined;
-    }
-    object["Fee"] = this.xrpAmountToJSON(txFee);
-    delete object.fee;
-
-    // Delete all fields from the transaction data one of before they get rewritten below.
-    delete object.payment;
-
-    // Convert additional transaction data.
-    const transactionDataCase = transaction.getTransactionDataCase();
-    switch (transactionDataCase) {
-      case Transaction.TransactionDataCase.PAYMENT: {
-        const payment = transaction.getPayment();
-        if (payment === undefined) {
-          return undefined;
-        }
-        Object.assign(object, this.paymentToJSON(payment));
-        break;
-      }
-    }
-
-    return object;
+    return undefined
   }
+//     // Serialize the protocol buffer to a JSON representation.
+//     var object: any = transaction.toObject();
 
-  /**
-   * Convert a Payment to a JSON representation.
-   *
-   * @param {proto.Payment} payment The Payment to convert.
-   * @returns {Object} The Payment as JSON.
-   */
-  private static paymentToJSON(payment: Payment): object | undefined {
-    const json: PaymentJSON = {
-      Amount: {},
-      Destination: "",
-      TransactionType: "Payment"
-    };
+//     // Convert fields names where direct conversion is possible.
+//     this.convertPropertyName("sequence", "Sequence", object);
+//     this.convertPropertyName("signingPublicKeyHex", "SigningPubKey", object);
+//     this.convertPropertyName(
+//       "lastLedgerSequence",
+//       "LastLedgerSequence",
+//       object
+//     );
 
-    // If an x-address was able to be decoded, add the components to the json.
-    const decodedXAddress = Utils.decodeXAddress(payment.getDestination());
-    if (!decodedXAddress) {
-      json.Destination = payment.getDestination();
-      delete json.DestinationTag;
-    } else {
-      json.Destination = decodedXAddress.address;
-      if (decodedXAddress.tag !== undefined) {
-        json.DestinationTag = decodedXAddress.tag;
-      }
-    }
+//     // Convert account field, handling X-Addresses if needed.
+//     const account = transaction.getAccount();
+//     if (!account || !Utils.isValidAddress(account)) {
+//       return undefined;
+//     }
 
-    const amountCase = payment.getAmountCase();
-    switch (amountCase) {
-      case Payment.AmountCase.FIAT_AMOUNT: {
-        const fiatAmount = payment.getFiatAmount();
-        if (fiatAmount === undefined) {
-          return undefined;
-        }
+//     var normalizedAccount = account;
+//     if (Utils.isValidXAddress(account)) {
+//       const decodedClassicAddress = Utils.decodeXAddress(account);
+//       if (!decodedClassicAddress) {
+//         return undefined;
+//       }
 
-        const jsonFiatAmount = this.fiatAmountToJSON(fiatAmount);
-        if (jsonFiatAmount === undefined) {
-          return undefined;
-        }
-        json.Amount = jsonFiatAmount;
-        break;
-      }
-      case Payment.AmountCase.XRP_AMOUNT: {
-        const xrpAmount = payment.getXrpAmount();
-        if (xrpAmount === undefined) {
-          return undefined;
-        }
-        json.Amount = this.xrpAmountToJSON(xrpAmount);
-        break;
-      }
-    }
-    return json;
-  }
+//       // Accounts cannot have a tag.
+//       if (decodedClassicAddress.tag !== undefined) {
+//         return undefined;
+//       }
 
-  /**
-   * Convert a FiatAmount amount to a JSON representation.
-   *
-   * @param {proto.FiatAmount} fiatAmount The FiatAmount to convert.
-   * @returns {Object} The FiatAmount as JSON.
-   */
-  private static fiatAmountToJSON(fiatAmount: FiatAmount): object | undefined {
-    const json: any = fiatAmount.toObject();
+//       normalizedAccount = decodedClassicAddress.address;
+//     }
+//     object["Account"] = normalizedAccount;
+//     delete object.account;
 
-    const currency = fiatAmount.getCurrency();
-    if (currency === undefined) {
-      return undefined;
-    }
+//     // Convert XRP denominated fee field.
+//     const txFee = transaction.getFee();
+//     if (txFee === undefined) {
+//       return undefined;
+//     }
+//     object["Fee"] = this.xrpAmountToJSON(txFee);
+//     delete object.fee;
 
-    json.currency = this.currencyToJSON(currency);
-    return json;
-  }
+//     // Delete all fields from the transaction data one of before they get rewritten below.
+//     delete object.payment;
 
-  /**
-   * Convert a Currency enum to a JSON representation.
-   *
-   * @param {proto.FiatAmount.Currency} currency The Currency to convert.
-   * @returns {String} The Currency as JSON.
-   */
-  private static currencyToJSON(currency: Currency): string | undefined {
-    switch (currency) {
-      case Currency.CURRENCY_INVALID:
-        return undefined;
-      case Currency.CURRENCY_USD:
-        return "USD";
-    }
-  }
+//     // Convert additional transaction data.
+//     const transactionDataCase = transaction.getTransactionDataCase();
+//     switch (transactionDataCase) {
+//       case Transaction.TransactionDataCase.PAYMENT: {
+//         const payment = transaction.getPayment();
+//         if (payment === undefined) {
+//           return undefined;
+//         }
+//         Object.assign(object, this.paymentToJSON(payment));
+//         break;
+//       }
+//     }
 
-  /**
-   * Convert an XRPAmount to a JSON representation.
-   *
-   * @param {proto.XRPAmount} xrpAmount The XRPAmount to convert.
-   * @return {String} The XRPAmount as JSON.
-   */
-  private static xrpAmountToJSON(xrpAmount: XRPAmount): string {
-    return xrpAmount.getDrops() + "";
-  }
+//     return object;
+//   }
 
-  /**
-   * Change the name of a field in an object while preserving the value.
-   *
-   * @note This method has side effects to the `object` parameter.
-   *
-   * @param {String} oldPropertyName The property name to convert from.
-   * @param {String} newPropertyName The new property name.
-   * @param {Object} object The object on which the conversion is performed.
-   */
-  private static convertPropertyName(
-    oldPropertyName: string,
-    newPropertyName: string,
-    object: any
-  ): void {
-    object[newPropertyName] = object[oldPropertyName];
-    delete object[oldPropertyName];
-  }
+//   /**
+//    * Convert a Payment to a JSON representation.
+//    *
+//    * @param {proto.Payment} payment The Payment to convert.
+//    * @returns {Object} The Payment as JSON.
+//    */
+//   private static paymentToJSON(payment: Payment): object | undefined {
+//     const json: PaymentJSON = {
+//       Amount: {},
+//       Destination: "",
+//       TransactionType: "Payment"
+//     };
+
+//     // If an x-address was able to be decoded, add the components to the json.
+//     const decodedXAddress = Utils.decodeXAddress(payment.getDestination());
+//     if (!decodedXAddress) {
+//       json.Destination = payment.getDestination();
+//       delete json.DestinationTag;
+//     } else {
+//       json.Destination = decodedXAddress.address;
+//       if (decodedXAddress.tag !== undefined) {
+//         json.DestinationTag = decodedXAddress.tag;
+//       }
+//     }
+
+//     const amountCase = payment.getAmountCase();
+//     switch (amountCase) {
+//       case Payment.AmountCase.FIAT_AMOUNT: {
+//         const fiatAmount = payment.getFiatAmount();
+//         if (fiatAmount === undefined) {
+//           return undefined;
+//         }
+
+//         const jsonFiatAmount = this.fiatAmountToJSON(fiatAmount);
+//         if (jsonFiatAmount === undefined) {
+//           return undefined;
+//         }
+//         json.Amount = jsonFiatAmount;
+//         break;
+//       }
+//       case Payment.AmountCase.XRP_AMOUNT: {
+//         const xrpAmount = payment.getXrpAmount();
+//         if (xrpAmount === undefined) {
+//           return undefined;
+//         }
+//         json.Amount = this.xrpAmountToJSON(xrpAmount);
+//         break;
+//       }
+//     }
+//     return json;
+//   }
+
+//   /**
+//    * Convert a FiatAmount amount to a JSON representation.
+//    *
+//    * @param {proto.FiatAmount} fiatAmount The FiatAmount to convert.
+//    * @returns {Object} The FiatAmount as JSON.
+//    */
+//   private static fiatAmountToJSON(fiatAmount: FiatAmount): object | undefined {
+//     const json: any = fiatAmount.toObject();
+
+//     const currency = fiatAmount.getCurrency();
+//     if (currency === undefined) {
+//       return undefined;
+//     }
+
+//     json.currency = this.currencyToJSON(currency);
+//     return json;
+//   }
+
+//   /**
+//    * Convert a Currency enum to a JSON representation.
+//    *
+//    * @param {proto.FiatAmount.Currency} currency The Currency to convert.
+//    * @returns {String} The Currency as JSON.
+//    */
+//   private static currencyToJSON(currency: Currency): string | undefined {
+//     switch (currency) {
+//       case Currency.CURRENCY_INVALID:
+//         return undefined;
+//       case Currency.CURRENCY_USD:
+//         return "USD";
+//     }
+//   }
+
+//   /**
+//    * Convert an XRPAmount to a JSON representation.
+//    *
+//    * @param {proto.XRPAmount} xrpAmount The XRPAmount to convert.
+//    * @return {String} The XRPAmount as JSON.
+//    */
+//   private static xrpAmountToJSON(xrpAmount: XRPAmount): string {
+//     return xrpAmount.getDrops() + "";
+//   }
+
+//   /**
+//    * Change the name of a field in an object while preserving the value.
+//    *
+//    * @note This method has side effects to the `object` parameter.
+//    *
+//    * @param {String} oldPropertyName The property name to convert from.
+//    * @param {String} newPropertyName The new property name.
+//    * @param {Object} object The object on which the conversion is performed.
+//    */
+//   private static convertPropertyName(
+//     oldPropertyName: string,
+//     newPropertyName: string,
+//     object: any
+//   ): void {
+//     object[newPropertyName] = object[oldPropertyName];
+//     delete object[oldPropertyName];
+//   }
 }
 
 export default Serializer;

@@ -1,7 +1,6 @@
 "use strict";
 
 import Serializer from "./serializer";
-import { SignedTransaction } from "../generated/signed_transaction_pb";
 import { Transaction } from "../generated/transaction_pb";
 import Wallet from "./wallet";
 
@@ -21,7 +20,7 @@ class Signer {
   public static signTransaction(
     transaction: Transaction,
     wallet: Wallet
-  ): SignedTransaction | undefined {
+  ): string | undefined {
     if (transaction === undefined || wallet === undefined) {
       return undefined;
     }
@@ -33,15 +32,7 @@ class Signer {
     const transactionHex = rippleCodec.encodeForSigning(transactionJSON);
 
     const signatureHex = wallet.sign(transactionHex);
-    if (signatureHex == undefined) {
-      return undefined;
-    }
-
-    const signedTransaction = new SignedTransaction();
-    signedTransaction.setTransaction(transaction);
-    signedTransaction.setTransactionSignatureHex(signatureHex);
-
-    return signedTransaction;
+    return signatureHex;
   }
 }
 
