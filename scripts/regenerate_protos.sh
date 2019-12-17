@@ -15,9 +15,6 @@ mkdir -p $JS_OUT_DIR
 $PWD/node_modules/grpc-tools/bin/protoc \
     --js_out=import_style=commonjs,binary:$TS_OUT_DIR \
     --js_out=import_style=commonjs,binary:$JS_OUT_DIR \
-    --grpc_out=$TS_OUT_DIR \
-    --grpc_out=$JS_OUT_DIR \
-    --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` \
     --proto_path=$PWD/xpring-common-protocol-buffers/proto \
     $PWD/xpring-common-protocol-buffers/**/*.proto
 
