@@ -26,4 +26,8 @@ $PWD/node_modules/grpc-tools/bin/protoc \
     --proto_path=$PWD/xpring-common-protocol-buffers/proto \
     $PWD/xpring-common-protocol-buffers/**/*.proto
 
+# Cleanup any errant gRPC protocol buffers.
+rm $JS_OUT_DIR/*grpc*
+rm $TS_OUT_DIR/*grpc*
+
 echo "All done!"
