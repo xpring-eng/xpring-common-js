@@ -17,8 +17,6 @@
     "bip32": "2.0.4",
     "bip39": "^3.0.2",
     "google-protobuf": "3.11.2",
-    "grpc": "1.24.2",
-    "grpc-tools": "^1.8.0",
     "ripple-address-codec": "4.0.0",
     "ripple-binary-codec": "0.2.5",
     "ripple-keypairs": "^0.11.0"
@@ -45,7 +43,8 @@
     "eslint-plugin-import": "2.19.1",
     "eslint-plugin-mocha": "6.2.2",
     "eslint-plugin-prettier": "3.1.2",
-    "grpc_tools_node_protoc_ts": "2.5.9",
+    "grpc-tools": "^1.8.0",
+    "grpc_tools_node_protoc_ts": "^2.5.9",
     "mocha": "6.2.2",
     "nyc": "14.1.1",
     "prettier": "1.19.1",
