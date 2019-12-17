@@ -1,58 +1,60 @@
 import FakeWallet from "./fakes/fake-wallet";
-// import { Payment } from "../build/generated/payment_pb";
 import Signer from "../src/signer";
-import { Transaction } from "../build/generated/transaction_pb";
+import { Payment, Transaction } from "../build/generated/transaction_pb";
 import Utils from "../src/utils";
-// import { XRPAmount } from "../build/generated/xrp_amount_pb";
 import { assert } from "chai";
 import "mocha";
+import { AccountAddress, CurrencyAmount, XRPDropsAmount } from "../generated/amount_pb";
+
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-// describe("signer", function(): void {
-//   it("sign", function(): void {
-//     // GIVEN an transaction and a wallet and expected signing artifacts.
-//     const fakeSignature = "DEADBEEF";
-//     const wallet = new FakeWallet(fakeSignature);
+describe("signer", function(): void {
+  it("sign", function(): void {
+    // GIVEN an transaction and a wallet and expected signing artifacts.
+    const fakeSignature = "DEADBEEF";
+    const wallet = new FakeWallet(fakeSignature);
 
-//     const value = "1000";
-//     const destination = "XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc";
-//     const fee = "10";
-//     const sequence = 1;
-//     const account = "X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4";
+    const value = 1000;
+    const destination = "XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc";
+    const fee = 10;
+    const sequence = 1;
+    const account = "X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4";
 
-//     const paymentAmount = new XRPAmount();
-//     paymentAmount.setDrops(value);
+    const paymentAmount = new XRPDropsAmount();
+    paymentAmount.setDrops(value);
 
-//     const payment = new Payment();
-//     payment.setDestination(destination);
-//     payment.setXrpAmount(paymentAmount);
+    const currencyAmount = new CurrencyAmount();
+    currencyAmount.setXrpAmount(paymentAmount);
 
-//     const transactionFee = new XRPAmount();
-//     transactionFee.setDrops(fee);
+    const destinationAddress = new AccountAddress();
+    destinationAddress.setAddress(destination)
 
-//     const transaction = new Transaction();
-//     transaction.setAccount(account);
-//     transaction.setFee(transactionFee);
-//     transaction.setSequence(sequence);
-//     transaction.setPayment(payment);
+    const payment = new Payment();
+    payment.setDestination(destinationAddress);
+    payment.setAmount(currencyAmount);
 
-//     // WHEN the transaction is signed with the wallet.
-//     const signedTransaction = Signer.signTransaction(transaction, wallet);
+    const transactionFee = new XRPDropsAmount();
+    transactionFee.setDrops(fee);
 
-//     // THEN the signing artifacts are as expected.
-//     assert.exists(signedTransaction);
+    const sender = new AccountAddress();
+    sender.setAddress(account)
 
-//     assert.isTrue(Utils.isHex(signedTransaction!.getTransactionSignatureHex()));
+    const transaction = new Transaction();
+    transaction.setAccount(sender);
+    transaction.setFee(transactionFee);
+    transaction.setSequence(sequence);
+    transaction.setPayment(payment);
 
-//     assert.equal(
-//       signedTransaction!.getTransactionSignatureHex(),
-//       fakeSignature
-//     );
+    // WHEN the transaction is signed with the wallet.
+    const signature = Signer.signTransaction(transaction, wallet);
 
-//     assert.deepEqual(
-//       signedTransaction!.getTransaction()!.toObject(),
-//       transaction.toObject()
-//     );
-//   });
-// });
+    // THEN the signing artifacts are as expected.
+    assert.exists(signature);
+    assert.isTrue(Utils.isHex(signature!));
+    assert.equal(
+      signature,
+      fakeSignature
+    );
+  });
+});

@@ -1,12 +1,5 @@
-// import { Payment } from "../generated/payment_pb";
-// import { Transaction } from "../generated/transaction_pb";
-// import { FiatAmount } from "../generated/fiat_amount_pb";
-// import { XRPAmount } from "../generated/xrp_amount_pb";
-// import { Currency } from "../generated/currency_pb";
 import { XRPDropsAmount } from "../generated/amount_pb";
-import { AccountAddress, CurrencyAmount } from "../generated/amount_pb";
-
-import { Transaction } from "../generated/transaction_pb"
+import { Payment, Transaction } from "../generated/transaction_pb"
 import Utils from "./utils";
 
 /* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */
@@ -37,15 +30,29 @@ class Serializer {
 
     // Convert fields names where direct conversion is possible.
     this.convertPropertyName("sequence", "Sequence", object);
-    this.convertPropertyName("signingPublicKeyHex", "SigningPubKey", object);
+    this.convertPropertyName("signingPublicKey", "SigningPubKey", object);
     this.convertPropertyName(
       "lastLedgerSequence",
       "LastLedgerSequence",
       object
     );
 
+    // Delete unused fields from the protocol buffer.
+    delete object.memosList
+    delete object.flags
+    delete object.signature
+    delete object.signersList
+    delete object.sourceTag
+
+    // Encode SigningPubKey to hex, which is what ripple-binary-codec expects.
+    object.SigningPubKey = Utils.toHex(transaction.getSigningPublicKey_asU8())
+
     // Convert account field, handling X-Addresses if needed.
-    const account = transaction.getAccount();
+    const accountAddress = transaction.getAccount()
+    if (!accountAddress) {
+      return undefined
+    }
+    const account = accountAddress.getAddress()
     if (!account || !Utils.isValidAddress(account)) {
       return undefined;
     }
@@ -108,9 +115,19 @@ class Serializer {
     };
 
     // If an x-address was able to be decoded, add the components to the json.
-    const decodedXAddress = Utils.decodeXAddress(payment.getDestination());
+    const destinationAddress = payment.getDestination();
+    if (!destinationAddress) {
+      return undefined
+    }
+
+    const destination = destinationAddress.getAddress();
+    if (!destination) {
+      return undefined
+    }
+
+    const decodedXAddress = Utils.decodeXAddress(destination);
     if (!decodedXAddress) {
-      json.Destination = payment.getDestination();
+      json.Destination = destination;
       delete json.DestinationTag;
     } else {
       json.Destination = decodedXAddress.address;
@@ -119,68 +136,16 @@ class Serializer {
       }
     }
 
-    const amountCase = payment.getAmountCase();
-    switch (amountCase) {
-      case Payment.AmountCase.FIAT_AMOUNT: {
-        const fiatAmount = payment.getFiatAmount();
-        if (fiatAmount === undefined) {
-          return undefined;
-        }
-
-        const jsonFiatAmount = this.fiatAmountToJSON(fiatAmount);
-        if (jsonFiatAmount === undefined) {
-          return undefined;
-        }
-        json.Amount = jsonFiatAmount;
-        break;
-      }
-      case Payment.AmountCase.XRP_AMOUNT: {
-        const xrpAmount = payment.getXrpAmount();
-        if (xrpAmount === undefined) {
-          return undefined;
-        }
-        json.Amount = this.xrpAmountToJSON(xrpAmount);
-        break;
-      }
-    }
-    return json;
-  }
-
-  /**
-   * Convert a FiatAmount amount to a JSON representation.
-   *
-   * @param {proto.FiatAmount} fiatAmount The FiatAmount to convert.
-   * @returns {Object} The FiatAmount as JSON.
-   */
-  private static fiatAmountToJSON(fiatAmount: FiatAmount): object | undefined {
-    const json: any = fiatAmount.toObject();
-
-    const currency = fiatAmount.getCurrency();
-    if (currency === undefined) {
+    const amount = payment.getAmount();
+    if (!amount) {
       return undefined;
     }
-
-    json.currency = this.currencyToJSON(currency);
+    const xrpAmount = amount.getXrpAmount()
+    if (!xrpAmount) {
+      return undefined;
+    }
+    json.Amount = this.xrpAmountToJSON(xrpAmount)
     return json;
-  }
-
-  /**
-   * Convert a CurrencyAmount to a JSON representation.
-   *
-   * @param currencyAmount The Currency to convert.
-   * @returns The Currency as JSON.
-   */
-  private static currencyToJSON(currencyAmount: CurrencyAmount): string | undefined {
-    switch (currencyAmount.getAmountCase()) {
-
-    }
-
-    switch (currency) {
-      case Currency.CURRENCY_INVALID:
-        return undefined;
-      case Currency.CURRENCY_USD:
-        return "USD";
-    }
   }
 
   /**
