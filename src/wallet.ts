@@ -82,7 +82,6 @@ class Wallet {
     }
 
     const seed = bip39.mnemonicToSeedSync(mnemonic);
-
     return Wallet.generateHDWalletFromSeed(seed, derivationPath, test);
   }
 
