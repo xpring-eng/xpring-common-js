@@ -76,16 +76,12 @@ class Wallet {
     derivationPath = Wallet.getDefaultDerivationPath(),
     test: boolean = false
   ): Wallet | undefined {
-    console.log('calling')
-
     // Validate mnemonic and path are valid.
     if (!bip39.validateMnemonic(mnemonic)) {
-      console.log('ditching (bad mnemonic)')
       return undefined;
     }
 
     const seed = bip39.mnemonicToSeedSync(mnemonic);
-    console.log('got a seed')
 
     return Wallet.generateHDWalletFromSeed(seed, derivationPath, test);
   }
@@ -103,8 +99,6 @@ class Wallet {
     derivationPath = Wallet.getDefaultDerivationPath(),
     test: boolean = false
   ): Wallet | undefined {
-    console.log('called sub function')
-
     const masterNode = bip32.fromSeed(seed);
     const node = masterNode.derivePath(derivationPath);
     const publicKey = Wallet.hexFromBuffer(node.publicKey);
