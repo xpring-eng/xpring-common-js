@@ -82,7 +82,7 @@ class Wallet {
     }
 
     const seed = bip39.mnemonicToSeedSync(mnemonic);
-    return this.generateHDWalletFromSeed(seed, derivationPath, test);
+    return Wallet.generateHDWalletFromSeed(seed, derivationPath, test);
   }
 
   /**
@@ -113,7 +113,7 @@ class Wallet {
    * @returns A new wallet from the given seed, or undefined if the seed was invalid.
    */
   public static generateWalletFromSeed(
-    seed: string,     
+    seed: string,
     test: boolean = false
   ): Wallet | undefined {
     try {
