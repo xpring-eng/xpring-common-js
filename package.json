@@ -29,7 +29,7 @@
     "lint:fix": "eslint **/*.ts --fix",
     "test": "npm run lint && nyc mocha",
     "prepublishOnly": "npm test && tsc -d",
-    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && tsc && npx webpack"
+    "webpack": "npm run clean && git submodule update --init --recursive && git submodule update --remote && ./scripts/regenerate_protos.sh && tsc && npx webpack"
   },
   "devDependencies": {
     "@types/chai": "4.2.7",
