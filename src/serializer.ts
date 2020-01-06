@@ -23,7 +23,7 @@ class Serializer {
    * @param {proto.Transaction} transaction A Transaction to convert.
    * @returns {Object} The Transaction as JSON.
    */
-  public static transactionToJSON(
+  public static legacyTransactionToJSON(
     transaction: Transaction
   ): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
@@ -66,7 +66,7 @@ class Serializer {
     if (txFee === undefined) {
       return undefined;
     }
-    object["Fee"] = this.xrpAmountToJSON(txFee);
+    object["Fee"] = this.legacyXRPAmountToJSON(txFee);
     delete object.fee;
 
     // Delete all fields from the transaction data one of before they get rewritten below.
@@ -80,7 +80,7 @@ class Serializer {
         if (payment === undefined) {
           return undefined;
         }
-        Object.assign(object, this.paymentToJSON(payment));
+        Object.assign(object, this.legacyPaymentToJSON(payment));
         break;
       }
     }
@@ -94,7 +94,7 @@ class Serializer {
    * @param {proto.Payment} payment The Payment to convert.
    * @returns {Object} The Payment as JSON.
    */
-  private static paymentToJSON(payment: Payment): object | undefined {
+  private static legacyPaymentToJSON(payment: Payment): object | undefined {
     const json: PaymentJSON = {
       Amount: {},
       Destination: "",
@@ -123,7 +123,7 @@ class Serializer {
         if (xrpAmount === undefined) {
           return undefined;
         }
-        json.Amount = this.xrpAmountToJSON(xrpAmount);
+        json.Amount = this.legacyXRPAmountToJSON(xrpAmount);
         break;
       }
     }
@@ -137,7 +137,7 @@ class Serializer {
    * @param {proto.XRPAmount} xrpAmount The XRPAmount to convert.
    * @return {String} The XRPAmount as JSON.
    */
-  private static xrpAmountToJSON(xrpAmount: XRPAmount): string {
+  private static legacyXRPAmountToJSON(xrpAmount: XRPAmount): string {
     return xrpAmount.getDrops() + "";
   }
 

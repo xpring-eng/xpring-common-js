@@ -18,7 +18,7 @@ class Signer {
    * @param {Wallet} wallet The wallet to sign the transaction with.
    * @returns {SignedTransaction} A signed transaction.
    */
-  public static signTransaction(
+  public static signLegacyTransaction(
     transaction: Transaction,
     wallet: Wallet
   ): SignedTransaction | undefined {
@@ -26,7 +26,7 @@ class Signer {
       return undefined;
     }
 
-    var transactionJSON = Serializer.transactionToJSON(transaction);
+    var transactionJSON = Serializer.legacyTransactionToJSON(transaction);
     if (transactionJSON === undefined) {
       return undefined;
     }

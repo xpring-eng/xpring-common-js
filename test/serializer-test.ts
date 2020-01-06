@@ -1,5 +1,3 @@
-import { Currency } from "../generated/legacy/currency_pb";
-import { FiatAmount } from "../generated/legacy/fiat_amount_pb";
 import { Payment } from "../generated/legacy/payment_pb";
 import Serializer from "../src/serializer";
 import { Transaction } from "../generated/legacy/transaction_pb";
@@ -11,7 +9,7 @@ import Utils from "../src/utils";
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe("serializer", function(): void {
-  it("serializes a payment in XRP from a classic address", function(): void {
+  it("serializes a legacy payment in XRP from a classic address", function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const value = "1000";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
@@ -41,7 +39,7 @@ describe("serializer", function(): void {
     transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.transactionToJSON(transaction);
+    const serialized = Serializer.legacyTransactionToJSON(transaction);
 
     // THEN the result is as expected.
     const expectedJSON = {
@@ -57,7 +55,7 @@ describe("serializer", function(): void {
     assert.deepEqual(serialized, expectedJSON);
   });
 
-  it("serializes a payment in XRP from an X-Address with no tag", function(): void {
+  it("serializes a legacy payment in XRP from an X-Address with no tag", function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const value = "1000";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
@@ -87,7 +85,7 @@ describe("serializer", function(): void {
     transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.transactionToJSON(transaction);
+    const serialized = Serializer.legacyTransactionToJSON(transaction);
 
     // THEN the result is as expected.
     const expectedJSON = {
@@ -103,7 +101,7 @@ describe("serializer", function(): void {
     assert.deepEqual(serialized, expectedJSON);
   });
 
-  it("fails to serializes a payment in XRP from an X-Address with a tag", function(): void {
+  it("fails to serializes a legacy payment in XRP from an X-Address with a tag", function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const value = "1000";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
@@ -133,13 +131,13 @@ describe("serializer", function(): void {
     transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.transactionToJSON(transaction);
+    const serialized = Serializer.legacyTransactionToJSON(transaction);
 
     // THEN the result is undefined.
     assert.isUndefined(serialized);
   });
 
-  it("fails to serializes a payment in XRP when account is undefined", function(): void {
+  it("fails to serializes a legacy payment in XRP when account is undefined", function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const value = "1000";
     const destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
@@ -167,13 +165,13 @@ describe("serializer", function(): void {
     transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.transactionToJSON(transaction);
+    const serialized = Serializer.legacyTransactionToJSON(transaction);
 
     // THEN the result is undefined.
     assert.isUndefined(serialized);
   });
 
-  it("serializes a payment to an X-address with a tag in XRP", function(): void {
+  it("serializes a legacy payment to an X-address with a tag in XRP", function(): void {
     // GIVEN a transaction which represents a payment to a destination and tag, denominated in XRP.
     const value = "1000";
     const destination = "XVfC9CTCJh6GN2x8bnrw3LtdbqiVCUvtU3HnooQDgBnUpQT";
@@ -203,7 +201,7 @@ describe("serializer", function(): void {
     transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.transactionToJSON(transaction);
+    const serialized = Serializer.legacyTransactionToJSON(transaction);
 
     // THEN the result is as expected.
     const expectedJSON = {
@@ -220,7 +218,7 @@ describe("serializer", function(): void {
     assert.deepEqual(serialized, expectedJSON);
   });
 
-  it("serializes a payment to an X-address without a tag in XRP", function(): void {
+  it("serializes a legacy payment to an X-address without a tag in XRP", function(): void {
     // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP.
     const value = "1000";
     const destination = "XVfC9CTCJh6GN2x8bnrw3LtdbqiVCUFyQVMzRrMGUZpokKH";
@@ -250,7 +248,7 @@ describe("serializer", function(): void {
     transaction.setLastLedgerSequence(lastLedgerSequence);
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.transactionToJSON(transaction);
+    const serialized = Serializer.legacyTransactionToJSON(transaction);
 
     // THEN the result is as expected.
     const expectedJSON = {
