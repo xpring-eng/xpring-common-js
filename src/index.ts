@@ -1,30 +1,30 @@
-export { AccountInfo } from "../generated/account_info_pb";
-export { Currency } from "../generated/currency_pb";
-export { Fee } from "../generated/fee_pb";
-export { FiatAmount } from "../generated/fiat_amount_pb";
+export { AccountInfo } from "../generated/legacy/account_info_pb";
+export { Currency } from "../generated/legacy/currency_pb";
+export { Fee } from "../generated/legacy/fee_pb";
+export { FiatAmount } from "../generated/legacy/fiat_amount_pb";
 export {
   GetLatestValidatedLedgerSequenceRequest
-} from "../generated/get_latest_validated_ledger_sequence_request_pb";
+} from "../generated/legacy/get_latest_validated_ledger_sequence_request_pb";
 export {
   GetAccountInfoRequest
-} from "../generated/get_account_info_request_pb";
-export { GetFeeRequest } from "../generated/get_fee_request_pb";
+} from "../generated/legacy/get_account_info_request_pb";
+export { GetFeeRequest } from "../generated/legacy/get_fee_request_pb";
 export {
   GetTransactionStatusRequest
-} from "../generated/get_transaction_status_request_pb";
-export { LedgerSequence } from "../generated/ledger_sequence_pb";
-export { Payment } from "../generated/payment_pb";
+} from "../generated/legacy/get_transaction_status_request_pb";
+export { LedgerSequence } from "../generated/legacy/ledger_sequence_pb";
+export { Payment } from "../generated/legacy/payment_pb";
 export {
   SubmitSignedTransactionRequest
-} from "../generated/submit_signed_transaction_request_pb";
+} from "../generated/legacy/submit_signed_transaction_request_pb";
 export {
   SubmitSignedTransactionResponse
-} from "../generated/submit_signed_transaction_response_pb";
-export { XRPAmount } from "../generated/xrp_amount_pb";
-export { SignedTransaction } from "../generated/signed_transaction_pb";
+} from "../generated/legacy/submit_signed_transaction_response_pb";
+export { XRPAmount } from "../generated/legacy/xrp_amount_pb";
+export { SignedTransaction } from "../generated/legacy/signed_transaction_pb";
 export { default as Signer } from "../src/signer";
-export { TransactionStatus } from "../generated/transaction_status_pb";
-export { Transaction } from "../generated/transaction_pb";
+export { TransactionStatus } from "../generated/legacy/transaction_status_pb";
+export { Transaction } from "../generated/legacy/transaction_pb";
 
 export { default as Wallet } from "./wallet";
 export { WalletGenerationResult } from "./wallet";
