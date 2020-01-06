@@ -1,7 +1,7 @@
 "use strict";
 
 import Serializer from "./serializer";
-import { Transaction } from "../generated/transaction_pb";
+import { Transaction } from "../generated/legacy/transaction_pb";
 import Wallet from "./wallet";
 
 const rippleCodec = require("ripple-binary-codec");

@@ -1,10 +1,10 @@
 import FakeWallet from "./fakes/fake-wallet";
 import Signer from "../src/signer";
-import { Payment, Transaction } from "../build/generated/transaction_pb";
+import { Payment, Transaction } from "../generated/legacy/transaction_pb";
 import Utils from "../src/utils";
 import { assert } from "chai";
 import "mocha";
-import { AccountAddress, CurrencyAmount, XRPDropsAmount } from "../generated/amount_pb";
+import { AccountAddress, CurrencyAmount, XRPDropsAmount } from "../generated/legacy/amount_pb";
 
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */

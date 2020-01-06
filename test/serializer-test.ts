@@ -1,6 +1,6 @@
 import Serializer from "../src/serializer";
-import { AccountAddress, CurrencyAmount, XRPDropsAmount } from "../generated/amount_pb";
-import { Payment, Transaction } from "../generated/transaction_pb";
+import { AccountAddress, CurrencyAmount, XRPDropsAmount } from "../generated/legacy/amount_pb";
+import { Payment, Transaction } from "../generated/legacy/transaction_pb";
 
 import { assert } from "chai";
 import "mocha";
