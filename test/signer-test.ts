@@ -10,7 +10,7 @@ import "mocha";
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe("signer", function(): void {
-  it("sign", function(): void {
+  it("sign legacy transaction", function(): void {
     // GIVEN an transaction and a wallet and expected signing artifacts.
     const fakeSignature = "DEADBEEF";
     const wallet = new FakeWallet(fakeSignature);
@@ -38,7 +38,7 @@ describe("signer", function(): void {
     transaction.setPayment(payment);
 
     // WHEN the transaction is signed with the wallet.
-    const signedTransaction = Signer.signTransaction(transaction, wallet);
+    const signedTransaction = Signer.signLegacyTransaction(transaction, wallet);
 
     // THEN the signing artifacts are as expected.
     assert.exists(signedTransaction);
