@@ -1,6 +1,6 @@
-import { Payment } from "../generated/payment_pb";
-import { Transaction } from "../generated/transaction_pb";
-import { XRPAmount } from "../generated/xrp_amount_pb";
+import { Payment } from "../generated/legacy/payment_pb";
+import { Transaction } from "../generated/legacy/transaction_pb";
+import { XRPAmount } from "../generated/legacy/xrp_amount_pb";
 import Utils from "./utils";
 
 /* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */
