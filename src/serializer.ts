@@ -40,22 +40,23 @@ class Serializer {
       object
     );
 
-    // Delete unused fields from the protocol buffer.
-    delete object.memosList
-    delete object.flags
-    delete object.signature
-    delete object.signersList
-    delete object.sourceTag
+    // Delete unsupported fields from the protocol buffer.
+    delete object.memosList;
+    delete object.flags;
+    delete object.signature;
+    delete object.signersList;
+    delete object.sourceTag;
+    delete object.accountTransactionId;
 
     // Encode SigningPubKey to hex, which is what ripple-binary-codec expects.
-    object.SigningPubKey = Utils.toHex(transaction.getSigningPublicKey_asU8())
+    object.SigningPubKey = Utils.toHex(transaction.getSigningPublicKey_asU8());
 
     // Convert account field, handling X-Addresses if needed.
-    const accountAddress = transaction.getAccount()
+    const accountAddress = transaction.getAccount();
     if (!accountAddress) {
       return undefined;
     }
-    const account = accountAddress.getAddress()
+    const account = accountAddress.getAddress();
     if (!account || !Utils.isValidAddress(account)) {
       return undefined;
     }
