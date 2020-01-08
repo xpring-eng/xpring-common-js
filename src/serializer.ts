@@ -53,7 +53,7 @@ class Serializer {
     // Convert account field, handling X-Addresses if needed.
     const accountAddress = transaction.getAccount()
     if (!accountAddress) {
-      return undefined
+      return undefined;
     }
     const account = accountAddress.getAddress()
     if (!account || !Utils.isValidAddress(account)) {
