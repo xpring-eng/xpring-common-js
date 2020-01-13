@@ -40,36 +40,32 @@ class Serializer {
       object
     );
 
-    // Delete unused fields from the protocol buffer.
-    delete object.memosList
-    delete object.flags
-    delete object.signature
-    delete object.signersList
-    delete object.sourceTag
+    // Delete unsupported fields from the protocol buffer.
+    ['memosList', 'flags', 'signature', 'signersList', 'sourceTag', 'accountTransactionId'].forEach((key): boolean => delete object[key]);
 
     // Encode SigningPubKey to hex, which is what ripple-binary-codec expects.
-    object.SigningPubKey = Utils.toHex(transaction.getSigningPublicKey_asU8())
+    object.SigningPubKey = Utils.toHex(transaction.getSigningPublicKey_asU8());
 
     // Convert account field, handling X-Addresses if needed.
-    const accountAddress = transaction.getAccount()
+    const accountAddress = transaction.getAccount();
     if (!accountAddress) {
-      return undefined
+      return;
     }
-    const account = accountAddress.getAddress()
+    const account = accountAddress.getAddress();
     if (!account || !Utils.isValidAddress(account)) {
-      return undefined;
+      return;
     }
 
     var normalizedAccount = account;
     if (Utils.isValidXAddress(account)) {
       const decodedClassicAddress = Utils.decodeXAddress(account);
       if (!decodedClassicAddress) {
-        return undefined;
+        return;
       }
 
       // Accounts cannot have a tag.
       if (decodedClassicAddress.tag !== undefined) {
-        return undefined;
+        return;
       }
 
       normalizedAccount = decodedClassicAddress.address;
@@ -80,7 +76,7 @@ class Serializer {
     // Convert XRP denominated fee field.
     const txFee = transaction.getFee();
     if (txFee === undefined) {
-      return undefined;
+      return;
     }
     object["Fee"] = this.xrpAmountToJSON(txFee);
     delete object.fee;
@@ -94,7 +90,7 @@ class Serializer {
       case Transaction.TransactionDataCase.PAYMENT: {
         const payment = transaction.getPayment();
         if (payment === undefined) {
-          return undefined;
+          return;
         }
         Object.assign(object, this.paymentToJSON(payment));
         break;
@@ -120,12 +116,12 @@ class Serializer {
     // If an x-address was able to be decoded, add the components to the json.
     const destinationAddress = payment.getDestination();
     if (!destinationAddress) {
-      return undefined
+      return
     }
 
     const destination = destinationAddress.getAddress();
     if (!destination) {
-      return undefined
+      return
     }
 
     const decodedXAddress = Utils.decodeXAddress(destination);
@@ -141,11 +137,11 @@ class Serializer {
 
     const amount = payment.getAmount();
     if (!amount) {
-      return undefined;
+      return;
     }
     const xrpAmount = amount.getXrpAmount()
     if (!xrpAmount) {
-      return undefined;
+      return;
     }
     json.Amount = this.xrpAmountToJSON(xrpAmount)
     return json;
@@ -185,19 +181,19 @@ class Serializer {
     // Convert account field, handling X-Addresses if needed.
     const account = transaction.getAccount();
     if (!account || !Utils.isValidAddress(account)) {
-      return undefined;
+      return;
     }
 
     var normalizedAccount = account;
     if (Utils.isValidXAddress(account)) {
       const decodedClassicAddress = Utils.decodeXAddress(account);
       if (!decodedClassicAddress) {
-        return undefined;
+        return;
       }
 
       // Accounts cannot have a tag.
       if (decodedClassicAddress.tag !== undefined) {
-        return undefined;
+        return;
       }
 
       normalizedAccount = decodedClassicAddress.address;
@@ -208,7 +204,7 @@ class Serializer {
     // Convert XRP denominated fee field.
     const txFee = transaction.getFee();
     if (txFee === undefined) {
-      return undefined;
+      return;
     }
     object["Fee"] = this.legacyXRPAmountToJSON(txFee);
     delete object.fee;
@@ -222,7 +218,7 @@ class Serializer {
       case Transaction.TransactionDataCase.PAYMENT: {
         const payment = transaction.getPayment();
         if (payment === undefined) {
-          return undefined;
+          return;
         }
         Object.assign(object, this.legacyPaymentToJSON(payment));
         break;
@@ -260,12 +256,12 @@ class Serializer {
     const amountCase = payment.getAmountCase();
     switch (amountCase) {
       case LegacyPayment.AmountCase.FIAT_AMOUNT: {
-        return undefined;
+        return;
       }
       case LegacyPayment.AmountCase.XRP_AMOUNT: {
         const xrpAmount = payment.getXrpAmount();
         if (xrpAmount === undefined) {
-          return undefined;
+          return;
         }
         json.Amount = this.legacyXRPAmountToJSON(xrpAmount);
         break;
