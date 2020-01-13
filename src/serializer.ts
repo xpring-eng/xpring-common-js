@@ -41,12 +41,7 @@ class Serializer {
     );
 
     // Delete unsupported fields from the protocol buffer.
-    delete object.memosList;
-    delete object.flags;
-    delete object.signature;
-    delete object.signersList;
-    delete object.sourceTag;
-    delete object.accountTransactionId;
+    ['memosList', 'flags', 'signature', 'signersList', 'sourceTag', 'accountTransactionId'].forEach((key): boolean => delete object[key]);
 
     // Encode SigningPubKey to hex, which is what ripple-binary-codec expects.
     object.SigningPubKey = Utils.toHex(transaction.getSigningPublicKey_asU8());
