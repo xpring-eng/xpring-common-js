@@ -1,12 +1,12 @@
-import { Payment as LegacyPayment } from "../generated/legacy/payment_pb";
+import { Payment as LegacyPayment } from "../src/generated/legacy/payment_pb";
 import Serializer from "../src/serializer";
-import { Transaction as LegacyTransaction } from "../generated/legacy/transaction_pb";
-import { AccountAddress, CurrencyAmount, XRPDropsAmount } from "../generated/rpc/v1/amount_pb";
-import { Payment, Transaction } from "../generated/rpc/v1/transaction_pb";
+import { Transaction as LegacyTransaction } from "../src/generated/legacy/transaction_pb";
+import { AccountAddress, CurrencyAmount, XRPDropsAmount } from "../src/generated/rpc/v1/amount_pb";
+import { Payment, Transaction } from "../src/generated/rpc/v1/transaction_pb";
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { XRPAmount } from "../generated/legacy/xrp_amount_pb";
+import { XRPAmount } from "../src/generated/legacy/xrp_amount_pb";
 import { assert } from "chai";
 import "mocha";
 import Utils from "../src/utils";
@@ -28,19 +28,19 @@ const accountXAddress = "X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4"
 
 /**
  * Create a new `Transaction` object with the given inputs.
- * 
- * @param value The amount of XRP to send, in drops. 
- * @param destination The destination address. 
- * @param fee The amount of XRP to use as a fee, in drops. 
+ *
+ * @param value The amount of XRP to send, in drops.
+ * @param destination The destination address.
+ * @param fee The amount of XRP to use as a fee, in drops.
  * @param lastLedgerSequence The last ledger sequence the transaction will be valid in.
  * @param sequence The sequence number for the sending account.
  * @param account The address of the sending account.
- * @param publicKey The public key of the sending account, encoded as a hexadecimal string. 
+ * @param publicKey The public key of the sending account, encoded as a hexadecimal string.
  */
 function makeTransaction(
-  value: number, 
-  destination: string, 
-  fee: number, 
+  value: number,
+  destination: string,
+  fee: number,
   lastLedgerSequence: number,
   sequence: number,
   account: string | undefined,
@@ -81,22 +81,22 @@ function makeTransaction(
 
 /**
  * Create a new `LegacyTransaction` object with the given inputs.
- * 
- * @param value The amount of XRP to send, in drops. 
- * @param destination The destination address. 
- * @param fee The amount of XRP to use as a fee, in drops. 
+ *
+ * @param value The amount of XRP to send, in drops.
+ * @param destination The destination address.
+ * @param fee The amount of XRP to use as a fee, in drops.
  * @param lastLedgerSequence The last ledger sequence the transaction will be valid in.
  * @param sequence The sequence number for the sending account.
  * @param account The address of the sending account.
- * @param publicKey The public key of the sending account, encoded as a hexadecimal string. 
+ * @param publicKey The public key of the sending account, encoded as a hexadecimal string.
  */
 function makeLegacyTransaction(
-  value: string, 
-  destination: string, 
-  fee: string, 
+  value: string,
+  destination: string,
+  fee: string,
   lastLedgerSequence: number,
-  sequence: number, 
-  account: string | undefined, 
+  sequence: number,
+  account: string | undefined,
   publicKey: string
 ): LegacyTransaction {
   const paymentAmount = new XRPAmount();
@@ -232,7 +232,7 @@ describe("serializer", function(): void {
     };
     assert.deepEqual(serialized, expectedJSON);
   });
-  
+
   it("serializes a payment in XRP from a classic address", function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeTransaction(Number(value), destinationClassicAddress, Number(fee), lastLedgerSequence, sequence, accountClassicAddress, publicKey);
@@ -290,7 +290,7 @@ describe("serializer", function(): void {
   it("fails to serializes a payment in XRP when account is undefined", function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeTransaction(Number(value), destinationClassicAddress, Number(fee), lastLedgerSequence, sequence, undefined, publicKey);
-    
+
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction);
 
@@ -323,7 +323,7 @@ describe("serializer", function(): void {
   it("serializes a payment to an X-address without a tag in XRP", function(): void {
     // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP.
     const transaction = makeTransaction(Number(value), destinationXAddressWithoutTag, Number(fee), lastLedgerSequence, sequence, accountClassicAddress, publicKey)
-    
+
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction);
 

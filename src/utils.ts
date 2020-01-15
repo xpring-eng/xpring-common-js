@@ -110,7 +110,8 @@ class Utils {
     let shimClassicAddress = addressCodec.xAddressToClassicAddress(xAddress);
     return {
       address: shimClassicAddress.classicAddress,
-      tag: shimClassicAddress.tag !== false ? shimClassicAddress.tag : undefined,
+      tag:
+        shimClassicAddress.tag !== false ? shimClassicAddress.tag : undefined,
       test: shimClassicAddress.test
     };
   }
