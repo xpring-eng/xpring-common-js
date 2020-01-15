@@ -27,7 +27,7 @@ class Signer {
       return undefined;
     }
 
-    var transactionJSON = Serializer.transactionToJSON(transaction);
+    const transactionJSON = Serializer.transactionToJSON(transaction);
     if (transactionJSON === undefined) {
       return undefined;
     }
@@ -51,7 +51,7 @@ class Signer {
       return undefined;
     }
 
-    var transactionJSON = Serializer.legacyTransactionToJSON(transaction);
+    const transactionJSON = Serializer.legacyTransactionToJSON(transaction);
     if (transactionJSON === undefined) {
       return undefined;
     }

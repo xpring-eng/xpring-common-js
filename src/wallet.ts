@@ -46,7 +46,7 @@ class Wallet {
    */
   public static generateRandomWallet(
     entropy: string | undefined = undefined,
-    test: boolean = false
+    test = false
   ): WalletGenerationResult | undefined {
     if (entropy && !Utils.isHex(entropy)) {
       return undefined;
@@ -78,7 +78,7 @@ class Wallet {
   public static generateWalletFromMnemonic(
     mnemonic: string,
     derivationPath = Wallet.getDefaultDerivationPath(),
-    test: boolean = false
+    test = false
   ): Wallet | undefined {
     // Validate mnemonic and path are valid.
     if (!bip39.validateMnemonic(mnemonic)) {
@@ -100,7 +100,7 @@ class Wallet {
   public static generateHDWalletFromSeed(
     seed: string,
     derivationPath = Wallet.getDefaultDerivationPath(),
-    test: boolean = false
+    test = false
   ): Wallet | undefined {
     const masterNode = bip32.fromSeed(seed);
     const node = masterNode.derivePath(derivationPath);
@@ -118,7 +118,7 @@ class Wallet {
    */
   public static generateWalletFromSeed(
     seed: string,
-    test: boolean = false
+    test = false
   ): Wallet | undefined {
     try {
       const keyPair = rippleKeyPair.deriveKeypair(seed);

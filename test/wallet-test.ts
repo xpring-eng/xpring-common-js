@@ -66,8 +66,9 @@ describe("wallet", function(): void {
       Wallet.getDefaultDerivationPath()
     );
     assert.equal(
-      walletGenerationResult!.wallet.getAddress(), "XVMFQQBMhdouRqhPMuawgBMN1AVFTofPAdRsXG5RkPtUPNQ"
-    )
+      walletGenerationResult!.wallet.getAddress(),
+      "XVMFQQBMhdouRqhPMuawgBMN1AVFTofPAdRsXG5RkPtUPNQ"
+    );
   });
 
   it("generateRandomWallet - entropy and testnet", function(): void {
@@ -88,8 +89,9 @@ describe("wallet", function(): void {
       Wallet.getDefaultDerivationPath()
     );
     assert.equal(
-      walletGenerationResult!.wallet.getAddress(), "TVHLFWLKvbMv1LFzd6FA2Bf9MPpcy4mRto4VFAAxLuNpvdW"
-    )
+      walletGenerationResult!.wallet.getAddress(),
+      "TVHLFWLKvbMv1LFzd6FA2Bf9MPpcy4mRto4VFAAxLuNpvdW"
+    );
   });
 
   it("generateRandomWallet - invalid entropy", function(): void {

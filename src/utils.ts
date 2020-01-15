@@ -79,7 +79,7 @@ class Utils {
   public static encodeXAddress(
     classicAddress: string,
     tag: number | undefined,
-    test: boolean = false
+    test = false
   ): string | undefined {
     if (!addressCodec.isValidClassicAddress(classicAddress)) {
       return undefined;
@@ -107,7 +107,7 @@ class Utils {
       return undefined;
     }
 
-    let shimClassicAddress = addressCodec.xAddressToClassicAddress(xAddress);
+    const shimClassicAddress = addressCodec.xAddressToClassicAddress(xAddress);
     return {
       address: shimClassicAddress.classicAddress,
       tag:

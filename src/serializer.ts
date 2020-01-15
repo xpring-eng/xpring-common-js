@@ -29,7 +29,7 @@ class Serializer {
     transaction: Transaction
   ): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
-    var object: any = transaction.toObject();
+    const object: any = transaction.toObject();
 
     // Convert fields names where direct conversion is possible.
     this.convertPropertyName("sequence", "Sequence", object);
@@ -63,7 +63,7 @@ class Serializer {
       return;
     }
 
-    var normalizedAccount = account;
+    let normalizedAccount = account;
     if (Utils.isValidXAddress(account)) {
       const decodedClassicAddress = Utils.decodeXAddress(account);
       if (!decodedClassicAddress) {
@@ -174,7 +174,7 @@ class Serializer {
     transaction: LegacyTransaction
   ): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
-    var object: any = transaction.toObject();
+    const object: any = transaction.toObject();
 
     // Convert fields names where direct conversion is possible.
     this.convertPropertyName("sequence", "Sequence", object);
@@ -191,7 +191,7 @@ class Serializer {
       return;
     }
 
-    var normalizedAccount = account;
+    let normalizedAccount = account;
     if (Utils.isValidXAddress(account)) {
       const decodedClassicAddress = Utils.decodeXAddress(account);
       if (!decodedClassicAddress) {
