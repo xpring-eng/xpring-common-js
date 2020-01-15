@@ -1,11 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
-    "rootDir": "./",
-    "outDir": "build",
-    "target": "esnext",
+    "outDir": "./build",
+    "target": "ESNext",
     "module": "commonjs",
-    "moduleResolution": "node",
     "sourceMap": true,
     "removeComments": true,
     "strict": true,
@@ -13,7 +10,6 @@
     "esModuleInterop": true
   },
   "include": [
-    "src/**/*",
-    "generated/*"
+    "src/**/*"
   ]
 }

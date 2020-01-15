@@ -1,1 +1,2 @@
-generated/*.js
+src/generated/*.js
+test/*

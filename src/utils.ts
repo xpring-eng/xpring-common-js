@@ -182,7 +182,7 @@ class Utils {
    * @param input The input to check.
    * @returns true if the input is valid hex, otherwise false.
    */
-  public static isHex(input: string) {
+  public static isHex(input: string): boolean {
     const hexRegEx = /([0-9]|[a-f])/gim;
     return (input.match(hexRegEx) || []).length === input.length;
   }
