@@ -12,9 +12,12 @@
     "noImplicitAny": true
   },
   "include": [
-    "src/**/*", "test/**/*"
+    "src/**/*",
+    "test/**/*",
+    "./webpack.config.js"
   ],
   "exclude": [
-    "test/**/*"
+    "test/**/*",
+    "./webpack.config.js"
   ]
 }

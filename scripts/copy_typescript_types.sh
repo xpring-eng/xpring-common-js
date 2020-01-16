@@ -6,7 +6,7 @@ set -e -o pipefail
 # Moves Typescript types to the build folder.
 ##########################################################################
 
-echo "Copying typescript declaration files for Protos"
+echo "Copying typescript type defintions files for Protos into build"
 
 mkdir -p ./build/generated
 mkdir -p ./build/generated/legacy
