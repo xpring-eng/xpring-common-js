@@ -22,6 +22,6 @@ module.exports = {
     path: path.resolve(__dirname, "build"),
     library: "xpring-common-js",
     libraryTarget: "umd",
-    globalObject: "(typeof window !== 'undefined' ? window : this)"
+    globalObject: "(typeof self !== 'undefined' ? self : this)"
   }
 };
