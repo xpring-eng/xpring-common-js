@@ -22,7 +22,8 @@
     "ripple-keypairs": "^0.11.0"
   },
   "scripts": {
-    "build": "npm run test && webpack && ./scripts/copy_typescript_types.sh",
+    "build": "npm run test && tsc -d",
+    "webpack": "npm run test && webpack && ./scripts/copy_typescript_types.sh",
     "clean": "rm -rf ./src/generated ./dist ./build",
     "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint",
     "lint": "eslint **/*.ts",
