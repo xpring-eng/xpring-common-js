@@ -15,6 +15,8 @@ The release migrates the protocol buffers in (xpring-common-protocol-buffers)[ht
 
 This release adds support for (protocol buffers in rippled)[https://github.com/ripple/rippled/tree/develop/src/ripple/proto/rpc/v1]. These protocol buffers are the recommended alternative.
 
+The protocol buffers from `rippled` are not compatible with the protocol buffers from `xpring-common-protocol-buffers`. That makes this a *breaking change*. Clients will need to migrate to new methods (see `breaking changes` below).
+
 - Support for rippled protocol buffer serialization and signing.
 - `Serializer`'s `transactionToJSON` method is renamed `legacyTransactionToJSON`. The `transactionToJSON` method now supports protocol buffers from rippled.
 - `Signers`'s `signTransaction` method is renamed to `signLegacyTransaction`. The `signTransaction` method now supports protocol buffers from rippled.
