@@ -2,9 +2,9 @@ const path = require("path");
 
 module.exports = {
   target: "web",
-  mode: "development",
+  mode: "production",
   entry: "./src/index.ts",
-  devtool: "true",
+  devtool: "false",
   module: {
     rules: [
       {
