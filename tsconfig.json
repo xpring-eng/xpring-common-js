@@ -4,6 +4,7 @@
     "target": "ESNext",
     "module": "commonjs",
     "sourceMap": true,
+    "declaration": true,
     "removeComments": true,
     "strict": true,
     "resolveJsonModule": true,
@@ -11,6 +12,9 @@
     "noImplicitAny": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*", "test/**/*"
+  ],
+  "exclude": [
+    "test/**/*"
   ]
 }

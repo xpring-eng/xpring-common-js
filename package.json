@@ -22,9 +22,9 @@
     "ripple-keypairs": "^0.11.0"
   },
   "scripts": {
-    "build": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && webpack",
+    "build": "npm run clean && ./scripts/regenerate_protos.sh && webpack && ./scripts/copy_typescript_types.sh",
     "clean": "rm -rf ./src/generated ./dist ./build",
-    "pretest": "npm run build",
+    "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint",
     "lint": "eslint **/*.ts",
     "lint:fix": "eslint **/*.ts --fix",
     "test": "nyc mocha",
@@ -49,6 +49,7 @@
     "nyc": "15.0.0",
     "prettier": "1.19.1",
     "source-map-support": "0.5.16",
+    "ts-loader": "^6.2.1",
     "ts-node": "8.6.2",
     "typescript": "3.7.4",
     "typescript-eslint-parser": "22.0.0",
