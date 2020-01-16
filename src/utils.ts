@@ -4,6 +4,8 @@ import { createHash } from "crypto";
 
 const addressCodec = require("ripple-address-codec");
 
+/* eslint-disable no-console */
+
 /**
  * A prefex applied when hashing a signed transaction blob.
  *
@@ -36,6 +38,7 @@ class Utils {
    * @returns True if the address is valid, otherwise false.
    */
   public static isValidAddress(address: string): boolean {
+    console.log("HITTING NEW CODE");
     return (
       addressCodec.isValidClassicAddress(address) ||
       addressCodec.isValidXAddress(address)
