@@ -1,6 +1,6 @@
 {
   "name": "xpring-common-js",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Common JavaScript for use within the Xpring Platform",
   "main": "build/index.js",
   "repository": "https://github.com/xpring-eng/xpring-common-js.git",

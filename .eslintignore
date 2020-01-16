@@ -1,3 +1,2 @@
-# Do not lint generated files.
-src/generated/*.ts
+# Do not lint build files.
 build/**/*

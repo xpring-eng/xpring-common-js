@@ -23,14 +23,6 @@ $PWD/node_modules/grpc-tools/bin/protoc \
     --proto_path $PROTO_PATH \
     ./rippled/src/ripple/proto/rpc/v1/*.proto
 
-# Generate typescript declaration files.
-# $PWD/node_modules/grpc-tools/bin/protoc \
-#     --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts \
-#     --ts_out=$TS_OUT_DIR \
-#     --ts_out=$JS_OUT_DIR \
-#     --proto_path=$PROTO_PATH \
-#     ./rippled/src/ripple/proto/rpc/v1/*.proto
-
 ##########################################################################
 # Regenerate legacy protocol buffers.
 # TODO(keefertaylor): Remove this when rippled fully supports gRPC.
@@ -50,13 +42,5 @@ $PWD/node_modules/grpc-tools/bin/protoc \
     --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` \
     --proto_path=$PWD/xpring-common-protocol-buffers/proto \
     $PWD/xpring-common-protocol-buffers/**/*.proto
-
-# Generate typescript declaration files.
-# $PWD/node_modules/grpc-tools/bin/protoc \
-#     --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts \
-#     --ts_out=$LEGACY_TS_OUT_DIR \
-#     --ts_out=$LEGACY_JS_OUT_DIR \
-#     --proto_path=$PWD/xpring-common-protocol-buffers/proto \
-#     $PWD/xpring-common-protocol-buffers/**/*.proto
 
 echo "All done!"
