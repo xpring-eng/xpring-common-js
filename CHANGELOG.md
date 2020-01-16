@@ -18,3 +18,8 @@ This release adds support for (protocol buffers in rippled)[https://github.com/r
 - Support for rippled protocol buffer serialization and signing.
 - `Serializer`'s `transactionToJSON` method is renamed `legacyTransactionToJSON`. The `transactionToJSON` method now supports protocol buffers from rippled.
 - `Signers`'s `signTransaction` method is renamed to `signLegacyTransaction`. The `signTransaction` method now supports protocol buffers from rippled.
+
+### Breaking Changes
+
+- Clients who called `Serializer`'s `transactionToJSON` should migrate to using the `legacyTransactionToJSON` method.
+- Clients who called `Signers`'s `signTransaction` should migrate to using the `signLegacyTransaction` method.
