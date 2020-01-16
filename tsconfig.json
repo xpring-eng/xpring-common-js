@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./build",
+    "outDir": "build",
     "target": "ESNext",
     "module": "commonjs",
     "sourceMap": true,
@@ -9,8 +9,7 @@
     "removeComments": true,
     "strict": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "noImplicitAny": true
+    "esModuleInterop": true
   },
   "include": [
     "src/**/*"
