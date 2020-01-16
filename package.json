@@ -29,7 +29,7 @@
     "lint": "eslint **/*.ts",
     "lint:fix": "eslint **/*.ts --fix",
     "test": "nyc mocha",
-    "prepublishOnly": "npm test && npm run build"
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@types/chai": "4.2.7",
