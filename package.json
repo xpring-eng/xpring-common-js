@@ -72,6 +72,8 @@
       "ts-node/register/transpile-only",
       "source-map-support/register"
     ],
-    "extension": ["ts"]
+    "extension": [
+      "ts"
+    ]
   }
 }
