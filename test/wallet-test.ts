@@ -1,5 +1,5 @@
-import Wallet from "../src/wallet";
 import { assert } from "chai";
+import Wallet from "../src/wallet";
 import "mocha";
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -21,7 +21,7 @@ const derivationPathTestCases = {
     expectedTestNetAddress: "TVHLFWLKvbMv1LFzd6FA2Bf9MPpcy4mRto4VFAAxLuNpvdW",
     messageHex: new Buffer("test message", "utf-8").toString("hex"),
     expectedSignature:
-      "3045022100E10177E86739A9C38B485B6AA04BF2B9AA00E79189A1132E7172B70F400ED1170220566BD64AA3F01DDE8D99DFFF0523D165E7DD2B9891ABDA1944E2F3A52CCCB83A"
+      "3045022100E10177E86739A9C38B485B6AA04BF2B9AA00E79189A1132E7172B70F400ED1170220566BD64AA3F01DDE8D99DFFF0523D165E7DD2B9891ABDA1944E2F3A52CCCB83A",
   },
   index1: {
     mnemonic:
@@ -31,8 +31,8 @@ const derivationPathTestCases = {
       "038BF420B5271ADA2D7479358FF98A29954CF18DC25155184AEAD05796DA737E89",
     expectedPrivateKey:
       "000974B4CFE004A2E6C4364CBF3510A36A352796728D0861F6B555ED7E54A70389",
-    expectedAddress: "X7uRz9jfzHUFEjZTZ7rMVzFuTGZTHWcmkKjvGkNqVbfMhca"
-  }
+    expectedAddress: "X7uRz9jfzHUFEjZTZ7rMVzFuTGZTHWcmkKjvGkNqVbfMhca",
+  },
 };
 
 describe("wallet", function(): void {
@@ -45,51 +45,53 @@ describe("wallet", function(): void {
     assert.exists(walletGenerationResult!.mnemonic);
     assert.equal(
       walletGenerationResult!.derivationPath,
-      Wallet.getDefaultDerivationPath()
+      Wallet.getDefaultDerivationPath(),
     );
   });
 
   it("generateRandomWallet - entropy and mainnet", function(): void {
     // WHEN a new wallet is generated with entropy on MainNet.
     const walletGenerationResult = Wallet.generateRandomWallet(
-      "00000000000000000000000000000000"
+      "00000000000000000000000000000000",
     );
 
     // THEN the result exists and has the default derivation path.
     assert.exists(walletGenerationResult);
     assert.equal(
       walletGenerationResult!.mnemonic,
-      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
     );
     assert.equal(
       walletGenerationResult!.derivationPath,
-      Wallet.getDefaultDerivationPath()
+      Wallet.getDefaultDerivationPath(),
     );
     assert.equal(
-      walletGenerationResult!.wallet.getAddress(), "XVMFQQBMhdouRqhPMuawgBMN1AVFTofPAdRsXG5RkPtUPNQ"
-    )
+      walletGenerationResult!.wallet.getAddress(),
+      "XVMFQQBMhdouRqhPMuawgBMN1AVFTofPAdRsXG5RkPtUPNQ",
+    );
   });
 
   it("generateRandomWallet - entropy and testnet", function(): void {
     // WHEN a new wallet is generated with entropy on TestNet
     const walletGenerationResult = Wallet.generateRandomWallet(
       "00000000000000000000000000000000",
-      true
+      true,
     );
 
     // THEN the result exists and has the default derivation path.
     assert.exists(walletGenerationResult);
     assert.equal(
       walletGenerationResult!.mnemonic,
-      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
     );
     assert.equal(
       walletGenerationResult!.derivationPath,
-      Wallet.getDefaultDerivationPath()
+      Wallet.getDefaultDerivationPath(),
     );
     assert.equal(
-      walletGenerationResult!.wallet.getAddress(), "TVHLFWLKvbMv1LFzd6FA2Bf9MPpcy4mRto4VFAAxLuNpvdW"
-    )
+      walletGenerationResult!.wallet.getAddress(),
+      "TVHLFWLKvbMv1LFzd6FA2Bf9MPpcy4mRto4VFAAxLuNpvdW",
+    );
   });
 
   it("generateRandomWallet - invalid entropy", function(): void {
@@ -107,7 +109,7 @@ describe("wallet", function(): void {
     // WHEN a new wallet is generated on MainNet with the mnemonic and derivation path.
     const wallet = Wallet.generateWalletFromMnemonic(
       testData.mnemonic,
-      testData.derivationPath
+      testData.derivationPath,
     )!;
 
     // THEN the wallet has the expected address and keys.
@@ -124,7 +126,7 @@ describe("wallet", function(): void {
     const wallet = Wallet.generateWalletFromMnemonic(
       testData.mnemonic,
       testData.derivationPath,
-      true
+      true,
     )!;
 
     // THEN the wallet has the expected address and keys.
@@ -140,7 +142,7 @@ describe("wallet", function(): void {
     // WHEN a new wallet is generated with the mnemonic and derivation path.
     const wallet = Wallet.generateWalletFromMnemonic(
       testData.mnemonic,
-      testData.derivationPath
+      testData.derivationPath,
     )!;
 
     // THEN the wallet has the expected address and keys.
@@ -184,7 +186,7 @@ describe("wallet", function(): void {
     // THEN the wallet has the expected address.
     assert.equal(
       wallet!.getAddress(),
-      "XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8"
+      "XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8",
     );
   });
 
@@ -199,7 +201,7 @@ describe("wallet", function(): void {
     // THEN the wallet has the expected address.
     assert.equal(
       wallet!.getAddress(),
-      "T7zFmeZo6uLHP4Vd21TpXjrTBk487ZQPGVQsJ1mKWGCD5rq"
+      "T7zFmeZo6uLHP4Vd21TpXjrTBk487ZQPGVQsJ1mKWGCD5rq",
     );
   });
 
@@ -219,7 +221,7 @@ describe("wallet", function(): void {
     const testData = derivationPathTestCases.index0;
     const wallet = Wallet.generateWalletFromMnemonic(
       testData.mnemonic,
-      testData.derivationPath
+      testData.derivationPath,
     )!;
 
     // WHEN the wallet signs a hex message.
@@ -234,7 +236,7 @@ describe("wallet", function(): void {
     const testData = derivationPathTestCases.index0;
     const wallet = Wallet.generateWalletFromMnemonic(
       testData.mnemonic,
-      testData.derivationPath
+      testData.derivationPath,
     )!;
     const message = "xrp";
 
@@ -250,7 +252,7 @@ describe("wallet", function(): void {
     const testData = derivationPathTestCases.index0;
     const wallet = Wallet.generateWalletFromMnemonic(
       testData.mnemonic,
-      testData.derivationPath
+      testData.derivationPath,
     )!;
     const message = testData.messageHex;
     const signature = testData.expectedSignature;
@@ -267,7 +269,7 @@ describe("wallet", function(): void {
     const testData = derivationPathTestCases.index0;
     const wallet = Wallet.generateWalletFromMnemonic(
       testData.mnemonic,
-      testData.derivationPath
+      testData.derivationPath,
     )!;
     const message = testData.messageHex;
     const signature = "DEADBEEF";
@@ -284,7 +286,7 @@ describe("wallet", function(): void {
     const testData = derivationPathTestCases.index0;
     const wallet = Wallet.generateWalletFromMnemonic(
       testData.mnemonic,
-      testData.derivationPath
+      testData.derivationPath,
     )!;
     const message = testData.messageHex;
     const signature = "xrp";
@@ -301,7 +303,7 @@ describe("wallet", function(): void {
     const testData = derivationPathTestCases.index0;
     const wallet = Wallet.generateWalletFromMnemonic(
       testData.mnemonic,
-      testData.derivationPath
+      testData.derivationPath,
     )!;
     const message = "xrp";
     const signature = testData.expectedSignature;
@@ -318,7 +320,7 @@ describe("wallet", function(): void {
     const testData = derivationPathTestCases.index0;
     const wallet = Wallet.generateWalletFromMnemonic(
       testData.mnemonic,
-      testData.derivationPath
+      testData.derivationPath,
     )!;
     const message = "";
 
@@ -335,7 +337,7 @@ describe("wallet", function(): void {
     const testData = derivationPathTestCases.index0;
     const wallet = Wallet.generateWalletFromMnemonic(
       testData.mnemonic,
-      testData.derivationPath
+      testData.derivationPath,
     )!;
     const message = "";
     const signature = "DEADBEEF";

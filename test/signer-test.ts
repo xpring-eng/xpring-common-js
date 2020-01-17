@@ -1,12 +1,16 @@
+import { assert } from "chai";
 import FakeWallet from "./fakes/fake-wallet";
 import { Payment as LegacyPayment } from "../generated/legacy/payment_pb";
 import Signer from "../src/signer";
 import { Transaction as LegacyTransaction } from "../generated/legacy/transaction_pb";
 import Utils from "../src/utils";
 import { XRPAmount } from "../generated/legacy/xrp_amount_pb";
-import { assert } from "chai";
 import "mocha";
-import { AccountAddress, CurrencyAmount, XRPDropsAmount } from "../generated/rpc/v1/amount_pb";
+import {
+  AccountAddress,
+  CurrencyAmount,
+  XRPDropsAmount,
+} from "../generated/rpc/v1/amount_pb";
 import { Payment, Transaction } from "../generated/rpc/v1/transaction_pb";
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -49,12 +53,12 @@ describe("signer", function(): void {
 
     assert.equal(
       signedTransaction!.getTransactionSignatureHex(),
-      fakeSignature
+      fakeSignature,
     );
 
     assert.deepEqual(
       signedTransaction!.getTransaction()!.toObject(),
-      transaction.toObject()
+      transaction.toObject(),
     );
   });
 
@@ -100,10 +104,6 @@ describe("signer", function(): void {
     // THEN the signing artifacts are as expected.
     assert.exists(signature);
     assert.isTrue(Utils.isHex(signature!));
-    assert.equal(
-      signature,
-      fakeSignature
-    );
+    assert.equal(signature, fakeSignature);
   });
 });
-

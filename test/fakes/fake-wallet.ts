@@ -24,7 +24,7 @@ class FakeWallet extends Wallet {
   constructor(
     private signature: string,
     publicKey = defaultPublicKey,
-    privateKey = defaultPrivateKey
+    privateKey = defaultPrivateKey,
   ) {
     super(publicKey, privateKey);
   }

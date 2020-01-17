@@ -46,7 +46,7 @@ class Wallet {
    */
   public static generateRandomWallet(
     entropy: string | undefined = undefined,
-    test: boolean = false
+    test = false,
   ): WalletGenerationResult | undefined {
     if (entropy && !Utils.isHex(entropy)) {
       return undefined;
@@ -57,10 +57,14 @@ class Wallet {
         ? bip39.generateMnemonic()
         : bip39.entropyToMnemonic(entropy);
     const derivationPath = Wallet.getDefaultDerivationPath();
-    const wallet = Wallet.generateWalletFromMnemonic(mnemonic, derivationPath, test);
+    const wallet = Wallet.generateWalletFromMnemonic(
+      mnemonic,
+      derivationPath,
+      test,
+    );
     return wallet == undefined
       ? undefined
-      : { wallet: wallet, mnemonic: mnemonic, derivationPath: derivationPath };
+      : { wallet, mnemonic, derivationPath };
   }
 
   /**
@@ -74,7 +78,7 @@ class Wallet {
   public static generateWalletFromMnemonic(
     mnemonic: string,
     derivationPath = Wallet.getDefaultDerivationPath(),
-    test: boolean = false
+    test = false,
   ): Wallet | undefined {
     // Validate mnemonic and path are valid.
     if (!bip39.validateMnemonic(mnemonic)) {
@@ -96,13 +100,13 @@ class Wallet {
   public static generateHDWalletFromSeed(
     seed: string,
     derivationPath = Wallet.getDefaultDerivationPath(),
-    test: boolean = false
+    test = false,
   ): Wallet | undefined {
     const masterNode = bip32.fromSeed(seed);
     const node = masterNode.derivePath(derivationPath);
     const publicKey = Wallet.hexFromBuffer(node.publicKey);
     const privateKey = Wallet.hexFromBuffer(node.privateKey);
-    return new Wallet(publicKey, "00" + privateKey, test);
+    return new Wallet(publicKey, `00${privateKey}`, test);
   }
 
   /**
@@ -114,7 +118,7 @@ class Wallet {
    */
   public static generateWalletFromSeed(
     seed: string,
-    test: boolean = false
+    test = false,
   ): Wallet | undefined {
     try {
       const keyPair = rippleKeyPair.deriveKeypair(seed);
@@ -134,7 +138,7 @@ class Wallet {
   public constructor(
     private readonly publicKey: string,
     private readonly privateKey: string,
-    private readonly test: boolean = false
+    private readonly test: boolean = false,
   ) {}
 
   /**

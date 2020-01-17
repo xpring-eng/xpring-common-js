@@ -1,5 +1,3 @@
-"use strict";
-
 import Serializer from "./serializer";
 import { SignedTransaction } from "../generated/legacy/signed_transaction_pb";
 import { Transaction as LegacyTransaction } from "../generated/legacy/transaction_pb";
@@ -21,13 +19,13 @@ class Signer {
    */
   public static signTransaction(
     transaction: Transaction,
-    wallet: Wallet
+    wallet: Wallet,
   ): string | undefined {
     if (transaction === undefined || wallet === undefined) {
       return undefined;
     }
 
-    var transactionJSON = Serializer.transactionToJSON(transaction);
+    const transactionJSON = Serializer.transactionToJSON(transaction);
     if (transactionJSON === undefined) {
       return undefined;
     }
@@ -45,13 +43,13 @@ class Signer {
    */
   public static signLegacyTransaction(
     transaction: LegacyTransaction,
-    wallet: Wallet
+    wallet: Wallet,
   ): SignedTransaction | undefined {
     if (transaction === undefined || wallet === undefined) {
       return undefined;
     }
 
-    var transactionJSON = Serializer.legacyTransactionToJSON(transaction);
+    const transactionJSON = Serializer.legacyTransactionToJSON(transaction);
     if (transactionJSON === undefined) {
       return undefined;
     }
