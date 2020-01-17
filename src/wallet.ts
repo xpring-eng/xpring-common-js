@@ -1,8 +1,7 @@
 import Utils from "./utils";
-
-const bip32 = require("bip32");
-const bip39 = require("bip39");
-const rippleKeyPair = require("ripple-keypairs");
+import * as bip32 from "bip32";
+import * as bip39 from "bip39";
+import * as rippleKeyPair from "ripple-keypairs";
 
 /**
  * The default derivation path to use with BIP44.
@@ -98,13 +97,14 @@ class Wallet {
    * @returns A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
   public static generateHDWalletFromSeed(
-    seed: string,
+    seed: Buffer,
     derivationPath = Wallet.getDefaultDerivationPath(),
     test = false
   ): Wallet | undefined {
     const masterNode = bip32.fromSeed(seed);
     const node = masterNode.derivePath(derivationPath);
     const publicKey = Wallet.hexFromBuffer(node.publicKey);
+    if (!node.privateKey) return undefined;
     const privateKey = Wallet.hexFromBuffer(node.privateKey);
     return new Wallet(publicKey, "00" + privateKey, test);
   }

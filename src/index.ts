@@ -17,7 +17,5 @@ export { TransactionStatus } from "./generated/legacy/transaction_status_pb";
 export { Transaction } from "./generated/legacy/transaction_pb";
 
 export { default as Wallet } from "./wallet";
-export { WalletGenerationResult } from "./wallet";
 export { default as Utils } from "./utils";
-export { ClassicAddress } from "./utils";
 export { default as Serializer } from "./serializer";

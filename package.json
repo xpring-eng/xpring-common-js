@@ -6,9 +6,6 @@
   "repository": "https://github.com/xpring-eng/xpring-common-js.git",
   "author": "Xpring Engineering",
   "license": "MIT",
-  "directories": {
-    "tests": "tests"
-  },
   "files": [
     "build/**/*"
   ],
@@ -21,7 +18,7 @@
     "ripple-keypairs": "^0.11.0"
   },
   "scripts": {
-    "build": "npm run test && tsc -d",
+    "build": "npm run test && tsc -d && ./scripts/copy_typescript_types.sh",
     "webpack": "npm run test && webpack && ./scripts/copy_typescript_types.sh",
     "clean": "rm -rf ./src/generated ./dist ./build",
     "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint",
@@ -69,5 +66,12 @@
     "all": true,
     "check-coverage": true,
     "check-leaks": true
+  },
+  "mocha": {
+    "require": [
+      "ts-node/register/transpile-only",
+      "source-map-support/register"
+    ],
+    "extension": ["ts"]
   }
 }
