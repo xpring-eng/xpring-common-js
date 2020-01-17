@@ -1,18 +1,18 @@
-import { Payment as LegacyPayment } from "../generated/legacy/payment_pb";
-import { Transaction as LegacyTransaction } from "../generated/legacy/transaction_pb";
-import { XRPAmount } from "../generated/legacy/xrp_amount_pb";
-import { XRPDropsAmount } from "../generated/rpc/v1/amount_pb";
-import { Payment, Transaction } from "../generated/rpc/v1/transaction_pb";
-import Utils from "./utils";
+import { Payment as LegacyPayment } from '../generated/legacy/payment_pb'
+import { Transaction as LegacyTransaction } from '../generated/legacy/transaction_pb'
+import { XRPAmount } from '../generated/legacy/xrp_amount_pb'
+import { XRPDropsAmount } from '../generated/rpc/v1/amount_pb'
+import { Payment, Transaction } from '../generated/rpc/v1/transaction_pb'
+import Utils from './utils'
 
 /* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface PaymentJSON {
-  Amount: object | string;
-  Destination: string;
-  DestinationTag?: number;
-  TransactionType: string;
+  Amount: object | string
+  Destination: string
+  DestinationTag?: number
+  TransactionType: string
 }
 
 /**
@@ -29,82 +29,78 @@ class Serializer {
     transaction: Transaction,
   ): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
-    const object: any = transaction.toObject();
+    const object: any = transaction.toObject()
 
     // Convert fields names where direct conversion is possible.
-    this.convertPropertyName("sequence", "Sequence", object);
-    this.convertPropertyName("signingPublicKey", "SigningPubKey", object);
-    this.convertPropertyName(
-      "lastLedgerSequence",
-      "LastLedgerSequence",
-      object,
-    );
+    this.convertPropertyName('sequence', 'Sequence', object)
+    this.convertPropertyName('signingPublicKey', 'SigningPubKey', object)
+    this.convertPropertyName('lastLedgerSequence', 'LastLedgerSequence', object)
 
     // Delete unsupported fields from the protocol buffer.
-    [
-      "memosList",
-      "flags",
-      "signature",
-      "signersList",
-      "sourceTag",
-      "accountTransactionId",
-    ].forEach((key): boolean => delete object[key]);
+    ;[
+      'memosList',
+      'flags',
+      'signature',
+      'signersList',
+      'sourceTag',
+      'accountTransactionId',
+    ].forEach((key): boolean => delete object[key])
 
     // Encode SigningPubKey to hex, which is what ripple-binary-codec expects.
-    object.SigningPubKey = Utils.toHex(transaction.getSigningPublicKey_asU8());
+    object.SigningPubKey = Utils.toHex(transaction.getSigningPublicKey_asU8())
 
     // Convert account field, handling X-Addresses if needed.
-    const accountAddress = transaction.getAccount();
+    const accountAddress = transaction.getAccount()
     if (!accountAddress) {
-      return;
+      return
     }
-    const account = accountAddress.getAddress();
+    const account = accountAddress.getAddress()
     if (!account || !Utils.isValidAddress(account)) {
-      return;
+      return
     }
 
-    let normalizedAccount = account;
+    let normalizedAccount = account
     if (Utils.isValidXAddress(account)) {
-      const decodedClassicAddress = Utils.decodeXAddress(account);
+      const decodedClassicAddress = Utils.decodeXAddress(account)
       if (!decodedClassicAddress) {
-        return;
+        return
       }
 
       // Accounts cannot have a tag.
       if (decodedClassicAddress.tag !== undefined) {
-        return;
+        return
       }
 
-      normalizedAccount = decodedClassicAddress.address;
+      normalizedAccount = decodedClassicAddress.address
     }
-    object.Account = normalizedAccount;
-    delete object.account;
+    object.Account = normalizedAccount
+    delete object.account
 
     // Convert XRP denominated fee field.
-    const txFee = transaction.getFee();
+    const txFee = transaction.getFee()
     if (txFee === undefined) {
-      return;
+      return
     }
-    object.Fee = this.xrpAmountToJSON(txFee);
-    delete object.fee;
+    object.Fee = this.xrpAmountToJSON(txFee)
+    delete object.fee
 
     // Delete all fields from the transaction data one of before they get rewritten below.
-    delete object.payment;
+    delete object.payment
 
     // Convert additional transaction data.
-    const transactionDataCase = transaction.getTransactionDataCase();
+    const transactionDataCase = transaction.getTransactionDataCase()
     switch (transactionDataCase) {
       case Transaction.TransactionDataCase.PAYMENT: {
-        const payment = transaction.getPayment();
+        const payment = transaction.getPayment()
         if (payment === undefined) {
-          return;
+          return
         }
-        Object.assign(object, this.paymentToJSON(payment));
-        break;
+        Object.assign(object, this.paymentToJSON(payment))
+        break
       }
     }
 
-    return object;
+    return object
   }
 
   /**
@@ -116,42 +112,42 @@ class Serializer {
   private static paymentToJSON(payment: Payment): object | undefined {
     const json: PaymentJSON = {
       Amount: {},
-      Destination: "",
-      TransactionType: "Payment",
-    };
+      Destination: '',
+      TransactionType: 'Payment',
+    }
 
     // If an x-address was able to be decoded, add the components to the json.
-    const destinationAddress = payment.getDestination();
+    const destinationAddress = payment.getDestination()
     if (!destinationAddress) {
       return
     }
 
-    const destination = destinationAddress.getAddress();
+    const destination = destinationAddress.getAddress()
     if (!destination) {
       return
     }
 
-    const decodedXAddress = Utils.decodeXAddress(destination);
+    const decodedXAddress = Utils.decodeXAddress(destination)
     if (!decodedXAddress) {
-      json.Destination = destination;
-      delete json.DestinationTag;
+      json.Destination = destination
+      delete json.DestinationTag
     } else {
-      json.Destination = decodedXAddress.address;
+      json.Destination = decodedXAddress.address
       if (decodedXAddress.tag !== undefined) {
-        json.DestinationTag = decodedXAddress.tag;
+        json.DestinationTag = decodedXAddress.tag
       }
     }
 
-    const amount = payment.getAmount();
+    const amount = payment.getAmount()
     if (!amount) {
-      return;
+      return
     }
     const xrpAmount = amount.getXrpAmount()
     if (!xrpAmount) {
-      return;
+      return
     }
     json.Amount = this.xrpAmountToJSON(xrpAmount)
-    return json;
+    return json
   }
 
   /**
@@ -161,7 +157,7 @@ class Serializer {
    * @returns The XRPAmount as JSON.
    */
   private static xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
-    return `${xrpDropsAmount.getDrops()}`;
+    return `${xrpDropsAmount.getDrops()}`
   }
 
   /**
@@ -174,65 +170,61 @@ class Serializer {
     transaction: LegacyTransaction,
   ): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
-    const object: any = transaction.toObject();
+    const object: any = transaction.toObject()
 
     // Convert fields names where direct conversion is possible.
-    this.convertPropertyName("sequence", "Sequence", object);
-    this.convertPropertyName("signingPublicKeyHex", "SigningPubKey", object);
-    this.convertPropertyName(
-      "lastLedgerSequence",
-      "LastLedgerSequence",
-      object,
-    );
+    this.convertPropertyName('sequence', 'Sequence', object)
+    this.convertPropertyName('signingPublicKeyHex', 'SigningPubKey', object)
+    this.convertPropertyName('lastLedgerSequence', 'LastLedgerSequence', object)
 
     // Convert account field, handling X-Addresses if needed.
-    const account = transaction.getAccount();
+    const account = transaction.getAccount()
     if (!account || !Utils.isValidAddress(account)) {
-      return;
+      return
     }
 
-    let normalizedAccount = account;
+    let normalizedAccount = account
     if (Utils.isValidXAddress(account)) {
-      const decodedClassicAddress = Utils.decodeXAddress(account);
+      const decodedClassicAddress = Utils.decodeXAddress(account)
       if (!decodedClassicAddress) {
-        return;
+        return
       }
 
       // Accounts cannot have a tag.
       if (decodedClassicAddress.tag !== undefined) {
-        return;
+        return
       }
 
-      normalizedAccount = decodedClassicAddress.address;
+      normalizedAccount = decodedClassicAddress.address
     }
-    object.Account = normalizedAccount;
-    delete object.account;
+    object.Account = normalizedAccount
+    delete object.account
 
     // Convert XRP denominated fee field.
-    const txFee = transaction.getFee();
+    const txFee = transaction.getFee()
     if (txFee === undefined) {
-      return;
+      return
     }
-    object.Fee = this.legacyXRPAmountToJSON(txFee);
-    delete object.fee;
+    object.Fee = this.legacyXRPAmountToJSON(txFee)
+    delete object.fee
 
     // Delete all fields from the transaction data one of before they get rewritten below.
-    delete object.payment;
+    delete object.payment
 
     // Convert additional transaction data.
-    const transactionDataCase = transaction.getTransactionDataCase();
+    const transactionDataCase = transaction.getTransactionDataCase()
     switch (transactionDataCase) {
       case Transaction.TransactionDataCase.PAYMENT: {
-        const payment = transaction.getPayment();
+        const payment = transaction.getPayment()
         if (payment === undefined) {
-          return;
+          return
         }
-        Object.assign(object, this.legacyPaymentToJSON(payment));
-        break;
+        Object.assign(object, this.legacyPaymentToJSON(payment))
+        break
       }
     }
 
-    return object;
+    return object
   }
 
   /**
@@ -246,37 +238,37 @@ class Serializer {
   ): object | undefined {
     const json: PaymentJSON = {
       Amount: {},
-      Destination: "",
-      TransactionType: "Payment",
-    };
+      Destination: '',
+      TransactionType: 'Payment',
+    }
 
     // If an x-address was able to be decoded, add the components to the json.
-    const decodedXAddress = Utils.decodeXAddress(payment.getDestination());
+    const decodedXAddress = Utils.decodeXAddress(payment.getDestination())
     if (!decodedXAddress) {
-      json.Destination = payment.getDestination();
-      delete json.DestinationTag;
+      json.Destination = payment.getDestination()
+      delete json.DestinationTag
     } else {
-      json.Destination = decodedXAddress.address;
+      json.Destination = decodedXAddress.address
       if (decodedXAddress.tag !== undefined) {
-        json.DestinationTag = decodedXAddress.tag;
+        json.DestinationTag = decodedXAddress.tag
       }
     }
 
-    const amountCase = payment.getAmountCase();
+    const amountCase = payment.getAmountCase()
     switch (amountCase) {
       case LegacyPayment.AmountCase.FIAT_AMOUNT: {
-        return;
+        return
       }
       case LegacyPayment.AmountCase.XRP_AMOUNT: {
-        const xrpAmount = payment.getXrpAmount();
+        const xrpAmount = payment.getXrpAmount()
         if (xrpAmount === undefined) {
-          return;
+          return
         }
-        json.Amount = this.legacyXRPAmountToJSON(xrpAmount);
-        break;
+        json.Amount = this.legacyXRPAmountToJSON(xrpAmount)
+        break
       }
     }
-    return json;
+    return json
   }
 
   /**
@@ -286,7 +278,7 @@ class Serializer {
    * @return {String} The XRPAmount as JSON.
    */
   private static legacyXRPAmountToJSON(xrpAmount: XRPAmount): string {
-    return `${xrpAmount.getDrops()}`;
+    return `${xrpAmount.getDrops()}`
   }
 
   /**
@@ -303,9 +295,9 @@ class Serializer {
     newPropertyName: string,
     object: any,
   ): void {
-    object[newPropertyName] = object[oldPropertyName];
-    delete object[oldPropertyName];
+    object[newPropertyName] = object[oldPropertyName]
+    delete object[oldPropertyName]
   }
 }
 
-export default Serializer;
+export default Serializer

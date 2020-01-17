@@ -1,10 +1,10 @@
-import Serializer from "./serializer";
-import { SignedTransaction } from "../generated/legacy/signed_transaction_pb";
-import { Transaction as LegacyTransaction } from "../generated/legacy/transaction_pb";
-import { Transaction } from "../generated/rpc/v1/transaction_pb";
-import Wallet from "./wallet";
+import Serializer from './serializer'
+import { SignedTransaction } from '../generated/legacy/signed_transaction_pb'
+import { Transaction as LegacyTransaction } from '../generated/legacy/transaction_pb'
+import { Transaction } from '../generated/rpc/v1/transaction_pb'
+import Wallet from './wallet'
 
-const rippleCodec = require("ripple-binary-codec");
+const rippleCodec = require('ripple-binary-codec')
 
 /**
  * Abstracts the details of signing.
@@ -22,16 +22,16 @@ class Signer {
     wallet: Wallet,
   ): string | undefined {
     if (transaction === undefined || wallet === undefined) {
-      return undefined;
+      return undefined
     }
 
-    const transactionJSON = Serializer.transactionToJSON(transaction);
+    const transactionJSON = Serializer.transactionToJSON(transaction)
     if (transactionJSON === undefined) {
-      return undefined;
+      return undefined
     }
-    const transactionHex = rippleCodec.encodeForSigning(transactionJSON);
+    const transactionHex = rippleCodec.encodeForSigning(transactionJSON)
 
-    return wallet.sign(transactionHex);
+    return wallet.sign(transactionHex)
   }
 
   /**
@@ -46,26 +46,26 @@ class Signer {
     wallet: Wallet,
   ): SignedTransaction | undefined {
     if (transaction === undefined || wallet === undefined) {
-      return undefined;
+      return undefined
     }
 
-    const transactionJSON = Serializer.legacyTransactionToJSON(transaction);
+    const transactionJSON = Serializer.legacyTransactionToJSON(transaction)
     if (transactionJSON === undefined) {
-      return undefined;
+      return undefined
     }
-    const transactionHex = rippleCodec.encodeForSigning(transactionJSON);
+    const transactionHex = rippleCodec.encodeForSigning(transactionJSON)
 
-    const signatureHex = wallet.sign(transactionHex);
+    const signatureHex = wallet.sign(transactionHex)
     if (signatureHex == undefined) {
-      return undefined;
+      return undefined
     }
 
-    const signedTransaction = new SignedTransaction();
-    signedTransaction.setTransaction(transaction);
-    signedTransaction.setTransactionSignatureHex(signatureHex);
+    const signedTransaction = new SignedTransaction()
+    signedTransaction.setTransaction(transaction)
+    signedTransaction.setTransactionSignatureHex(signatureHex)
 
-    return signedTransaction;
+    return signedTransaction
   }
 }
 
-export default Signer;
+export default Signer

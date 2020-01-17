@@ -1,16 +1,16 @@
-import Wallet from "../../src/wallet";
+import Wallet from '../../src/wallet'
 
 /**
  * A public key to default to.
  */
 const defaultPublicKey =
-  "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE";
+  '031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE'
 
 /**
  * A private key to default to.
  */
 const defaultPrivateKey =
-  "0090802A50AA84EFB6CDB225F17C27616EA94048C179142FECF03F4712A07EA7A4";
+  '0090802A50AA84EFB6CDB225F17C27616EA94048C179142FECF03F4712A07EA7A4'
 
 /**
  * A fake wallet which always produces the given signature.
@@ -26,7 +26,7 @@ class FakeWallet extends Wallet {
     publicKey = defaultPublicKey,
     privateKey = defaultPrivateKey,
   ) {
-    super(publicKey, privateKey);
+    super(publicKey, privateKey)
   }
 
   /**
@@ -35,8 +35,8 @@ class FakeWallet extends Wallet {
    * @param {String} hex The hex to sign.
    */
   sign(_hex: string): string {
-    return this.signature;
+    return this.signature
   }
 }
 
-export default FakeWallet;
+export default FakeWallet
