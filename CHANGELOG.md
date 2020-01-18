@@ -18,7 +18,6 @@ The release switches us over to using gRPC-Web instead of the node.js version of
 - Fixed the lint issues found in the src as well as the tests.
 - Moved the generated files that are being consumed by the build process into the src.
 - Updated our webpack configuration to use UMD (Universal module definitions) to support both web and node.js.
-- Added a .vscode > settings.json to help with the prettier and eslint automation.
 
 ## [2.0.0] - 2019-02-15
 
