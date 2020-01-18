@@ -57,7 +57,11 @@ class Wallet {
         ? bip39.generateMnemonic()
         : bip39.entropyToMnemonic(entropy);
     const derivationPath = Wallet.getDefaultDerivationPath();
-    const wallet = Wallet.generateWalletFromMnemonic(mnemonic, derivationPath, test);
+    const wallet = Wallet.generateWalletFromMnemonic(
+      mnemonic,
+      derivationPath,
+      test
+    );
     return wallet == undefined
       ? undefined
       : { wallet: wallet, mnemonic: mnemonic, derivationPath: derivationPath };

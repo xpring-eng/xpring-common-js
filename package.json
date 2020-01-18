@@ -10,7 +10,6 @@
     "build/**/*"
   ],
   "dependencies": {
-    "@types/google-protobuf": "^3.7.2",
     "bip32": "2.0.5",
     "bip39": "^3.0.2",
     "google-protobuf": "3.11.2",
@@ -31,6 +30,7 @@
   },
   "devDependencies": {
     "@types/chai": "4.2.7",
+    "@types/google-protobuf": "^3.7.2",
     "@types/mocha": "5.2.7",
     "@typescript-eslint/eslint-plugin": "2.16.0",
     "@typescript-eslint/parser": "2.16.0",
@@ -47,6 +47,7 @@
     "nyc": "15.0.0",
     "prettier": "1.19.1",
     "source-map-support": "0.5.16",
+    "ts-loader": "^6.2.1",
     "ts-node": "8.6.2",
     "typescript": "3.7.5",
     "typescript-eslint-parser": "22.0.0",

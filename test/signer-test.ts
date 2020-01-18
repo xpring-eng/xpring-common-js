@@ -6,7 +6,11 @@ import Utils from "../src/utils";
 import { XRPAmount } from "../src/generated/legacy/xrp_amount_pb";
 import { assert } from "chai";
 import "mocha";
-import { AccountAddress, CurrencyAmount, XRPDropsAmount } from "../src/generated/rpc/v1/amount_pb";
+import {
+  AccountAddress,
+  CurrencyAmount,
+  XRPDropsAmount
+} from "../src/generated/rpc/v1/amount_pb";
 import { Payment, Transaction } from "../src/generated/rpc/v1/transaction_pb";
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -76,7 +80,7 @@ describe("signer", function(): void {
     currencyAmount.setXrpAmount(paymentAmount);
 
     const destinationAddress = new AccountAddress();
-    destinationAddress.setAddress(destination)
+    destinationAddress.setAddress(destination);
 
     const payment = new Payment();
     payment.setDestination(destinationAddress);
@@ -86,7 +90,7 @@ describe("signer", function(): void {
     transactionFee.setDrops(fee);
 
     const sender = new AccountAddress();
-    sender.setAddress(account)
+    sender.setAddress(account);
 
     const transaction = new Transaction();
     transaction.setAccount(sender);
@@ -100,10 +104,6 @@ describe("signer", function(): void {
     // THEN the signing artifacts are as expected.
     assert.exists(signature);
     assert.isTrue(Utils.isHex(signature!));
-    assert.equal(
-      signature,
-      fakeSignature
-    );
+    assert.equal(signature, fakeSignature);
   });
 });
-

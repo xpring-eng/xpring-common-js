@@ -19,7 +19,7 @@ interface PaymentJSON {
  * Provides functionality to serialize from protocol buffers to JSON objects.
  */
 class Serializer {
-/**
+  /**
    * Convert a Transaction to a JSON representation.
    *
    * @param {proto.Transaction} transaction A Transaction to convert.
@@ -41,7 +41,14 @@ class Serializer {
     );
 
     // Delete unsupported fields from the protocol buffer.
-    ['memosList', 'flags', 'signature', 'signersList', 'sourceTag', 'accountTransactionId'].forEach((key): boolean => delete object[key]);
+    [
+      "memosList",
+      "flags",
+      "signature",
+      "signersList",
+      "sourceTag",
+      "accountTransactionId"
+    ].forEach((key): boolean => delete object[key]);
 
     // Encode SigningPubKey to hex, which is what ripple-binary-codec expects.
     object.SigningPubKey = Utils.toHex(transaction.getSigningPublicKey_asU8());
@@ -116,12 +123,12 @@ class Serializer {
     // If an x-address was able to be decoded, add the components to the json.
     const destinationAddress = payment.getDestination();
     if (!destinationAddress) {
-      return
+      return;
     }
 
     const destination = destinationAddress.getAddress();
     if (!destination) {
-      return
+      return;
     }
 
     const decodedXAddress = Utils.decodeXAddress(destination);
@@ -139,11 +146,11 @@ class Serializer {
     if (!amount) {
       return;
     }
-    const xrpAmount = amount.getXrpAmount()
+    const xrpAmount = amount.getXrpAmount();
     if (!xrpAmount) {
       return;
     }
-    json.Amount = this.xrpAmountToJSON(xrpAmount)
+    json.Amount = this.xrpAmountToJSON(xrpAmount);
     return json;
   }
 
@@ -234,7 +241,9 @@ class Serializer {
    * @param payment The Payment to convert.
    * @returns The Payment as JSON.
    */
-  private static legacyPaymentToJSON(payment: LegacyPayment): object | undefined {
+  private static legacyPaymentToJSON(
+    payment: LegacyPayment
+  ): object | undefined {
     const json: PaymentJSON = {
       Amount: {},
       Destination: "",
@@ -269,7 +278,6 @@ class Serializer {
     }
     return json;
   }
-
 
   /**
    * Convert an XRPAmount to a JSON representation.
