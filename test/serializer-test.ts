@@ -1,12 +1,12 @@
-import { Payment as LegacyPayment } from "../generated/legacy/payment_pb";
+import { Payment as LegacyPayment } from "../src/generated/legacy/payment_pb";
 import Serializer from "../src/serializer";
-import { Transaction as LegacyTransaction } from "../generated/legacy/transaction_pb";
-import { AccountAddress, CurrencyAmount, XRPDropsAmount } from "../generated/rpc/v1/amount_pb";
-import { Payment, Transaction } from "../generated/rpc/v1/transaction_pb";
+import { Transaction as LegacyTransaction } from "../src/generated/legacy/transaction_pb";
+import { AccountAddress, CurrencyAmount, XRPDropsAmount } from "../src/generated/rpc/v1/amount_pb";
+import { Payment, Transaction } from "../src/generated/rpc/v1/transaction_pb";
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { XRPAmount } from "../generated/legacy/xrp_amount_pb";
+import { XRPAmount } from "../src/generated/legacy/xrp_amount_pb";
 import { assert } from "chai";
 import "mocha";
 import Utils from "../src/utils";

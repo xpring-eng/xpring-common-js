@@ -1,12 +1,8 @@
 module.exports = {
-  entry: './build/src/index.js',
+  entry: './build/index.js',
   output: {
-    filename: 'bundled.js',
+    filename: 'index.js',
     libraryTarget: 'var',
     library: 'EntryPoint'
-  },
-  externals: {
-    'grpc': '{}',
-    '../generated/xrp_ledger_grpc_pb': '{}',
   }
 };

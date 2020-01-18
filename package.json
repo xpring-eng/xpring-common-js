@@ -6,9 +6,6 @@
   "repository": "https://github.com/xpring-eng/xpring-common-js.git",
   "author": "Xpring Engineering",
   "license": "MIT",
-  "directories": {
-    "tests": "tests"
-  },
   "files": [
     "build/**/*"
   ],
@@ -19,7 +16,8 @@
     "google-protobuf": "3.11.2",
     "ripple-address-codec": "4.0.0",
     "ripple-binary-codec": "0.2.6",
-    "ripple-keypairs": "^0.11.0"
+    "ripple-keypairs": "^0.11.0",
+    "grpc-web": "1.0.7"
   },
   "scripts": {
     "build": "tsc -d",
@@ -34,10 +32,10 @@
   "devDependencies": {
     "@types/chai": "4.2.7",
     "@types/mocha": "5.2.7",
-    "@typescript-eslint/eslint-plugin": "1.13.0",
-    "@typescript-eslint/parser": "1.13.0",
+    "@typescript-eslint/eslint-plugin": "2.16.0",
+    "@typescript-eslint/parser": "2.16.0",
     "chai": "4.2.0",
-    "eslint": "5.16.0",
+    "eslint": "6.8.0",
     "eslint-config-airbnb-base": "14.0.0",
     "eslint-config-prettier": "6.9.0",
     "eslint-plugin-import": "2.20.0",

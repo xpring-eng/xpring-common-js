@@ -1,8 +1,8 @@
-import { Payment as LegacyPayment } from "../generated/legacy/payment_pb";
-import { Transaction as LegacyTransaction } from "../generated/legacy/transaction_pb";
-import { XRPAmount } from "../generated/legacy/xrp_amount_pb";
-import { XRPDropsAmount } from "../generated/rpc/v1/amount_pb";
-import { Payment, Transaction } from "../generated/rpc/v1/transaction_pb";
+import { Payment as LegacyPayment } from "./generated/legacy/payment_pb";
+import { Transaction as LegacyTransaction } from "./generated/legacy/transaction_pb";
+import { XRPAmount } from "./generated/legacy/xrp_amount_pb";
+import { XRPDropsAmount } from "./generated/rpc/v1/amount_pb";
+import { Payment, Transaction } from "./generated/rpc/v1/transaction_pb";
 import Utils from "./utils";
 
 /* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */
@@ -29,7 +29,7 @@ class Serializer {
     transaction: Transaction
   ): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
-    var object: any = transaction.toObject();
+    const object: any = transaction.toObject();
 
     // Convert fields names where direct conversion is possible.
     this.convertPropertyName("sequence", "Sequence", object);
@@ -56,7 +56,7 @@ class Serializer {
       return;
     }
 
-    var normalizedAccount = account;
+    let normalizedAccount = account;
     if (Utils.isValidXAddress(account)) {
       const decodedClassicAddress = Utils.decodeXAddress(account);
       if (!decodedClassicAddress) {
@@ -167,7 +167,7 @@ class Serializer {
     transaction: LegacyTransaction
   ): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
-    var object: any = transaction.toObject();
+    const object: any = transaction.toObject();
 
     // Convert fields names where direct conversion is possible.
     this.convertPropertyName("sequence", "Sequence", object);
@@ -184,7 +184,7 @@ class Serializer {
       return;
     }
 
-    var normalizedAccount = account;
+    let normalizedAccount = account;
     if (Utils.isValidXAddress(account)) {
       const decodedClassicAddress = Utils.decodeXAddress(account);
       if (!decodedClassicAddress) {

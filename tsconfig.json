@@ -10,10 +10,12 @@
     "removeComments": true,
     "strict": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "allowJs": true,
+    "declaration": true
   },
   "include": [
     "src/**/*",
-    "generated/*"
+    "test/**/*"
   ]
 }
