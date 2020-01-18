@@ -29,22 +29,11 @@ class Serializer {
     transaction: Transaction
   ): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
-    var object: any = transaction.toObject();
+    var object: any = {}
 
-    // Convert fields names where direct conversion is possible.
-    this.convertPropertyName("sequence", "Sequence", object);
-    this.convertPropertyName("signingPublicKey", "SigningPubKey", object);
-    this.convertPropertyName(
-      "lastLedgerSequence",
-      "LastLedgerSequence",
-      object
-    );
-
-    // Delete unsupported fields from the protocol buffer.
-    ['memosList', 'flags', 'signature', 'signersList', 'sourceTag', 'accountTransactionId'].forEach((key): boolean => delete object[key]);
-
-    // Encode SigningPubKey to hex, which is what ripple-binary-codec expects.
-    object.SigningPubKey = Utils.toHex(transaction.getSigningPublicKey_asU8());
+    object.Sequence = transaction.getSequence();
+    object.SigningPubKey =  Utils.toHex(transaction.getSigningPublicKey_asU8());
+    object.LastLedgerSequence = transaction.getLastLedgerSequence()
 
     // Convert account field, handling X-Addresses if needed.
     const accountAddress = transaction.getAccount();
@@ -70,19 +59,14 @@ class Serializer {
 
       normalizedAccount = decodedClassicAddress.address;
     }
-    object["Account"] = normalizedAccount;
-    delete object.account;
+    object.Account = normalizedAccount;
 
     // Convert XRP denominated fee field.
     const txFee = transaction.getFee();
     if (txFee === undefined) {
       return;
     }
-    object["Fee"] = this.xrpAmountToJSON(txFee);
-    delete object.fee;
-
-    // Delete all fields from the transaction data one of before they get rewritten below.
-    delete object.payment;
+    object.Fee = this.xrpAmountToJSON(txFee);
 
     // Convert additional transaction data.
     const transactionDataCase = transaction.getTransactionDataCase();
