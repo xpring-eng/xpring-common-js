@@ -1,5 +1,5 @@
 module.exports = {
-  entry: './build/index.js',
+  entry: './build/src/index.js',
   output: {
     filename: 'index.js',
     libraryTarget: 'var',
