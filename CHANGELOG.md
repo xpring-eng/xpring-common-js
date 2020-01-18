@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2020-01-TBD
+
+### Added
+
+The release switches us over to using gRPC-Web instead of the node.js version of gRPC. The goal of this change is to enabled the library to be used in browser as well as on Node.js without having two separate codebases or build strategies.
+
+- Move from gRPC node to gRpc Web
+- Update ESLint and configure it to work with prettier and TSConfig.
+- Fixed the lint issues found in the src as well as the tests.
+- Moved the generated files that are being consumed by the build process into the src.
+- Updated our webpack configuration to use UMD (Universal module definitions) to support both web and node.js.
+- Added a .vscode > settings.json to help with the prettier and eslint automation.
+
 ## [2.0.0] - 2019-02-15
 
 ### Added
