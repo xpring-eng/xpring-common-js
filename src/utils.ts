@@ -1,8 +1,7 @@
 "use strict";
 
 import { createHash } from "crypto";
-
-const addressCodec = require("ripple-address-codec");
+import * as addressCodec from "ripple-address-codec";
 
 /**
  * A prefex applied when hashing a signed transaction blob.
