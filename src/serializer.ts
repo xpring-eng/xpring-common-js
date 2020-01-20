@@ -19,14 +19,16 @@ interface PaymentJSON {
  * Provides functionality to serialize from protocol buffers to JSON objects.
  */
 class Serializer {
-/**
+  /**
    * Convert a Transaction to a JSON representation.
    *
    * @param {proto.Transaction} transaction A Transaction to convert.
+   * @param signature An optional hex encoded signature to include in the transaction.
    * @returns {Object} The Transaction as JSON.
    */
   public static transactionToJSON(
-    transaction: Transaction
+    transaction: Transaction,
+    signature?: string
   ): object | undefined {
     // Serialize the protocol buffer to a JSON representation.
     var object: any = transaction.toObject();
@@ -95,6 +97,10 @@ class Serializer {
         Object.assign(object, this.paymentToJSON(payment));
         break;
       }
+    }
+
+    if (signature) {
+      object.TxnSignature = signature;
     }
 
     return object;

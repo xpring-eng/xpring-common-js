@@ -33,7 +33,13 @@ class Signer {
     }
     const transactionHex = rippleCodec.encodeForSigning(transactionJSON);
 
-    return wallet.sign(transactionHex);
+    const signatureHex = wallet.sign(transactionHex);
+    if (!signatureHex) {
+      throw new Error("Unable to produce a signature.")
+    }
+    
+    const signedTransactionJSON = Serializer.transactionToJSON(transaction, signatureHex);
+    return rippleCodec.encode(signedTransactionJSON);
   }
 
   /**
