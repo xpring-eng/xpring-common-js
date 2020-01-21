@@ -2,12 +2,14 @@ import FakeWallet from "./fakes/fake-wallet";
 import { Payment as LegacyPayment } from "../generated/legacy/payment_pb";
 import Signer from "../src/signer";
 import { Transaction as LegacyTransaction } from "../generated/legacy/transaction_pb";
-import Utils from "../src/utils";
 import { XRPAmount } from "../generated/legacy/xrp_amount_pb";
 import { assert } from "chai";
 import "mocha";
 import { AccountAddress, CurrencyAmount, XRPDropsAmount } from "../generated/rpc/v1/amount_pb";
 import { Payment, Transaction } from "../generated/rpc/v1/transaction_pb";
+import Utils from "../src/utils";
+import Serializer from "../src/serializer";
+import * as rippleCodec from "ripple-binary-codec"
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
@@ -94,15 +96,19 @@ describe("signer", function(): void {
     transaction.setSequence(sequence);
     transaction.setPayment(payment);
 
+    // Encode transaction with the expected signature.
+    const expectedSignedTransactionJSON = Serializer.transactionToJSON(transaction, fakeSignature);
+    const expectedSignedTransactionHex = rippleCodec.encode(expectedSignedTransactionJSON);
+    const expectedSignedTransaction = Utils.toBytes(expectedSignedTransactionHex);
+
     // WHEN the transaction is signed with the wallet.
-    const signature = Signer.signTransaction(transaction, wallet);
+    const signedTransaction = Signer.signTransaction(transaction, wallet);
 
     // THEN the signing artifacts are as expected.
-    assert.exists(signature);
-    assert.isTrue(Utils.isHex(signature!));
-    assert.equal(
-      signature,
-      fakeSignature
+    assert.exists(signedTransaction);
+    assert.deepEqual(
+      signedTransaction,
+      expectedSignedTransaction
     );
   });
 });

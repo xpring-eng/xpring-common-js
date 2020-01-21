@@ -5,7 +5,7 @@ import { SignedTransaction } from "../generated/legacy/signed_transaction_pb";
 import { Transaction as LegacyTransaction } from "../generated/legacy/transaction_pb";
 import { Transaction } from "../generated/rpc/v1/transaction_pb";
 import Wallet from "./wallet";
-import Utils from "utils";
+import Utils from "./utils";
 
 const rippleCodec = require("ripple-binary-codec");
 
@@ -18,7 +18,7 @@ class Signer {
    *
    * @param transaction The transaction to sign.
    * @param wallet The wallet to sign the transaction with.
-   * @returns A signed transaction.
+   * @returns A set of bytes representing the inputs and a signature.
    */
   public static signTransaction(
     transaction: Transaction,
