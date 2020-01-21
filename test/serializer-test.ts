@@ -1,37 +1,33 @@
-import { Payment as LegacyPayment } from "../src/generated/legacy/payment_pb";
-import Serializer from "../src/serializer";
-import { Transaction as LegacyTransaction } from "../src/generated/legacy/transaction_pb";
+import { assert } from 'chai'
+import { Payment as LegacyPayment } from '../src/generated/legacy/payment_pb'
+import Serializer from '../src/serializer'
+import { Transaction as LegacyTransaction } from '../src/generated/legacy/transaction_pb'
 import {
   AccountAddress,
   CurrencyAmount,
-  XRPDropsAmount
-} from "../src/generated/rpc/v1/amount_pb";
-import { Payment, Transaction } from "../src/generated/rpc/v1/transaction_pb";
+  XRPDropsAmount,
+} from '../src/generated/rpc/v1/amount_pb'
+import { Payment, Transaction } from '../src/generated/rpc/v1/transaction_pb'
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
-import { XRPAmount } from "../src/generated/legacy/xrp_amount_pb";
-import { assert } from "chai";
-import "mocha";
-import Utils from "../src/utils";
-
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { XRPAmount } from '../src/generated/legacy/xrp_amount_pb'
+import 'mocha'
+import Utils from '../src/utils'
 
 /** Constants for transactions */
-const value = "1000";
-const destinationClassicAddress = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
+const value = '1000'
+const destinationClassicAddress = 'rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh'
 const destinationXAddressWithoutTag =
-  "XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc";
+  'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
 const destinationXAddressWithTag =
-  "XVPcpSm47b1CZkf5AkKM9a84dQHe3mTAxgxfLw2qYoe7Boa";
-const tag = 12345;
-const sequence = 1;
-const lastLedgerSequence = 20;
+  'XVPcpSm47b1CZkf5AkKM9a84dQHe3mTAxgxfLw2qYoe7Boa'
+const tag = 12345
+const sequence = 1
+const lastLedgerSequence = 20
 const publicKey =
-  "031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE";
-const fee = "10";
-const accountClassicAddress = "r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ";
-const accountXAddress = "X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4";
+  '031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE'
+const fee = '10'
+const accountClassicAddress = 'r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ'
+const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
 
 /**
  * Create a new `Transaction` object with the given inputs.
@@ -51,39 +47,39 @@ function makeTransaction(
   lastLedgerSequence: number,
   sequence: number,
   account: string | undefined,
-  publicKey: string
+  publicKey: string,
 ): Transaction {
-  const paymentAmount = new XRPDropsAmount();
-  paymentAmount.setDrops(value);
+  const paymentAmount = new XRPDropsAmount()
+  paymentAmount.setDrops(value)
 
-  const currencyAmount = new CurrencyAmount();
-  currencyAmount.setXrpAmount(paymentAmount);
+  const currencyAmount = new CurrencyAmount()
+  currencyAmount.setXrpAmount(paymentAmount)
 
-  const destinationAddress = new AccountAddress();
-  destinationAddress.setAddress(destination);
+  const destinationAddress = new AccountAddress()
+  destinationAddress.setAddress(destination)
 
-  const payment = new Payment();
-  payment.setDestination(destinationAddress);
-  payment.setAmount(currencyAmount);
+  const payment = new Payment()
+  payment.setDestination(destinationAddress)
+  payment.setAmount(currencyAmount)
 
-  const transactionFee = new XRPDropsAmount();
-  transactionFee.setDrops(fee);
+  const transactionFee = new XRPDropsAmount()
+  transactionFee.setDrops(fee)
 
-  const transaction = new Transaction();
-  transaction.setFee(transactionFee);
-  transaction.setSequence(sequence);
-  transaction.setPayment(payment);
-  transaction.setSigningPublicKey(Utils.toBytes(publicKey));
-  transaction.setLastLedgerSequence(lastLedgerSequence);
+  const transaction = new Transaction()
+  transaction.setFee(transactionFee)
+  transaction.setSequence(sequence)
+  transaction.setPayment(payment)
+  transaction.setSigningPublicKey(Utils.toBytes(publicKey))
+  transaction.setLastLedgerSequence(lastLedgerSequence)
 
   // Account is an optional input so that malformed transaction serialization can be tested.
   if (account) {
-    const sender = new AccountAddress();
-    sender.setAddress(account);
-    transaction.setAccount(sender);
+    const sender = new AccountAddress()
+    sender.setAddress(account)
+    transaction.setAccount(sender)
   }
 
-  return transaction;
+  return transaction
 }
 
 /**
@@ -104,35 +100,35 @@ function makeLegacyTransaction(
   lastLedgerSequence: number,
   sequence: number,
   account: string | undefined,
-  publicKey: string
+  publicKey: string,
 ): LegacyTransaction {
-  const paymentAmount = new XRPAmount();
-  paymentAmount.setDrops(value);
+  const paymentAmount = new XRPAmount()
+  paymentAmount.setDrops(value)
 
-  const payment = new LegacyPayment();
-  payment.setDestination(destination);
-  payment.setXrpAmount(paymentAmount);
+  const payment = new LegacyPayment()
+  payment.setDestination(destination)
+  payment.setXrpAmount(paymentAmount)
 
-  const transactionFee = new XRPAmount();
-  transactionFee.setDrops(fee);
+  const transactionFee = new XRPAmount()
+  transactionFee.setDrops(fee)
 
-  const transaction = new LegacyTransaction();
-  transaction.setFee(transactionFee);
-  transaction.setSequence(sequence);
-  transaction.setPayment(payment);
-  transaction.setSigningPublicKeyHex(publicKey);
-  transaction.setLastLedgerSequence(lastLedgerSequence);
+  const transaction = new LegacyTransaction()
+  transaction.setFee(transactionFee)
+  transaction.setSequence(sequence)
+  transaction.setPayment(payment)
+  transaction.setSigningPublicKeyHex(publicKey)
+  transaction.setLastLedgerSequence(lastLedgerSequence)
 
   // Account is an optional input so that malformed transaction serialization can be tested.
   if (account) {
-    transaction.setAccount(account);
+    transaction.setAccount(account)
   }
 
-  return transaction;
+  return transaction
 }
 
-describe("serializer", function(): void {
-  it("serializes a legacy payment in XRP from a classic address", function(): void {
+describe('serializer', function(): void {
+  it('serializes a legacy payment in XRP from a classic address', function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeLegacyTransaction(
       value,
@@ -141,11 +137,11 @@ describe("serializer", function(): void {
       lastLedgerSequence,
       sequence,
       accountClassicAddress,
-      publicKey
-    );
+      publicKey,
+    )
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.legacyTransactionToJSON(transaction);
+    const serialized = Serializer.legacyTransactionToJSON(transaction)
 
     // THEN the result is as expected.
     const expectedJSON = {
@@ -155,13 +151,13 @@ describe("serializer", function(): void {
       Fee: fee,
       LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
-      TransactionType: "Payment",
-      SigningPubKey: publicKey
-    };
-    assert.deepEqual(serialized, expectedJSON);
-  });
+      TransactionType: 'Payment',
+      SigningPubKey: publicKey,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
 
-  it("serializes a legacy payment in XRP from an X-Address with no tag", function(): void {
+  it('serializes a legacy payment in XRP from an X-Address with no tag', function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeLegacyTransaction(
       value,
@@ -170,11 +166,11 @@ describe("serializer", function(): void {
       lastLedgerSequence,
       sequence,
       accountXAddress,
-      publicKey
-    );
+      publicKey,
+    )
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.legacyTransactionToJSON(transaction);
+    const serialized = Serializer.legacyTransactionToJSON(transaction)
 
     // THEN the result is as expected.
     const expectedJSON = {
@@ -184,15 +180,15 @@ describe("serializer", function(): void {
       Fee: fee,
       LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
-      TransactionType: "Payment",
-      SigningPubKey: publicKey
-    };
-    assert.deepEqual(serialized, expectedJSON);
-  });
+      TransactionType: 'Payment',
+      SigningPubKey: publicKey,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
 
-  it("fails to serializes a legacy payment in XRP from an X-Address with a tag", function(): void {
+  it('fails to serializes a legacy payment in XRP from an X-Address with a tag', function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP from a sender with a tag.
-    const account = Utils.encodeXAddress(accountClassicAddress, tag);
+    const account = Utils.encodeXAddress(accountClassicAddress, tag)
     const transaction = makeLegacyTransaction(
       value,
       destinationClassicAddress,
@@ -200,17 +196,17 @@ describe("serializer", function(): void {
       lastLedgerSequence,
       sequence,
       account,
-      publicKey
-    );
+      publicKey,
+    )
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.legacyTransactionToJSON(transaction);
+    const serialized = Serializer.legacyTransactionToJSON(transaction)
 
     // THEN the result is undefined.
-    assert.isUndefined(serialized);
-  });
+    assert.isUndefined(serialized)
+  })
 
-  it("fails to serializes a legacy payment in XRP when account is undefined", function(): void {
+  it('fails to serializes a legacy payment in XRP when account is undefined', function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeLegacyTransaction(
       value,
@@ -219,17 +215,17 @@ describe("serializer", function(): void {
       lastLedgerSequence,
       sequence,
       undefined,
-      publicKey
-    );
+      publicKey,
+    )
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.legacyTransactionToJSON(transaction);
+    const serialized = Serializer.legacyTransactionToJSON(transaction)
 
     // THEN the result is undefined.
-    assert.isUndefined(serialized);
-  });
+    assert.isUndefined(serialized)
+  })
 
-  it("serializes a legacy payment to an X-address with a tag in XRP", function(): void {
+  it('serializes a legacy payment to an X-address with a tag in XRP', function(): void {
     // GIVEN a transaction which represents a payment to a destination and tag, denominated in XRP.
     const transaction = makeLegacyTransaction(
       value,
@@ -238,11 +234,11 @@ describe("serializer", function(): void {
       lastLedgerSequence,
       sequence,
       accountClassicAddress,
-      publicKey
-    );
+      publicKey,
+    )
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.legacyTransactionToJSON(transaction);
+    const serialized = Serializer.legacyTransactionToJSON(transaction)
 
     // THEN the result is as expected.
     const expectedJSON = {
@@ -253,13 +249,13 @@ describe("serializer", function(): void {
       Fee: fee,
       LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
-      TransactionType: "Payment",
-      SigningPubKey: publicKey
-    };
-    assert.deepEqual(serialized, expectedJSON);
-  });
+      TransactionType: 'Payment',
+      SigningPubKey: publicKey,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
 
-  it("serializes a legacy payment to an X-address without a tag in XRP", function(): void {
+  it('serializes a legacy payment to an X-address without a tag in XRP', function(): void {
     // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP.
     const transaction = makeLegacyTransaction(
       value,
@@ -268,11 +264,11 @@ describe("serializer", function(): void {
       lastLedgerSequence,
       sequence,
       accountClassicAddress,
-      publicKey
-    );
+      publicKey,
+    )
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.legacyTransactionToJSON(transaction);
+    const serialized = Serializer.legacyTransactionToJSON(transaction)
 
     // THEN the result is as expected.
     const expectedJSON = {
@@ -282,13 +278,13 @@ describe("serializer", function(): void {
       Fee: fee,
       LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
-      TransactionType: "Payment",
-      SigningPubKey: publicKey
-    };
-    assert.deepEqual(serialized, expectedJSON);
-  });
+      TransactionType: 'Payment',
+      SigningPubKey: publicKey,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
 
-  it("serializes a payment in XRP from a classic address", function(): void {
+  it('serializes a payment in XRP from a classic address', function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeTransaction(
       Number(value),
@@ -297,11 +293,11 @@ describe("serializer", function(): void {
       lastLedgerSequence,
       sequence,
       accountClassicAddress,
-      publicKey
-    );
+      publicKey,
+    )
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.transactionToJSON(transaction);
+    const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
     const expectedJSON = {
@@ -311,13 +307,13 @@ describe("serializer", function(): void {
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
-      TransactionType: "Payment",
-      SigningPubKey: publicKey
-    };
-    assert.deepEqual(serialized, expectedJSON);
-  });
+      TransactionType: 'Payment',
+      SigningPubKey: publicKey,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
 
-  it("serializes a payment in XRP from an X-Address with no tag", function(): void {
+  it('serializes a payment in XRP from an X-Address with no tag', function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeTransaction(
       Number(value),
@@ -326,11 +322,11 @@ describe("serializer", function(): void {
       lastLedgerSequence,
       sequence,
       accountXAddress,
-      publicKey
-    );
+      publicKey,
+    )
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.transactionToJSON(transaction);
+    const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
     const expectedJSON = {
@@ -340,15 +336,15 @@ describe("serializer", function(): void {
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
-      TransactionType: "Payment",
-      SigningPubKey: publicKey
-    };
-    assert.deepEqual(serialized, expectedJSON);
-  });
+      TransactionType: 'Payment',
+      SigningPubKey: publicKey,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
 
-  it("fails to serializes a payment in XRP from an X-Address with a tag", function(): void {
+  it('fails to serializes a payment in XRP from an X-Address with a tag', function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP from a sender with a tag.
-    const account = Utils.encodeXAddress(accountClassicAddress, tag);
+    const account = Utils.encodeXAddress(accountClassicAddress, tag)
     const transaction = makeTransaction(
       Number(value),
       destinationClassicAddress,
@@ -356,17 +352,17 @@ describe("serializer", function(): void {
       lastLedgerSequence,
       sequence,
       account,
-      publicKey
-    );
+      publicKey,
+    )
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.transactionToJSON(transaction);
+    const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is undefined.
-    assert.isUndefined(serialized);
-  });
+    assert.isUndefined(serialized)
+  })
 
-  it("fails to serializes a payment in XRP when account is undefined", function(): void {
+  it('fails to serializes a payment in XRP when account is undefined', function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeTransaction(
       Number(value),
@@ -375,17 +371,17 @@ describe("serializer", function(): void {
       lastLedgerSequence,
       sequence,
       undefined,
-      publicKey
-    );
+      publicKey,
+    )
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.transactionToJSON(transaction);
+    const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is undefined.
-    assert.isUndefined(serialized);
-  });
+    assert.isUndefined(serialized)
+  })
 
-  it("serializes a payment to an X-address with a tag in XRP", function(): void {
+  it('serializes a payment to an X-address with a tag in XRP', function(): void {
     // GIVEN a transaction which represents a payment to a destination and tag, denominated in XRP.
     const transaction = makeTransaction(
       Number(value),
@@ -394,11 +390,11 @@ describe("serializer", function(): void {
       lastLedgerSequence,
       sequence,
       accountClassicAddress,
-      publicKey
-    );
+      publicKey,
+    )
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.transactionToJSON(transaction);
+    const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
     const expectedJSON = {
@@ -409,13 +405,13 @@ describe("serializer", function(): void {
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
-      TransactionType: "Payment",
-      SigningPubKey: publicKey
-    };
-    assert.deepEqual(serialized, expectedJSON);
-  });
+      TransactionType: 'Payment',
+      SigningPubKey: publicKey,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
 
-  it("serializes a payment to an X-address without a tag in XRP", function(): void {
+  it('serializes a payment to an X-address without a tag in XRP', function(): void {
     // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP.
     const transaction = makeTransaction(
       Number(value),
@@ -424,11 +420,11 @@ describe("serializer", function(): void {
       lastLedgerSequence,
       sequence,
       accountClassicAddress,
-      publicKey
-    );
+      publicKey,
+    )
 
     // WHEN the transaction is serialized to JSON.
-    const serialized = Serializer.transactionToJSON(transaction);
+    const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
     const expectedJSON = {
@@ -438,9 +434,9 @@ describe("serializer", function(): void {
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,
-      TransactionType: "Payment",
-      SigningPubKey: publicKey
-    };
-    assert.deepEqual(serialized, expectedJSON);
-  });
-});
+      TransactionType: 'Payment',
+      SigningPubKey: publicKey,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
+})
