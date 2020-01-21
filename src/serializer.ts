@@ -12,6 +12,14 @@ interface PaymentJSON {
   TransactionType: string
 }
 
+interface TransactionJSON {
+  Account: string
+  Sequence: number
+  SigningPubKey: string
+  LastLedgerSequence: number
+  Fee: string
+}
+
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
  */
@@ -24,27 +32,18 @@ class Serializer {
    */
   public static transactionToJSON(
     transaction: Transaction,
-  ): object | undefined {
-    // Serialize the protocol buffer to a JSON representation.
-    const object: any = transaction.toObject()
+  ): TransactionJSON | undefined {
+    const object: TransactionJSON = {
+      Account: '',
+      Sequence: 0,
+      SigningPubKey: '',
+      LastLedgerSequence: 0,
+      Fee: '',
+    }
 
-    // Convert fields names where direct conversion is possible.
-    this.convertPropertyName('sequence', 'Sequence', object)
-    this.convertPropertyName('signingPublicKey', 'SigningPubKey', object)
-    this.convertPropertyName('lastLedgerSequence', 'LastLedgerSequence', object)
-
-    // Delete unsupported fields from the protocol buffer.
-    ;[
-      'memosList',
-      'flags',
-      'signature',
-      'signersList',
-      'sourceTag',
-      'accountTransactionId',
-    ].forEach((key): boolean => delete object[key])
-
-    // Encode SigningPubKey to hex, which is what ripple-binary-codec expects.
+    object.Sequence = transaction.getSequence()
     object.SigningPubKey = Utils.toHex(transaction.getSigningPublicKey_asU8())
+    object.LastLedgerSequence = transaction.getLastLedgerSequence()
 
     // Convert account field, handling X-Addresses if needed.
     const accountAddress = transaction.getAccount()
@@ -71,7 +70,6 @@ class Serializer {
       normalizedAccount = decodedClassicAddress.address
     }
     object.Account = normalizedAccount
-    delete object.account
 
     // Convert XRP denominated fee field.
     const txFee = transaction.getFee()
@@ -79,10 +77,6 @@ class Serializer {
       return
     }
     object.Fee = this.xrpAmountToJSON(txFee)
-    delete object.fee
-
-    // Delete all fields from the transaction data one of before they get rewritten below.
-    delete object.payment
 
     // Convert additional transaction data.
     const transactionDataCase = transaction.getTransactionDataCase()
@@ -95,6 +89,8 @@ class Serializer {
         Object.assign(object, this.paymentToJSON(payment))
         break
       }
+      default:
+        throw new Error('Unexpected transactionDataCase')
     }
 
     return object
@@ -165,14 +161,18 @@ class Serializer {
    */
   public static legacyTransactionToJSON(
     transaction: LegacyTransaction,
-  ): object | undefined {
-    // Serialize the protocol buffer to a JSON representation.
-    const object: any = transaction.toObject()
+  ): TransactionJSON | undefined {
+    const object: TransactionJSON = {
+      Account: '',
+      Sequence: 0,
+      SigningPubKey: '',
+      LastLedgerSequence: 0,
+      Fee: '',
+    }
 
-    // Convert fields names where direct conversion is possible.
-    this.convertPropertyName('sequence', 'Sequence', object)
-    this.convertPropertyName('signingPublicKeyHex', 'SigningPubKey', object)
-    this.convertPropertyName('lastLedgerSequence', 'LastLedgerSequence', object)
+    object.Sequence = transaction.getSequence()
+    object.SigningPubKey = transaction.getSigningPublicKeyHex()
+    object.LastLedgerSequence = transaction.getLastLedgerSequence()
 
     // Convert account field, handling X-Addresses if needed.
     const account = transaction.getAccount()
@@ -195,7 +195,6 @@ class Serializer {
       normalizedAccount = decodedClassicAddress.address
     }
     object.Account = normalizedAccount
-    delete object.account
 
     // Convert XRP denominated fee field.
     const txFee = transaction.getFee()
@@ -203,10 +202,6 @@ class Serializer {
       return
     }
     object.Fee = this.legacyXRPAmountToJSON(txFee)
-    delete object.fee
-
-    // Delete all fields from the transaction data one of before they get rewritten below.
-    delete object.payment
 
     // Convert additional transaction data.
     const transactionDataCase = transaction.getTransactionDataCase()
@@ -219,6 +214,8 @@ class Serializer {
         Object.assign(object, this.legacyPaymentToJSON(payment))
         break
       }
+      default:
+        throw new Error('Unexpected transactionDataCase')
     }
 
     return object
@@ -264,6 +261,8 @@ class Serializer {
         json.Amount = this.legacyXRPAmountToJSON(xrpAmount)
         break
       }
+      default:
+        throw new Error('Unexpected amountCase')
     }
     return json
   }
