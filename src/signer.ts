@@ -1,11 +1,10 @@
+import * as rippleCodec from 'ripple-binary-codec'
 import Serializer from './serializer'
 import { SignedTransaction } from '../generated/legacy/signed_transaction_pb'
 import { Transaction as LegacyTransaction } from '../generated/legacy/transaction_pb'
 import { Transaction } from '../generated/rpc/v1/transaction_pb'
 import Wallet from './wallet'
 import Utils from './utils'
-
-const rippleCodec = require('ripple-binary-codec')
 
 /**
  * Abstracts the details of signing.

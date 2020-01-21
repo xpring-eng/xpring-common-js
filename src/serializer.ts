@@ -14,10 +14,11 @@ interface PaymentJSON {
 
 interface TransactionJSON {
   Account: string
+  Fee: string
+  LastLedgerSequence: number
   Sequence: number
   SigningPubKey: string
-  LastLedgerSequence: number
-  Fee: string
+  TxnSignature?: string
 }
 
 /**
@@ -33,6 +34,7 @@ class Serializer {
    */
   public static transactionToJSON(
     transaction: Transaction,
+    signature?: string,
   ): TransactionJSON | undefined {
     const object: TransactionJSON = {
       Account: '',

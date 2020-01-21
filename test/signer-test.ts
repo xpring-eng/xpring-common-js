@@ -1,4 +1,5 @@
 import { assert } from 'chai'
+import * as rippleCodec from 'ripple-binary-codec'
 import FakeWallet from './fakes/fake-wallet'
 import { Payment as LegacyPayment } from '../generated/legacy/payment_pb'
 import Signer from '../src/signer'
@@ -13,7 +14,6 @@ import {
 import { Payment, Transaction } from '../generated/rpc/v1/transaction_pb'
 import Utils from '../src/utils'
 import Serializer from '../src/serializer'
-import * as rippleCodec from 'ripple-binary-codec'
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
