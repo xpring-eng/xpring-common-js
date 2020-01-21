@@ -15,6 +15,15 @@ interface PaymentJSON {
   TransactionType: string;
 }
 
+interface TransactionJSON {
+  Account: string;
+  Sequence: number;
+  SigningPubKey: string;
+  LastLedgerSequence: number;
+  Fee: string;
+
+}
+
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
  */
@@ -27,9 +36,15 @@ class Serializer {
    */
   public static transactionToJSON(
     transaction: Transaction
-  ): object | undefined {
+  ): TransactionJSON | undefined {
     // Serialize the protocol buffer to a JSON representation.
-    var object: any = {}
+    const object: TransactionJSON = {
+      Account: "",
+      Sequence: 0,
+      SigningPubKey: "",
+      LastLedgerSequence: 0,
+      Fee: ""
+    }
 
     object.Sequence = transaction.getSequence();
     object.SigningPubKey =  Utils.toHex(transaction.getSigningPublicKey_asU8());
