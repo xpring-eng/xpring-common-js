@@ -1,13 +1,11 @@
-"use strict";
+import Serializer from './serializer'
+import { SignedTransaction } from '../generated/legacy/signed_transaction_pb'
+import { Transaction as LegacyTransaction } from '../generated/legacy/transaction_pb'
+import { Transaction } from '../generated/rpc/v1/transaction_pb'
+import Wallet from './wallet'
+import Utils from './utils'
 
-import Serializer from "./serializer";
-import { SignedTransaction } from "../generated/legacy/signed_transaction_pb";
-import { Transaction as LegacyTransaction } from "../generated/legacy/transaction_pb";
-import { Transaction } from "../generated/rpc/v1/transaction_pb";
-import Wallet from "./wallet";
-import Utils from "./utils";
-
-const rippleCodec = require("ripple-binary-codec");
+const rippleCodec = require('ripple-binary-codec')
 
 /**
  * Abstracts the details of signing.
@@ -22,26 +20,29 @@ class Signer {
    */
   public static signTransaction(
     transaction: Transaction,
-    wallet: Wallet
+    wallet: Wallet,
   ): Uint8Array | undefined {
     if (transaction === undefined || wallet === undefined) {
-      return undefined;
+      return undefined
     }
 
-    var transactionJSON = Serializer.transactionToJSON(transaction);
+    const transactionJSON = Serializer.transactionToJSON(transaction)
     if (transactionJSON === undefined) {
-      return undefined;
+      return undefined
     }
-    const transactionHex = rippleCodec.encodeForSigning(transactionJSON);
+    const transactionHex = rippleCodec.encodeForSigning(transactionJSON)
 
-    const signatureHex = wallet.sign(transactionHex);
+    const signatureHex = wallet.sign(transactionHex)
     if (!signatureHex) {
-      throw new Error("Unable to produce a signature.")
+      throw new Error('Unable to produce a signature.')
     }
-    
-    const signedTransactionJSON = Serializer.transactionToJSON(transaction, signatureHex);
-    const signedTransactionHex = rippleCodec.encode(signedTransactionJSON);
-    return Utils.toBytes(signedTransactionHex);
+
+    const signedTransactionJSON = Serializer.transactionToJSON(
+      transaction,
+      signatureHex,
+    )
+    const signedTransactionHex = rippleCodec.encode(signedTransactionJSON)
+    return Utils.toBytes(signedTransactionHex)
   }
 
   /**
@@ -53,29 +54,29 @@ class Signer {
    */
   public static signLegacyTransaction(
     transaction: LegacyTransaction,
-    wallet: Wallet
+    wallet: Wallet,
   ): SignedTransaction | undefined {
     if (transaction === undefined || wallet === undefined) {
-      return undefined;
+      return undefined
     }
 
-    var transactionJSON = Serializer.legacyTransactionToJSON(transaction);
+    const transactionJSON = Serializer.legacyTransactionToJSON(transaction)
     if (transactionJSON === undefined) {
-      return undefined;
+      return undefined
     }
-    const transactionHex = rippleCodec.encodeForSigning(transactionJSON);
+    const transactionHex = rippleCodec.encodeForSigning(transactionJSON)
 
-    const signatureHex = wallet.sign(transactionHex);
-    if (signatureHex == undefined) {
-      return undefined;
+    const signatureHex = wallet.sign(transactionHex)
+    if (signatureHex === undefined) {
+      return undefined
     }
 
-    const signedTransaction = new SignedTransaction();
-    signedTransaction.setTransaction(transaction);
-    signedTransaction.setTransactionSignatureHex(signatureHex);
+    const signedTransaction = new SignedTransaction()
+    signedTransaction.setTransaction(transaction)
+    signedTransaction.setTransactionSignatureHex(signatureHex)
 
-    return signedTransaction;
+    return signedTransaction
   }
 }
 
-export default Signer;
+export default Signer
