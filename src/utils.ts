@@ -1,27 +1,25 @@
-"use strict";
-
-import { createHash } from "crypto";
-import * as addressCodec from "ripple-address-codec";
+import { createHash } from 'crypto'
+import * as addressCodec from 'ripple-address-codec'
 
 /**
  * A prefex applied when hashing a signed transaction blob.
  *
  * @see https://xrpl.org/basic-data-types.html#hashes
  */
-const signedTransactionPrefixHex = "54584E00";
+const signedTransactionPrefixHex = '54584E00'
 
 /**
  * A simple property bag which contains components of a classic address. Components contained in this object are neither sanitized or validated.
  */
 export interface ClassicAddress {
   /** A classic address. */
-  address: string;
+  address: string
 
   /** An optional tag. */
-  tag?: number;
+  tag?: number
 
   /** A boolean indicating whether this address is for use on a test network. */
-  test: boolean;
+  test: boolean
 }
 
 class Utils {
@@ -38,7 +36,7 @@ class Utils {
     return (
       addressCodec.isValidClassicAddress(address) ||
       addressCodec.isValidXAddress(address)
-    );
+    )
   }
 
   /**
@@ -50,7 +48,7 @@ class Utils {
    * @returns True if the address is a valid X-address, otherwise false.
    */
   public static isValidXAddress(address: string): boolean {
-    return addressCodec.isValidXAddress(address);
+    return addressCodec.isValidXAddress(address)
   }
 
   /**
@@ -62,7 +60,7 @@ class Utils {
    * @returns True if the address is a valid classic address, otherwise false.
    */
   public static isValidClassicAddress(address: string): boolean {
-    return addressCodec.isValidClassicAddress(address);
+    return addressCodec.isValidClassicAddress(address)
   }
 
   /**
@@ -78,19 +76,19 @@ class Utils {
   public static encodeXAddress(
     classicAddress: string,
     tag: number | undefined,
-    test = false
+    test = false,
   ): string | undefined {
     if (!addressCodec.isValidClassicAddress(classicAddress)) {
-      return undefined;
+      return undefined
     }
 
     // Xpring Common JS's API takes a string|undefined while the underlying address library wants string|false.
-    const shimTagParameter = tag !== undefined ? tag : false;
+    const shimTagParameter = tag !== undefined ? tag : false
     return addressCodec.classicAddressToXAddress(
       classicAddress,
       shimTagParameter,
-      test
-    );
+      test,
+    )
   }
 
   /**
@@ -103,16 +101,16 @@ class Utils {
    */
   public static decodeXAddress(xAddress: string): ClassicAddress | undefined {
     if (!addressCodec.isValidXAddress(xAddress)) {
-      return undefined;
+      return undefined
     }
 
-    const shimClassicAddress = addressCodec.xAddressToClassicAddress(xAddress);
+    const shimClassicAddress = addressCodec.xAddressToClassicAddress(xAddress)
     return {
       address: shimClassicAddress.classicAddress,
       tag:
         shimClassicAddress.tag !== false ? shimClassicAddress.tag : undefined,
-      test: shimClassicAddress.test
-    };
+      test: shimClassicAddress.test,
+    }
   }
 
   /**
@@ -123,8 +121,8 @@ class Utils {
    */
   public static toHex(bytes: Uint8Array): string {
     return Buffer.from(bytes)
-      .toString("hex")
-      .toUpperCase();
+      .toString('hex')
+      .toUpperCase()
   }
 
   /**
@@ -134,7 +132,7 @@ class Utils {
    * @returns A decoded byte array.
    */
   public static toBytes(hex: string): Uint8Array {
-    return Uint8Array.from(Buffer.from(hex, "hex"));
+    return Uint8Array.from(Buffer.from(hex, 'hex'))
   }
 
   /**
@@ -144,17 +142,17 @@ class Utils {
    * @returns A hex encoded hash if the input was valid, otherwise undefined.
    */
   public static transactionBlobToTransactionHash(
-    transactionBlobHex: string
+    transactionBlobHex: string,
   ): string | undefined {
     if (!Utils.isHex(transactionBlobHex)) {
-      return undefined;
+      return undefined
     }
 
     const prefixedTransactionBlob = this.toBytes(
-      signedTransactionPrefixHex + transactionBlobHex
-    );
-    const hash = this.sha512Half(prefixedTransactionBlob);
-    return this.toHex(hash);
+      signedTransactionPrefixHex + transactionBlobHex,
+    )
+    const hash = this.sha512Half(prefixedTransactionBlob)
+    return this.toHex(hash)
   }
 
   /**
@@ -164,16 +162,14 @@ class Utils {
    * @returns The hash of the input.
    */
   private static sha512Half(bytes: Uint8Array): Uint8Array {
-    const sha512 = createHash("sha512");
+    const sha512 = createHash('sha512')
     const hashHex = sha512
       .update(bytes)
-      .digest("hex")
-      .toUpperCase();
-    const hash = this.toBytes(hashHex);
+      .digest('hex')
+      .toUpperCase()
+    const hash = this.toBytes(hashHex)
 
-    /* eslint-disable @typescript-eslint/no-magic-numbers */
-    return hash.slice(0, 32);
-    /* eslint-enable @typescript-eslint/no-magic-numbers */
+    return hash.slice(0, 32)
   }
 
   /**
@@ -183,9 +179,9 @@ class Utils {
    * @returns true if the input is valid hex, otherwise false.
    */
   public static isHex(input: string): boolean {
-    const hexRegEx = /([0-9]|[a-f])/gim;
-    return (input.match(hexRegEx) || []).length === input.length;
+    const hexRegEx = /([0-9]|[a-f])/gim
+    return (input.match(hexRegEx) || []).length === input.length
   }
 }
 
-export default Utils;
+export default Utils
