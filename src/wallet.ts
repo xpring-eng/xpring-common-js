@@ -1,26 +1,25 @@
-import Utils from "./utils";
-
-const bip32 = require("bip32");
-const bip39 = require("bip39");
-const rippleKeyPair = require("ripple-keypairs");
+import * as bip32 from 'bip32'
+import * as bip39 from 'bip39'
+import * as rippleKeyPair from 'ripple-keypairs'
+import Utils from './utils'
 
 /**
  * The default derivation path to use with BIP44.
  */
-const defaultDerivationPath = "m/44'/144'/0'/0/0";
+const defaultDerivationPath = "m/44'/144'/0'/0/0"
 
 /**
  * An object which contains artifacts from generating a new wallet.
  */
 export interface WalletGenerationResult {
   /** The newly generated Wallet. */
-  wallet: Wallet;
+  wallet: Wallet
 
   /** The mnemonic used to generate the wallet. */
-  mnemonic: string;
+  mnemonic: string
 
   /** The derivation path used to generate the wallet. */
-  derivationPath: string;
+  derivationPath: string
 }
 
 /**
@@ -31,7 +30,7 @@ class Wallet {
    * @returns {String} The default derivation path.
    */
   public static getDefaultDerivationPath(): string {
-    return defaultDerivationPath;
+    return defaultDerivationPath
   }
 
   /**
@@ -46,25 +45,25 @@ class Wallet {
    */
   public static generateRandomWallet(
     entropy: string | undefined = undefined,
-    test = false
+    test = false,
   ): WalletGenerationResult | undefined {
     if (entropy && !Utils.isHex(entropy)) {
-      return undefined;
+      return undefined
     }
 
     const mnemonic =
-      entropy == undefined
+      entropy === undefined
         ? bip39.generateMnemonic()
-        : bip39.entropyToMnemonic(entropy);
-    const derivationPath = Wallet.getDefaultDerivationPath();
+        : bip39.entropyToMnemonic(entropy)
+    const derivationPath = Wallet.getDefaultDerivationPath()
     const wallet = Wallet.generateWalletFromMnemonic(
       mnemonic,
       derivationPath,
-      test
-    );
-    return wallet == undefined
+      test,
+    )
+    return wallet === undefined
       ? undefined
-      : { wallet: wallet, mnemonic: mnemonic, derivationPath: derivationPath };
+      : { wallet, mnemonic, derivationPath }
   }
 
   /**
@@ -78,15 +77,15 @@ class Wallet {
   public static generateWalletFromMnemonic(
     mnemonic: string,
     derivationPath = Wallet.getDefaultDerivationPath(),
-    test = false
+    test = false,
   ): Wallet | undefined {
     // Validate mnemonic and path are valid.
     if (!bip39.validateMnemonic(mnemonic)) {
-      return undefined;
+      return undefined
     }
 
-    const seed = bip39.mnemonicToSeedSync(mnemonic);
-    return Wallet.generateHDWalletFromSeed(seed, derivationPath, test);
+    const seed = bip39.mnemonicToSeedSync(mnemonic)
+    return Wallet.generateHDWalletFromSeed(seed, derivationPath, test)
   }
 
   /**
@@ -98,15 +97,17 @@ class Wallet {
    * @returns A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
   public static generateHDWalletFromSeed(
-    seed: string,
+    seed: Buffer,
     derivationPath = Wallet.getDefaultDerivationPath(),
-    test = false
+    test = false,
   ): Wallet | undefined {
-    const masterNode = bip32.fromSeed(seed);
-    const node = masterNode.derivePath(derivationPath);
-    const publicKey = Wallet.hexFromBuffer(node.publicKey);
-    const privateKey = Wallet.hexFromBuffer(node.privateKey);
-    return new Wallet(publicKey, "00" + privateKey, test);
+    const masterNode = bip32.fromSeed(seed)
+    const node = masterNode.derivePath(derivationPath)
+    if (node.privateKey === undefined) return
+
+    const publicKey = Wallet.hexFromBuffer(node.publicKey)
+    const privateKey = Wallet.hexFromBuffer(node.privateKey)
+    return new Wallet(publicKey, `00${privateKey}`, test)
   }
 
   /**
@@ -118,13 +119,13 @@ class Wallet {
    */
   public static generateWalletFromSeed(
     seed: string,
-    test = false
+    test = false,
   ): Wallet | undefined {
     try {
-      const keyPair = rippleKeyPair.deriveKeypair(seed);
-      return new Wallet(keyPair.publicKey, keyPair.privateKey, test);
+      const keyPair = rippleKeyPair.deriveKeypair(seed)
+      return new Wallet(keyPair.publicKey, keyPair.privateKey, test)
     } catch (exception) {
-      return undefined;
+      return undefined
     }
   }
 
@@ -138,33 +139,33 @@ class Wallet {
   public constructor(
     private readonly publicKey: string,
     private readonly privateKey: string,
-    private readonly test: boolean = false
+    private readonly test: boolean = false,
   ) {}
 
   /**
    * @returns {String} A string representing the public key for the wallet.
    */
   public getPublicKey(): string {
-    return this.publicKey;
+    return this.publicKey
   }
 
   /**
    * @returns {String} A string representing the private key for the wallet.
    */
   public getPrivateKey(): string {
-    return this.privateKey;
+    return this.privateKey
   }
 
   /**
    * @returns {String} A string representing the address of the wallet.
    */
   public getAddress(): string {
-    const classicAddress = rippleKeyPair.deriveAddress(this.getPublicKey());
-    const xAddress = Utils.encodeXAddress(classicAddress, undefined, this.test);
-    if (xAddress == undefined) {
-      throw new Error("Unknown error deriving address");
+    const classicAddress = rippleKeyPair.deriveAddress(this.getPublicKey())
+    const xAddress = Utils.encodeXAddress(classicAddress, undefined, this.test)
+    if (xAddress === undefined) {
+      throw new Error('Unknown error deriving address')
     }
-    return xAddress;
+    return xAddress
   }
 
   /**
@@ -175,9 +176,9 @@ class Wallet {
    */
   public sign(hex: string): string | undefined {
     if (!Utils.isHex(hex)) {
-      return undefined;
+      return undefined
     }
-    return rippleKeyPair.sign(hex, this.getPrivateKey());
+    return rippleKeyPair.sign(hex, this.getPrivateKey())
   }
 
   /**
@@ -189,21 +190,21 @@ class Wallet {
    */
   public verify(message: string, signature: string): boolean {
     if (!Utils.isHex(signature) || !Utils.isHex(message)) {
-      return false;
+      return false
     }
 
     try {
-      return rippleKeyPair.verify(message, signature, this.getPublicKey());
+      return rippleKeyPair.verify(message, signature, this.getPublicKey())
     } catch (error) {
       // The ripple-key-pair module may throw errors for some signatures rather than returning false.
       // If an error was thrown then the signature is definitely not valid.
-      return false;
+      return false
     }
   }
 
   private static hexFromBuffer(buffer: Buffer): string {
-    return buffer.toString("hex").toUpperCase();
+    return buffer.toString('hex').toUpperCase()
   }
 }
 
-export default Wallet;
+export default Wallet
