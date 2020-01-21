@@ -58,24 +58,37 @@ module.exports = {
   ],
 
   rules: {
-    // Unary operators are subject to Automatic Semicolon Insertion, which can cause bugs. However, we should allow them in for loops
-    // "no-plusplus": ["error", { allowForLoopAfterthoughts: true }],
+    // We should get around to fixing these warnings eventually, and switch this rule back to an error, but we are blocked.
+    // First `ripple-binary-codec` needs to be converted to TypeScript, and `ripple-keypairs` needs to ship type definition files.
+    '@typescript-eslint/no-var-requires': 'warn',
+    // This rule is about explicitly using `return undefined` when a function returns any non-undefined object.
+    // However, since we're using TypeScript, it will yell at us if a function is not allowed to return `undefined` in its signature, so we don't need this rule.
+    'consistent-return': 'off',
   },
 
   overrides: [
+    // Overrides for all test files
     {
-      files: "serializer-test.ts",
-      rules: {
-        // For this test file, we shadow the function parameter names with constants for testing
-        "no-shadow": "off",
-      },
-    },
-    {
-      files: "test/**/*.ts",
+      files: 'test/**/*.ts',
       rules: {
         // For our Mocha test files, the pattern has been to have unnamed functions
-        "func-names": "off"
-      }
-    }
+        'func-names': 'off',
+        // Using non-null assertions (obj!.property) cancels the benefits of the strict null-checking mode, but these are test files, so we don't care.
+        '@typescript-eslint/no-non-null-assertion': 'off',
+        // Allow unused variables in our test files when explicitly prepended with `_`.
+        '@typescript-eslint/no-unused-vars': [
+          'error',
+          { argsIgnorePattern: '^_' },
+        ],
+      },
+    },
+    // Overrides for serializer-test.ts
+    {
+      files: 'serializer-test.ts',
+      rules: {
+        // For this test file specifically, we shadow the function parameter names with constants for testing
+        'no-shadow': 'off',
+      },
+    },
   ],
-};
+}

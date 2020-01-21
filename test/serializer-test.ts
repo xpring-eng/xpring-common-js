@@ -9,13 +9,9 @@ import {
 } from '../generated/rpc/v1/amount_pb'
 import { Payment, Transaction } from '../generated/rpc/v1/transaction_pb'
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 import { XRPAmount } from '../generated/legacy/xrp_amount_pb'
 import 'mocha'
 import Utils from '../src/utils'
-
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 /** Constants for transactions */
 const value = '1000'

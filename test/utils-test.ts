@@ -2,9 +2,6 @@ import { assert } from 'chai'
 import Utils from '../src/utils'
 import 'mocha'
 
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 describe('utils', function(): void {
   it('isValidAddress() - Valid Classic Address', function(): void {
     // GIVEN a valid classic address.

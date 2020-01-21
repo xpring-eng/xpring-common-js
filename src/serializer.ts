@@ -5,9 +5,6 @@ import { XRPDropsAmount } from '../generated/rpc/v1/amount_pb'
 import { Payment, Transaction } from '../generated/rpc/v1/transaction_pb'
 import Utils from './utils'
 
-/* Allow `any` since this class doing progressive conversion of protocol buffers to JSON. */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 interface PaymentJSON {
   Amount: object | string
   Destination: string
@@ -281,6 +278,7 @@ class Serializer {
     return `${xrpAmount.getDrops()}`
   }
 
+  // TODO: Remove this function when legacyTransactionToJSON() gets removed
   /**
    * Change the name of a field in an object while preserving the value.
    *
@@ -295,8 +293,10 @@ class Serializer {
     newPropertyName: string,
     object: any,
   ): void {
+    /* eslint-disable no-param-reassign */
     object[newPropertyName] = object[oldPropertyName]
     delete object[oldPropertyName]
+    /* eslint-enable no-param-reassign */
   }
 }
 

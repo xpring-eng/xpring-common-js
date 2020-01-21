@@ -53,7 +53,7 @@ class Wallet {
     }
 
     const mnemonic =
-      entropy == undefined
+      entropy === undefined
         ? bip39.generateMnemonic()
         : bip39.entropyToMnemonic(entropy)
     const derivationPath = Wallet.getDefaultDerivationPath()
@@ -62,7 +62,7 @@ class Wallet {
       derivationPath,
       test,
     )
-    return wallet == undefined
+    return wallet === undefined
       ? undefined
       : { wallet, mnemonic, derivationPath }
   }
@@ -161,7 +161,7 @@ class Wallet {
   public getAddress(): string {
     const classicAddress = rippleKeyPair.deriveAddress(this.getPublicKey())
     const xAddress = Utils.encodeXAddress(classicAddress, undefined, this.test)
-    if (xAddress == undefined) {
+    if (xAddress === undefined) {
       throw new Error('Unknown error deriving address')
     }
     return xAddress

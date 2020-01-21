@@ -13,8 +13,6 @@ import {
 } from '../generated/rpc/v1/amount_pb'
 import { Payment, Transaction } from '../generated/rpc/v1/transaction_pb'
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 describe('signer', function(): void {
   it('sign legacy transaction', function(): void {
     // GIVEN an transaction and a wallet and expected signing artifacts.

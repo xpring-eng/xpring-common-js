@@ -56,7 +56,7 @@ class Signer {
     const transactionHex = rippleCodec.encodeForSigning(transactionJSON)
 
     const signatureHex = wallet.sign(transactionHex)
-    if (signatureHex == undefined) {
+    if (signatureHex === undefined) {
       return undefined
     }
 

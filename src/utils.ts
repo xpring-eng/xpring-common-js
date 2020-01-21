@@ -1,6 +1,5 @@
 import { createHash } from 'crypto'
-
-const addressCodec = require('ripple-address-codec')
+import * as addressCodec from 'ripple-address-codec'
 
 /**
  * A prefex applied when hashing a signed transaction blob.
@@ -170,9 +169,7 @@ class Utils {
       .toUpperCase()
     const hash = this.toBytes(hashHex)
 
-    /* eslint-disable @typescript-eslint/no-magic-numbers */
     return hash.slice(0, 32)
-    /* eslint-enable @typescript-eslint/no-magic-numbers */
   }
 
   /**
@@ -181,7 +178,7 @@ class Utils {
    * @param input The input to check.
    * @returns true if the input is valid hex, otherwise false.
    */
-  public static isHex(input: string) {
+  public static isHex(input: string): boolean {
     const hexRegEx = /([0-9]|[a-f])/gim
     return (input.match(hexRegEx) || []).length === input.length
   }
