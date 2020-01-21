@@ -58,9 +58,6 @@ module.exports = {
   ],
 
   rules: {
-    // We should get around to fixing these warnings eventually, and switch this rule back to an error, but we are blocked.
-    // First `ripple-binary-codec` needs to be converted to TypeScript, and `ripple-keypairs` needs to ship type definition files.
-    '@typescript-eslint/no-var-requires': 'warn',
     // This rule is about explicitly using `return undefined` when a function returns any non-undefined object.
     // However, since we're using TypeScript, it will yell at us if a function is not allowed to return `undefined` in its signature, so we don't need this rule.
     'consistent-return': 'off',
