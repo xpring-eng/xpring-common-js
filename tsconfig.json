@@ -10,7 +10,8 @@
     "removeComments": true,
     "strict": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "typeRoots": ["./src/typings", "./node_modules/@types"]
   },
   "include": [
     "src/**/*",
