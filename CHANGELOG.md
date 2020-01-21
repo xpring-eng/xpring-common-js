@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Modify `Signer`'s `signTransaction` method to return an array of signed bytes rather than a string based signature.
+
+
 ## [2.0.0] - 2019-02-15
 
 ### Added
