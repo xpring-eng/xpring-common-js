@@ -5,6 +5,7 @@ import { SignedTransaction } from "../generated/legacy/signed_transaction_pb";
 import { Transaction as LegacyTransaction } from "../generated/legacy/transaction_pb";
 import { Transaction } from "../generated/rpc/v1/transaction_pb";
 import Wallet from "./wallet";
+import Utils from "utils";
 
 const rippleCodec = require("ripple-binary-codec");
 
@@ -22,7 +23,7 @@ class Signer {
   public static signTransaction(
     transaction: Transaction,
     wallet: Wallet
-  ): string | undefined {
+  ): Uint8Array | undefined {
     if (transaction === undefined || wallet === undefined) {
       return undefined;
     }
@@ -39,7 +40,8 @@ class Signer {
     }
     
     const signedTransactionJSON = Serializer.transactionToJSON(transaction, signatureHex);
-    return rippleCodec.encode(signedTransactionJSON);
+    const signedTransactionHex = rippleCodec.encode(signedTransactionJSON);
+    return Utils.toBytes(signedTransactionHex);
   }
 
   /**
