@@ -287,18 +287,18 @@ class Serializer {
    * @param {String} newPropertyName The new property name.
    * @param {Object} object The object on which the conversion is performed.
    */
-  private static convertPropertyName(
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    oldPropertyName: string,
-    newPropertyName: string,
-    object: any,
-    /* eslint-enable @typescript-eslint/no-explicit-any */
-  ): void {
-    /* eslint-disable no-param-reassign */
-    object[newPropertyName] = object[oldPropertyName]
-    delete object[oldPropertyName]
-    /* eslint-enable no-param-reassign */
-  }
+  // private static convertPropertyName(
+  //   /* eslint-disable @typescript-eslint/no-explicit-any */
+  //   oldPropertyName: string,
+  //   newPropertyName: string,
+  //   object: any,
+  //   /* eslint-enable @typescript-eslint/no-explicit-any */
+  // ): void {
+  //   /* eslint-disable no-param-reassign */
+  //   object[newPropertyName] = object[oldPropertyName]
+  //   delete object[oldPropertyName]
+  //   /* eslint-enable no-param-reassign */
+  // }
 }
 
 export default Serializer
