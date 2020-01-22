@@ -14,10 +14,11 @@ interface PaymentJSON {
 
 interface TransactionJSON {
   Account: string
+  Fee: string
+  LastLedgerSequence: number
   Sequence: number
   SigningPubKey: string
-  LastLedgerSequence: number
-  Fee: string
+  TxnSignature?: string
 }
 
 /**
@@ -28,10 +29,12 @@ class Serializer {
    * Convert a Transaction to a JSON representation.
    *
    * @param {proto.Transaction} transaction A Transaction to convert.
+   * @param signature An optional hex encoded signature to include in the transaction.
    * @returns {Object} The Transaction as JSON.
    */
   public static transactionToJSON(
     transaction: Transaction,
+    signature?: string,
   ): TransactionJSON | undefined {
     const object: TransactionJSON = {
       Account: '',
@@ -91,6 +94,10 @@ class Serializer {
       }
       default:
         throw new Error('Unexpected transactionDataCase')
+    }
+
+    if (signature) {
+      object.TxnSignature = signature
     }
 
     return object

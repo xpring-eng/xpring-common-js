@@ -4,6 +4,7 @@ import { SignedTransaction } from './generated/legacy/signed_transaction_pb'
 import { Transaction as LegacyTransaction } from './generated/legacy/transaction_pb'
 import { Transaction } from './generated/rpc/v1/transaction_pb'
 import Wallet from './wallet'
+import Utils from './utils'
 
 /**
  * Abstracts the details of signing.
@@ -14,12 +15,12 @@ class Signer {
    *
    * @param transaction The transaction to sign.
    * @param wallet The wallet to sign the transaction with.
-   * @returns A signed transaction.
+   * @returns A set of bytes representing the inputs and a signature.
    */
   public static signTransaction(
     transaction: Transaction,
     wallet: Wallet,
-  ): string | undefined {
+  ): Uint8Array | undefined {
     if (transaction === undefined || wallet === undefined) {
       return undefined
     }
@@ -30,7 +31,17 @@ class Signer {
     }
     const transactionHex = rippleCodec.encodeForSigning(transactionJSON)
 
-    return wallet.sign(transactionHex)
+    const signatureHex = wallet.sign(transactionHex)
+    if (!signatureHex) {
+      throw new Error('Unable to produce a signature.')
+    }
+
+    const signedTransactionJSON = Serializer.transactionToJSON(
+      transaction,
+      signatureHex,
+    )
+    const signedTransactionHex = rippleCodec.encode(signedTransactionJSON)
+    return Utils.toBytes(signedTransactionHex)
   }
 
   /**
