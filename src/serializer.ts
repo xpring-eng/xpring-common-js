@@ -266,39 +266,6 @@ class Serializer {
     }
     return json
   }
-
-  /**
-   * Convert an XRPAmount to a JSON representation.
-   *
-   * @param {proto.XRPAmount} xrpAmount The XRPAmount to convert.
-   * @return {String} The XRPAmount as JSON.
-   */
-  private static legacyXRPAmountToJSON(xrpAmount: XRPAmount): string {
-    return `${xrpAmount.getDrops()}`
-  }
-
-  // TODO: Remove this function when legacyTransactionToJSON() gets removed
-  /**
-   * Change the name of a field in an object while preserving the value.
-   *
-   * @note This method has side effects to the `object` parameter.
-   *
-   * @param {String} oldPropertyName The property name to convert from.
-   * @param {String} newPropertyName The new property name.
-   * @param {Object} object The object on which the conversion is performed.
-   */
-  private static convertPropertyName(
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    oldPropertyName: string,
-    newPropertyName: string,
-    object: any,
-    /* eslint-enable @typescript-eslint/no-explicit-any */
-  ): void {
-    /* eslint-disable no-param-reassign */
-    object[newPropertyName] = object[oldPropertyName]
-    delete object[oldPropertyName]
-    /* eslint-enable no-param-reassign */
-  }
 }
 
 export default Serializer
