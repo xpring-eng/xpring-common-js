@@ -13,10 +13,10 @@
     "esModuleInterop": true,
     "allowJs": true,
     "declaration": true,
+    "declarationMap": true,
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
   "include": [
-    "src/**/*",
-    "test/**/*"
+    "src/**/*"
   ]
 }
