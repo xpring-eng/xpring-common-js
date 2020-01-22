@@ -1,17 +1,17 @@
 import { assert } from 'chai'
 import FakeWallet from './fakes/fake-wallet'
-import { Payment as LegacyPayment } from '../generated/legacy/payment_pb'
+import { Payment as LegacyPayment } from '../src/generated/legacy/payment_pb'
 import Signer from '../src/signer'
-import { Transaction as LegacyTransaction } from '../generated/legacy/transaction_pb'
+import { Transaction as LegacyTransaction } from '../src/generated/legacy/transaction_pb'
 import Utils from '../src/utils'
-import { XRPAmount } from '../generated/legacy/xrp_amount_pb'
+import { XRPAmount } from '../src/generated/legacy/xrp_amount_pb'
 import 'mocha'
 import {
   AccountAddress,
   CurrencyAmount,
   XRPDropsAmount,
-} from '../generated/rpc/v1/amount_pb'
-import { Payment, Transaction } from '../generated/rpc/v1/transaction_pb'
+} from '../src/generated/rpc/v1/amount_pb'
+import { Payment, Transaction } from '../src/generated/rpc/v1/transaction_pb'
 
 describe('signer', function(): void {
   it('sign legacy transaction', function(): void {

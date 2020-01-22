@@ -1,8 +1,8 @@
-import { Payment as LegacyPayment } from '../generated/legacy/payment_pb'
-import { Transaction as LegacyTransaction } from '../generated/legacy/transaction_pb'
-import { XRPAmount } from '../generated/legacy/xrp_amount_pb'
-import { XRPDropsAmount } from '../generated/rpc/v1/amount_pb'
-import { Payment, Transaction } from '../generated/rpc/v1/transaction_pb'
+import { Payment as LegacyPayment } from './generated/legacy/payment_pb'
+import { Transaction as LegacyTransaction } from './generated/legacy/transaction_pb'
+import { XRPAmount } from './generated/legacy/xrp_amount_pb'
+import { XRPDropsAmount } from './generated/rpc/v1/amount_pb'
+import { Payment, Transaction } from './generated/rpc/v1/transaction_pb'
 import Utils from './utils'
 
 interface PaymentJSON {

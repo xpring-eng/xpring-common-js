@@ -11,10 +11,11 @@
     "strict": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "allowJs": true,
+    "declaration": true,
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
   "include": [
-    "src/**/*",
-    "generated/*"
+    "src/**/*"
   ]
 }
