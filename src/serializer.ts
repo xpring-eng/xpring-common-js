@@ -266,6 +266,16 @@ class Serializer {
     }
     return json
   }
+  
+  /**	
+   * Convert an XRPAmount to a JSON representation.	
+   *	
+   * @param {proto.XRPAmount} xrpAmount The XRPAmount to convert.	
+   * @return {String} The XRPAmount as JSON.	
+   */	
+  private static legacyXRPAmountToJSON(xrpAmount: XRPAmount): string {	
+    return `${xrpAmount.getDrops()}`	
+  }
 }
 
 export default Serializer
