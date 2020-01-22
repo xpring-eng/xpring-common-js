@@ -1,7 +1,7 @@
 import { assert } from 'chai'
 import * as rippleCodec from 'ripple-binary-codec'
 import FakeWallet from './fakes/fake-wallet'
-import { Payment as LegacyPayment } from '../generated/legacy/payment_pb'
+import { Payment as LegacyPayment } from '../src/generated/legacy/payment_pb'
 import Signer from '../src/signer'
 import { Transaction as LegacyTransaction } from '../generated/legacy/transaction_pb'
 import { XRPAmount } from '../generated/legacy/xrp_amount_pb'
