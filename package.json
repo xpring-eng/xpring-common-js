@@ -19,14 +19,14 @@
     "grpc-web": "1.0.7"
   },
   "scripts": {
-    "build": "npm run test && tsc -d",
-    "webpack": "npm run test && npx webpack",
+    "build": "rm -rf ./src/generated ./build && ./scripts/regenerate_protos.sh && npm run lint && tsc -d",
+    "webpack": "rm -rf ./src/generated ./dist && ./scripts/regenerate_protos.sh && npm run lint && npx webpack",
     "clean": "rm -rf ./src/generated ./dist ./build",
     "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint",
     "lint": "eslint **/*.ts",
     "lint:fix": "eslint **/*.ts --fix",
     "test": "nyc mocha",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run test && npm run build"
   },
   "devDependencies": {
     "@types/chai": "4.2.7",
