@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking Changes
+- Modify `Signer`'s `signTransaction` method to return an array of signed bytes rather than a string based signature.
+
+## [2.0.1] - 2019-02-15
+
+### Fixed
+
+This patch release locks the versions of `grpc-tools` and `grpc_tools_node_protoc_ts` dependencies. This allows client projects to be able to deterministicly generate compatible protocol buffers with this project's TypeScript. 
+
+Previously, different versions of the protocol buffer compiler would (sometimes) produce slightly different output (generally by renaming fields).
+
 ## [2.0.0] - 2019-02-15
 
 ### Added

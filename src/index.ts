@@ -19,3 +19,7 @@ export { default as Wallet } from './wallet'
 export { default as Utils } from './utils'
 export { default as Signer } from './signer'
 export { default as Serializer } from './serializer'
+
+// Type Exports
+export { WalletGenerationResult } from './wallet'
+export { ClassicAddress } from './utils'

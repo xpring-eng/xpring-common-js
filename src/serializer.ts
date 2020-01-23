@@ -14,10 +14,11 @@ interface PaymentJSON {
 
 interface TransactionJSON {
   Account: string
+  Fee: string
+  LastLedgerSequence: number
   Sequence: number
   SigningPubKey: string
-  LastLedgerSequence: number
-  Fee: string
+  TxnSignature?: string
 }
 
 /**
@@ -28,10 +29,12 @@ class Serializer {
    * Convert a Transaction to a JSON representation.
    *
    * @param {proto.Transaction} transaction A Transaction to convert.
+   * @param signature An optional hex encoded signature to include in the transaction.
    * @returns {Object} The Transaction as JSON.
    */
   public static transactionToJSON(
     transaction: Transaction,
+    signature?: string,
   ): TransactionJSON | undefined {
     const object: TransactionJSON = {
       Account: '',
@@ -91,6 +94,10 @@ class Serializer {
       }
       default:
         throw new Error('Unexpected transactionDataCase')
+    }
+
+    if (signature) {
+      object.TxnSignature = signature
     }
 
     return object
@@ -276,29 +283,6 @@ class Serializer {
   private static legacyXRPAmountToJSON(xrpAmount: XRPAmount): string {
     return `${xrpAmount.getDrops()}`
   }
-
-  // TODO: Remove this function when legacyTransactionToJSON() gets removed
-  /**
-   * Change the name of a field in an object while preserving the value.
-   *
-   * @note This method has side effects to the `object` parameter.
-   *
-   * @param {String} oldPropertyName The property name to convert from.
-   * @param {String} newPropertyName The new property name.
-   * @param {Object} object The object on which the conversion is performed.
-   */
-  // private static convertPropertyName(
-  //   /* eslint-disable @typescript-eslint/no-explicit-any */
-  //   oldPropertyName: string,
-  //   newPropertyName: string,
-  //   object: any,
-  //   /* eslint-enable @typescript-eslint/no-explicit-any */
-  // ): void {
-  //   /* eslint-disable no-param-reassign */
-  //   object[newPropertyName] = object[oldPropertyName]
-  //   delete object[oldPropertyName]
-  //   /* eslint-enable no-param-reassign */
-  // }
 }
 
 export default Serializer
