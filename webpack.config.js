@@ -25,7 +25,7 @@ module.exports = {
   output: {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
-    library: 'xpring-common-js',
+    library: 'XpringCommonJS',
     libraryTarget: 'umd',
     globalObject: "(typeof self !== 'undefined' ? self : this)",
   },
