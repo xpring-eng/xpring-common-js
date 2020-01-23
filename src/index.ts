@@ -19,3 +19,8 @@ export { default as Wallet } from './wallet'
 export { default as Utils } from './utils'
 export { default as Signer } from './signer'
 export { default as Serializer } from './serializer'
+
+// This syntax allows for exported types with --isolatedModules enabled
+// we might not want to do this might cause an error when the code is transpiled by babel
+export type WalletGenerationResult = import('./wallet').WalletGenerationResult
+export type ClassicAddress = import('./utils').ClassicAddress
