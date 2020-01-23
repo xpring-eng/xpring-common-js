@@ -23,8 +23,8 @@
     "webpack": "rm -rf ./src/generated ./dist && ./scripts/regenerate_protos.sh && npm run lint && npx webpack",
     "clean": "rm -rf ./src/generated ./dist ./build",
     "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint",
-    "lint": "eslint **/*.ts",
-    "lint:fix": "eslint **/*.ts --fix",
+    "lint": "eslint src/**/*.ts test/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts test/**/*.ts --fix",
     "test": "nyc mocha",
     "prepublishOnly": "npm run test && npm run build"
   },
