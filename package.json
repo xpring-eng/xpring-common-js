@@ -20,10 +20,10 @@
   },
   "scripts": {
     "build": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc -d",
-    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && npx webpack",
+    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && npx webpack",
     "clean": "rm -rf ./src/generated ./dist ./build",
-    "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint",
-    "lint": "eslint . --ext .ts --fix && tsc --noEmit",
+    "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit",
+    "lint": "eslint . --ext .ts --fix",
     "test": "nyc mocha",
     "prepublishOnly": "npm run test && npm run build"
   },
@@ -64,14 +64,5 @@
     ],
     "all": true,
     "check-leaks": true
-  },
-  "mocha": {
-    "require": [
-      "ts-node/register",
-      "source-map-support/register"
-    ],
-    "extension": [
-      "ts"
-    ]
   }
 }
