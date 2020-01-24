@@ -12,12 +12,14 @@ export { SubmitSignedTransactionRequest } from './generated/legacy/submit_signed
 export { SubmitSignedTransactionResponse } from './generated/legacy/submit_signed_transaction_response_pb'
 export { XRPAmount } from './generated/legacy/xrp_amount_pb'
 export { SignedTransaction } from './generated/legacy/signed_transaction_pb'
-export { default as Signer } from './signer'
 export { TransactionStatus } from './generated/legacy/transaction_status_pb'
 export { Transaction } from './generated/legacy/transaction_pb'
 
 export { default as Wallet } from './wallet'
-export { WalletGenerationResult } from './wallet'
 export { default as Utils } from './utils'
-export { ClassicAddress } from './utils'
+export { default as Signer } from './signer'
 export { default as Serializer } from './serializer'
+
+// Type Exports
+export { WalletGenerationResult } from './wallet'
+export { ClassicAddress } from './utils'

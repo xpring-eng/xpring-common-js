@@ -1,8 +1,8 @@
 module.exports = {
-  entry: './build/src/index.js',
+  entry: './build/index.js',
   output: {
-    filename: 'index.js',
+    filename: 'bundled.js',
     libraryTarget: 'var',
-    library: 'EntryPoint'
-  }
-};
+    library: 'EntryPoint',
+  },
+}
