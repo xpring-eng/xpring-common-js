@@ -13,9 +13,9 @@ module.exports = {
         loader: 'ts-loader',
         options: {
           compilerOptions: {
-            outDir: './dist'
-          }
-        }
+            outDir: './dist',
+          },
+        },
       },
     ],
   },
