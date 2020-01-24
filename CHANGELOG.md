@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Updated webpack configuration to use UMD (Universal module definitions) to support both web and Node.js.
 
+### Internal Changes
+- Updated the ESLint and TSConfig to properly lint the project to our preferred styles.
+
 ## [2.0.1] - 2019-02-15
 
 ### Fixed
