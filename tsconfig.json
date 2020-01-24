@@ -5,11 +5,6 @@
     "module": "commonjs",
     "declaration": true,
     "sourceMap": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
 
     // Directories
     "outDir": "build",
@@ -29,7 +24,6 @@
 
     // Advanced Options
     "allowJs": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "typeRoots": ["./src/types", "./node_modules/@types"]
