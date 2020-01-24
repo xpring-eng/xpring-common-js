@@ -5,11 +5,11 @@ module.exports = {
   target: 'web',
   mode: 'production',
   entry: './src/index.ts',
-  devtool: 'false',
+  devtool: 'source-map',
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.ts$/,
         loader: 'ts-loader',
         options: {
           compilerOptions: {
