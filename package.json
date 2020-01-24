@@ -19,13 +19,13 @@
     "grpc-web": "1.0.7"
   },
   "scripts": {
-    "build": "tsc -d",
-    "clean": "rm -rf ./generated ./dist ./build",
-    "pretest": "./scripts/regenerate_protos.sh && tsc",
+    "build": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc -d",
+    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && npx webpack",
+    "clean": "rm -rf ./src/generated ./dist ./build",
+    "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit",
     "lint": "eslint . --ext .ts --fix",
-    "test": "npm run lint && nyc mocha",
-    "prepublishOnly": "npm test && tsc -d",
-    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && tsc && npx webpack"
+    "test": "nyc mocha",
+    "prepublishOnly": "npm run test && npm run build"
   },
   "devDependencies": {
     "@types/chai": "4.2.7",
@@ -47,6 +47,7 @@
     "nyc": "15.0.0",
     "prettier": "^1.19.1",
     "source-map-support": "0.5.16",
+    "ts-loader": "^6.2.1",
     "ts-node": "8.6.2",
     "typescript": "3.7.5",
     "typescript-eslint-parser": "22.0.0",
