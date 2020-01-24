@@ -7,17 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.1.0] - 2020-01-TBD
+### Breaking Changes
+- Modify `Signer`'s `signTransaction` method to return an array of signed bytes rather than a string based signature.
 
-### Added
+### Added gRPC-Web
+The release switches the library over to using gRPC-Web instead of the Node.js version of gRPC. The goal of this change is to enable the library to be usable on the web and Node.js without having two separate codebases or build strategies.
 
-The release switches us over to using gRPC-Web instead of the node.js version of gRPC. The goal of this change is to enabled the library to be used in browser as well as on Node.js without having two separate codebases or build strategies.
-
-- Move from gRPC node to gRpc Web
-- Update ESLint and configure it to work with prettier and TSConfig.
+- Moved from gRPC node to gRPC-Web
+- Updated ESLint and configured it to work with prettier and TSConfig.
 - Fixed the lint issues found in the src as well as the tests.
 - Moved the generated files that are being consumed by the build process into the src.
-- Updated our webpack configuration to use UMD (Universal module definitions) to support both web and node.js.
+- Updated webpack configuration to use UMD (Universal module definitions) to support both web and Node.js.
+
+## [2.0.1] - 2019-02-15
+
+### Fixed
+
+This patch release locks the versions of `grpc-tools` and `grpc_tools_node_protoc_ts` dependencies. This allows client projects to be able to deterministicly generate compatible protocol buffers with this project's TypeScript. 
+
+Previously, different versions of the protocol buffer compiler would (sometimes) produce slightly different output (generally by renaming fields).
 
 ## [2.0.0] - 2019-02-15
 

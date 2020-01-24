@@ -10,8 +10,12 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/,
+        loader: 'ts-loader',
+        options: {
+          compilerOptions: {
+            outDir: './dist'
+          }
+        }
       },
     ],
   },
@@ -20,8 +24,8 @@ module.exports = {
   },
   output: {
     filename: 'index.js',
-    path: path.resolve(__dirname, 'build'),
-    library: 'xpring-common-js',
+    path: path.resolve(__dirname, 'dist'),
+    library: 'XpringCommonJS',
     libraryTarget: 'umd',
     globalObject: "(typeof self !== 'undefined' ? self : this)",
   },

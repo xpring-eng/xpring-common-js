@@ -31,7 +31,6 @@
     "allowJs": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
     "esModuleInterop": true,
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
