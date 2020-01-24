@@ -9,14 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking Changes
 - Modify `Signer`'s `signTransaction` method to return an array of signed bytes rather than a string based signature.
+- Switched the library over to using gRPC-Web instead of the Node.js version of gRPC. The goal of this change is to enable the library to be usable on the web and Node.js without having two separate codebases or build strategies
+- Changed webpack EntryPoint to XpringCommonJS
+- Changed webpack output file from bundled.js to index.js
 
-### Added gRPC-Web
-The release switches the library over to using gRPC-Web instead of the Node.js version of gRPC. The goal of this change is to enable the library to be usable on the web and Node.js without having two separate codebases or build strategies.
-
-- Moved from gRPC node to gRPC-Web
-- Updated ESLint and configured it to work with prettier and TSConfig.
-- Fixed the lint issues found in the src as well as the tests.
-- Moved the generated files that are being consumed by the build process into the src.
+### Fixed
 - Updated webpack configuration to use UMD (Universal module definitions) to support both web and Node.js.
 
 ## [2.0.1] - 2019-02-15
