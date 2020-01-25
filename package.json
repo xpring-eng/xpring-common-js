@@ -19,8 +19,8 @@
     "ripple-keypairs": "^0.11.0"
   },
   "scripts": {
-    "build": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc -d && rsync -r ./src/generated ./build",
-    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && npx webpack && rsync -r ./src/generated ./dist",
+    "build": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc -d && copyfiles -u 2 './src/generated/**/*' ./build/generated",
+    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && copyfiles -u 2 './src/generated/**/*' ./dist/generated",
     "clean": "rm -rf ./src/generated ./dist ./build",
     "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit",
     "lint": "eslint . --ext .ts --fix",
@@ -34,6 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^2.16.0",
     "@typescript-eslint/parser": "^2.16.0",
     "chai": "4.2.0",
+    "copyfiles": "^2.2.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-airbnb-typescript": "^6.3.1",
