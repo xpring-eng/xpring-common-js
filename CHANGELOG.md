@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 This release fixes the empty typescript type definition exports.
 
 ### Fixed
-- Fixed the build and webpack output to include the generated protobuf typescript type definintions.
+- Build and Webpack output now include the generated protobuf typescript type definintions.
 
 ## [3.0.0] - 2019-02-24
 
