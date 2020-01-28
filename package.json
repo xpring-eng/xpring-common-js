@@ -1,6 +1,6 @@
 {
   "name": "xpring-common-js",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Common JavaScript for use within the Xpring Platform",
   "main": "build/index.js",
   "repository": "https://github.com/xpring-eng/xpring-common-js.git",
@@ -20,7 +20,7 @@
   },
   "scripts": {
     "build": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc -d && copyfiles -u 2 './src/generated/**/*' ./build/generated",
-    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && copyfiles -u 2 './src/generated/**/*' ./dist/generated",
+    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && webpack && copyfiles -u 2 './src/generated/**/*' ./dist/generated",
     "clean": "rm -rf ./src/generated ./dist ./build",
     "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit",
     "lint": "eslint . --ext .ts --fix",
