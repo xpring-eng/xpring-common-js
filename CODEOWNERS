@@ -1,3 +1,4 @@
 * @keefertaylor
 
-package-lock.json @xpring-eng/devx-reviewers
+# Allow anyone in DevX reviewers to approve automated dependency updates from Dependabot.
+package* @xpring-eng/devx-reviewers
