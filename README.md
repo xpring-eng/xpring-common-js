@@ -9,11 +9,24 @@ Developers probably want to use one of the language specific libraries for [Xpri
 
 ## Getting started
 
-This library requires the Git submodules to be initialized and updated. After cloning this repository, run:
+This library requires the Git submodules to be initialized and updated, and the `protoc-gen-grpc-web` tool to be installed. After cloning this repository, run:
 
 ```
 git submodule update --init
 ```
+
+You can download the `protoc-gen-grpc-web` protoc plugin from our Github
+[release](https://github.com/grpc/grpc-web/releases) page. Make sure they are both executable and are discoverable from your PATH.
+
+For example, in MacOS, you can do:
+
+```
+sudo mv ~/Downloads/protoc-gen-grpc-web-1.0.7-darwin-x86_64 \
+  /usr/local/bin/protoc-gen-grpc-web
+chmod +x /usr/local/bin/protoc-gen-grpc-web
+```
+
+(Information from the [grpc-web](https://github.com/grpc/grpc-web/tree/master/packages/grpc-web) repository)
 
 ## Overview
 Xpring Common JavaScript is composed of several classes:
