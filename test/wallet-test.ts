@@ -214,6 +214,56 @@ describe('wallet', function(): void {
     assert.isUndefined(wallet)
   })
 
+  it('walletFromSecretNumbers - MainNet', function(): void {
+    // GIVEN a seed used to generate a wallet on MainNet
+    const seed = [
+      '554872',
+      '394230',
+      '209376',
+      '323698',
+      '140250',
+      '387423',
+      '652803',
+      '258676',
+    ]
+    const isTestNet = false
+
+    // WHEN a wallet is generated from the seed.
+    const wallet = Wallet.generateWalletFromSecretNumbers(seed, isTestNet)
+
+    // THEN the wallet has the expected address.
+    assert.equal(
+      wallet!.getAddress(),
+      'XVPCcgRJZmYGpSczab57QWbcoTnP2FQsKrCTFWughwrqBH2',
+    )
+  })
+
+  it('walletFromSecretNumbers - TestNet', function(): void {
+    // GIVEN a seed used to generate a wallet on TestNet
+    const seed = '554872 394230 209376 323698 140250 387423 652803 258676'
+    const test = true
+
+    // WHEN a wallet is generated from the seed.
+    const wallet = Wallet.generateWalletFromSecretNumbers(seed, test)
+
+    // THEN the wallet has the expected address.
+    assert.equal(
+      wallet!.getAddress(),
+      'TVKUp82HRjaHTxPb4QTEJWMXGtcUaQhnGBcv3U9UekYpy9T',
+    )
+  })
+
+  it('walletFromSecretNumbers - invalid seed', function(): void {
+    // GIVEN an invalid seed.
+    const seed = '554872 394230 209372 323695 140250 387423 652803 258676'
+
+    // WHEN a wallet is generated from the seed.
+    const wallet = Wallet.generateWalletFromSecretNumbers(seed)
+
+    // THEN the wallet is undefined.
+    assert.isUndefined(wallet)
+  })
+
   it('sign', function(): void {
     // GIVEN a wallet.
     const testData = derivationPathTestCases.index0

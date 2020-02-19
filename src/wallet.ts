@@ -1,6 +1,7 @@
 import * as bip32 from 'bip32'
 import * as bip39 from 'bip39'
 import * as rippleKeyPair from 'ripple-keypairs'
+import { Account as SecretNumbersAccount } from 'xrpl-secret-numbers'
 import Utils from './utils'
 
 /**
@@ -123,6 +124,26 @@ class Wallet {
   ): Wallet | undefined {
     try {
       const keyPair = rippleKeyPair.deriveKeypair(seed)
+      return new Wallet(keyPair.publicKey, keyPair.privateKey, test)
+    } catch (exception) {
+      return undefined
+    }
+  }
+
+  /**
+   * Generate a new wallet from the given secret numbers.
+   *
+   * @param secretNumbers The given seed for the wallet.
+   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @returns A new wallet from the given seed, or undefined if the seed was invalid.
+   */
+  public static generateWalletFromSecretNumbers(
+    secretNumbers: string | string[],
+    test = false,
+  ): Wallet | undefined {
+    try {
+      const account = new SecretNumbersAccount(secretNumbers)
+      const keyPair = account.getKeypair()
       return new Wallet(keyPair.publicKey, keyPair.privateKey, test)
     } catch (exception) {
       return undefined
