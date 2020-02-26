@@ -3,9 +3,13 @@
 
 # Xpring Common JavaScript
 
-Xpring Common JavaScript Library provides common JavaScript functionality to all client side libraries in [Xpring SDK](https://github.com/xpring-eng/xpring-sdk). This library is built to be consumed as a dependency to other libraries, rather than a standalone library.
+Xpring Common JavaScript Library provides common JavaScript functionality to all client side libraries in [Xpring SDK](https://github.com/xpring-eng/xpring-sdk) ([TS/JS version](https://github.com/xpring-eng/xpring-js)). This library is built to be consumed as a dependency to other libraries, rather than a standalone library.
 
-Developers probably want to use one of the language specific libraries for [Xpring SDK](https://github.com/xpring-eng/xpring-sdk#client-side-libraries), rather than consuming this library directly. However, developers with specific requirements for interacting with Xpring SDK may want to depend on this library.
+Developers probably want to use one of the language specific libraries for [Xpring SDK](https://github.com/xpring-eng/xpring-sdk#client-side-libraries) ([TS/JS version](https://github.com/xpring-eng/xpring-js)), rather than consuming this library directly. However, developers with specific requirements for interacting with Xpring SDK may want to depend on this library.
+
+## Getting started
+
+This library requires the Git submodules to be initialized and updated and depends on protobuf and gRPC-web. More about this in the ["Building The Library"](https://github.com/xpring-eng/xpring-common-js/blob/master/CONTRIBUTING.md#building-the-library) section.
 
 ## Overview
 Xpring Common JavaScript is composed of several classes:
