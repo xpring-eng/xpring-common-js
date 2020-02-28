@@ -48,17 +48,21 @@ class Serializer {
     }
 
     const sequence = transaction.getSequence()?.getValue()
+    if (sequence) {
+      object.Sequence = sequence
+    }
+
     const signingPubKeyBytes = transaction
       .getSigningPublicKey()
       ?.getValue_asU8()
-    const lastLedgerSequence = transaction.getLastLedgerSequence()?.getValue()
-    if (!sequence || !signingPubKeyBytes || !lastLedgerSequence) {
-      return
+    if (signingPubKeyBytes) {
+      object.SigningPubKey = Utils.toHex(signingPubKeyBytes)
     }
 
-    object.Sequence = sequence
-    object.SigningPubKey = Utils.toHex(signingPubKeyBytes)
-    object.LastLedgerSequence = lastLedgerSequence
+    const lastLedgerSequence = transaction.getLastLedgerSequence()?.getValue()
+    if (lastLedgerSequence) {
+      object.LastLedgerSequence = lastLedgerSequence
+    }
 
     // Convert account field, handling X-Addresses if needed.
     const accountAddress = transaction.getAccount()

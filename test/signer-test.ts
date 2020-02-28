@@ -123,6 +123,7 @@ describe('signer', function(): void {
       transaction,
       fakeSignature,
     )
+
     const expectedSignedTransactionHex = rippleCodec.encode(
       expectedSignedTransactionJSON,
     )

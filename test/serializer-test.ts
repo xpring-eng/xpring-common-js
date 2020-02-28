@@ -87,7 +87,7 @@ function makeTransaction(
   lastLedgerSequence.setValue(lastLedgerSequenceNumber)
 
   const signingPublicKey = new SigningPublicKey()
-  signingPublicKey.setValue(publicKey)
+  signingPublicKey.setValue(Utils.toBytes(publicKey))
 
   const transaction = new Transaction()
   transaction.setFee(transactionFee)
