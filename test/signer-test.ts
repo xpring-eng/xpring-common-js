@@ -7,13 +7,22 @@ import { Transaction as LegacyTransaction } from '../src/generated/legacy/transa
 import { XRPAmount } from '../src/generated/legacy/xrp_amount_pb'
 import 'mocha'
 import {
-  AccountAddress,
   CurrencyAmount,
   XRPDropsAmount,
-} from '../src/generated/rpc/v1/amount_pb'
-import { Payment, Transaction } from '../src/generated/rpc/v1/transaction_pb'
+} from '../src/generated/org/xrpl/rpc/v1/amount_pb'
+import {
+  Payment,
+  Transaction,
+} from '../src/generated/org/xrpl/rpc/v1/transaction_pb'
+import { AccountAddress } from '../src/generated/org/xrpl/rpc/v1/account_pb'
 import Utils from '../src/utils'
 import Serializer from '../src/serializer'
+import {
+  Destination,
+  Sequence,
+  Account,
+  Amount,
+} from '../src/generated/org/xrpl/rpc/v1/common_pb'
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
@@ -66,10 +75,10 @@ describe('signer', function(): void {
     const fakeSignature = 'DEADBEEF'
     const wallet = new FakeWallet(fakeSignature)
 
-    const value = 1000
-    const destination = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
-    const fee = 10
-    const sequence = 1
+    const value = '1000'
+    const destinationAddress = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
+    const fee = '10'
+    const sequenceNumber = 1
     const account = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
 
     const paymentAmount = new XRPDropsAmount()
@@ -78,18 +87,30 @@ describe('signer', function(): void {
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(paymentAmount)
 
-    const destinationAddress = new AccountAddress()
-    destinationAddress.setAddress(destination)
+    const destinationAccountAddress = new AccountAddress()
+    destinationAccountAddress.setAddress(destinationAddress)
+
+    const destination = new Destination()
+    destination.setValue(destinationAccountAddress)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
 
     const payment = new Payment()
-    payment.setDestination(destinationAddress)
-    payment.setAmount(currencyAmount)
+    payment.setDestination(destination)
+    payment.setAmount(amount)
 
     const transactionFee = new XRPDropsAmount()
     transactionFee.setDrops(fee)
 
-    const sender = new AccountAddress()
-    sender.setAddress(account)
+    const senderAccountAddress = new AccountAddress()
+    senderAccountAddress.setAddress(account)
+
+    const sender = new Account()
+    sender.setValue(senderAccountAddress)
+
+    const sequence = new Sequence()
+    sequence.setValue(sequenceNumber)
 
     const transaction = new Transaction()
     transaction.setAccount(sender)

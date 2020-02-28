@@ -14,7 +14,7 @@ export { XRPAmount } from './generated/legacy/xrp_amount_pb'
 export { SignedTransaction } from './generated/legacy/signed_transaction_pb'
 export { TransactionStatus } from './generated/legacy/transaction_status_pb'
 export { Transaction as LegacyTransaction } from './generated/legacy/transaction_pb'
-export { Transaction } from './generated/rpc/v1/transaction_pb'
+export { Transaction } from './generated/org/xrpl/rpc/v1/transaction_pb'
 
 export { default as Wallet } from './wallet'
 export { default as Utils } from './utils'
