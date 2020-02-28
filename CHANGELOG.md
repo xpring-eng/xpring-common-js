@@ -14,6 +14,8 @@ This version uses new protocol buffers from rippled which have breaking changes 
 - Re-ordering and repurposing of fields in order to add additional layers of abstraction
 - Change package from `rpc.v1` to `org.xrpl.rpc.v1`
 
+Since this library exposes public APIs that use these protocol buffers, clients will need to pass the same version of the protocol buffers compiled from rippled, which is any commit after [#3254](https://github.com/ripple/rippled/pull/3254).
+
 ### Changed
 
 Update to the latest version of protocol buffers from rippled, introduced in [#3254](https://github.com/ripple/rippled/pull/3254).
