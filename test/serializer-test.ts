@@ -2,16 +2,25 @@ import { assert } from 'chai'
 import { Payment as LegacyPayment } from '../src/generated/legacy/payment_pb'
 import Serializer from '../src/serializer'
 import { Transaction as LegacyTransaction } from '../src/generated/legacy/transaction_pb'
+import { AccountAddress } from '../src/generated/org/xrpl/rpc/v1/account_pb'
 import {
-  AccountAddress,
   CurrencyAmount,
   XRPDropsAmount,
-} from '../src/generated/rpc/v1/amount_pb'
-import { Payment, Transaction } from '../src/generated/rpc/v1/transaction_pb'
-
+} from '../src/generated/org/xrpl/rpc/v1/amount_pb'
+import {
+  Payment,
+  Transaction,
+} from '../src/generated/org/xrpl/rpc/v1/transaction_pb'
 import { XRPAmount } from '../src/generated/legacy/xrp_amount_pb'
 import 'mocha'
 import Utils from '../src/utils'
+import {
+  Destination,
+  Amount,
+  Sequence,
+  SigningPublicKey,
+  Account,
+} from '../src/generated/org/xrpl/rpc/v1/common_pb'
 
 /** Constants for transactions */
 const value = '1000'
@@ -41,12 +50,12 @@ const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
  * @param publicKey The public key of the sending account, encoded as a hexadecimal string.
  */
 function makeTransaction(
-  value: number,
-  destination: string,
-  fee: number,
-  lastLedgerSequence: number,
-  sequence: number,
-  account: string | undefined,
+  value: string,
+  destinationAddress: string,
+  fee: string,
+  lastLedgerSequenceNumber: number,
+  sequenceNumber: number,
+  senderAddress: string | undefined,
   publicKey: string,
 ): Transaction {
   const paymentAmount = new XRPDropsAmount()
@@ -55,28 +64,47 @@ function makeTransaction(
   const currencyAmount = new CurrencyAmount()
   currencyAmount.setXrpAmount(paymentAmount)
 
-  const destinationAddress = new AccountAddress()
-  destinationAddress.setAddress(destination)
+  const amount = new Amount()
+  amount.setValue(currencyAmount)
+
+  const destinationAccountAddress = new AccountAddress()
+  destinationAccountAddress.setAddress(destinationAddress)
+
+  const destination = new Destination()
+  destination.setValue(destinationAccountAddress)
 
   const payment = new Payment()
-  payment.setDestination(destinationAddress)
-  payment.setAmount(currencyAmount)
+  payment.setDestination(destination)
+  payment.setAmount(amount)
 
   const transactionFee = new XRPDropsAmount()
   transactionFee.setDrops(fee)
+
+  const sequence = new Sequence()
+  sequence.setValue(sequenceNumber)
+
+  const lastLedgerSequence = new Sequence()
+  lastLedgerSequence.setValue(lastLedgerSequenceNumber)
+
+  const signingPublicKey = new SigningPublicKey()
+  signingPublicKey.setValue(Utils.toBytes(publicKey))
 
   const transaction = new Transaction()
   transaction.setFee(transactionFee)
   transaction.setSequence(sequence)
   transaction.setPayment(payment)
-  transaction.setSigningPublicKey(Utils.toBytes(publicKey))
+  transaction.setSigningPublicKey(signingPublicKey)
   transaction.setLastLedgerSequence(lastLedgerSequence)
 
   // Account is an optional input so that malformed transaction serialization can be tested.
-  if (account) {
-    const sender = new AccountAddress()
-    sender.setAddress(account)
-    transaction.setAccount(sender)
+  if (senderAddress) {
+    const senderAccountAddress = new AccountAddress()
+    senderAccountAddress.setAddress(senderAddress)
+
+    const senderAccount = new Account()
+    senderAccount.setValue(senderAccountAddress)
+
+    transaction.setAccount(senderAccount)
   }
 
   return transaction
@@ -287,9 +315,9 @@ describe('serializer', function(): void {
   it('serializes a payment in XRP from a classic address', function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeTransaction(
-      Number(value),
+      value,
       destinationClassicAddress,
-      Number(fee),
+      fee,
       lastLedgerSequence,
       sequence,
       accountClassicAddress,
@@ -316,9 +344,9 @@ describe('serializer', function(): void {
   it('serializes a payment in XRP from an X-Address with no tag', function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeTransaction(
-      Number(value),
+      value,
       destinationClassicAddress,
-      Number(fee),
+      fee,
       lastLedgerSequence,
       sequence,
       accountXAddress,
@@ -346,9 +374,9 @@ describe('serializer', function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP from a sender with a tag.
     const account = Utils.encodeXAddress(accountClassicAddress, tag)
     const transaction = makeTransaction(
-      Number(value),
+      value,
       destinationClassicAddress,
-      Number(fee),
+      fee,
       lastLedgerSequence,
       sequence,
       account,
@@ -365,9 +393,9 @@ describe('serializer', function(): void {
   it('fails to serializes a payment in XRP when account is undefined', function(): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeTransaction(
-      Number(value),
+      value,
       destinationClassicAddress,
-      Number(fee),
+      fee,
       lastLedgerSequence,
       sequence,
       undefined,
@@ -384,9 +412,9 @@ describe('serializer', function(): void {
   it('serializes a payment to an X-address with a tag in XRP', function(): void {
     // GIVEN a transaction which represents a payment to a destination and tag, denominated in XRP.
     const transaction = makeTransaction(
-      Number(value),
+      value,
       destinationXAddressWithTag,
-      Number(fee),
+      fee,
       lastLedgerSequence,
       sequence,
       accountClassicAddress,
@@ -414,9 +442,9 @@ describe('serializer', function(): void {
   it('serializes a payment to an X-address without a tag in XRP', function(): void {
     // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP.
     const transaction = makeTransaction(
-      Number(value),
+      value,
       destinationXAddressWithoutTag,
-      Number(fee),
+      fee,
       lastLedgerSequence,
       sequence,
       accountClassicAddress,

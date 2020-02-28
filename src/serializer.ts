@@ -1,8 +1,11 @@
 import { Payment as LegacyPayment } from './generated/legacy/payment_pb'
 import { Transaction as LegacyTransaction } from './generated/legacy/transaction_pb'
 import { XRPAmount } from './generated/legacy/xrp_amount_pb'
-import { XRPDropsAmount } from './generated/rpc/v1/amount_pb'
-import { Payment, Transaction } from './generated/rpc/v1/transaction_pb'
+import { XRPDropsAmount } from './generated/org/xrpl/rpc/v1/amount_pb'
+import {
+  Payment,
+  Transaction,
+} from './generated/org/xrpl/rpc/v1/transaction_pb'
 import Utils from './utils'
 
 interface PaymentJSON {
@@ -44,16 +47,29 @@ class Serializer {
       Fee: '',
     }
 
-    object.Sequence = transaction.getSequence()
-    object.SigningPubKey = Utils.toHex(transaction.getSigningPublicKey_asU8())
-    object.LastLedgerSequence = transaction.getLastLedgerSequence()
+    const sequence = transaction.getSequence()?.getValue()
+    if (sequence) {
+      object.Sequence = sequence
+    }
+
+    const signingPubKeyBytes = transaction
+      .getSigningPublicKey()
+      ?.getValue_asU8()
+    if (signingPubKeyBytes) {
+      object.SigningPubKey = Utils.toHex(signingPubKeyBytes)
+    }
+
+    const lastLedgerSequence = transaction.getLastLedgerSequence()?.getValue()
+    if (lastLedgerSequence) {
+      object.LastLedgerSequence = lastLedgerSequence
+    }
 
     // Convert account field, handling X-Addresses if needed.
     const accountAddress = transaction.getAccount()
     if (!accountAddress) {
       return
     }
-    const account = accountAddress.getAddress()
+    const account = accountAddress.getValue()?.getAddress()
     if (!account || !Utils.isValidAddress(account)) {
       return
     }
@@ -122,7 +138,7 @@ class Serializer {
       return
     }
 
-    const destination = destinationAddress.getAddress()
+    const destination = destinationAddress.getValue()?.getAddress()
     if (!destination) {
       return
     }
@@ -142,7 +158,7 @@ class Serializer {
     if (!amount) {
       return
     }
-    const xrpAmount = amount.getXrpAmount()
+    const xrpAmount = amount.getValue()?.getXrpAmount()
     if (!xrpAmount) {
       return
     }

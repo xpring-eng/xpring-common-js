@@ -12,6 +12,7 @@ echo "Regenerating Protocol Buffers from Rippled"
 OUT_DIR="./src/generated"
 
 PROTO_PATH="./rippled/src/ripple/proto/"
+PROTO_SRC_FILES=$PROTO_PATH/org/xrpl/rpc/v1/*.proto
 
 mkdir -p $OUT_DIR
 
@@ -20,7 +21,7 @@ $PWD/node_modules/grpc-tools/bin/protoc \
     --js_out=import_style=commonjs,binary:$OUT_DIR \
     --grpc-web_out=import_style=commonjs+dts,mode=grpcwebtext:$OUT_DIR \
     --proto_path $PROTO_PATH \
-    ./rippled/src/ripple/proto/rpc/v1/*.proto
+    $PROTO_SRC_FILES
 
 ##########################################################################
 # Regenerate legacy protocol buffers.
