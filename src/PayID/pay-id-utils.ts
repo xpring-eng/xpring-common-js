@@ -14,6 +14,8 @@ export default class PayIDUtils {
     paymentPointer: string,
   ): PaymentPointer | undefined {
     // Input must be ascii only.
+    // TODO(keefertaylor): Reconcile whether this is a needed constraint.
+    // See: https://app.asana.com/0/1143722888069470/1165014342225697
     if (!PayIDUtils.isASCII(paymentPointer)) return
 
     // Payment pointers must start with a '$'.
