@@ -12,8 +12,8 @@ describe('PayIDUtils', function(): void {
     const paymentPointer = PayIDUtils.parsePaymentPointer(rawPaymentPointer)
 
     // THEN the host and path are set correctly.
-    assert.equal(paymentPointer.host, 'example.com')
-    assert.equal(paymentPointer.path, '/foo')
+    assert.equal(paymentPointer?.host, 'example.com')
+    assert.equal(paymentPointer?.path, '/foo')
   })
 
   it('parse payment pointer - well known path', function(): void {
@@ -24,8 +24,8 @@ describe('PayIDUtils', function(): void {
     const paymentPointer = PayIDUtils.parsePaymentPointer(rawPaymentPointer)
 
     // THEN the host and path are set correctly.
-    assert.equal(paymentPointer.host, 'example.com')
-    assert.equal(paymentPointer.path, PaymentPointer.WELL_KNOWN_PATH)
+    assert.equal(paymentPointer?.host, 'example.com')
+    assert.equal(paymentPointer?.path, PaymentPointer.WELL_KNOWN_PATH)
   })
 
   it('parse payment pointer - well known path trailing slash', function(): void {
@@ -36,8 +36,8 @@ describe('PayIDUtils', function(): void {
     const paymentPointer = PayIDUtils.parsePaymentPointer(rawPaymentPointer)
 
     // THEN the host and path are set correctly.
-    assert.equal(paymentPointer.host, 'example.com')
-    assert.equal(paymentPointer.path, PaymentPointer.WELL_KNOWN_PATH)
+    assert.equal(paymentPointer?.host, 'example.com')
+    assert.equal(paymentPointer?.path, PaymentPointer.WELL_KNOWN_PATH)
   })
 
   it('parse payment pointer - incorrect prefix', function(): void {

@@ -27,6 +27,6 @@ export default class PaymentPointer {
     // An empty path of '/' path defaults to a WELL_KNOWN path.
     const normalizedPath = path || PaymentPointer.WELL_KNOWN_PATH
     this.path =
-      normalizedPath === '/' ? normalizedPath : PaymentPointer.WELL_KNOWN_PATH
+      normalizedPath === '/' ? PaymentPointer.WELL_KNOWN_PATH : normalizedPath
   }
 }
