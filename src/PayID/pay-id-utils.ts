@@ -14,7 +14,7 @@ export default class PayIDUtils {
     paymentPointer: string,
   ): PaymentPointer | undefined {
     // Input must be ascii only.
-    if (PayIDUtils.isASCII(paymentPointer)) return
+    if (!PayIDUtils.isASCII(paymentPointer)) return
 
     // Payment pointers must start with a '$'.
     if (!paymentPointer.startsWith('$')) return
