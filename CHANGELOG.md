@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.1.0] - 2020-03-04
+
+This release adds new functionality to work with the PayID system in Xpring SDK.
+
 ### Added
 - `PaymentPointer`: A new model object to work with conceptual components of payment pointers. See: https://paymentpointers.org/syntax-resolution/
 - `PayIDUtils`: A static utility class for working with PayID constructs.
