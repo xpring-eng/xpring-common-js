@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `PaymentPointer`: A new model object to work with conceptual components of payment pointers. See: https://paymentpointers.org/syntax-resolution/
+- `PayIDUtils`: A static utility class for working with PayID constructs.
+
 ## [4.0.0] - 2020-02-28
 
 This version uses new protocol buffers from rippled which have breaking changes in them. Specifically, the breaking changes include:
