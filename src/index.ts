@@ -21,6 +21,9 @@ export { default as Utils } from './utils'
 export { default as Signer } from './signer'
 export { default as Serializer } from './serializer'
 
+export { default as PayIDUtils } from './PayID/pay-id-utils'
+export { default as PaymentPointer } from './PayID/payment-pointer'
+
 // Type Exports
 export { WalletGenerationResult } from './wallet'
 export { ClassicAddress } from './utils'
