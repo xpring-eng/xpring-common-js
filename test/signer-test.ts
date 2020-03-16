@@ -150,24 +150,14 @@ describe('signer', function(): void {
       'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4',
     )
 
-    // make mocha and typescript happy
-    if (destinationAddress == null) {
-      assert.fail('destinationAddress is undefined')
-      return
-    }
-    if (sourceAddress == null) {
-      assert.fail('sourceAddress is undefined')
-      return
-    }
-
     const transactionJSON = {
-      Account: sourceAddress.address,
+      Account: sourceAddress!.address,
       Fee: '10',
       Sequence: 1,
       LastLedgerSequence: 0,
       SigningPubKey: 'BEEFDEAD',
       Amount: '1000',
-      Destination: destinationAddress.address,
+      Destination: destinationAddress!.address,
       TransactionType: 'Payment',
     }
 
