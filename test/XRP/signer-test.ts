@@ -145,19 +145,19 @@ describe('signer', function(): void {
     const wallet = new FakeWallet(fakeSignature)
     const destinationAddress = Utils.decodeXAddress(
       'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc',
-    )!
+    )
     const sourceAddress = Utils.decodeXAddress(
       'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4',
-    )!
+    )
 
     const transactionJSON = {
-      Account: sourceAddress.address,
+      Account: sourceAddress!.address,
       Fee: '10',
       Sequence: 1,
       LastLedgerSequence: 0,
       SigningPubKey: 'BEEFDEAD',
       Amount: '1000',
-      Destination: destinationAddress.address,
+      Destination: destinationAddress!.address,
       TransactionType: 'Payment',
     }
 
