@@ -1,5 +1,5 @@
 # Do not lint generated files.
-src/generated
+src/XRP/generated
 build
 dist
 

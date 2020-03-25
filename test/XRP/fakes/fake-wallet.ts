@@ -1,4 +1,4 @@
-import Wallet from '../../src/wallet'
+import Wallet from '../../../src/XRP/wallet'
 
 /**
  * A public key to default to.

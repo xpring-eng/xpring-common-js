@@ -1,28 +1,28 @@
 import { assert } from 'chai'
 import * as rippleCodec from 'ripple-binary-codec'
 import FakeWallet from './fakes/fake-wallet'
-import { Payment as LegacyPayment } from '../src/generated/legacy/payment_pb'
-import Signer from '../src/signer'
-import { Transaction as LegacyTransaction } from '../src/generated/legacy/transaction_pb'
-import { XRPAmount } from '../src/generated/legacy/xrp_amount_pb'
+import { Payment as LegacyPayment } from '../../src/XRP/generated/legacy/payment_pb'
+import Signer from '../../src/XRP/signer'
+import { Transaction as LegacyTransaction } from '../../src/XRP/generated/legacy/transaction_pb'
+import { XRPAmount } from '../../src/XRP/generated/legacy/xrp_amount_pb'
 import 'mocha'
 import {
   CurrencyAmount,
   XRPDropsAmount,
-} from '../src/generated/org/xrpl/rpc/v1/amount_pb'
+} from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Payment,
   Transaction,
-} from '../src/generated/org/xrpl/rpc/v1/transaction_pb'
-import { AccountAddress } from '../src/generated/org/xrpl/rpc/v1/account_pb'
-import Utils from '../src/utils'
-import Serializer from '../src/serializer'
+} from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
+import { AccountAddress } from '../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
+import Utils from '../../src/Common/utils'
+import Serializer from '../../src/XRP/serializer'
 import {
   Destination,
   Sequence,
   Account,
   Amount,
-} from '../src/generated/org/xrpl/rpc/v1/common_pb'
+} from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
@@ -145,19 +145,19 @@ describe('signer', function(): void {
     const wallet = new FakeWallet(fakeSignature)
     const destinationAddress = Utils.decodeXAddress(
       'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc',
-    )
+    )!
     const sourceAddress = Utils.decodeXAddress(
       'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4',
-    )
+    )!
 
     const transactionJSON = {
-      Account: sourceAddress!.address,
+      Account: sourceAddress.address,
       Fee: '10',
       Sequence: 1,
       LastLedgerSequence: 0,
       SigningPubKey: 'BEEFDEAD',
       Amount: '1000',
-      Destination: destinationAddress!.address,
+      Destination: destinationAddress.address,
       TransactionType: 'Payment',
     }
 

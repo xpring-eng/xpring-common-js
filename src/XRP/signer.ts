@@ -4,7 +4,7 @@ import { SignedTransaction } from './generated/legacy/signed_transaction_pb'
 import { Transaction as LegacyTransaction } from './generated/legacy/transaction_pb'
 import { Transaction } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import Wallet from './wallet'
-import Utils from './utils'
+import Utils from '../Common/utils'
 
 /**
  * Abstracts the details of signing.
