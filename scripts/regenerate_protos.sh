@@ -9,7 +9,7 @@ set -e -o pipefail
 echo "Regenerating Protocol Buffers from Rippled"
 
 # Directory to write generated code to (.js and .d.ts files)
-OUT_DIR="./src/generated"
+OUT_DIR="./src/XRP/generated"
 
 PROTO_PATH="./rippled/src/ripple/proto/"
 PROTO_SRC_FILES=$PROTO_PATH/org/xrpl/rpc/v1/*.proto

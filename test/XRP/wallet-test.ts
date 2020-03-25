@@ -1,5 +1,5 @@
 import { assert } from 'chai'
-import Wallet from '../src/wallet'
+import Wallet from '../../src/XRP/wallet'
 import 'mocha'
 
 /**

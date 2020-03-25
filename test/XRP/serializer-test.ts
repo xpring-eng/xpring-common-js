@@ -1,26 +1,26 @@
 import { assert } from 'chai'
-import { Payment as LegacyPayment } from '../src/generated/legacy/payment_pb'
-import Serializer from '../src/serializer'
-import { Transaction as LegacyTransaction } from '../src/generated/legacy/transaction_pb'
-import { AccountAddress } from '../src/generated/org/xrpl/rpc/v1/account_pb'
+import { Payment as LegacyPayment } from '../../src/XRP/generated/legacy/payment_pb'
+import Serializer from '../../src/XRP/serializer'
+import { Transaction as LegacyTransaction } from '../../src/XRP/generated/legacy/transaction_pb'
+import { AccountAddress } from '../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
 import {
   CurrencyAmount,
   XRPDropsAmount,
-} from '../src/generated/org/xrpl/rpc/v1/amount_pb'
+} from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Payment,
   Transaction,
-} from '../src/generated/org/xrpl/rpc/v1/transaction_pb'
-import { XRPAmount } from '../src/generated/legacy/xrp_amount_pb'
+} from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
+import { XRPAmount } from '../../src/XRP/generated/legacy/xrp_amount_pb'
 import 'mocha'
-import Utils from '../src/utils'
+import Utils from '../../src/Common/utils'
 import {
   Destination,
   Amount,
   Sequence,
   SigningPublicKey,
   Account,
-} from '../src/generated/org/xrpl/rpc/v1/common_pb'
+} from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 
 /** Constants for transactions */
 const value = '1000'

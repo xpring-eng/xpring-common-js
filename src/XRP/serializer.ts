@@ -6,7 +6,7 @@ import {
   Payment,
   Transaction,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
-import Utils from './utils'
+import Utils from '../Common/utils'
 
 interface PaymentJSON {
   Amount: object | string

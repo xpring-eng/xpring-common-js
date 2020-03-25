@@ -1,7 +1,7 @@
 import * as bip32 from 'bip32'
 import * as bip39 from 'bip39'
 import * as rippleKeyPair from 'ripple-keypairs'
-import Utils from './utils'
+import Utils from '../Common/utils'
 
 /**
  * The default derivation path to use with BIP44.
