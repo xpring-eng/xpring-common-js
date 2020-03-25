@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.2.0] - 2020-03-16
+
+Adds the Signer.signTransactionFromJSON function.
+
 ## [4.1.0] - 2020-03-04
 
 This release adds new functionality to work with the PayID system in Xpring SDK.

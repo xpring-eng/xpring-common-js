@@ -15,7 +15,7 @@ interface PaymentJSON {
   TransactionType: string
 }
 
-interface TransactionJSON {
+interface BaseTransactionJSON {
   Account: string
   Fee: string
   LastLedgerSequence: number
@@ -23,6 +23,15 @@ interface TransactionJSON {
   SigningPubKey: string
   TxnSignature?: string
 }
+
+interface PaymentTransactionJSONAddition extends PaymentJSON {
+  TransactionType: 'Payment'
+}
+
+type PaymentTransactionJSON = BaseTransactionJSON &
+  PaymentTransactionJSONAddition
+
+export type TransactionJSON = BaseTransactionJSON | PaymentTransactionJSON
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
