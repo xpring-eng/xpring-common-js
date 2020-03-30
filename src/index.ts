@@ -24,6 +24,9 @@ export { default as Serializer } from './XRP/serializer'
 export { default as PayIDUtils } from './PayID/pay-id-utils'
 export { default as PaymentPointer } from './PayID/payment-pointer'
 
+// Fakes for Tests
+export { default as FakeWallet } from '../test/XRP/fakes/fake-wallet'
+
 // Type Exports
 export { WalletGenerationResult } from './XRP/wallet'
 export { ClassicAddress } from './Common/utils'
