@@ -39,10 +39,10 @@ describe('wallet', function(): void {
     const walletGenerationResult = Wallet.generateRandomWallet()
 
     // THEN the wallet generation artifacts exist and have the default derivation path.
-    assert.exists(walletGenerationResult.wallet)
-    assert.exists(walletGenerationResult.mnemonic)
+    assert.exists(walletGenerationResult!.wallet)
+    assert.exists(walletGenerationResult!.mnemonic)
     assert.equal(
-      walletGenerationResult.derivationPath,
+      walletGenerationResult!.derivationPath,
       Wallet.getDefaultDerivationPath(),
     )
   })
@@ -56,15 +56,15 @@ describe('wallet', function(): void {
     // THEN the result exists and has the default derivation path.
     assert.exists(walletGenerationResult)
     assert.equal(
-      walletGenerationResult.mnemonic,
+      walletGenerationResult!.mnemonic,
       'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
     )
     assert.equal(
-      walletGenerationResult.derivationPath,
+      walletGenerationResult!.derivationPath,
       Wallet.getDefaultDerivationPath(),
     )
     assert.equal(
-      walletGenerationResult.wallet.getAddress(),
+      walletGenerationResult!.wallet.getAddress(),
       'XVMFQQBMhdouRqhPMuawgBMN1AVFTofPAdRsXG5RkPtUPNQ',
     )
   })
@@ -79,15 +79,15 @@ describe('wallet', function(): void {
     // THEN the result exists and has the default derivation path.
     assert.exists(walletGenerationResult)
     assert.equal(
-      walletGenerationResult.mnemonic,
+      walletGenerationResult!.mnemonic,
       'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
     )
     assert.equal(
-      walletGenerationResult.derivationPath,
+      walletGenerationResult!.derivationPath,
       Wallet.getDefaultDerivationPath(),
     )
     assert.equal(
-      walletGenerationResult.wallet.getAddress(),
+      walletGenerationResult!.wallet.getAddress(),
       'TVHLFWLKvbMv1LFzd6FA2Bf9MPpcy4mRto4VFAAxLuNpvdW',
     )
   })
@@ -183,7 +183,7 @@ describe('wallet', function(): void {
 
     // THEN the wallet has the expected address.
     assert.equal(
-      wallet.getAddress(),
+      wallet!.getAddress(),
       'XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8',
     )
   })
@@ -198,7 +198,7 @@ describe('wallet', function(): void {
 
     // THEN the wallet has the expected address.
     assert.equal(
-      wallet.getAddress(),
+      wallet!.getAddress(),
       'T7zFmeZo6uLHP4Vd21TpXjrTBk487ZQPGVQsJ1mKWGCD5rq',
     )
   })
