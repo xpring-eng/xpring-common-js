@@ -1,7 +1,5 @@
 import * as rippleCodec from 'ripple-binary-codec'
 import Serializer, { TransactionJSON } from './serializer'
-import { SignedTransaction } from './generated/legacy/signed_transaction_pb'
-import { Transaction as LegacyTransaction } from './generated/legacy/transaction_pb'
 import { Transaction } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import Wallet from './wallet'
 import Utils from '../Common/utils'
@@ -56,39 +54,6 @@ class Signer {
       return undefined
     }
     return Signer.signTransactionFromJSON(transactionJSON, wallet)
-  }
-
-  /**
-   * Encode the given object to hex and sign it.
-   *
-   * @param {Transaction} transaction The transaction to sign.
-   * @param {Wallet} wallet The wallet to sign the transaction with.
-   * @returns {SignedTransaction} A signed transaction.
-   */
-  public static signLegacyTransaction(
-    transaction: LegacyTransaction,
-    wallet: Wallet,
-  ): SignedTransaction | undefined {
-    if (transaction === undefined || wallet === undefined) {
-      return undefined
-    }
-
-    const transactionJSON = Serializer.legacyTransactionToJSON(transaction)
-    if (transactionJSON === undefined) {
-      return undefined
-    }
-    const transactionHex = rippleCodec.encodeForSigning(transactionJSON)
-
-    const signatureHex = wallet.sign(transactionHex)
-    if (signatureHex === undefined) {
-      return undefined
-    }
-
-    const signedTransaction = new SignedTransaction()
-    signedTransaction.setTransaction(transaction)
-    signedTransaction.setTransactionSignatureHex(signatureHex)
-
-    return signedTransaction
   }
 }
 
