@@ -2,7 +2,7 @@
   "name": "xpring-common-js",
   "version": "5.0.1",
   "description": "Common JavaScript for use within the Xpring Platform",
-  "main": "build/index.js",
+  "main": "build/src/index.js",
   "repository": "https://github.com/xpring-eng/xpring-common-js.git",
   "author": "Xpring Engineering",
   "license": "MIT",
@@ -19,7 +19,7 @@
     "ripple-keypairs": "^1.0.0"
   },
   "scripts": {
-    "build": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc -d && copyfiles -u 3 './src/XRP/generated/**/*' ./build/XRP/generated",
+    "build": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc -d && copyfiles -u 3 './src/XRP/generated/**/*' ./build/src/XRP/generated",
     "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && webpack && copyfiles -u 3 './src/XRP/generated/**/*' ./dist/XRP/generated",
     "clean": "rm -rf ./src/generated ./dist ./build",
     "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit",
