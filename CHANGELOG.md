@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0] - 2020-04-08
+
+This fix release fixes build references. 
+
+## [5.0.0] - 2020-04-08
+
 ### Added
 - A new `FakeWallet` is exported from the library to assist clients in unit testing.
 
