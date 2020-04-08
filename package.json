@@ -19,8 +19,8 @@
     "ripple-keypairs": "^1.0.0"
   },
   "scripts": {
-    "build": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc -d && copyfiles -u 2 './src/XRP/generated/**/*' ./build/XRP/generated",
-    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && webpack && copyfiles -u 2 './src/XRP/generated/**/*' ./dist/XRP/generated",
+    "build": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc -d && copyfiles -u 3 './src/XRP/generated/**/*' ./build/XRP/generated",
+    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && webpack && copyfiles -u 3 './src/XRP/generated/**/*' ./dist/XRP/generated",
     "clean": "rm -rf ./src/generated ./dist ./build",
     "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit",
     "lint": "eslint . --ext .ts --fix",
