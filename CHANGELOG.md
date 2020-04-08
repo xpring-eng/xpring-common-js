@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-#### Removed
+### Added
+- A new `FakeWallet` is exported from the library to assist clients in unit testing.
+
+### Removed
 - - All legacy services are removed from Xpring-Common-JS. This functionality is no longer supported. Going forward, all functionality will use [rippled's protocol buffer API](https://github.com/ripple/rippled/pull/3254).
 
 ## [4.2.0] - 2020-03-16
