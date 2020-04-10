@@ -1,5 +1,5 @@
 /**
- * A class which which encapsulates components of a Pay ID.
+ * A class which encapsulates components of a Pay ID.
  */
 export default class PayIDComponents {
   /**
