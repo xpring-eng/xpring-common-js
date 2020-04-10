@@ -14,7 +14,7 @@ describe('PayIDUtils', function(): void {
 
     // THEN the host and path are set correctly.
     assert.equal(payIDComponents?.host, host)
-    assert.equal(payIDComponents?.path, path)
+    assert.equal(payIDComponents?.path, `/${path}`)
   })
 
   it('parse Pay ID - multiple dollar signs', function(): void {
