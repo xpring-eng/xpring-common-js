@@ -1,35 +1,28 @@
-import PaymentPointer from './payment-pointer'
+import PayIDComponents from './pay-id-components'
 
 /**
  * A static utility class for PayID.
  */
 export default class PayIDUtils {
   /**
-   * Parse a payment pointer string to a payment pointer object
+   * Parse a PayID string to a set of PayIDComponents object
    *
-   * @param paymentPointer The input string payment pointer.
-   * @returns A PaymentPointer object if the input was valid, otherwise undefined.
+   * @param parsePayID The input Pay ID.
+   * @returns A PayIDComponents object if the input was valid, otherwise undefined.
    */
-  public static parsePaymentPointer(
-    paymentPointer: string,
-  ): PaymentPointer | undefined {
-    // Input must be ascii only.
-    if (!PayIDUtils.isASCII(paymentPointer)) return
+  public static parsePayID(payID: string): PayIDComponents | undefined {
+    if (!PayIDUtils.isASCII(payID)) return
 
-    // Payment pointers must start with a '$'.
-    if (!paymentPointer.startsWith('$')) return
+    // Validate there are two components of a payment pointer.
+    const components = payID.split('$')
+    if (components.length !== 2) return
 
-    const address = paymentPointer.substring(1)
-    const pathIndex = address.indexOf('/')
+    // Validate the host and path have values.
+    const path = components[0]
+    const host = components[1]
+    if (host.length === 0 || path.length === 0) return
 
-    // Host must not be empty.
-    const host = pathIndex >= 0 ? address.substring(0, pathIndex) : address
-    if (host === '') return
-
-    if (pathIndex >= 0) {
-      return new PaymentPointer(host, address.substring(pathIndex))
-    }
-    return new PaymentPointer(host)
+    return new PayIDComponents(host, `/${path}`)
   }
 
   /**
