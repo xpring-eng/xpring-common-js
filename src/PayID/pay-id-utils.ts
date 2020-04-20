@@ -22,7 +22,7 @@ export default class PayIDUtils {
     const host = components[1]
     if (host.length === 0 || path.length === 0) return
 
-    return new PayIDComponents(host, path)
+    return new PayIDComponents(host, `/${path}`)
   }
 
   /**
