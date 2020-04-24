@@ -6,7 +6,7 @@ export { default as Signer } from './XRP/signer'
 export { default as Serializer } from './XRP/serializer'
 
 export { default as PayIDUtils } from './PayID/pay-id-utils'
-export { default as PaymentPointer } from './PayID/payment-pointer'
+export { default as PayIDComponents } from './PayID/pay-id-components'
 
 // Fakes for Tests
 export { default as FakeWallet } from '../test/XRP/fakes/fake-wallet'

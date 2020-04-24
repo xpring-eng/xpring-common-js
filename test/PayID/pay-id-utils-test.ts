@@ -1,66 +1,66 @@
 import { assert } from 'chai'
 import PayIDUtils from '../../src/PayID/pay-id-utils'
 import 'mocha'
-import PaymentPointer from '../../src/PayID/payment-pointer'
 
 describe('PayIDUtils', function(): void {
-  it('parse payment pointer - host and path', function(): void {
-    // GIVEN a payment pointer with a host and a path.
-    const rawPaymentPointer = '$example.com/foo'
+  it('parse Pay ID - valid', function(): void {
+    // GIVEN a Pay ID with a host and a path.
+    const host = 'xpring.money'
+    const path = 'georgewashington'
+    const rawPayID = `${path}$${host}`
 
-    // WHEN it is parsed to a PaymentPointer object
-    const paymentPointer = PayIDUtils.parsePaymentPointer(rawPaymentPointer)
-
-    // THEN the host and path are set correctly.
-    assert.equal(paymentPointer?.host, 'example.com')
-    assert.equal(paymentPointer?.path, '/foo')
-  })
-
-  it('parse payment pointer - well known path', function(): void {
-    // GIVEN a payment pointer with a well known path.
-    const rawPaymentPointer = '$example.com'
-
-    // WHEN it is parsed to a PaymentPointer object
-    const paymentPointer = PayIDUtils.parsePaymentPointer(rawPaymentPointer)
+    // WHEN it is parsed to components.
+    const payIDComponents = PayIDUtils.parsePayID(rawPayID)
 
     // THEN the host and path are set correctly.
-    assert.equal(paymentPointer?.host, 'example.com')
-    assert.equal(paymentPointer?.path, PaymentPointer.WELL_KNOWN_PATH)
+    assert.equal(payIDComponents?.host, host)
+    assert.equal(payIDComponents?.path, `/${path}`)
   })
 
-  it('parse payment pointer - well known path trailing slash', function(): void {
-    // GIVEN a payment pointer with a well known path and a trailing slash.
-    const rawPaymentPointer = '$example.com/'
+  it('parse Pay ID - multiple dollar signs', function(): void {
+    // GIVEN a Pay ID with too many '$'.
+    const host = 'xpring$money' // Extra '$'.
+    const path = 'georgewashington'
+    const rawPayID = `${host}$${path}`
 
-    // WHEN it is parsed to a PaymentPointer object
-    const paymentPointer = PayIDUtils.parsePaymentPointer(rawPaymentPointer)
+    // WHEN it is parsed to components.
+    const payIDComponents = PayIDUtils.parsePayID(rawPayID)
 
-    // THEN the host and path are set correctly.
-    assert.equal(paymentPointer?.host, 'example.com')
-    assert.equal(paymentPointer?.path, PaymentPointer.WELL_KNOWN_PATH)
+    // THEN the Pay ID failed to parse.
+    assert.isUndefined(payIDComponents)
   })
 
-  it('parse payment pointer - incorrect prefix', function(): void {
-    // GIVEN a payment pointer without a '$' prefix
-    const rawPaymentPointer = 'example.com/'
+  it('parse Pay ID - empty host', function(): void {
+    // GIVEN a Pay ID with an empty host.
+    const host = ''
+    const path = 'georgewashington'
+    const rawPayID = `${host}$${path}`
 
-    // WHEN it is parsed to a PaymentPointer object THEN the result is undefined
-    assert.isUndefined(PayIDUtils.parsePaymentPointer(rawPaymentPointer))
+    // WHEN it is parsed to components.
+    const payIDComponents = PayIDUtils.parsePayID(rawPayID)
+
+    // THEN the Pay ID failed to parse.
+    assert.isUndefined(payIDComponents)
   })
 
-  it('parse payment pointer - empty host', function(): void {
-    // GIVEN a payment pointer without a host.
-    const rawPaymentPointer = '$'
+  it('parse Pay ID - empty path', function(): void {
+    // GIVEN a Pay ID with an empty host.
+    const host = 'xpring.money'
+    const path = ''
+    const rawPayID = `${host}$${path}`
 
-    // WHEN it is parsed to a PaymentPointer object THEN the result is undefined
-    assert.isUndefined(PayIDUtils.parsePaymentPointer(rawPaymentPointer))
+    // WHEN it is parsed to components.
+    const payIDComponents = PayIDUtils.parsePayID(rawPayID)
+
+    // THEN the Pay ID failed to parse.
+    assert.isUndefined(payIDComponents)
   })
 
-  it('parse payment pointer - non-ascii characters', function(): void {
-    // GIVEN a payment pointer with non-ascii characters.
-    const rawPaymentPointer = '$ZA̡͊͠͝LGΌ IS̯͈͕̹̘̱ͮ TO͇̹̺ͅƝ̴ȳ̳ TH̘Ë͖́̉ ͠P̯͍̭O̚N̐Y̡'
+  it('parse Pay ID - non-ascii characters', function(): void {
+    // GIVEN a Pay ID with non-ascii characters.
+    const rawPayID = 'ZA̡͊͠͝LGΌIS̯͈͕̹̘̱ͮ$TO͇̹̺ͅƝ̴ȳ̳TH̘Ë͖́̉ ͠P̯͍̭O̚N̐Y̡'
 
-    // WHEN it is parsed to a PaymentPointer object THEN the result is undefined
-    assert.isUndefined(PayIDUtils.parsePaymentPointer(rawPaymentPointer))
+    // WHEN it is parsed to components THEN the result is undefined
+    assert.isUndefined(PayIDUtils.parsePayID(rawPayID))
   })
 })
