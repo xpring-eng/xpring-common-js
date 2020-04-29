@@ -33,8 +33,8 @@ const derivationPathTestCases = {
   },
 }
 
-describe('wallet', function(): void {
-  it('generateRandomWallet', function(): void {
+describe('wallet', function (): void {
+  it('generateRandomWallet', function (): void {
     // WHEN a new wallet is generated for use on mainnet
     const walletGenerationResult = Wallet.generateRandomWallet()
 
@@ -47,7 +47,7 @@ describe('wallet', function(): void {
     )
   })
 
-  it('generateRandomWallet - entropy and mainnet', function(): void {
+  it('generateRandomWallet - entropy and mainnet', function (): void {
     // WHEN a new wallet is generated with entropy on MainNet.
     const walletGenerationResult = Wallet.generateRandomWallet(
       '00000000000000000000000000000000',
@@ -69,7 +69,7 @@ describe('wallet', function(): void {
     )
   })
 
-  it('generateRandomWallet - entropy and testnet', function(): void {
+  it('generateRandomWallet - entropy and testnet', function (): void {
     // WHEN a new wallet is generated with entropy on TestNet
     const walletGenerationResult = Wallet.generateRandomWallet(
       '00000000000000000000000000000000',
@@ -92,7 +92,7 @@ describe('wallet', function(): void {
     )
   })
 
-  it('generateRandomWallet - invalid entropy', function(): void {
+  it('generateRandomWallet - invalid entropy', function (): void {
     // WHEN a new wallet is generated with invalid hexadecimal entropy.
     const walletGenerationResult = Wallet.generateRandomWallet('xrp')
 
@@ -100,7 +100,7 @@ describe('wallet', function(): void {
     assert.isUndefined(walletGenerationResult)
   })
 
-  it('walletFromMnemonic - derivation path index 0 - MainNet', function(): void {
+  it('walletFromMnemonic - derivation path index 0 - MainNet', function (): void {
     // GIVEN a menmonic, derivation path and a set of expected outputs.
     const testData = derivationPathTestCases.index0
 
@@ -116,7 +116,7 @@ describe('wallet', function(): void {
     assert.equal(wallet.getAddress(), testData.expectedMainNetAddress)
   })
 
-  it('walletFromMnemonic - derivation path index 0, TestNet', function(): void {
+  it('walletFromMnemonic - derivation path index 0, TestNet', function (): void {
     // GIVEN a menmonic, derivation path and a set of expected outputs.
     const testData = derivationPathTestCases.index0
 
@@ -133,7 +133,7 @@ describe('wallet', function(): void {
     assert.equal(wallet.getAddress(), testData.expectedTestNetAddress)
   })
 
-  it('walletFromMnemonic - derivation path index 1', function(): void {
+  it('walletFromMnemonic - derivation path index 1', function (): void {
     // GIVEN a menmonic, derivation path and a set of expected outputs.
     const testData = derivationPathTestCases.index1
 
@@ -149,7 +149,7 @@ describe('wallet', function(): void {
     assert.equal(wallet.getAddress(), testData.expectedAddress)
   })
 
-  it('walletFromMnemonic - no derivation path', function(): void {
+  it('walletFromMnemonic - no derivation path', function (): void {
     // GIVEN a menmonic, derivation path and a set of expected outputs.
     const testData = derivationPathTestCases.index0
 
@@ -162,7 +162,7 @@ describe('wallet', function(): void {
     assert.equal(wallet.getAddress(), testData.expectedMainNetAddress)
   })
 
-  it('walletFromMnemonic - invalid mnemonic', function(): void {
+  it('walletFromMnemonic - invalid mnemonic', function (): void {
     // GIVEN an invalid mnemonic.
     const mnemonic = 'xrp xrp xpr xpr xrp xrp xpr xpr xrp xrp xpr xpr'
 
@@ -173,7 +173,7 @@ describe('wallet', function(): void {
     assert.isUndefined(wallet)
   })
 
-  it('walletFromSeed - MainNet', function(): void {
+  it('walletFromSeed - MainNet', function (): void {
     // GIVEN a seed used to generate a wallet on MainNet
     const seed = 'snYP7oArxKepd3GPDcrjMsJYiJeJB'
     const isTestNet = false
@@ -188,7 +188,7 @@ describe('wallet', function(): void {
     )
   })
 
-  it('walletFromSeed - TestNet', function(): void {
+  it('walletFromSeed - TestNet', function (): void {
     // GIVEN a seed used to generate a wallet on TestNet
     const seed = 'snYP7oArxKepd3GPDcrjMsJYiJeJB'
     const test = true
@@ -203,7 +203,7 @@ describe('wallet', function(): void {
     )
   })
 
-  it('walletFromSeed - invalid seed', function(): void {
+  it('walletFromSeed - invalid seed', function (): void {
     // GIVEN an invalid seed.
     const seed = 'xrp'
 
@@ -214,7 +214,7 @@ describe('wallet', function(): void {
     assert.isUndefined(wallet)
   })
 
-  it('sign', function(): void {
+  it('sign', function (): void {
     // GIVEN a wallet.
     const testData = derivationPathTestCases.index0
     const wallet = Wallet.generateWalletFromMnemonic(
@@ -229,7 +229,7 @@ describe('wallet', function(): void {
     assert.equal(signature, testData.expectedSignature)
   })
 
-  it('sign - invalid hex', function(): void {
+  it('sign - invalid hex', function (): void {
     // GIVEN a wallet and a non-hexadecimal message.
     const testData = derivationPathTestCases.index0
     const wallet = Wallet.generateWalletFromMnemonic(
@@ -245,7 +245,7 @@ describe('wallet', function(): void {
     assert.notExists(signature)
   })
 
-  it('verify - valid signature', function(): void {
+  it('verify - valid signature', function (): void {
     // GIVEN a wallet and a message with a valid signature.
     const testData = derivationPathTestCases.index0
     const wallet = Wallet.generateWalletFromMnemonic(
@@ -262,7 +262,7 @@ describe('wallet', function(): void {
     assert.isTrue(isValid)
   })
 
-  it('verify - invalid signature', function(): void {
+  it('verify - invalid signature', function (): void {
     // GIVEN a wallet and a invalid signature.
     const testData = derivationPathTestCases.index0
     const wallet = Wallet.generateWalletFromMnemonic(
@@ -279,7 +279,7 @@ describe('wallet', function(): void {
     assert.isFalse(isValid)
   })
 
-  it('verify - bad signature', function(): void {
+  it('verify - bad signature', function (): void {
     // GIVEN a wallet and a non hex signature.
     const testData = derivationPathTestCases.index0
     const wallet = Wallet.generateWalletFromMnemonic(
@@ -296,7 +296,7 @@ describe('wallet', function(): void {
     assert.isFalse(isValid)
   })
 
-  it('verify - bad message', function(): void {
+  it('verify - bad message', function (): void {
     // GIVEN a wallet and a non hex message.
     const testData = derivationPathTestCases.index0
     const wallet = Wallet.generateWalletFromMnemonic(
@@ -313,7 +313,7 @@ describe('wallet', function(): void {
     assert.isFalse(isValid)
   })
 
-  it('signs and verifies an empty message', function(): void {
+  it('signs and verifies an empty message', function (): void {
     // GIVEN a wallet and an empty message.
     const testData = derivationPathTestCases.index0
     const wallet = Wallet.generateWalletFromMnemonic(
@@ -330,7 +330,7 @@ describe('wallet', function(): void {
     assert.isTrue(isValid)
   })
 
-  it('fails to verify a bad signature on an empty string.', function(): void {
+  it('fails to verify a bad signature on an empty string.', function (): void {
     // GIVEN a wallet and an empty message and an incorrect signature.
     const testData = derivationPathTestCases.index0
     const wallet = Wallet.generateWalletFromMnemonic(

@@ -23,8 +23,8 @@ import {
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-describe('signer', function(): void {
-  it('sign', function(): void {
+describe('signer', function (): void {
+  it('sign', function (): void {
     // GIVEN an transaction and a wallet and expected signing artifacts.
     const fakeSignature = 'DEADBEEF'
     const wallet = new FakeWallet(fakeSignature)
@@ -93,7 +93,7 @@ describe('signer', function(): void {
     assert.deepEqual(signedTransaction, expectedSignedTransaction)
   })
 
-  it('sign from JSON', function(): void {
+  it('sign from JSON', function (): void {
     // GIVEN an transaction and a wallet and expected signing artifacts.
     const fakeSignature = 'DEADBEEF'
     const wallet = new FakeWallet(fakeSignature)
