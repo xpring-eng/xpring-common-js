@@ -120,9 +120,7 @@ class Utils {
    * @returns An encoded hexadecimal string.
    */
   public static toHex(bytes: Uint8Array): string {
-    return Buffer.from(bytes)
-      .toString('hex')
-      .toUpperCase()
+    return Buffer.from(bytes).toString('hex').toUpperCase()
   }
 
   /**
@@ -163,10 +161,7 @@ class Utils {
    */
   private static sha512Half(bytes: Uint8Array): Uint8Array {
     const sha512 = createHash('sha512')
-    const hashHex = sha512
-      .update(bytes)
-      .digest('hex')
-      .toUpperCase()
+    const hashHex = sha512.update(bytes).digest('hex').toUpperCase()
     const hash = this.toBytes(hashHex)
 
     return hash.slice(0, 32)

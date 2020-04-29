@@ -107,8 +107,8 @@ function makeTransaction(
   return transaction
 }
 
-describe('serializer', function(): void {
-  it('serializes a payment in XRP from a classic address', function(): void {
+describe('serializer', function (): void {
+  it('serializes a payment in XRP from a classic address', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeTransaction(
       value,
@@ -137,7 +137,7 @@ describe('serializer', function(): void {
     assert.deepEqual(serialized, expectedJSON)
   })
 
-  it('serializes a payment in XRP from an X-Address with no tag', function(): void {
+  it('serializes a payment in XRP from an X-Address with no tag', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeTransaction(
       value,
@@ -166,7 +166,7 @@ describe('serializer', function(): void {
     assert.deepEqual(serialized, expectedJSON)
   })
 
-  it('fails to serializes a payment in XRP from an X-Address with a tag', function(): void {
+  it('fails to serializes a payment in XRP from an X-Address with a tag', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP from a sender with a tag.
     const account = Utils.encodeXAddress(accountClassicAddress, tag)
     const transaction = makeTransaction(
@@ -186,7 +186,7 @@ describe('serializer', function(): void {
     assert.isUndefined(serialized)
   })
 
-  it('fails to serializes a payment in XRP when account is undefined', function(): void {
+  it('fails to serializes a payment in XRP when account is undefined', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makeTransaction(
       value,
@@ -205,7 +205,7 @@ describe('serializer', function(): void {
     assert.isUndefined(serialized)
   })
 
-  it('serializes a payment to an X-address with a tag in XRP', function(): void {
+  it('serializes a payment to an X-address with a tag in XRP', function (): void {
     // GIVEN a transaction which represents a payment to a destination and tag, denominated in XRP.
     const transaction = makeTransaction(
       value,
@@ -235,7 +235,7 @@ describe('serializer', function(): void {
     assert.deepEqual(serialized, expectedJSON)
   })
 
-  it('serializes a payment to an X-address without a tag in XRP', function(): void {
+  it('serializes a payment to an X-address without a tag in XRP', function (): void {
     // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP.
     const transaction = makeTransaction(
       value,
