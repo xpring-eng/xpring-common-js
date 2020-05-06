@@ -42,7 +42,7 @@ export default class PayIDUtils {
    */
   private static isASCII(input: string): boolean {
     // eslint-disable-next-line no-control-regex
-    return /^[\x00-\x7F]*$/.test(input)
+    return /^[\x00-\x7F]*$/u.test(input)
   }
 
   /** Please do not instantiate this static utility class. */
