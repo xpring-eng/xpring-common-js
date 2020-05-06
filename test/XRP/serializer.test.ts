@@ -1,17 +1,12 @@
+import 'mocha'
 import { assert } from 'chai'
 
-import Serializer from '../../src/XRP/serializer'
+import Utils from '../../src/Common/utils'
 import { AccountAddress } from '../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
 import {
   CurrencyAmount,
   XRPDropsAmount,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
-import {
-  Payment,
-  Transaction,
-} from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
-import 'mocha'
-import Utils from '../../src/Common/utils'
 import {
   Destination,
   Amount,
@@ -19,6 +14,11 @@ import {
   SigningPublicKey,
   Account,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
+import {
+  Payment,
+  Transaction,
+} from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
+import Serializer from '../../src/XRP/serializer'
 
 /** Constants for transactions */
 const value = '1000'
