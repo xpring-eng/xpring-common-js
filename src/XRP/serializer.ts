@@ -38,9 +38,9 @@ class Serializer {
   /**
    * Convert a Transaction to a JSON representation.
    *
-   * @param {proto.Transaction} transaction - A Transaction to convert.
+   * @param transaction - A Transaction to convert.
    * @param signature - An optional hex encoded signature to include in the transaction.
-   * @returns {Object} The Transaction as JSON.
+   * @returns The Transaction as JSON.
    */
   public static transactionToJSON(
     transaction: Transaction,
@@ -129,8 +129,8 @@ class Serializer {
   /**
    * Convert a Payment to a JSON representation.
    *
-   * @param {proto.Payment} payment - The Payment to convert.
-   * @returns {Object} The Payment as JSON.
+   * @param payment - The Payment to convert.
+   * @returns The Payment as JSON.
    */
   private static paymentToJSON(payment: Payment): object | undefined {
     const json: PaymentJSON = {

@@ -28,7 +28,7 @@ export interface WalletGenerationResult {
  */
 class Wallet {
   /**
-   * @returns {String} The default derivation path.
+   * @returns The default derivation path.
    */
   public static getDefaultDerivationPath(): string {
     return defaultDerivationPath
@@ -146,21 +146,21 @@ class Wallet {
   ) {}
 
   /**
-   * @returns {String} A string representing the public key for the wallet.
+   * @returns A string representing the public key for the wallet.
    */
   public getPublicKey(): string {
     return this.publicKey
   }
 
   /**
-   * @returns {String} A string representing the private key for the wallet.
+   * @returns A string representing the private key for the wallet.
    */
   public getPrivateKey(): string {
     return this.privateKey
   }
 
   /**
-   * @returns {String} A string representing the address of the wallet.
+   * @returns A string representing the address of the wallet.
    */
   public getAddress(): string {
     const classicAddress = rippleKeyPair.deriveAddress(this.getPublicKey())
@@ -174,8 +174,8 @@ class Wallet {
   /**
    * Sign an arbitrary hex string.
    *
-   * @param {String} hex - An arbitrary hex string to sign.
-   * @returns {String} A signature in hexadecimal format if the input was valid, otherwise undefined.
+   * @param hex - An arbitrary hex string to sign.
+   * @returns A signature in hexadecimal format if the input was valid, otherwise undefined.
    */
   public sign(hex: string): string | undefined {
     if (!Utils.isHex(hex)) {
@@ -187,9 +187,9 @@ class Wallet {
   /**
    * Verify a signature is valid for a message.
    *
-   * @param {String} message - A message in hex format.
-   * @param {String} signature - A signature in hex format.
-   * @returns {Boolean} True if the signature is valid, otherwise false.
+   * @param message - A message in hex format.
+   * @param signature - A signature in hex format.
+   * @returns True if the signature is valid, otherwise false.
    */
   public verify(message: string, signature: string): boolean {
     if (!Utils.isHex(signature) || !Utils.isHex(message)) {
