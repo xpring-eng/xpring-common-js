@@ -176,7 +176,7 @@ class Utils {
    */
   public static isHex(input: string): boolean {
     const hexRegEx = /([0-9]|[a-f])/gim
-    return (input.match(hexRegEx) || []).length === input.length
+    return (input.match(hexRegEx) ?? []).length === input.length
   }
 }
 
