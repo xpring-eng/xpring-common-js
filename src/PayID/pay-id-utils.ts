@@ -7,7 +7,7 @@ export default class PayIDUtils {
   /**
    * Parse a PayID string to a set of PayIDComponents object
    *
-   * @param parsePayID The input Pay ID.
+   * @param parsePayID - The input Pay ID.
    * @returns A PayIDComponents object if the input was valid, otherwise undefined.
    */
   public static parsePayID(payID: string): PayIDComponents | undefined {
@@ -37,7 +37,7 @@ export default class PayIDUtils {
    * Shamelessly taken from:
    * https://stackoverflow.com/questions/14313183/javascript-regex-how-do-i-check-if-the-string-is-ascii-only
    *
-   * @param input The input to check
+   * @param input - The input to check
    * @returns A boolean indicating the result.
    */
   private static isASCII(input: string): boolean {

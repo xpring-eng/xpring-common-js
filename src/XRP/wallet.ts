@@ -40,8 +40,8 @@ class Wallet {
    *
    * Secure random number generation is used when entropy is ommitted and when the runtime environment has the necessary support. Otherwise, an error is thrown. Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
    *
-   * @param entropy A optional hex string of entropy.
-   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @param entropy - A optional hex string of entropy.
+   * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns Artifacts from the wallet generation.
    */
   public static generateRandomWallet(
@@ -70,9 +70,9 @@ class Wallet {
   /**
    * Generate a new hierarchical deterministic wallet from a mnemonic and derivation path.
    *
-   * @param mnemonic The given mnemonic for the wallet.
-   * @param derivationPath The given derivation path to use. If undefined, the default path is used.
-   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @param mnemonic - The given mnemonic for the wallet.
+   * @param derivationPath - The given derivation path to use. If undefined, the default path is used.
+   * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
   public static generateWalletFromMnemonic(
@@ -92,9 +92,9 @@ class Wallet {
   /**
    * Generate a new hierarchical deterministic wallet from a seed and derivation path.
    *
-   * @param seed The given seed for the wallet.
-   * @param derivationPath The given derivation path to use. If undefined, the default path is used.
-   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @param seed - The given seed for the wallet.
+   * @param derivationPath - The given derivation path to use. If undefined, the default path is used.
+   * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
   public static generateHDWalletFromSeed(
@@ -116,8 +116,8 @@ class Wallet {
   /**
    * Generate a new wallet from the given seed.
    *
-   * @param seed The given seed for the wallet.
-   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @param seed - The given seed for the wallet.
+   * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns A new wallet from the given seed, or undefined if the seed was invalid.
    */
   public static generateWalletFromSeed(
@@ -135,9 +135,9 @@ class Wallet {
   /**
    * Create a new Wallet object.
    *
-   * @param publicKey The given public key for the wallet.
-   * @param privateKey The given private key for the wallet.
-   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @param publicKey - The given public key for the wallet.
+   * @param privateKey - The given private key for the wallet.
+   * @param test - Whether the address is for use on a test network, defaults to `false`.
    */
   public constructor(
     private readonly publicKey: string,
@@ -174,7 +174,7 @@ class Wallet {
   /**
    * Sign an arbitrary hex string.
    *
-   * @param {String} hex An arbitrary hex string to sign.
+   * @param {String} hex - An arbitrary hex string to sign.
    * @returns {String} A signature in hexadecimal format if the input was valid, otherwise undefined.
    */
   public sign(hex: string): string | undefined {
@@ -187,8 +187,8 @@ class Wallet {
   /**
    * Verify a signature is valid for a message.
    *
-   * @param {String} message A message in hex format.
-   * @param {String} signature A signature in hex format.
+   * @param {String} message - A message in hex format.
+   * @param {String} signature - A signature in hex format.
    * @returns {Boolean} True if the signature is valid, otherwise false.
    */
   public verify(message: string, signature: string): boolean {

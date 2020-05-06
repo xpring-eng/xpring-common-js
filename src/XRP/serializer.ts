@@ -38,8 +38,8 @@ class Serializer {
   /**
    * Convert a Transaction to a JSON representation.
    *
-   * @param {proto.Transaction} transaction A Transaction to convert.
-   * @param signature An optional hex encoded signature to include in the transaction.
+   * @param {proto.Transaction} transaction - A Transaction to convert.
+   * @param signature - An optional hex encoded signature to include in the transaction.
    * @returns {Object} The Transaction as JSON.
    */
   public static transactionToJSON(
@@ -129,7 +129,7 @@ class Serializer {
   /**
    * Convert a Payment to a JSON representation.
    *
-   * @param {proto.Payment} payment The Payment to convert.
+   * @param {proto.Payment} payment - The Payment to convert.
    * @returns {Object} The Payment as JSON.
    */
   private static paymentToJSON(payment: Payment): object | undefined {
@@ -176,7 +176,7 @@ class Serializer {
   /**
    * Convert an XRPDropsAmount to a JSON representation.
    *
-   * @param xrpDropsAmount The XRPAmount to convert.
+   * @param xrpDropsAmount - The XRPAmount to convert.
    * @returns The XRPAmount as JSON.
    */
   private static xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
