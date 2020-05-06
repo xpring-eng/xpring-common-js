@@ -1,4 +1,5 @@
 import { assert } from 'chai'
+
 import PayIDUtils from '../../src/PayID/pay-id-utils'
 import 'mocha'
 

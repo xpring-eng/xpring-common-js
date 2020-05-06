@@ -1,4 +1,5 @@
 import { assert } from 'chai'
+
 import Serializer from '../../src/XRP/serializer'
 import { AccountAddress } from '../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
 import {

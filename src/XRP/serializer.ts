@@ -1,9 +1,10 @@
+import Utils from '../Common/utils'
+
 import { XRPDropsAmount } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Payment,
   Transaction,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
-import Utils from '../Common/utils'
 
 interface PaymentJSON {
   Amount: object | string

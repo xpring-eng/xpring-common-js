@@ -1,4 +1,5 @@
 import { createHash } from 'crypto'
+
 import * as addressCodec from 'ripple-address-codec'
 
 /**

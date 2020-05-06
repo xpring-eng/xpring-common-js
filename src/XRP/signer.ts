@@ -1,8 +1,10 @@
 import * as rippleCodec from 'ripple-binary-codec'
-import Serializer, { TransactionJSON } from './serializer'
-import { Transaction } from './generated/org/xrpl/rpc/v1/transaction_pb'
-import Wallet from './wallet'
+
 import Utils from '../Common/utils'
+
+import { Transaction } from './generated/org/xrpl/rpc/v1/transaction_pb'
+import Serializer, { TransactionJSON } from './serializer'
+import Wallet from './wallet'
 
 /**
  * Abstracts the details of signing.
