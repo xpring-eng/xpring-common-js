@@ -104,7 +104,9 @@ class Wallet {
   ): Wallet | undefined {
     const masterNode = bip32.fromSeed(seed)
     const node = masterNode.derivePath(derivationPath)
-    if (node.privateKey === undefined) return
+    if (node.privateKey === undefined) {
+      return
+    }
 
     const publicKey = Wallet.hexFromBuffer(node.publicKey)
     const privateKey = Wallet.hexFromBuffer(node.privateKey)

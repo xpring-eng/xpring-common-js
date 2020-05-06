@@ -11,16 +11,22 @@ export default class PayIDUtils {
    * @returns A PayIDComponents object if the input was valid, otherwise undefined.
    */
   public static parsePayID(payID: string): PayIDComponents | undefined {
-    if (!PayIDUtils.isASCII(payID)) return
+    if (!PayIDUtils.isASCII(payID)) {
+      return
+    }
 
     // Validate there are two components of a payment pointer.
     const components = payID.split('$')
-    if (components.length !== 2) return
+    if (components.length !== 2) {
+      return
+    }
 
     // Validate the host and path have values.
     const path = components[0]
     const host = components[1]
-    if (host.length === 0 || path.length === 0) return
+    if (host.length === 0 || path.length === 0) {
+      return
+    }
 
     return new PayIDComponents(host, `/${path}`)
   }
