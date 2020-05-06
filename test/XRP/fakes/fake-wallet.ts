@@ -22,7 +22,7 @@ class FakeWallet extends Wallet {
    * @param {String} signature The signature this wallet will produce.
    */
   constructor(
-    private signature: string,
+    private readonly signature: string,
     publicKey = defaultPublicKey,
     privateKey = defaultPrivateKey,
   ) {
