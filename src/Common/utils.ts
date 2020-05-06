@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import * as addressCodec from 'ripple-address-codec'
 
 /**
- * A prefex applied when hashing a signed transaction blob.
+ * A prefix applied when hashing a signed transaction blob.
  *
  * @see https://xrpl.org/basic-data-types.html#hashes
  */
