@@ -14,7 +14,7 @@ class Signer {
    * Encode the given raw JSON transaction to hex and sign it.
    *
    * @param transactionJSON - The raw transaction JSON object.
-   * @param wallet  -The wallet to sign the transaction with.
+   * @param wallet - The wallet to sign the transaction with.
    * @returns A set of bytes representing the inputs and a signature.
    */
   public static signTransactionFromJSON(
