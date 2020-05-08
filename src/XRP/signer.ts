@@ -1,8 +1,10 @@
 import * as rippleCodec from 'ripple-binary-codec'
-import Serializer, { TransactionJSON } from './serializer'
-import { Transaction } from './generated/org/xrpl/rpc/v1/transaction_pb'
-import Wallet from './wallet'
+
 import Utils from '../Common/utils'
+
+import { Transaction } from './generated/org/xrpl/rpc/v1/transaction_pb'
+import Serializer, { TransactionJSON } from './serializer'
+import Wallet from './wallet'
 
 /**
  * Abstracts the details of signing.
@@ -11,9 +13,9 @@ class Signer {
   /**
    * Encode the given raw JSON transaction to hex and sign it.
    *
-   * @param {TransactionJSON} transactionJSON The raw transaction JSON object.
-   * @param {Wallet} wallet The wallet to sign the transaction with.
-   * @returns {Uint8Array} A set of bytes representing the inputs and a signature.
+   * @param transactionJSON - The raw transaction JSON object.
+   * @param wallet - The wallet to sign the transaction with.
+   * @returns A set of bytes representing the inputs and a signature.
    */
   public static signTransactionFromJSON(
     transactionJSON: TransactionJSON,
@@ -37,9 +39,9 @@ class Signer {
   /**
    * Encode the given object to hex and sign it.
    *
-   * @param {Transaction} transaction The transaction to sign.
-   * @param {Wallet} wallet The wallet to sign the transaction with.
-   * @returns {Uint8Array} A set of bytes representing the inputs and a signature.
+   * @param transaction - The transaction to sign.
+   * @param wallet - The wallet to sign the transaction with.
+   * @returns A set of bytes representing the inputs and a signature.
    */
   public static signTransaction(
     transaction: Transaction,

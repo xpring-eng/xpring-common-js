@@ -7,20 +7,26 @@ export default class PayIDUtils {
   /**
    * Parse a PayID string to a set of PayIDComponents object
    *
-   * @param parsePayID The input Pay ID.
+   * @param parsePayID - The input Pay ID.
    * @returns A PayIDComponents object if the input was valid, otherwise undefined.
    */
   public static parsePayID(payID: string): PayIDComponents | undefined {
-    if (!PayIDUtils.isASCII(payID)) return
+    if (!PayIDUtils.isASCII(payID)) {
+      return
+    }
 
     // Validate there are two components of a payment pointer.
     const components = payID.split('$')
-    if (components.length !== 2) return
+    if (components.length !== 2) {
+      return
+    }
 
     // Validate the host and path have values.
     const path = components[0]
     const host = components[1]
-    if (host.length === 0 || path.length === 0) return
+    if (host.length === 0 || path.length === 0) {
+      return
+    }
 
     return new PayIDComponents(host, `/${path}`)
   }
@@ -31,12 +37,12 @@ export default class PayIDUtils {
    * Shamelessly taken from:
    * https://stackoverflow.com/questions/14313183/javascript-regex-how-do-i-check-if-the-string-is-ascii-only
    *
-   * @param input The input to check
+   * @param input - The input to check
    * @returns A boolean indicating the result.
    */
   private static isASCII(input: string): boolean {
     // eslint-disable-next-line no-control-regex
-    return /^[\x00-\x7F]*$/.test(input)
+    return /^[\x00-\x7F]*$/u.test(input)
   }
 
   /** Please do not instantiate this static utility class. */

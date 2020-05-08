@@ -1,16 +1,12 @@
+import 'mocha'
 import { assert } from 'chai'
-import Serializer from '../../src/XRP/serializer'
+
+import Utils from '../../src/Common/utils'
 import { AccountAddress } from '../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
 import {
   CurrencyAmount,
   XRPDropsAmount,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
-import {
-  Payment,
-  Transaction,
-} from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
-import 'mocha'
-import Utils from '../../src/Common/utils'
 import {
   Destination,
   Amount,
@@ -18,6 +14,11 @@ import {
   SigningPublicKey,
   Account,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
+import {
+  Payment,
+  Transaction,
+} from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
+import Serializer from '../../src/XRP/serializer'
 
 /** Constants for transactions */
 const value = '1000'
@@ -38,13 +39,13 @@ const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
 /**
  * Create a new `Transaction` object with the given inputs.
  *
- * @param value The amount of XRP to send, in drops.
- * @param destination The destination address.
- * @param fee The amount of XRP to use as a fee, in drops.
- * @param lastLedgerSequence The last ledger sequence the transaction will be valid in.
- * @param sequence The sequence number for the sending account.
- * @param account The address of the sending account.
- * @param publicKey The public key of the sending account, encoded as a hexadecimal string.
+ * @param value - The amount of XRP to send, in drops.
+ * @param destination - The destination address.
+ * @param fee - The amount of XRP to use as a fee, in drops.
+ * @param lastLedgerSequence - The last ledger sequence the transaction will be valid in.
+ * @param sequence - The sequence number for the sending account.
+ * @param account - The address of the sending account.
+ * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
  */
 function makeTransaction(
   value: string,
