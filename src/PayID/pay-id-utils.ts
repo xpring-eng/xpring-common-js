@@ -67,7 +67,10 @@ export class PayIDUtils {
    * @returns A PayIDComponents object if the input was valid, otherwise undefined.
    */
   public static parsePayID(payID: string): PayIDComponents | undefined {
-    return PayIdUtils.parsePayID(payID)
+    const components = PayIdUtils.parsePayID(payID)
+    return components !== undefined
+      ? new PayIDComponents(components?.host, components?.path)
+      : undefined
   }
 
   /** Please do not instantiate this static utility class. */
