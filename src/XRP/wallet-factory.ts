@@ -18,9 +18,12 @@ export default class WalletFactory {
    * @param publicKey - A hexadecimal encoded public key.
    * @param privateKey -  A hexadecimal encoded private key.
    */
-  public walletFromKeys(publicKey: string, privateKey: string): Wallet | undefined {
+  public walletFromKeys(
+    publicKey: string,
+    privateKey: string,
+  ): Wallet | undefined {
     if (!Utils.isHex(publicKey) || !Utils.isHex(privateKey)) {
-        return undefined;
+      return undefined
     }
     return new Wallet(publicKey, privateKey, this.isTest)
   }
