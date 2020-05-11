@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- A new class, `PayIdUtils`, replaces the functionality in `PayIDUtils` with an idiomatically cased name.
+- A new class, `PayIdComponents`, replaces the functionality in `PayIDComponents` with an idiomatically cased name.
+
+### Deprecated
+- `PayIDUtils` is deprecated. Please use the idiomatically cased `PayIdUtils` class instead.
+- `PayIDComponents` is deprecated. Please use the idiomatically cased `PayIdComponents` class instead.
 
 ## [5.0.3] - 2020-04-10
 
