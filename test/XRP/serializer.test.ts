@@ -20,7 +20,7 @@ import {
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer from '../../src/XRP/serializer'
 
-/** Constants for transactions */
+/** Constants for transactions. */
 const value = '1000'
 const destinationClassicAddress = 'rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh'
 const destinationXAddressWithoutTag =

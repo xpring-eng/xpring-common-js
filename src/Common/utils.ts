@@ -10,7 +10,8 @@ import * as addressCodec from 'ripple-address-codec'
 const signedTransactionPrefixHex = '54584E00'
 
 /**
- * A simple property bag which contains components of a classic address. Components contained in this object are neither sanitized or validated.
+ * A simple property bag which contains components of a classic address.
+ * Components contained in this object are neither sanitized or validated.
  */
 export interface ClassicAddress {
   /** A classic address. */

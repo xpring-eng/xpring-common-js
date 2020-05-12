@@ -38,7 +38,10 @@ class Wallet {
    * Generate a new wallet hierarchical deterministic wallet with a random mnemonic and
    * default derivation path.
    *
-   * Secure random number generation is used when entropy is ommitted and when the runtime environment has the necessary support. Otherwise, an error is thrown. Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
+   * Secure random number generation is used when entropy is omitted and when the runtime environment has the necessary support.
+   * Otherwise, an error is thrown.
+   *
+   * Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
    *
    * @param entropy - A optional hex string of entropy.
    * @param test - Whether the address is for use on a test network, defaults to `false`.
