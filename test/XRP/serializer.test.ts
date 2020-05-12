@@ -40,11 +40,11 @@ const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
  * Create a new `Transaction` object with the given inputs.
  *
  * @param value - The amount of XRP to send, in drops.
- * @param destination - The destination address.
+ * @param destinationAddress - The destination address.
  * @param fee - The amount of XRP to use as a fee, in drops.
- * @param lastLedgerSequence - The last ledger sequence the transaction will be valid in.
- * @param sequence - The sequence number for the sending account.
- * @param account - The address of the sending account.
+ * @param lastLedgerSequenceNumber - The last ledger sequence the transaction will be valid in.
+ * @param sequenceNumber - The sequence number for the sending account.
+ * @param senderAddress - The address of the sending account.
  * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
  */
 function makeTransaction(
