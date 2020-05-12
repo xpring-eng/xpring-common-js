@@ -5,7 +5,8 @@ import 'mocha'
 
 /**
  * A mapping of input and expected outputs for BIP39 and BIP44.
- * @see https://iancoleman.io/bip39/#english
+ *
+ * @see [BIP39 - Mnemonic Code Converter]{@link https://iancoleman.io/bip39/#english}
  */
 const derivationPathTestCases = {
   index0: {
