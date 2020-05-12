@@ -177,7 +177,7 @@ abstract class Utils {
     const hashHex = sha512.update(bytes).digest('hex').toUpperCase()
     const hash = this.toBytes(hashHex)
 
-    return hash.slice(0, 32)
+    return hash.slice(0, hash.length / 2)
   }
 }
 
