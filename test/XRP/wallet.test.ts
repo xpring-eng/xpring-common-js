@@ -193,10 +193,10 @@ describe('wallet', function (): void {
   it('walletFromSeed - TestNet', function (): void {
     // GIVEN a seed used to generate a wallet on TestNet
     const seed = 'snYP7oArxKepd3GPDcrjMsJYiJeJB'
-    const test = true
+    const isTest = true
 
     // WHEN a wallet is generated from the seed.
-    const wallet = Wallet.generateWalletFromSeed(seed, test)
+    const wallet = Wallet.generateWalletFromSeed(seed, isTest)
 
     // THEN the wallet has the expected address.
     assert.equal(
