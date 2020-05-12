@@ -24,7 +24,7 @@ export interface ClassicAddress {
   test: boolean
 }
 
-class Utils {
+abstract class Utils {
   /**
    * Validate that the given string is a valid address for the XRP Ledger.
    *
@@ -156,6 +156,17 @@ class Utils {
   }
 
   /**
+   * Check if the given string is valid hex.
+   *
+   * @param input - The input to check.
+   * @returns true if the input is valid hex, otherwise false.
+   */
+  public static isHex(input: string): boolean {
+    const hexRegEx = /(?:[0-9]|[a-f])/gimu
+    return (input.match(hexRegEx) ?? []).length === input.length
+  }
+
+  /**
    * Compute the SHA512 half hash of the given bytes.
    *
    * @param input - The input to hash.
@@ -167,17 +178,6 @@ class Utils {
     const hash = this.toBytes(hashHex)
 
     return hash.slice(0, 32)
-  }
-
-  /**
-   * Check if the given string is valid hex.
-   *
-   * @param input - The input to check.
-   * @returns true if the input is valid hex, otherwise false.
-   */
-  public static isHex(input: string): boolean {
-    const hexRegEx = /(?:[0-9]|[a-f])/gimu
-    return (input.match(hexRegEx) ?? []).length === input.length
   }
 }
 
