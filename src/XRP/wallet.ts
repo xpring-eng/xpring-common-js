@@ -130,7 +130,7 @@ class Wallet {
     try {
       const keyPair = rippleKeyPair.deriveKeypair(seed)
       return new Wallet(keyPair.publicKey, keyPair.privateKey, test)
-    } catch (exception) {
+    } catch {
       return undefined
     }
   }
@@ -201,7 +201,7 @@ class Wallet {
 
     try {
       return rippleKeyPair.verify(message, signature, this.getPublicKey())
-    } catch (error) {
+    } catch {
       // The ripple-key-pair module may throw errors for some signatures rather than returning false.
       // If an error was thrown then the signature is definitely not valid.
       return false
