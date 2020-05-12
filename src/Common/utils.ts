@@ -176,7 +176,7 @@ class Utils {
    * @returns true if the input is valid hex, otherwise false.
    */
   public static isHex(input: string): boolean {
-    const hexRegEx = /([0-9]|[a-f])/gimu
+    const hexRegEx = /(?:[0-9]|[a-f])/gimu
     return (input.match(hexRegEx) ?? []).length === input.length
   }
 }
