@@ -81,7 +81,7 @@ module.exports = {
     },
     // Overrides for serializer-test.ts
     {
-      files: 'serializer-test.ts',
+      files: 'serializer.test.ts',
       rules: {
         // For this test file specifically, we shadow the function parameter names with constants for testing
         'no-shadow': 'off',

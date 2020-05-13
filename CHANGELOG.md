@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.3] - 2020-04-10
+
+This fix release contains minor improvements to experimental components.
+
+## [5.0.2] - 2020-04-08
+
+This fix release fixes build references.
+
+## [5.0.1] - 2020-04-08
+
+This fix release fixes build references. 
+
+## [5.0.0] - 2020-04-08
+
+### Added
+- A new `FakeWallet` is exported from the library to assist clients in unit testing.
+
+### Removed
+- - All legacy services are removed from Xpring-Common-JS. This functionality is no longer supported. Going forward, all functionality will use [rippled's protocol buffer API](https://github.com/ripple/rippled/pull/3254).
+
+## [4.2.0] - 2020-03-16
+
+Adds the Signer.signTransactionFromJSON function.
+
+## [4.1.0] - 2020-03-04
+
+This release adds new functionality to work with the PayID system in Xpring SDK.
+
+### Added
+- `PaymentPointer`: A new model object to work with conceptual components of payment pointers. See: https://paymentpointers.org/syntax-resolution/
+- `PayIDUtils`: A static utility class for working with PayID constructs.
+
+## [4.0.0] - 2020-02-28
+
+This version uses new protocol buffers from rippled which have breaking changes in them. Specifically, the breaking changes include:
+- Use numeric `string` types rather than `number` types when working with 64 bit numbers
+- Re-ordering and repurposing of fields in order to add additional layers of abstraction
+- Change package from `rpc.v1` to `org.xrpl.rpc.v1`
+
+Since this library exposes public APIs that use these protocol buffers, clients will need to pass the same version of the protocol buffers compiled from rippled, which is any commit after [#3254](https://github.com/ripple/rippled/pull/3254).
+
+### Changed
+
+Update to the latest version of protocol buffers from rippled, introduced in [#3254](https://github.com/ripple/rippled/pull/3254).
+
 ## [3.0.2] - 2019-02-28
 
 ### Fixed

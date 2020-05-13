@@ -1,8 +1,9 @@
 import { createHash } from 'crypto'
+
 import * as addressCodec from 'ripple-address-codec'
 
 /**
- * A prefex applied when hashing a signed transaction blob.
+ * A prefix applied when hashing a signed transaction blob.
  *
  * @see https://xrpl.org/basic-data-types.html#hashes
  */
@@ -29,7 +30,7 @@ class Utils {
    * This function returns true for both X-addresses and classic addresses.
    * @see https://xrpaddress.info/
    *
-   * @param address An address to check.
+   * @param address - An address to check.
    * @returns True if the address is valid, otherwise false.
    */
   public static isValidAddress(address: string): boolean {
@@ -44,7 +45,7 @@ class Utils {
    *
    * @see https://xrpaddress.info/
    *
-   * @param address An address to check.
+   * @param address - An address to check.
    * @returns True if the address is a valid X-address, otherwise false.
    */
   public static isValidXAddress(address: string): boolean {
@@ -56,7 +57,7 @@ class Utils {
    *
    * @see https://xrpaddress.info/
    *
-   * @param address An address to check.
+   * @param address - An address to check.
    * @returns True if the address is a valid classic address, otherwise false.
    */
   public static isValidClassicAddress(address: string): boolean {
@@ -68,9 +69,9 @@ class Utils {
    *
    * @see https://xrpaddress.info/
    *
-   * @param classicAddress A classic address to encode.
-   * @param tag An optional tag to encode.
-   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @param classicAddress - A classic address to encode.
+   * @param tag - An optional tag to encode.
+   * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns A new x-address if inputs were valid, otherwise undefined.
    */
   public static encodeXAddress(
@@ -96,7 +97,7 @@ class Utils {
    *
    * @see https://xrpaddress.info/
    *
-   * @param xAddress The xAddress to decode.
+   * @param xAddress - The xAddress to decode.
    * @returns A `ClassicAddress`
    */
   public static decodeXAddress(xAddress: string): ClassicAddress | undefined {
@@ -116,19 +117,17 @@ class Utils {
   /**
    * Convert the given byte array to a hexadecimal string.
    *
-   * @param bytes An array of bytes
+   * @param bytes - An array of bytes
    * @returns An encoded hexadecimal string.
    */
   public static toHex(bytes: Uint8Array): string {
-    return Buffer.from(bytes)
-      .toString('hex')
-      .toUpperCase()
+    return Buffer.from(bytes).toString('hex').toUpperCase()
   }
 
   /**
    * Convert the given hexadecimal string to a byte array.
    *
-   * @param hex A hexadecimal string.
+   * @param hex - A hexadecimal string.
    * @returns A decoded byte array.
    */
   public static toBytes(hex: string): Uint8Array {
@@ -138,7 +137,7 @@ class Utils {
   /**
    * Convert the given transaction blob to a transaction hash.
    *
-   * @param transactionBlobHex A hexadecimal encoded transaction blob.
+   * @param transactionBlobHex - A hexadecimal encoded transaction blob.
    * @returns A hex encoded hash if the input was valid, otherwise undefined.
    */
   public static transactionBlobToTransactionHash(
@@ -158,15 +157,12 @@ class Utils {
   /**
    * Compute the SHA512 half hash of the given bytes.
    *
-   * @param input The input to hash.
+   * @param input - The input to hash.
    * @returns The hash of the input.
    */
   private static sha512Half(bytes: Uint8Array): Uint8Array {
     const sha512 = createHash('sha512')
-    const hashHex = sha512
-      .update(bytes)
-      .digest('hex')
-      .toUpperCase()
+    const hashHex = sha512.update(bytes).digest('hex').toUpperCase()
     const hash = this.toBytes(hashHex)
 
     return hash.slice(0, 32)
@@ -175,12 +171,12 @@ class Utils {
   /**
    * Check if the given string is valid hex.
    *
-   * @param input The input to check.
+   * @param input - The input to check.
    * @returns true if the input is valid hex, otherwise false.
    */
   public static isHex(input: string): boolean {
-    const hexRegEx = /([0-9]|[a-f])/gim
-    return (input.match(hexRegEx) || []).length === input.length
+    const hexRegEx = /([0-9]|[a-f])/gimu
+    return (input.match(hexRegEx) ?? []).length === input.length
   }
 }
 
