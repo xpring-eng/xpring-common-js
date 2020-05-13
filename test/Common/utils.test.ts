@@ -9,10 +9,10 @@ describe('utils', function (): void {
     const address = 'rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1'
 
     // WHEN the address is validated.
-    const validAddress = Utils.isValidAddress(address)
+    const isValidAddress = Utils.isValidAddress(address)
 
     // THEN the address is deemed valid.
-    assert.isTrue(validAddress)
+    assert.isTrue(isValidAddress)
   })
 
   it('isValidAddress() - Valid X-Address', function (): void {
@@ -20,10 +20,10 @@ describe('utils', function (): void {
     const address = 'XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi'
 
     // WHEN the address is validated.
-    const validAddress = Utils.isValidAddress(address)
+    const isValidAddress = Utils.isValidAddress(address)
 
     // THEN the address is deemed valid.
-    assert.isTrue(validAddress)
+    assert.isTrue(isValidAddress)
   })
 
   it('isValidAddress() - Wrong Alphabet', function (): void {
@@ -31,10 +31,10 @@ describe('utils', function (): void {
     const address = '1EAG1MwmzkG6gRZcYqcRMfC17eMt8TDTit'
 
     // WHEN the address is validated.
-    const validAddress = Utils.isValidAddress(address)
+    const isValidAddress = Utils.isValidAddress(address)
 
     // THEN the address is deemed invalid.
-    assert.isFalse(validAddress)
+    assert.isFalse(isValidAddress)
   })
 
   it('isValidAddress() - Invalid Classic Address Checksum', function (): void {
@@ -42,10 +42,10 @@ describe('utils', function (): void {
     const address = 'rU6K7V3Po4sBBBBBaU29sesqs2qTQJWDw1'
 
     // WHEN the address is validated.
-    const validAddress = Utils.isValidAddress(address)
+    const isValidAddress = Utils.isValidAddress(address)
 
     // THEN the address is deemed invalid.
-    assert.isFalse(validAddress)
+    assert.isFalse(isValidAddress)
   })
 
   it('isValidAddress() - Invalid X-Address Checksum', function (): void {
@@ -53,10 +53,10 @@ describe('utils', function (): void {
     const address = 'XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHI'
 
     // WHEN the address is validated.
-    const validAddress = Utils.isValidAddress(address)
+    const isValidAddress = Utils.isValidAddress(address)
 
     // THEN the address is deemed invalid.
-    assert.isFalse(validAddress)
+    assert.isFalse(isValidAddress)
   })
 
   it('isValidAddress() - Invalid Characters', function (): void {
@@ -64,10 +64,10 @@ describe('utils', function (): void {
     const address = 'rU6K7V3Po4sBBBBBaU@#$%qs2qTQJWDw1'
 
     // WHEN the address is validated.
-    const validAddress = Utils.isValidAddress(address)
+    const isValidAddress = Utils.isValidAddress(address)
 
     // THEN the address is deemed invalid.
-    assert.isFalse(validAddress)
+    assert.isFalse(isValidAddress)
   })
 
   it('isValidAddress() - Too Long', function (): void {
@@ -76,10 +76,10 @@ describe('utils', function (): void {
       'rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1'
 
     // WHEN the address is validated.
-    const validAddress = Utils.isValidAddress(address)
+    const isValidAddress = Utils.isValidAddress(address)
 
     // THEN the address is deemed invalid.
-    assert.isFalse(validAddress)
+    assert.isFalse(isValidAddress)
   })
 
   it('isValidAddress() - Too Short', function (): void {
@@ -87,10 +87,10 @@ describe('utils', function (): void {
     const address = 'rU6K7V3Po4s2qTQJWDw1'
 
     // WHEN the address is validated.
-    const validAddress = Utils.isValidAddress(address)
+    const isValidAddress = Utils.isValidAddress(address)
 
     // THEN the address is deemed invalid.
-    assert.isFalse(validAddress)
+    assert.isFalse(isValidAddress)
   })
 
   it('encodeXAddress() - Mainnet Address and Tag', function (): void {

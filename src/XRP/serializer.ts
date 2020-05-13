@@ -34,7 +34,7 @@ export type TransactionJSON = BaseTransactionJSON | PaymentTransactionJSON
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
  */
-class Serializer {
+abstract class Serializer {
   /**
    * Convert a Transaction to a JSON representation.
    *

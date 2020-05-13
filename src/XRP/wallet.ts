@@ -38,7 +38,10 @@ class Wallet {
    * Generate a new wallet hierarchical deterministic wallet with a random mnemonic and
    * default derivation path.
    *
-   * Secure random number generation is used when entropy is ommitted and when the runtime environment has the necessary support. Otherwise, an error is thrown. Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
+   * Secure random number generation is used when entropy is omitted and when the runtime environment has the necessary support.
+   * Otherwise, an error is thrown.
+   *
+   * Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
    *
    * @param entropy - A optional hex string of entropy.
    * @param test - Whether the address is for use on a test network, defaults to `false`.
@@ -127,7 +130,7 @@ class Wallet {
     try {
       const keyPair = rippleKeyPair.deriveKeypair(seed)
       return new Wallet(keyPair.publicKey, keyPair.privateKey, test)
-    } catch (exception) {
+    } catch {
       return undefined
     }
   }
@@ -198,7 +201,7 @@ class Wallet {
 
     try {
       return rippleKeyPair.verify(message, signature, this.getPublicKey())
-    } catch (error) {
+    } catch {
       // The ripple-key-pair module may throw errors for some signatures rather than returning false.
       // If an error was thrown then the signature is definitely not valid.
       return false

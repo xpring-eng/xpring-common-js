@@ -3,7 +3,7 @@ import PayIDComponents from './pay-id-components'
 /**
  * A static utility class for PayID.
  */
-export default class PayIDUtils {
+export default abstract class PayIDUtils {
   /**
    * Parse a PayID string to a set of PayIDComponents object
    *
@@ -44,8 +44,4 @@ export default class PayIDUtils {
     // eslint-disable-next-line no-control-regex
     return /^[\x00-\x7F]*$/u.test(input)
   }
-
-  /** Please do not instantiate this static utility class. */
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor() {}
 }

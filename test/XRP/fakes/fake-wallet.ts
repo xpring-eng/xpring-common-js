@@ -21,7 +21,7 @@ class FakeWallet extends Wallet {
    *
    * @param signature - The signature this wallet will produce.
    */
-  constructor(
+  public constructor(
     private readonly signature: string,
     publicKey = defaultPublicKey,
     privateKey = defaultPrivateKey,
@@ -34,7 +34,7 @@ class FakeWallet extends Wallet {
    *
    * @param hex - The hex to sign.
    */
-  sign(_hex: string): string {
+  public sign(_hex: string): string {
     return this.signature
   }
 }
