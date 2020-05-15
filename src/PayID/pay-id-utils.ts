@@ -1,17 +1,21 @@
-import PayIDComponents from './pay-id-components'
+// Disable multiple classes to accommodate the switch to idiomatic style naming.
+// TODO(keefertaylor): Remove this when migration is complete.
+/* eslint-disable  max-classes-per-file */
+
+import PayIdComponents, { PayIDComponents } from './pay-id-components'
 
 /**
- * A static utility class for PayID.
+ * A static utility class for Pay ID functionality.
  */
-export default abstract class PayIDUtils {
+export default class PayIdUtils {
   /**
    * Parse a PayID string to a set of PayIDComponents object
    *
    * @param parsePayID - The input Pay ID.
    * @returns A PayIDComponents object if the input was valid, otherwise undefined.
    */
-  public static parsePayID(payID: string): PayIDComponents | undefined {
-    if (!PayIDUtils.isASCII(payID)) {
+  public static parsePayID(payID: string): PayIdComponents | undefined {
+    if (!PayIdUtils.isASCII(payID)) {
       return
     }
 
@@ -28,7 +32,7 @@ export default abstract class PayIDUtils {
       return
     }
 
-    return new PayIDComponents(host, `/${path}`)
+    return new PayIdComponents(host, `/${path}`)
   }
 
   /**
@@ -44,4 +48,28 @@ export default abstract class PayIDUtils {
     // eslint-disable-next-line no-control-regex
     return /^[\x00-\x7F]*$/u.test(input)
   }
+}
+
+/**
+ * A static utility class for PayID.
+ *
+ * @deprecated Please use the idiomatically named `PayIdUtils` class instead.
+ */
+export class PayIDUtils {
+  /**
+   * Parse a PayID string to a set of PayIDComponents object
+   *
+   * @param parsePayID - The input Pay ID.
+   * @returns A PayIDComponents object if the input was valid, otherwise undefined.
+   */
+  public static parsePayID(payID: string): PayIDComponents | undefined {
+    const components = PayIdUtils.parsePayID(payID)
+    return components !== undefined
+      ? new PayIDComponents(components?.host, components?.path)
+      : undefined
+  }
+
+  /** Please do not instantiate this static utility class. */
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private constructor() {}
 }
