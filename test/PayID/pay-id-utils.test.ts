@@ -20,7 +20,7 @@ describe('PayIDUtils', function (): void {
 
   it('parse Pay ID - multiple dollar signs', function (): void {
     // GIVEN a Pay ID with too many '$'.
-    const host = 'xpring$money' // Extra '$'.
+    const host = 'xpring$money'
     const path = 'georgewashington'
     const rawPayID = `${host}$${path}`
 

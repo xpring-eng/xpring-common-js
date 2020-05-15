@@ -9,7 +9,7 @@ import Wallet from './wallet'
 /**
  * Abstracts the details of signing.
  */
-class Signer {
+abstract class Signer {
   /**
    * Encode the given raw JSON transaction to hex and sign it.
    *

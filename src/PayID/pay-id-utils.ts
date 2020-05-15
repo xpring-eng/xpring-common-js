@@ -48,10 +48,6 @@ export default class PayIdUtils {
     // eslint-disable-next-line no-control-regex
     return /^[\x00-\x7F]*$/u.test(input)
   }
-
-  /** Please do not instantiate this static utility class. */
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor() {}
 }
 
 /**
