@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.4] - 2020-05-15
+
+This release contains minor deprecations of names of methods and classes to make this library more idiomatic with the wider JavaScript ecosystem.
+
 ### Added
 - A new class, `PayIdUtils`, replaces the functionality in `PayIDUtils` with an idiomatically cased name.
 - A new class, `PayIdComponents`, replaces the functionality in `PayIDComponents` with an idiomatically cased name.
