@@ -3,10 +3,13 @@ export { default as Utils } from './Common/utils'
 export { ClassicAddress } from './Common/utils'
 
 // Exported PayID Functionality.
-export { default as PayIDComponents } from './PayID/pay-id-components'
-export { default as PayIDUtils } from './PayID/pay-id-utils'
+export { default as PayIdUtils, PayIDUtils } from './PayID/pay-id-utils'
+export {
+  default as PayIdComponents,
+  PayIDComponents,
+} from './PayID/pay-id-components'
 
-// Exported XRP Classes.
+// Exported XRP Functionality.
 export { default as FakeWallet } from '../test/XRP/fakes/fake-wallet'
 export { default as Serializer } from './XRP/serializer'
 export { default as Signer } from './XRP/signer'
