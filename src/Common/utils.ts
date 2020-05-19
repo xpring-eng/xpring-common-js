@@ -1,28 +1,4 @@
-import { createHash } from 'crypto'
-
-import * as addressCodec from 'ripple-address-codec'
-
-/**
- * A prefix applied when hashing a signed transaction blob.
- *
- * @see https://xrpl.org/basic-data-types.html#hashes
- */
-const signedTransactionPrefixHex = '54584E00'
-
-/**
- * A simple property bag which contains components of a classic address.
- * Components contained in this object are neither sanitized or validated.
- */
-export interface ClassicAddress {
-  /** A classic address. */
-  address: string
-
-  /** An optional tag. */
-  tag?: number
-
-  /** A boolean indicating whether this address is for use on a test network. */
-  test: boolean
-}
+import XrpUtils, { ClassicAddress } from '../XRP/xrp-utils'
 
 abstract class Utils {
   /**
@@ -31,14 +7,13 @@ abstract class Utils {
    * This function returns true for both X-addresses and classic addresses.
    * @see https://xrpaddress.info/
    *
+   * @deprecated Please use the method provided by XrpUtils instead.
+   *
    * @param address - An address to check.
    * @returns True if the address is valid, otherwise false.
    */
   public static isValidAddress(address: string): boolean {
-    return (
-      addressCodec.isValidClassicAddress(address) ||
-      addressCodec.isValidXAddress(address)
-    )
+    return XrpUtils.isValidAddress(address)
   }
 
   /**
@@ -46,11 +21,13 @@ abstract class Utils {
    *
    * @see https://xrpaddress.info/
    *
+   * @deprecated Please use the method provided by XrpUtils instead.
+   *
    * @param address - An address to check.
    * @returns True if the address is a valid X-address, otherwise false.
    */
   public static isValidXAddress(address: string): boolean {
-    return addressCodec.isValidXAddress(address)
+    return XrpUtils.isValidXAddress(address)
   }
 
   /**
@@ -58,17 +35,21 @@ abstract class Utils {
    *
    * @see https://xrpaddress.info/
    *
+   * @deprecated Please use the method provided by XrpUtils instead.
+   *
    * @param address - An address to check.
    * @returns True if the address is a valid classic address, otherwise false.
    */
   public static isValidClassicAddress(address: string): boolean {
-    return addressCodec.isValidClassicAddress(address)
+    return XrpUtils.isValidClassicAddress(address)
   }
 
   /**
    * Encode the given classic address and tag into an x-address.
    *
    * @see https://xrpaddress.info/
+   *
+   * @deprecated Please use the method provided by XrpUtils instead.
    *
    * @param classicAddress - A classic address to encode.
    * @param tag - An optional tag to encode.
@@ -80,17 +61,7 @@ abstract class Utils {
     tag: number | undefined,
     test = false,
   ): string | undefined {
-    if (!addressCodec.isValidClassicAddress(classicAddress)) {
-      return undefined
-    }
-
-    // Xpring Common JS's API takes a string|undefined while the underlying address library wants string|false.
-    const shimTagParameter = tag !== undefined ? tag : false
-    return addressCodec.classicAddressToXAddress(
-      classicAddress,
-      shimTagParameter,
-      test,
-    )
+    return XrpUtils.encodeXAddress(classicAddress, tag, test)
   }
 
   /**
@@ -98,21 +69,13 @@ abstract class Utils {
    *
    * @see https://xrpaddress.info/
    *
+   * @deprecated Please use the method provided by XrpUtils instead.
+   *
    * @param xAddress - The xAddress to decode.
    * @returns A `ClassicAddress`
    */
   public static decodeXAddress(xAddress: string): ClassicAddress | undefined {
-    if (!addressCodec.isValidXAddress(xAddress)) {
-      return undefined
-    }
-
-    const shimClassicAddress = addressCodec.xAddressToClassicAddress(xAddress)
-    return {
-      address: shimClassicAddress.classicAddress,
-      tag:
-        shimClassicAddress.tag !== false ? shimClassicAddress.tag : undefined,
-      test: shimClassicAddress.test,
-    }
+    return XrpUtils.decodeXAddress(xAddress)
   }
 
   /**
@@ -138,21 +101,15 @@ abstract class Utils {
   /**
    * Convert the given transaction blob to a transaction hash.
    *
+   * @deprecated Please use the method provided by XrpUtils instead.
+   *
    * @param transactionBlobHex - A hexadecimal encoded transaction blob.
    * @returns A hex encoded hash if the input was valid, otherwise undefined.
    */
   public static transactionBlobToTransactionHash(
     transactionBlobHex: string,
   ): string | undefined {
-    if (!Utils.isHex(transactionBlobHex)) {
-      return undefined
-    }
-
-    const prefixedTransactionBlob = this.toBytes(
-      signedTransactionPrefixHex + transactionBlobHex,
-    )
-    const hash = this.sha512Half(prefixedTransactionBlob)
-    return this.toHex(hash)
+    return XrpUtils.transactionBlobToTransactionHash(transactionBlobHex)
   }
 
   /**
@@ -164,20 +121,6 @@ abstract class Utils {
   public static isHex(input: string): boolean {
     const hexRegEx = /(?:[0-9]|[a-f])/gimu
     return (input.match(hexRegEx) ?? []).length === input.length
-  }
-
-  /**
-   * Compute the SHA512 half hash of the given bytes.
-   *
-   * @param input - The input to hash.
-   * @returns The hash of the input.
-   */
-  private static sha512Half(bytes: Uint8Array): Uint8Array {
-    const sha512 = createHash('sha512')
-    const hashHex = sha512.update(bytes).digest('hex').toUpperCase()
-    const hash = this.toBytes(hashHex)
-
-    return hash.slice(0, hash.length / 2)
   }
 }
 
