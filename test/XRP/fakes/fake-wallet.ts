@@ -16,17 +16,21 @@ const defaultPrivateKey =
  * A fake wallet which always produces the given signature.
  */
 class FakeWallet extends Wallet {
+  private readonly signature: string
+
   /**
    * Initialize a wallet which will always produce the same signature when asked to sign a string.
    *
    * @param signature - The signature this wallet will produce.
    */
   public constructor(
-    private readonly signature: string,
+    signature: string,
     publicKey = defaultPublicKey,
     privateKey = defaultPrivateKey,
   ) {
     super(publicKey, privateKey)
+
+    this.signature = signature
   }
 
   /**

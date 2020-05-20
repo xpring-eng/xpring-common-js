@@ -34,7 +34,7 @@ export type TransactionJSON = BaseTransactionJSON | PaymentTransactionJSON
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
  */
-abstract class Serializer {
+const serializer = {
   /**
    * Convert a Transaction to a JSON representation.
    *
@@ -42,7 +42,7 @@ abstract class Serializer {
    * @param signature - An optional hex encoded signature to include in the transaction.
    * @returns The Transaction as JSON.
    */
-  public static transactionToJSON(
+  transactionToJSON(
     transaction: Transaction,
     signature?: string,
   ): TransactionJSON | undefined {
@@ -74,23 +74,23 @@ abstract class Serializer {
     // Convert account field, handling X-Addresses if needed.
     const accountAddress = transaction.getAccount()
     if (!accountAddress) {
-      return
+      return undefined
     }
     const account = accountAddress.getValue()?.getAddress()
     if (!account || !Utils.isValidAddress(account)) {
-      return
+      return undefined
     }
 
     let normalizedAccount = account
     if (Utils.isValidXAddress(account)) {
       const decodedClassicAddress = Utils.decodeXAddress(account)
       if (!decodedClassicAddress) {
-        return
+        return undefined
       }
 
       // Accounts cannot have a tag.
       if (decodedClassicAddress.tag !== undefined) {
-        return
+        return undefined
       }
 
       normalizedAccount = decodedClassicAddress.address
@@ -100,7 +100,7 @@ abstract class Serializer {
     // Convert XRP denominated fee field.
     const txFee = transaction.getFee()
     if (txFee === undefined) {
-      return
+      return undefined
     }
     object.Fee = this.xrpAmountToJSON(txFee)
 
@@ -110,7 +110,7 @@ abstract class Serializer {
       case Transaction.TransactionDataCase.PAYMENT: {
         const payment = transaction.getPayment()
         if (payment === undefined) {
-          return
+          return undefined
         }
         Object.assign(object, this.paymentToJSON(payment))
         break
@@ -124,7 +124,7 @@ abstract class Serializer {
     }
 
     return object
-  }
+  },
 
   /**
    * Convert a Payment to a JSON representation.
@@ -132,7 +132,7 @@ abstract class Serializer {
    * @param payment - The Payment to convert.
    * @returns The Payment as JSON.
    */
-  private static paymentToJSON(payment: Payment): object | undefined {
+  paymentToJSON(payment: Payment): object | undefined {
     const json: PaymentJSON = {
       Amount: {},
       Destination: '',
@@ -142,36 +142,36 @@ abstract class Serializer {
     // If an x-address was able to be decoded, add the components to the json.
     const destinationAddress = payment.getDestination()
     if (!destinationAddress) {
-      return
+      return undefined
     }
 
     const destination = destinationAddress.getValue()?.getAddress()
     if (!destination) {
-      return
+      return undefined
     }
 
     const decodedXAddress = Utils.decodeXAddress(destination)
-    if (!decodedXAddress) {
-      json.Destination = destination
-      delete json.DestinationTag
-    } else {
+    if (decodedXAddress) {
       json.Destination = decodedXAddress.address
       if (decodedXAddress.tag !== undefined) {
         json.DestinationTag = decodedXAddress.tag
       }
+    } else {
+      json.Destination = destination
+      delete json.DestinationTag
     }
 
     const amount = payment.getAmount()
     if (!amount) {
-      return
+      return undefined
     }
     const xrpAmount = amount.getValue()?.getXrpAmount()
     if (!xrpAmount) {
-      return
+      return undefined
     }
     json.Amount = this.xrpAmountToJSON(xrpAmount)
     return json
-  }
+  },
 
   /**
    * Convert an XRPDropsAmount to a JSON representation.
@@ -179,9 +179,9 @@ abstract class Serializer {
    * @param xrpDropsAmount - The XRPAmount to convert.
    * @returns The XRPAmount as JSON.
    */
-  private static xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
+  xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
     return `${xrpDropsAmount.getDrops()}`
-  }
+  },
 }
 
-export default Serializer
+export default serializer
