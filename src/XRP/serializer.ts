@@ -54,7 +54,7 @@ const serializer = {
       Fee: '',
     }
 
-    const sequence = transaction.getSequence()?.getValue()
+    const sequence = transaction.getSequence()?.getValue() ?? 0
     if (sequence) {
       object.Sequence = sequence
     }
@@ -84,20 +84,11 @@ const serializer = {
     }
     object.Fee = this.xrpAmountToJSON(txFee)
 
-    // Convert additional transaction data.
-    const transactionDataCase = transaction.getTransactionDataCase()
-    switch (transactionDataCase) {
-      case Transaction.TransactionDataCase.PAYMENT: {
-        const payment = transaction.getPayment()
-        if (payment === undefined) {
-          return undefined
-        }
-        Object.assign(object, this.paymentToJSON(payment))
-        break
-      }
-      default:
-        throw new Error('Unexpected transactionDataCase')
+    const additionalTransactionData = getAdditionalTransactionData(transaction)
+    if (additionalTransactionData === undefined) {
+      return undefined
     }
+    Object.assign(object, additionalTransactionData)
 
     if (signature) {
       object.TxnSignature = signature
@@ -192,4 +183,30 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
   }
 
   return decodedClassicAddress.address
+}
+
+/**
+ * Given a Transaction, get the JSON representation of data specific to that transaction type.
+ *
+ * @param transaction - A transaction to check for additional transaction-type specific data.
+ * @returns A JSON representation of the transaction-type specific data, or undefined.
+ */
+function getAdditionalTransactionData(
+  transaction: Transaction,
+): object | undefined {
+  const transactionDataCase = transaction.getTransactionDataCase()
+
+  switch (transactionDataCase) {
+    case Transaction.TransactionDataCase.PAYMENT: {
+      const payment = transaction.getPayment()
+      if (payment === undefined) {
+        return undefined
+      }
+
+      return serializer.paymentToJSON(payment)
+    }
+
+    default:
+      throw new Error('Unexpected transactionDataCase')
+  }
 }
