@@ -48,10 +48,10 @@ const serializer = {
   ): TransactionJSON | undefined {
     const object: TransactionJSON = {
       Account: '',
-      Sequence: 0,
-      SigningPubKey: '',
-      LastLedgerSequence: 0,
       Fee: '',
+      Sequence: 0,
+      LastLedgerSequence: 0,
+      SigningPubKey: '',
     }
 
     const sequence = transaction.getSequence()?.getValue()
