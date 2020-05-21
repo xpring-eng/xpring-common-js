@@ -111,36 +111,23 @@ const serializer = {
     }
 
     // If an x-address was able to be decoded, add the components to the json.
-    const destinationAddress = payment.getDestination()
-    if (!destinationAddress) {
-      return undefined
-    }
-
-    const destination = destinationAddress.getValue()?.getAddress()
+    const destination = payment.getDestination()?.getValue()?.getAddress()
     if (!destination) {
       return undefined
     }
 
     const decodedXAddress = Utils.decodeXAddress(destination)
-    if (decodedXAddress) {
-      json.Destination = decodedXAddress.address
-      if (decodedXAddress.tag !== undefined) {
+    json.Destination = decodedXAddress?.address ?? destination
+    if (decodedXAddress?.tag !== undefined) {
         json.DestinationTag = decodedXAddress.tag
       }
-    } else {
-      json.Destination = destination
-      delete json.DestinationTag
-    }
 
-    const amount = payment.getAmount()
-    if (!amount) {
-      return undefined
-    }
-    const xrpAmount = amount.getValue()?.getXrpAmount()
+    const xrpAmount = payment.getAmount()?.getValue()?.getXrpAmount()
     if (!xrpAmount) {
       return undefined
     }
     json.Amount = this.xrpAmountToJSON(xrpAmount)
+
     return json
   },
 
