@@ -71,29 +71,9 @@ const serializer = {
       object.LastLedgerSequence = lastLedgerSequence
     }
 
-    // Convert account field, handling X-Addresses if needed.
-    const accountAddress = transaction.getAccount()
-    if (!accountAddress) {
+    const normalizedAccount = getNormalizedAccount(transaction)
+    if (!normalizedAccount) {
       return undefined
-    }
-    const account = accountAddress.getValue()?.getAddress()
-    if (!account || !Utils.isValidAddress(account)) {
-      return undefined
-    }
-
-    let normalizedAccount = account
-    if (Utils.isValidXAddress(account)) {
-      const decodedClassicAddress = Utils.decodeXAddress(account)
-      if (!decodedClassicAddress) {
-        return undefined
-      }
-
-      // Accounts cannot have a tag.
-      if (decodedClassicAddress.tag !== undefined) {
-        return undefined
-      }
-
-      normalizedAccount = decodedClassicAddress.address
     }
     object.Account = normalizedAccount
 
@@ -185,3 +165,30 @@ const serializer = {
 }
 
 export default serializer
+
+/**
+ * Converts the transaction's account field, handling X-Addresses if needed.
+ *
+ * @param transaction - The transaction to scrape the account from.
+ *
+ * @returns A XRP address or undefined.
+ */
+function getNormalizedAccount(transaction: Transaction): string | undefined {
+  // Convert account field, handling X-Addresses if needed.
+  const account = transaction.getAccount()?.getValue()?.getAddress()
+  if (!account || !Utils.isValidAddress(account)) {
+    return undefined
+  }
+
+  if (Utils.isValidClassicAddress(account)) {
+    return account
+  }
+
+  const decodedClassicAddress = Utils.decodeXAddress(account)
+  if (!decodedClassicAddress || decodedClassicAddress.tag !== undefined) {
+    // Accounts cannot have a tag.
+    return undefined
+  }
+
+  return decodedClassicAddress.address
+}
