@@ -61,6 +61,10 @@ module.exports = {
     // This rule is about explicitly using `return undefined` when a function returns any non-undefined object.
     // However, since we're using TypeScript, it will yell at us if a function is not allowed to return `undefined` in its signature, so we don't need this rule.
     'consistent-return': 'off',
+
+    // Hans loves writing helper functions at the bottom of files,
+    // and @xpring-eng/eslint-config-base has this rule disabled for that very reason.
+    '@typescript-eslint/no-use-before-define': 'off',
   },
 
   overrides: [
