@@ -54,7 +54,7 @@ const serializer = {
       Fee: '',
     }
 
-    const sequence = transaction.getSequence()?.getValue() ?? 0
+    const sequence = transaction.getSequence()?.getValue()
     if (sequence) {
       object.Sequence = sequence
     }
