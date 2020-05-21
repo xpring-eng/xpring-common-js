@@ -54,23 +54,6 @@ const serializer = {
       SigningPubKey: '',
     }
 
-    const sequence = transaction.getSequence()?.getValue()
-    if (sequence) {
-      object.Sequence = sequence
-    }
-
-    const signingPubKeyBytes = transaction
-      .getSigningPublicKey()
-      ?.getValue_asU8()
-    if (signingPubKeyBytes) {
-      object.SigningPubKey = Utils.toHex(signingPubKeyBytes)
-    }
-
-    const lastLedgerSequence = transaction.getLastLedgerSequence()?.getValue()
-    if (lastLedgerSequence) {
-      object.LastLedgerSequence = lastLedgerSequence
-    }
-
     const normalizedAccount = getNormalizedAccount(transaction)
     if (!normalizedAccount) {
       return undefined
@@ -83,6 +66,18 @@ const serializer = {
       return undefined
     }
     object.Fee = this.xrpAmountToJSON(txFee)
+
+    // Set sequence numbers
+    object.Sequence = transaction.getSequence()?.getValue() ?? 0
+    object.LastLedgerSequence =
+      transaction.getLastLedgerSequence()?.getValue() ?? 0
+
+    const signingPubKeyBytes = transaction
+      .getSigningPublicKey()
+      ?.getValue_asU8()
+    if (signingPubKeyBytes) {
+      object.SigningPubKey = Utils.toHex(signingPubKeyBytes)
+    }
 
     const additionalTransactionData = getAdditionalTransactionData(transaction)
     if (additionalTransactionData === undefined) {
