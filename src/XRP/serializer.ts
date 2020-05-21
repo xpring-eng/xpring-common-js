@@ -174,7 +174,6 @@ export default serializer
  * @returns A XRP address or undefined.
  */
 function getNormalizedAccount(transaction: Transaction): string | undefined {
-  // Convert account field, handling X-Addresses if needed.
   const account = transaction.getAccount()?.getValue()?.getAddress()
   if (!account || !Utils.isValidAddress(account)) {
     return undefined
@@ -184,6 +183,8 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
     return account
   }
 
+  // We already checked that we're a valid address, and if we were a classic address,
+  // so we are definitely an X-Address here.
   const decodedClassicAddress = Utils.decodeXAddress(account)
   if (!decodedClassicAddress || decodedClassicAddress.tag !== undefined) {
     // Accounts cannot have a tag.
