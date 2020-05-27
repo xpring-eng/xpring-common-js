@@ -27,6 +27,23 @@ export interface WalletGenerationResult {
  * A wallet object that has an address and keypair.
  */
 class Wallet {
+  private readonly publicKey: string
+  private readonly privateKey: string
+  private readonly test: boolean
+
+  /**
+   * Create a new Wallet object.
+   *
+   * @param publicKey - The given public key for the wallet.
+   * @param privateKey - The given private key for the wallet.
+   * @param test - Whether the address is for use on a test network, defaults to `false`.
+   */
+  public constructor(publicKey: string, privateKey: string, test = false) {
+    this.publicKey = publicKey
+    this.privateKey = privateKey
+    this.test = test
+  }
+
   /**
    * @returns The default derivation path.
    */
@@ -88,6 +105,7 @@ class Wallet {
       return undefined
     }
 
+    /* eslint-disable-next-line no-sync */
     const seed = bip39.mnemonicToSeedSync(mnemonic)
     return Wallet.generateHDWalletFromSeed(seed, derivationPath, test)
   }
@@ -108,7 +126,7 @@ class Wallet {
     const masterNode = bip32.fromSeed(seed)
     const node = masterNode.derivePath(derivationPath)
     if (node.privateKey === undefined) {
-      return
+      return undefined
     }
 
     const publicKey = Wallet.hexFromBuffer(node.publicKey)
@@ -135,18 +153,9 @@ class Wallet {
     }
   }
 
-  /**
-   * Create a new Wallet object.
-   *
-   * @param publicKey - The given public key for the wallet.
-   * @param privateKey - The given private key for the wallet.
-   * @param test - Whether the address is for use on a test network, defaults to `false`.
-   */
-  public constructor(
-    private readonly publicKey: string,
-    private readonly privateKey: string,
-    private readonly test: boolean = false,
-  ) {}
+  private static hexFromBuffer(buffer: Buffer): string {
+    return buffer.toString('hex').toUpperCase()
+  }
 
   /**
    * @returns A string representing the public key for the wallet.
@@ -206,10 +215,6 @@ class Wallet {
       // If an error was thrown then the signature is definitely not valid.
       return false
     }
-  }
-
-  private static hexFromBuffer(buffer: Buffer): string {
-    return buffer.toString('hex').toUpperCase()
   }
 }
 
