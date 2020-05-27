@@ -43,13 +43,9 @@ module.exports = {
         // Because of gRPC, our tests have to have a ton of statements to be useful
         'max-statements': ['warn', { max: 40 }],
 
-        // TODO:(@hbergren) We should be able to get rid of these two rules eventually,
-        // because they are both specified in the core config.
-
-        // describe blocks count as a function in Mocha tests, and can be insanely long
-        'max-lines-per-function': 'off',
-
-        // We should refactor our test files to be more specific / smaller, but for now, this is fine.
+        // TODO:(@hbergren) We should be able to get rid of this rule eventually.
+        // When we refactor our test files to be more specific / smaller,
+        // we can remove this rule and use the stricter config provided for this rule in @xpring-eng/eslint-config-base.
         'max-lines': ['warn', { max: 400 }],
       },
     },
