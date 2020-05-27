@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import XrpUtils, { ClassicAddress } from '../XRP/xrp-utils'
+import XrpUtils from '../XRP/xrp-utils'
 
 const utils = {
   /**
@@ -13,9 +13,7 @@ const utils = {
    * @param address - An address to check.
    * @returns True if the address is valid, otherwise false.
    */
-  isValidAddress(address: string): boolean {
-    return XrpUtils.isValidAddress(address)
-  },
+  isValidAddress: XrpUtils.isValidAddress.bind(XrpUtils),
 
   /**
    * Validate whether the given string is a valid X-address for the XRP Ledger.
@@ -27,9 +25,7 @@ const utils = {
    * @param address - An address to check.
    * @returns True if the address is a valid X-address, otherwise false.
    */
-  isValidXAddress(address: string): boolean {
-    return XrpUtils.isValidXAddress(address)
-  },
+  isValidXAddress: XrpUtils.isValidXAddress.bind(XrpUtils),
 
   /**
    * Validate whether the given string is a valid classic address for the XRP Ledger.
@@ -41,9 +37,7 @@ const utils = {
    * @param address - An address to check.
    * @returns True if the address is a valid classic address, otherwise false.
    */
-  isValidClassicAddress(address: string): boolean {
-    return XrpUtils.isValidClassicAddress(address)
-  },
+  isValidClassicAddress: XrpUtils.isValidClassicAddress.bind(XrpUtils),
 
   /**
    * Encode the given classic address and tag into an x-address.
@@ -57,13 +51,7 @@ const utils = {
    * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns A new x-address if inputs were valid, otherwise undefined.
    */
-  encodeXAddress(
-    classicAddress: string,
-    tag: number | undefined,
-    test = false,
-  ): string | undefined {
-    return XrpUtils.encodeXAddress(classicAddress, tag, test)
-  },
+  encodeXAddress: XrpUtils.encodeXAddress.bind(XrpUtils),
 
   /**
    * Decode a `ClassicAddress` from a given x-address.
@@ -75,9 +63,7 @@ const utils = {
    * @param xAddress - The xAddress to decode.
    * @returns A `ClassicAddress`
    */
-  decodeXAddress(xAddress: string): ClassicAddress | undefined {
-    return XrpUtils.decodeXAddress(xAddress)
-  },
+  decodeXAddress: XrpUtils.decodeXAddress.bind(XrpUtils),
 
   /**
    * Convert the given byte array to a hexadecimal string.
@@ -85,9 +71,7 @@ const utils = {
    * @param bytes - An array of bytes
    * @returns An encoded hexadecimal string.
    */
-  toHex(bytes: Uint8Array): string {
-    return Buffer.from(bytes).toString('hex').toUpperCase()
-  },
+  toHex: XrpUtils.toHex.bind(XrpUtils),
 
   /**
    * Convert the given hexadecimal string to a byte array.
