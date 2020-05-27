@@ -19,76 +19,38 @@ module.exports = {
     browser: true, // Enable browser global variables
     node: true, // Enable node global variables & Node.js scoping
     es2020: true, // Add all ECMAScript 2020 globals and automatically set the ecmaVersion parser option to ES2020
-    mocha: true, // Add Mocha testing global variables
   },
 
   plugins: [
     '@typescript-eslint', // Add some TypeScript specific rules, and disable rules covered by the typechecker
     'import', // Add rules that help validate proper imports
-    'mocha', // Add rules for writing better Mocha tests
-    'prettier', // Allows running prettier as an ESLint rule, and reporting differences as individual linting issues
   ],
 
-  extends: [
-    // ESLint recommended rules
-    'eslint:recommended',
+  extends: ['@xpring-eng/eslint-config-base/loose'],
 
-    // Add TypeScript-specific rules, and disable rules covered by typechecker
-    'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended',
-
-    // Add rules for import/export syntax
-    'plugin:import/errors',
-    'plugin:import/warnings',
-    'plugin:import/typescript',
-
-    // Add rules for Mocha-specific syntax
-    'plugin:mocha/recommended',
-
-    // Add Airbnb + TypeScript support
-    'airbnb-base',
-    'airbnb-typescript/base',
-
-    // Add rules that specifically require type information using our tsconfig
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-
-    // Enable Prettier for ESLint --fix, and disable rules that conflict with Prettier
-    'prettier/@typescript-eslint',
-    'plugin:prettier/recommended',
-  ],
-
-  rules: {
-    // This rule is about explicitly using `return undefined` when a function returns any non-undefined object.
-    // However, since we're using TypeScript, it will yell at us if a function is not allowed to return `undefined` in its signature, so we don't need this rule.
-    'consistent-return': 'off',
-
-    // @hbergren loves writing helper functions at the bottom of files,
-    // and @xpring-eng/eslint-config-base has this rule disabled for that very reason.
-    '@typescript-eslint/no-use-before-define': 'off',
-  },
+  rules: {},
 
   overrides: [
-    // Overrides for all test files
     {
-      files: 'test/**/*.ts',
+      files: 'test/**/*.test.ts',
       rules: {
-        // For our Mocha test files, the pattern has been to have unnamed functions
-        'func-names': 'off',
-        // Using non-null assertions (obj!.property) cancels the benefits of the strict null-checking mode, but these are test files, so we don't care.
+        // We use non-null assertions liberally in tests to allow TypeScript to build
         '@typescript-eslint/no-non-null-assertion': 'off',
-        // Allow unused variables in our test files when explicitly prepended with `_`.
-        '@typescript-eslint/no-unused-vars': [
-          'error',
-          { argsIgnorePattern: '^_' },
-        ],
-      },
-    },
-    // Overrides for serializer-test.ts
-    {
-      files: 'serializer.test.ts',
-      rules: {
-        // For this test file specifically, we shadow the function parameter names with constants for testing
-        'no-shadow': 'off',
+
+        // Because of gRPC, our tests have to have a ton of imports
+        'import/max-dependencies': ['warn', { max: 11 }],
+
+        // Because of gRPC, our tests have to have a ton of statements to be useful
+        'max-statements': ['warn', { max: 40 }],
+
+        // TODO:(@hbergren) We should be able to get rid of these two rules eventually,
+        // because they are both specified in the core config.
+
+        // describe blocks count as a function in Mocha tests, and can be insanely long
+        'max-lines-per-function': 'off',
+
+        // We should refactor our test files to be more specific / smaller, but for now, this is fine.
+        'max-lines': ['warn', { max: 400 }],
       },
     },
   ],
