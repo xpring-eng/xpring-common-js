@@ -7,7 +7,7 @@ import {
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 
 interface PaymentJSON {
-  Amount: object | string
+  Amount: Record<string, unknown> | string
   Destination: string
   DestinationTag?: number
   TransactionType: string
@@ -98,7 +98,7 @@ const serializer = {
    * @param payment - The Payment to convert.
    * @returns The Payment as JSON.
    */
-  paymentToJSON(payment: Payment): object | undefined {
+  paymentToJSON(payment: Payment): PaymentJSON | undefined {
     const json: PaymentJSON = {
       Amount: {},
       Destination: '',
@@ -175,7 +175,7 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
  */
 function getAdditionalTransactionData(
   transaction: Transaction,
-): object | undefined {
+): PaymentJSON | undefined {
   const transactionDataCase = transaction.getTransactionDataCase()
 
   switch (transactionDataCase) {

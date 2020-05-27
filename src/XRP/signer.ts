@@ -44,8 +44,8 @@ const signer = {
    * @returns A set of bytes representing the inputs and a signature.
    */
   signTransaction(
-    transaction: Transaction,
-    wallet: Wallet,
+    transaction?: Transaction,
+    wallet?: Wallet,
   ): Uint8Array | undefined {
     if (transaction === undefined || wallet === undefined) {
       return undefined
