@@ -101,9 +101,11 @@ const serializer = {
       object.TxnSignature = signature
     }
 
-    object.Memos = transaction
-      .getMemosList()
-      ?.map((memo) => this.memoToJSON(memo))
+    if (transaction.getMemosList() && transaction.getMemosList().length) {
+      object.Memos = transaction
+        .getMemosList()
+        .map((memo) => this.memoToJSON(memo))
+    }
 
     return object
   },
