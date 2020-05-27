@@ -111,9 +111,9 @@ const serializer = {
       object.TxnSignature = signature
     }
 
-    if (transaction.getMemosList() && transaction.getMemosList().length > 0) {
-      object.Memos = transaction.getMemosList().map(this.memoToJSON)
-    }
+    object.Memos = transaction
+      .getMemosList()
+      ?.map((memo) => this.memoToJSON(memo))
 
     return object
   },
@@ -181,16 +181,16 @@ const serializer = {
    * @returns The Memo as JSON.
    */
   memoToJSON(memo: Memo): MemoJSON {
-    const Memo: MemoDetailsJSON = {
+    const jsonMemo: MemoDetailsJSON = {
       MemoData: memo?.getMemoData()?.getValue_asB64(),
       MemoFormat: memo?.getMemoFormat()?.getValue_asB64(),
       MemoType: memo?.getMemoType()?.getValue_asB64(),
     }
 
     return {
-      Memo,
+      Memo: jsonMemo,
     }
-  }
+  },
 }
 
 export default serializer

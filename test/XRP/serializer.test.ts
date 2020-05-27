@@ -32,6 +32,9 @@ const publicKey =
 const fee = '10'
 const accountClassicAddress = 'r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ'
 const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
+const dataForMemo = 'I forgot to pick up Carl...'
+const typeForMemo = 'meme'
+const formatForMemo = 'jaypeg'
 
 /**
  * Create a new `Transaction` object with the given inputs.
@@ -264,7 +267,7 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized, expectedJSON)
   })
 
-  it('serializes a payment with a memo', function(): void {
+  it('serializes a payment with a memo', function (): void {
     // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP, with a dank
     // meme for a memo
     const transaction = makeTransaction(
@@ -279,13 +282,13 @@ describe('serializer', function (): void {
 
     const memo = new Memo()
     const memoData = new MemoData()
-    memoData.setValue('I forgot to pick up Carl...')
+    memoData.setValue(dataForMemo)
     memo.setMemoData(memoData)
     const memoType = new MemoType()
-    memoType.setValue('meme')
+    memoType.setValue(typeForMemo)
     memo.setMemoType(memoType)
     const memoFormat = new MemoFormat()
-    memoFormat.setValue('jaypeg')
+    memoFormat.setValue(formatForMemo)
     memo.setMemoFormat(memoFormat)
 
     transaction.setMemosList([memo])
@@ -306,12 +309,12 @@ describe('serializer', function (): void {
       Memos: [
         {
           Memo: {
-            MemoData: 'I forgot to pick up Carl...',
-            MemoType: 'meme',
-            MemoFormat: 'jaypeg',
-          }
-        }
-      ]
+            MemoData: dataForMemo,
+            MemoType: typeForMemo,
+            MemoFormat: formatForMemo,
+          },
+        },
+      ],
     }
     assert.deepEqual(serialized, expectedJSON)
   })
