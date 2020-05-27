@@ -154,6 +154,7 @@ const serializer = {
 
   /**
    * Convert a Memo to a JSON representation.
+   *
    * @param memo - The Memo to convert.
    * @returns The Memo as JSON.
    */
