@@ -24,6 +24,7 @@
     "clean": "rm -rf ./src/generated ./dist ./build",
     "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit",
     "lint": "eslint . --ext .ts --fix",
+    "lintNoFix": "eslint . --ext .ts",
     "test": "nyc mocha",
     "prepublishOnly": "npm run test && npm run build"
   },
