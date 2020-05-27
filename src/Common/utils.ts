@@ -1,3 +1,4 @@
+import { createHash } from 'crypto'
 import XrpUtils, { ClassicAddress } from '../XRP/xrp-utils'
 
 const utils = {
@@ -12,9 +13,9 @@ const utils = {
    * @param address - An address to check.
    * @returns True if the address is valid, otherwise false.
    */
-  public static isValidAddress(address: string): boolean {
+  isValidAddress(address: string): boolean {
     return XrpUtils.isValidAddress(address)
-  }
+  },
 
   /**
    * Validate whether the given string is a valid X-address for the XRP Ledger.
@@ -26,9 +27,9 @@ const utils = {
    * @param address - An address to check.
    * @returns True if the address is a valid X-address, otherwise false.
    */
-  public static isValidXAddress(address: string): boolean {
+  isValidXAddress(address: string): boolean {
     return XrpUtils.isValidXAddress(address)
-  }
+  },
 
   /**
    * Validate whether the given string is a valid classic address for the XRP Ledger.
@@ -40,9 +41,9 @@ const utils = {
    * @param address - An address to check.
    * @returns True if the address is a valid classic address, otherwise false.
    */
-  public static isValidClassicAddress(address: string): boolean {
+  isValidClassicAddress(address: string): boolean {
     return XrpUtils.isValidClassicAddress(address)
-  }
+  },
 
   /**
    * Encode the given classic address and tag into an x-address.
@@ -62,7 +63,7 @@ const utils = {
     test = false,
   ): string | undefined {
     return XrpUtils.encodeXAddress(classicAddress, tag, test)
-  }
+  },
 
   /**
    * Decode a `ClassicAddress` from a given x-address.
@@ -74,9 +75,9 @@ const utils = {
    * @param xAddress - The xAddress to decode.
    * @returns A `ClassicAddress`
    */
-  public static decodeXAddress(xAddress: string): ClassicAddress | undefined {
+  decodeXAddress(xAddress: string): ClassicAddress | undefined {
     return XrpUtils.decodeXAddress(xAddress)
-  }
+  },
 
   /**
    * Convert the given byte array to a hexadecimal string.
@@ -110,7 +111,7 @@ const utils = {
     transactionBlobHex: string,
   ): string | undefined {
     return XrpUtils.transactionBlobToTransactionHash(transactionBlobHex)
-  }
+  },
 
   /**
    * Check if the given string is valid hex.
@@ -121,7 +122,7 @@ const utils = {
   isHex(input: string): boolean {
     const hexRegEx = /(?:[0-9]|[a-f])/gimu
     return (input.match(hexRegEx) ?? []).length === input.length
-  }
+  },
 
   /**
    * Compute the SHA512 half hash of the given bytes.

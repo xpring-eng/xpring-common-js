@@ -1,4 +1,4 @@
-// Comppon Exports
+// Common Exports
 export { default as Utils } from './Common/utils'
 
 // XRP Exports
