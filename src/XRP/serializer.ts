@@ -163,6 +163,7 @@ const serializer = {
    * non-empty objects.
    *
    * @param memos
+   * @returns the Memos as JSON or undefined
    */
   memosToJSON(memos: Memo[]): { Memos: MemoJSON[] } | undefined {
     if (!memos || !memos.length) {
