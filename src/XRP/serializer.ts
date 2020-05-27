@@ -48,27 +48,10 @@ const serializer = {
   ): TransactionJSON | undefined {
     const object: TransactionJSON = {
       Account: '',
-      Sequence: 0,
-      SigningPubKey: '',
-      LastLedgerSequence: 0,
       Fee: '',
-    }
-
-    const sequence = transaction.getSequence()?.getValue()
-    if (sequence) {
-      object.Sequence = sequence
-    }
-
-    const signingPubKeyBytes = transaction
-      .getSigningPublicKey()
-      ?.getValue_asU8()
-    if (signingPubKeyBytes) {
-      object.SigningPubKey = Utils.toHex(signingPubKeyBytes)
-    }
-
-    const lastLedgerSequence = transaction.getLastLedgerSequence()?.getValue()
-    if (lastLedgerSequence) {
-      object.LastLedgerSequence = lastLedgerSequence
+      Sequence: 0,
+      LastLedgerSequence: 0,
+      SigningPubKey: '',
     }
 
     const normalizedAccount = getNormalizedAccount(transaction)
@@ -84,20 +67,23 @@ const serializer = {
     }
     object.Fee = this.xrpAmountToJSON(txFee)
 
-    // Convert additional transaction data.
-    const transactionDataCase = transaction.getTransactionDataCase()
-    switch (transactionDataCase) {
-      case Transaction.TransactionDataCase.PAYMENT: {
-        const payment = transaction.getPayment()
-        if (payment === undefined) {
-          return undefined
-        }
-        Object.assign(object, this.paymentToJSON(payment))
-        break
-      }
-      default:
-        throw new Error('Unexpected transactionDataCase')
+    // Set sequence numbers
+    object.Sequence = transaction.getSequence()?.getValue() ?? 0
+    object.LastLedgerSequence =
+      transaction.getLastLedgerSequence()?.getValue() ?? 0
+
+    const signingPubKeyBytes = transaction
+      .getSigningPublicKey()
+      ?.getValue_asU8()
+    if (signingPubKeyBytes) {
+      object.SigningPubKey = Utils.toHex(signingPubKeyBytes)
     }
+
+    const additionalTransactionData = getAdditionalTransactionData(transaction)
+    if (additionalTransactionData === undefined) {
+      return undefined
+    }
+    Object.assign(object, additionalTransactionData)
 
     if (signature) {
       object.TxnSignature = signature
@@ -120,36 +106,23 @@ const serializer = {
     }
 
     // If an x-address was able to be decoded, add the components to the json.
-    const destinationAddress = payment.getDestination()
-    if (!destinationAddress) {
-      return undefined
-    }
-
-    const destination = destinationAddress.getValue()?.getAddress()
+    const destination = payment.getDestination()?.getValue()?.getAddress()
     if (!destination) {
       return undefined
     }
 
     const decodedXAddress = Utils.decodeXAddress(destination)
-    if (decodedXAddress) {
-      json.Destination = decodedXAddress.address
-      if (decodedXAddress.tag !== undefined) {
+    json.Destination = decodedXAddress?.address ?? destination
+    if (decodedXAddress?.tag !== undefined) {
         json.DestinationTag = decodedXAddress.tag
       }
-    } else {
-      json.Destination = destination
-      delete json.DestinationTag
-    }
 
-    const amount = payment.getAmount()
-    if (!amount) {
-      return undefined
-    }
-    const xrpAmount = amount.getValue()?.getXrpAmount()
+    const xrpAmount = payment.getAmount()?.getValue()?.getXrpAmount()
     if (!xrpAmount) {
       return undefined
     }
     json.Amount = this.xrpAmountToJSON(xrpAmount)
+
     return json
   },
 
@@ -192,4 +165,30 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
   }
 
   return decodedClassicAddress.address
+}
+
+/**
+ * Given a Transaction, get the JSON representation of data specific to that transaction type.
+ *
+ * @param transaction - A transaction to check for additional transaction-type specific data.
+ * @returns A JSON representation of the transaction-type specific data, or undefined.
+ */
+function getAdditionalTransactionData(
+  transaction: Transaction,
+): object | undefined {
+  const transactionDataCase = transaction.getTransactionDataCase()
+
+  switch (transactionDataCase) {
+    case Transaction.TransactionDataCase.PAYMENT: {
+      const payment = transaction.getPayment()
+      if (payment === undefined) {
+        return undefined
+      }
+
+      return serializer.paymentToJSON(payment)
+    }
+
+    default:
+      throw new Error('Unexpected transactionDataCase')
+  }
 }
