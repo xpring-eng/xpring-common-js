@@ -1,16 +1,23 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount } from './generated/org/xrpl/rpc/v1/amount_pb'
-import {
-  Payment,
-  Transaction,
-} from './generated/org/xrpl/rpc/v1/transaction_pb'
+import { Memo, Payment, Transaction, } from './generated/org/xrpl/rpc/v1/transaction_pb'
 
 interface PaymentJSON {
   Amount: object | string
   Destination: string
   DestinationTag?: number
   TransactionType: string
+}
+
+interface MemoJSON {
+  Memo?: MemoDetailsJSON
+}
+
+interface MemoDetailsJSON {
+  MemoData?: string
+  MemoType?: string
+  MemoFormat?: string
 }
 
 interface BaseTransactionJSON {
@@ -20,6 +27,7 @@ interface BaseTransactionJSON {
   Sequence: number
   SigningPubKey: string
   TxnSignature?: string
+  Memos?: MemoJSON[]
 }
 
 interface PaymentTransactionJSONAddition extends PaymentJSON {
@@ -103,6 +111,10 @@ const serializer = {
       object.TxnSignature = signature
     }
 
+    if (transaction.getMemosList() && transaction.getMemosList().length > 0) {
+      object.Memos = transaction.getMemosList().map(this.memoToJSON)
+    }
+
     return object
   },
 
@@ -162,6 +174,23 @@ const serializer = {
   xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
     return `${xrpDropsAmount.getDrops()}`
   },
+
+  /**
+   * Convert a Memo to a JSON representation.
+   * @param memo - The Memo to convert.
+   * @returns The Memo as JSON.
+   */
+  memoToJSON(memo: Memo): MemoJSON {
+    const Memo: MemoDetailsJSON = {
+      MemoData: memo?.getMemoData()?.getValue_asB64(),
+      MemoFormat: memo?.getMemoFormat()?.getValue_asB64(),
+      MemoType: memo?.getMemoType()?.getValue_asB64(),
+    }
+
+    return {
+      Memo,
+    }
+  }
 }
 
 export default serializer

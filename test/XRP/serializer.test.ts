@@ -3,21 +3,18 @@ import { assert } from 'chai'
 
 import Utils from '../../src/Common/utils'
 import { AccountAddress } from '../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
+import { CurrencyAmount, XRPDropsAmount, } from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
 import {
-  CurrencyAmount,
-  XRPDropsAmount,
-} from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
-import {
-  Destination,
+  Account,
   Amount,
+  Destination,
+  MemoData,
+  MemoFormat,
+  MemoType,
   Sequence,
   SigningPublicKey,
-  Account,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
-import {
-  Payment,
-  Transaction,
-} from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
+import { Memo, Payment, Transaction, } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer from '../../src/XRP/serializer'
 
 /** Constants for transactions. */
@@ -263,6 +260,58 @@ describe('serializer', function (): void {
       Sequence: sequence,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('serializes a payment with a memo', function(): void {
+    // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP, with a dank
+    // meme for a memo
+    const transaction = makeTransaction(
+      value,
+      destinationXAddressWithoutTag,
+      fee,
+      lastLedgerSequence,
+      sequence,
+      accountClassicAddress,
+      publicKey,
+    )
+
+    const memo = new Memo()
+    const memoData = new MemoData()
+    memoData.setValue('I forgot to pick up Carl...')
+    memo.setMemoData(memoData)
+    const memoType = new MemoType()
+    memoType.setValue('meme')
+    memo.setMemoType(memoType)
+    const memoFormat = new MemoFormat()
+    memoFormat.setValue('jaypeg')
+    memo.setMemoFormat(memoFormat)
+
+    transaction.setMemosList([memo])
+
+    // WHEN the meme'd transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction)
+
+    // THEN the result still has the meme as expected.
+    const expectedJSON = {
+      Account: accountClassicAddress,
+      Amount: value.toString(),
+      Destination: destinationClassicAddress,
+      Fee: fee.toString(),
+      LastLedgerSequence: lastLedgerSequence,
+      Sequence: sequence,
+      TransactionType: 'Payment',
+      SigningPubKey: publicKey,
+      Memos: [
+        {
+          Memo: {
+            MemoData: 'I forgot to pick up Carl...',
+            MemoType: 'meme',
+            MemoFormat: 'jaypeg',
+          }
+        }
+      ]
     }
     assert.deepEqual(serialized, expectedJSON)
   })
