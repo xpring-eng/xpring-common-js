@@ -3,7 +3,10 @@ import { assert } from 'chai'
 
 import Utils from '../../src/Common/utils'
 import { AccountAddress } from '../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
-import { CurrencyAmount, XRPDropsAmount, } from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
+import {
+  CurrencyAmount,
+  XRPDropsAmount,
+} from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Account,
   Amount,
@@ -14,7 +17,11 @@ import {
   Sequence,
   SigningPublicKey,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
-import { Memo, Payment, Transaction, } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
+import {
+  Memo,
+  Payment,
+  Transaction,
+} from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer from '../../src/XRP/serializer'
 
 /** Constants for transactions. */

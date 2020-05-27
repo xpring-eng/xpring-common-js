@@ -1,7 +1,11 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount } from './generated/org/xrpl/rpc/v1/amount_pb'
-import { Memo, Payment, Transaction, } from './generated/org/xrpl/rpc/v1/transaction_pb'
+import {
+  Memo,
+  Payment,
+  Transaction,
+} from './generated/org/xrpl/rpc/v1/transaction_pb'
 
 interface PaymentJSON {
   Amount: object | string
@@ -126,8 +130,8 @@ const serializer = {
     const decodedXAddress = Utils.decodeXAddress(destination)
     json.Destination = decodedXAddress?.address ?? destination
     if (decodedXAddress?.tag !== undefined) {
-        json.DestinationTag = decodedXAddress.tag
-      }
+      json.DestinationTag = decodedXAddress.tag
+    }
 
     const xrpAmount = payment.getAmount()?.getValue()?.getXrpAmount()
     if (!xrpAmount) {
