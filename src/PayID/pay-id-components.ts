@@ -7,6 +7,7 @@
  */
 export default class PayIdComponents {
   public readonly host: string
+
   public readonly path: string
 
   /**
@@ -28,7 +29,9 @@ export default class PayIdComponents {
  */
 export class PayIDComponents {
   public readonly host: string
+
   public readonly path: string
+
   /**
    * Create a new PayIDComponents.
    *

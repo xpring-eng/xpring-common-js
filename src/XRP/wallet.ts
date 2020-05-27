@@ -28,7 +28,9 @@ export interface WalletGenerationResult {
  */
 class Wallet {
   private readonly publicKey: string
+
   private readonly privateKey: string
+
   private readonly test: boolean
 
   /**

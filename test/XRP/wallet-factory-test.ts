@@ -4,6 +4,8 @@ import WalletFactory from '../../src/XRP/wallet-factory'
 import 'mocha'
 
 describe('Wallet Factory', function (): void {
+  // walletFromKeys()
+
   it('Wallet From Keys - Valid Keys', function (): void {
     // GIVEN a wallet factory and set of valid keys.
     const walletFactory = new WalletFactory(true)
@@ -45,6 +47,35 @@ describe('Wallet Factory', function (): void {
     const wallet = walletFactory.walletFromKeys(publicKey, privateKey)
 
     // THEN the generated wallet is undefined.
+    assert.isUndefined(wallet)
+  })
+
+  // walletFromSeed
+
+  it('walletFromSeed - MainNet', function (): void {
+    // GIVEN a wallet factory and a valid seed.
+    const walletFactory = new WalletFactory(true)
+    const seed = 'snYP7oArxKepd3GPDcrjMsJYiJeJB'
+
+    // WHEN a wallet is generated from the seed.
+    const wallet = walletFactory.walletFromSeed(seed)
+
+    // THEN the wallet has the expected address.
+    assert.equal(
+      wallet.getAddress(),
+      'XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8',
+    )
+  })
+
+  it('walletFromSeed - invalid seed', function (): void {
+    // GIVEN a wallet factory and an valid seed.
+    const walletFactory = new WalletFactory(true)
+    const seed = 'xrp'
+
+    // WHEN a wallet is generated from the seed.
+    const wallet = walletFactory.walletFromSeed(seed)
+
+    // THEN the wallet is undefined.
     assert.isUndefined(wallet)
   })
 })
