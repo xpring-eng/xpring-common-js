@@ -169,7 +169,7 @@ const utils = {
   /**
    * Compute the SHA512 half hash of the given bytes.
    *
-   * @param input - The input to hash.
+   * @param bytes - The array of bytes to hash.
    * @returns The hash of the input.
    */
   sha512Half(bytes: Uint8Array): Uint8Array {
