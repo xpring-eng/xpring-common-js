@@ -47,6 +47,7 @@ const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
  * @param senderAddress - The address of the sending account.
  * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
  */
+/* eslint-disable no-shadow */
 function makeTransaction(
   value: string,
   destinationAddress: string,
@@ -107,6 +108,7 @@ function makeTransaction(
 
   return transaction
 }
+/* eslint-enable no-shadow */
 
 describe('serializer', function (): void {
   it('serializes a payment in XRP from a classic address', function (): void {

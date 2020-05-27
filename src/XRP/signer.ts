@@ -9,7 +9,7 @@ import Wallet from './wallet'
 /**
  * Abstracts the details of signing.
  */
-abstract class Signer {
+const signer = {
   /**
    * Encode the given raw JSON transaction to hex and sign it.
    *
@@ -17,7 +17,7 @@ abstract class Signer {
    * @param wallet - The wallet to sign the transaction with.
    * @returns A set of bytes representing the inputs and a signature.
    */
-  public static signTransactionFromJSON(
+  signTransactionFromJSON(
     transactionJSON: TransactionJSON,
     wallet: Wallet,
   ): Uint8Array {
@@ -34,7 +34,7 @@ abstract class Signer {
     }
     const signedTransactionHex = rippleCodec.encode(signedTransactionJSON)
     return Utils.toBytes(signedTransactionHex)
-  }
+  },
 
   /**
    * Encode the given object to hex and sign it.
@@ -43,7 +43,7 @@ abstract class Signer {
    * @param wallet - The wallet to sign the transaction with.
    * @returns A set of bytes representing the inputs and a signature.
    */
-  public static signTransaction(
+  signTransaction(
     transaction: Transaction,
     wallet: Wallet,
   ): Uint8Array | undefined {
@@ -55,8 +55,8 @@ abstract class Signer {
     if (transactionJSON === undefined) {
       return undefined
     }
-    return Signer.signTransactionFromJSON(transactionJSON, wallet)
-  }
+    return this.signTransactionFromJSON(transactionJSON, wallet)
+  },
 }
 
-export default Signer
+export default signer

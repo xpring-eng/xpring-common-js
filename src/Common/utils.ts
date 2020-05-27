@@ -1,6 +1,6 @@
 import XrpUtils, { ClassicAddress } from '../XRP/xrp-utils'
 
-abstract class Utils {
+const utils = {
   /**
    * Validate that the given string is a valid address for the XRP Ledger.
    *
@@ -56,7 +56,7 @@ abstract class Utils {
    * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns A new x-address if inputs were valid, otherwise undefined.
    */
-  public static encodeXAddress(
+  encodeXAddress(
     classicAddress: string,
     tag: number | undefined,
     test = false,
@@ -84,9 +84,9 @@ abstract class Utils {
    * @param bytes - An array of bytes
    * @returns An encoded hexadecimal string.
    */
-  public static toHex(bytes: Uint8Array): string {
+  toHex(bytes: Uint8Array): string {
     return Buffer.from(bytes).toString('hex').toUpperCase()
-  }
+  },
 
   /**
    * Convert the given hexadecimal string to a byte array.
@@ -94,9 +94,9 @@ abstract class Utils {
    * @param hex - A hexadecimal string.
    * @returns A decoded byte array.
    */
-  public static toBytes(hex: string): Uint8Array {
+  toBytes(hex: string): Uint8Array {
     return Uint8Array.from(Buffer.from(hex, 'hex'))
-  }
+  },
 
   /**
    * Convert the given transaction blob to a transaction hash.
@@ -106,7 +106,7 @@ abstract class Utils {
    * @param transactionBlobHex - A hexadecimal encoded transaction blob.
    * @returns A hex encoded hash if the input was valid, otherwise undefined.
    */
-  public static transactionBlobToTransactionHash(
+  transactionBlobToTransactionHash(
     transactionBlobHex: string,
   ): string | undefined {
     return XrpUtils.transactionBlobToTransactionHash(transactionBlobHex)
@@ -118,10 +118,24 @@ abstract class Utils {
    * @param input - The input to check.
    * @returns true if the input is valid hex, otherwise false.
    */
-  public static isHex(input: string): boolean {
+  isHex(input: string): boolean {
     const hexRegEx = /(?:[0-9]|[a-f])/gimu
     return (input.match(hexRegEx) ?? []).length === input.length
   }
+
+  /**
+   * Compute the SHA512 half hash of the given bytes.
+   *
+   * @param input - The input to hash.
+   * @returns The hash of the input.
+   */
+  sha512Half(bytes: Uint8Array): Uint8Array {
+    const sha512 = createHash('sha512')
+    const hashHex = sha512.update(bytes).digest('hex').toUpperCase()
+    const hash = this.toBytes(hashHex)
+
+    return hash.slice(0, hash.length / 2)
+  },
 }
 
-export default Utils
+export default utils
