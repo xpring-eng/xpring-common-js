@@ -325,4 +325,8 @@ describe('serializer', function (): void {
     }
     assert.deepEqual(serialized, expectedJSON)
   })
+
+  it('serializes empty or blank memo arrays or objects to undefined', function (): void {
+    assert.isUndefined(Serializer.memosToJSON([]))
+  })
 })

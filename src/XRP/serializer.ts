@@ -101,9 +101,12 @@ const serializer = {
       object.TxnSignature = signature
     }
 
+    Object.assign(object, this.memosToJSON(transaction.getMemosList()))
+
     if (transaction.getMemosList() && transaction.getMemosList().length) {
       object.Memos = transaction
         .getMemosList()
+        .filter((memo) => !!memo)
         .map((memo) => this.memoToJSON(memo))
     }
 
@@ -152,6 +155,24 @@ const serializer = {
    */
   xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
     return `${xrpDropsAmount.getDrops()}`
+  },
+
+  /**
+   * Convert an array of Memo objects to a JSON representation keyed by
+   * a field called 'Memos' iff the array is not empty and it contains
+   * non-empty objects.
+   *
+   * @param memos
+   */
+  memosToJSON(memos: Memo[]): { Memos: MemoJSON[] } | undefined {
+    if (!memos || !memos.length) {
+      return undefined
+    }
+
+    const filteredMemos = memos
+      .filter((memo) => !!memo)
+      .map((memo) => this.memoToJSON(memo))
+    return (filteredMemos.length && { Memos: filteredMemos }) || undefined
   },
 
   /**
