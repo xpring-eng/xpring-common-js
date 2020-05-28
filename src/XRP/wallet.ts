@@ -106,7 +106,7 @@ class Wallet {
     }
 
     // TODO: (@keefertaylor) Why is this method synchronous?
-    /* eslint-disable node/no-sync */
+    /* eslint-disable-next-line node/no-sync */
     const seed = bip39.mnemonicToSeedSync(mnemonic)
     return Wallet.generateHDWalletFromSeed(seed, derivationPath, test)
   }
