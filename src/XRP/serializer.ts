@@ -103,13 +103,6 @@ const serializer = {
 
     Object.assign(object, this.memosToJSON(transaction.getMemosList()))
 
-    if (transaction.getMemosList() && transaction.getMemosList().length) {
-      object.Memos = transaction
-        .getMemosList()
-        .filter((memo) => !!memo)
-        .map((memo) => this.memoToJSON(memo))
-    }
-
     return object
   },
 
