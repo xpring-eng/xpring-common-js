@@ -105,7 +105,8 @@ class Wallet {
       return undefined
     }
 
-    /* eslint-disable-next-line no-sync */
+    // TODO:(@hbergren): Try making this async?
+    /* eslint-disable-next-line node/no-sync */
     const seed = bip39.mnemonicToSeedSync(mnemonic)
     return Wallet.generateHDWalletFromSeed(seed, derivationPath, test)
   }

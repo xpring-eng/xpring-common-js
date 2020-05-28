@@ -47,10 +47,6 @@ const signer = {
     transaction: Transaction,
     wallet: Wallet,
   ): Uint8Array | undefined {
-    if (transaction === undefined || wallet === undefined) {
-      return undefined
-    }
-
     const transactionJSON = Serializer.transactionToJSON(transaction)
     if (transactionJSON === undefined) {
       return undefined

@@ -7,7 +7,7 @@ import {
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 
 interface PaymentJSON {
-  Amount: object | string
+  Amount: Record<string, unknown> | string
   Destination: string
   DestinationTag?: number
   TransactionType: string
@@ -42,6 +42,7 @@ const serializer = {
    * @param signature - An optional hex encoded signature to include in the transaction.
    * @returns The Transaction as JSON.
    */
+  // eslint-disable-next-line max-statements
   transactionToJSON(
     transaction: Transaction,
     signature?: string,
@@ -98,7 +99,8 @@ const serializer = {
    * @param payment - The Payment to convert.
    * @returns The Payment as JSON.
    */
-  paymentToJSON(payment: Payment): object | undefined {
+  // eslint-disable-next-line max-statements
+  paymentToJSON(payment: Payment): PaymentJSON | undefined {
     const json: PaymentJSON = {
       Amount: {},
       Destination: '',
@@ -114,8 +116,8 @@ const serializer = {
     const decodedXAddress = Utils.decodeXAddress(destination)
     json.Destination = decodedXAddress?.address ?? destination
     if (decodedXAddress?.tag !== undefined) {
-        json.DestinationTag = decodedXAddress.tag
-      }
+      json.DestinationTag = decodedXAddress.tag
+    }
 
     const xrpAmount = payment.getAmount()?.getValue()?.getXrpAmount()
     if (!xrpAmount) {
@@ -175,7 +177,7 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
  */
 function getAdditionalTransactionData(
   transaction: Transaction,
-): object | undefined {
+): PaymentJSON | undefined {
   const transactionDataCase = transaction.getTransactionDataCase()
 
   switch (transactionDataCase) {

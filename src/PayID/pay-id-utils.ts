@@ -57,9 +57,9 @@ export default payIdUtils
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export abstract class PayIDUtils {
   /**
-   * Parse a PayID string to a set of PayIDComponents object
+   * Parse a PayID string to a set of PayIDComponents object.
    *
-   * @param parsePayID - The input Pay ID.
+   * @param payID - The PayID to parse.
    * @returns A PayIDComponents object if the input was valid, otherwise undefined.
    */
   public static parsePayID(payID: string): PayIDComponents | undefined {

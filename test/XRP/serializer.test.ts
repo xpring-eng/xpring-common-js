@@ -48,6 +48,7 @@ const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
  * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
  */
 /* eslint-disable no-shadow */
+/* eslint-disable-next-line max-params */
 function makeTransaction(
   value: string,
   destinationAddress: string,
