@@ -327,6 +327,12 @@ describe('serializer', function (): void {
   })
 
   it('serializes empty or blank memo arrays or objects to undefined', function (): void {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    assert.isUndefined(Serializer.memosToJSON(undefined))
     assert.isUndefined(Serializer.memosToJSON([]))
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    assert.isUndefined(Serializer.memosToJSON([null]))
   })
 })
