@@ -55,6 +55,7 @@ const formatForMemo = 'jaypeg'
  * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
  */
 /* eslint-disable no-shadow */
+/* eslint-disable-next-line max-params */
 function makeTransaction(
   value: string,
   destinationAddress: string,
