@@ -39,9 +39,9 @@ const publicKey =
 const fee = '10'
 const accountClassicAddress = 'r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ'
 const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
-const dataForMemo = 'I forgot to pick up Carl...'
-const typeForMemo = 'meme'
-const formatForMemo = 'jaypeg'
+const dataForMemo = Utils.toBytes('I forgot to pick up Carl...')
+const typeForMemo = Utils.toBytes('meme')
+const formatForMemo = Utils.toBytes('jaypeg')
 
 /**
  * Create a new `Transaction` object with the given inputs.

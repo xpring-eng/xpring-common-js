@@ -19,9 +19,9 @@ interface MemoJSON {
 }
 
 interface MemoDetailsJSON {
-  MemoData?: string
-  MemoType?: string
-  MemoFormat?: string
+  MemoData?: Uint8Array
+  MemoType?: Uint8Array
+  MemoFormat?: Uint8Array
 }
 
 interface BaseTransactionJSON {
@@ -157,18 +157,16 @@ const serializer = {
    * a field called 'Memos' iff the array is not empty and it contains
    * non-empty objects.
    *
-   * @param memos
-   * @returns the Memos as JSON or undefined
+   * @param memos - The Memos to convert.
+   * @returns the Memos as JSON or undefined.
    */
   memosToJSON(memos: Memo[]): { Memos: MemoJSON[] } | undefined {
-    if (!memos || !memos.length) {
+    if (!memos.length) {
       return undefined
     }
 
-    const filteredMemos = memos
-      .filter((memo) => !!memo)
-      .map((memo) => this.memoToJSON(memo))
-    return (filteredMemos.length && { Memos: filteredMemos }) || undefined
+    const convertedMemos = memos.map((memo) => this.memoToJSON(memo))
+    return { Memos: convertedMemos }
   },
 
   /**
@@ -179,9 +177,9 @@ const serializer = {
    */
   memoToJSON(memo: Memo): MemoJSON {
     const jsonMemo: MemoDetailsJSON = {
-      MemoData: memo?.getMemoData()?.getValue_asB64(),
-      MemoFormat: memo?.getMemoFormat()?.getValue_asB64(),
-      MemoType: memo?.getMemoType()?.getValue_asB64(),
+      MemoData: memo.getMemoData()?.getValue_asU8(),
+      MemoFormat: memo.getMemoFormat()?.getValue_asU8(),
+      MemoType: memo.getMemoType()?.getValue_asU8(),
     }
 
     return {
