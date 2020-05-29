@@ -42,7 +42,7 @@ const serializer = {
    * @param signature - An optional hex encoded signature to include in the transaction.
    * @returns The Transaction as JSON.
    */
-  // eslint-disable-next-line max-statements
+  // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
   transactionToJSON(
     transaction: Transaction,
     signature?: string,
@@ -99,7 +99,7 @@ const serializer = {
    * @param payment - The Payment to convert.
    * @returns The Payment as JSON.
    */
-  // eslint-disable-next-line max-statements
+  // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
   paymentToJSON(payment: Payment): PaymentJSON | undefined {
     const json: PaymentJSON = {
       Amount: {},
