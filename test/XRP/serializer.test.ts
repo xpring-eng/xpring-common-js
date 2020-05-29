@@ -330,4 +330,39 @@ describe('serializer', function (): void {
   it('serializes empty or blank memo arrays or objects to undefined', function (): void {
     assert.isUndefined(Serializer.memosToJSON([]))
   })
+
+  it('serializes both memos with empty fields and complete fields correctly', function (): void {
+    const memo = new Memo()
+    const memoData = new MemoData()
+    memoData.setValue(dataForMemo)
+    memo.setMemoData(memoData)
+    const memoType = new MemoType()
+    memoType.setValue(typeForMemo)
+    memo.setMemoType(memoType)
+    const memoFormat = new MemoFormat()
+    memoFormat.setValue(formatForMemo)
+    memo.setMemoFormat(memoFormat)
+
+    const expectedJSON = {
+      Memo: {
+        MemoData: dataForMemo,
+        MemoType: typeForMemo,
+        MemoFormat: formatForMemo,
+      },
+    }
+
+    assert.deepEqual(Serializer.memoToJSON(memo), expectedJSON)
+
+    const emptyMemo = new Memo()
+
+    const expectedEmptyJSON = {
+      Memo: {
+        MemoData: undefined,
+        MemoType: undefined,
+        MemoFormat: undefined,
+      },
+    }
+
+    assert.deepEqual(Serializer.memoToJSON(emptyMemo), expectedEmptyJSON)
+  })
 })
