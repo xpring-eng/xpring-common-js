@@ -2,6 +2,7 @@ import Utils from '../Common/utils'
 
 import { XRPDropsAmount } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
+  Memo,
   Payment,
   Transaction,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
@@ -13,6 +14,16 @@ interface PaymentJSON {
   TransactionType: string
 }
 
+interface MemoJSON {
+  Memo?: MemoDetailsJSON
+}
+
+interface MemoDetailsJSON {
+  MemoData?: Uint8Array
+  MemoType?: Uint8Array
+  MemoFormat?: Uint8Array
+}
+
 interface BaseTransactionJSON {
   Account: string
   Fee: string
@@ -20,6 +31,7 @@ interface BaseTransactionJSON {
   Sequence: number
   SigningPubKey: string
   TxnSignature?: string
+  Memos?: MemoJSON[]
 }
 
 interface PaymentTransactionJSONAddition extends PaymentJSON {
@@ -90,6 +102,8 @@ const serializer = {
       object.TxnSignature = signature
     }
 
+    Object.assign(object, this.memosToJSON(transaction.getMemosList()))
+
     return object
   },
 
@@ -136,6 +150,41 @@ const serializer = {
    */
   xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
     return `${xrpDropsAmount.getDrops()}`
+  },
+
+  /**
+   * Convert an array of Memo objects to a JSON representation keyed by
+   * a field called 'Memos' iff the array is not empty and it contains
+   * non-empty objects.
+   *
+   * @param memos - The Memos to convert.
+   * @returns the Memos as JSON or undefined.
+   */
+  memosToJSON(memos: Memo[]): { Memos: MemoJSON[] } | undefined {
+    if (!memos.length) {
+      return undefined
+    }
+
+    const convertedMemos = memos.map((memo) => this.memoToJSON(memo))
+    return { Memos: convertedMemos }
+  },
+
+  /**
+   * Convert a Memo to a JSON representation.
+   *
+   * @param memo - The Memo to convert.
+   * @returns The Memo as JSON.
+   */
+  memoToJSON(memo: Memo): MemoJSON {
+    const jsonMemo: MemoDetailsJSON = {
+      MemoData: memo.getMemoData()?.getValue_asU8(),
+      MemoFormat: memo.getMemoFormat()?.getValue_asU8(),
+      MemoType: memo.getMemoType()?.getValue_asU8(),
+    }
+
+    return {
+      Memo: jsonMemo,
+    }
   },
 }
 
