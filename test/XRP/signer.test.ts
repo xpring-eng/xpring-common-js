@@ -23,8 +23,6 @@ import Signer from '../../src/XRP/signer'
 
 import FakeWallet from './fakes/fake-wallet'
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 describe('signer', function (): void {
   it('sign', function (): void {
     // GIVEN an transaction and a wallet and expected signing artifacts.
