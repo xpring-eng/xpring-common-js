@@ -1,7 +1,6 @@
 import { assert } from 'chai'
 
 import WalletFactory from '../../src/XRP/wallet-factory'
-import 'mocha'
 
 describe('Wallet Factory', function (): void {
   it('Wallet From Keys - Valid Keys', function (): void {
