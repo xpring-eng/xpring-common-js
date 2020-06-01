@@ -105,9 +105,11 @@ class Wallet {
       return undefined
     }
 
-    // TODO:(@hbergren): Try making this async?
-    /* eslint-disable-next-line node/no-sync */
+    /* eslint-disable node/no-sync --
+     * TODO:(@keefertaylor) To be fixed when we make a WalletFactory
+     */
     const seed = bip39.mnemonicToSeedSync(mnemonic)
+    /* eslint-enable node/no-sync */
     return Wallet.generateHDWalletFromSeed(seed, derivationPath, test)
   }
 

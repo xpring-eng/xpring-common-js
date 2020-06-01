@@ -1,6 +1,8 @@
 // Disable multiple classes to accommodate the switch to idiomatic style naming.
 // TODO(keefertaylor): Remove this when migration is complete.
-/* eslint-disable  max-classes-per-file */
+/* eslint-disable  max-classes-per-file --
+ * We only export two classes in this file because one is deprecated and will eventually be removed.
+ */
 
 /**
  * A class which encapsulates components of a Pay ID.

@@ -54,8 +54,10 @@ const formatForMemo = Utils.toBytes('jaypeg')
  * @param senderAddress - The address of the sending account.
  * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
  */
-/* eslint-disable no-shadow */
-/* eslint-disable-next-line max-params */
+/* eslint-disable no-shadow, max-params --
+ * The values we are shadowing are only used as inputs for this function,
+ * and it's fine to have a ton of parameters because this function is only used for testing purposes.
+ */
 function makeTransaction(
   value: string,
   destinationAddress: string,
@@ -116,7 +118,7 @@ function makeTransaction(
 
   return transaction
 }
-/* eslint-enable no-shadow */
+/* eslint-enable no-shadow, max-params */
 
 describe('serializer', function (): void {
   it('serializes a payment in XRP from a classic address', function (): void {
