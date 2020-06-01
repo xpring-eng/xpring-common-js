@@ -179,6 +179,10 @@ const utils = {
 
     return hash.slice(0, hash.length / 2)
   },
+
+  hexFromBuffer(buffer: Buffer): string {
+    return buffer.toString('hex').toUpperCase()
+  },
 }
 
 export default utils

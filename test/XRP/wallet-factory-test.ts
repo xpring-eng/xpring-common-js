@@ -78,4 +78,76 @@ describe('Wallet Factory', function (): void {
     // THEN the wallet is undefined.
     assert.isUndefined(wallet)
   })
+
+  // walletFromSeedAndDerivationPath
+
+  it('walletFromSeedAndDerivationPath - valid inputs - derivation path 0', function (): void {
+    // GIVEN a wallet factory, a valid seed and a valid derivation path.
+    const walletFactory = new WalletFactory(true)
+    const seed = 'snYP7oArxKepd3GPDcrjMsJYiJeJB'
+    const derivationPath = "m/44'/144'/0'/0/0"
+
+    // WHEN a wallet is generated from the seed and derivation path.
+    const wallet = walletFactory.walletFromSeedAndDerivationPath(
+      seed,
+      derivationPath,
+    )
+
+    // THEN the wallet has the expected address.
+    assert.equal(
+      wallet.getAddress(),
+      'XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8',
+    )
+  })
+
+  it('walletFromSeedAndDerivationPath - valid inputs - derivation path 1', function (): void {
+    // GIVEN a wallet factory, a valid seed and a valid derivation path.
+    const walletFactory = new WalletFactory(true)
+    const seed = 'snYP7oArxKepd3GPDcrjMsJYiJeJB'
+    const derivationPath = "m/44'/144'/0'/0/1"
+
+    // WHEN a wallet is generated from the seed and derivation path.
+    const wallet = walletFactory.walletFromSeedAndDerivationPath(
+      seed,
+      derivationPath,
+    )
+
+    // THEN the wallet has the expected address.
+    assert.equal(
+      wallet.getAddress(),
+      'XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8',
+    )
+  })
+
+  it('walletFromSeedAndDerivationPath - invalid derivation path', function (): void {
+    // GIVEN a wallet factory and an invalid derivation path.
+    const walletFactory = new WalletFactory(true)
+    const seed = 'snYP7oArxKepd3GPDcrjMsJYiJeJB'
+    const derivationPath = 'xrp'
+
+    // WHEN a wallet is generated from the seed and derivation path.
+    const wallet = walletFactory.walletFromSeedAndDerivationPath(
+      seed,
+      derivationPath,
+    )
+
+    // THEN the wallet is undefined.
+    assert.isUndefined(wallet)
+  })
+
+  it('walletFromSeedAndDerivationPath - invalid seed', function (): void {
+    // GIVEN a wallet factory and an invalid seed.
+    const walletFactory = new WalletFactory(true)
+    const seed = 'xrp'
+    const derivationPath = "m/44'/144'/0'/0/0"
+
+    // WHEN a wallet is generated from the seed and derivation path.
+    const wallet = walletFactory.walletFromSeedAndDerivationPath(
+      seed,
+      derivationPath,
+    )
+
+    // THEN the wallet is undefined.
+    assert.isUndefined(wallet)
+  })
 })
