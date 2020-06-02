@@ -159,7 +159,7 @@ const serializer = {
    *
    * @param memos - The Memos to convert.
    *
-   * @returns A array of the Memos in JSON format, or undefined.
+   * @returns An array of the Memos in JSON format, or undefined.
    */
   memosToJSON(memos: Memo[]): { Memos: MemoJSON[] } | undefined {
     if (!memos.length) {
