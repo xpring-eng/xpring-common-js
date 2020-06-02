@@ -54,7 +54,7 @@ const serializer = {
    * @param signature - An optional hex encoded signature to include in the transaction.
    * @returns The Transaction as JSON.
    */
-  // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
+  // eslint-disable-next-line max-statements, max-lines-per-function -- No clear way to refactor this because gRPC is verbose.
   transactionToJSON(
     transaction: Transaction,
     signature?: string,
@@ -158,7 +158,8 @@ const serializer = {
    * non-empty objects.
    *
    * @param memos - The Memos to convert.
-   * @returns the Memos as JSON or undefined.
+   *
+   * @returns A array of the Memos in JSON format, or undefined.
    */
   memosToJSON(memos: Memo[]): { Memos: MemoJSON[] } | undefined {
     if (!memos.length) {

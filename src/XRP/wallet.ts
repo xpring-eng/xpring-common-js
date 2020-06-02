@@ -156,6 +156,13 @@ class Wallet {
     }
   }
 
+  /**
+   * Converts a Buffer to an uppercase hexadecimal string.
+   *
+   * @param buffer - A Buffer to be converted to hexadecimal.
+   *
+   * @returns A hexadecimal string.
+   */
   private static hexFromBuffer(buffer: Buffer): string {
     return buffer.toString('hex').toUpperCase()
   }
