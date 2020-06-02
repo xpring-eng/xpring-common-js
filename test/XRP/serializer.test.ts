@@ -43,6 +43,10 @@ const dataForMemo = Utils.toBytes('I forgot to pick up Carl...')
 const typeForMemo = Utils.toBytes('meme')
 const formatForMemo = Utils.toBytes('jaypeg')
 
+/* eslint-disable no-shadow, max-params --
+ * The values we are shadowing are only used as inputs for this function,
+ * and it's fine to have a ton of parameters because this function is only used for testing purposes.
+ */
 /**
  * Create a new `Transaction` object with the given inputs.
  *
@@ -53,10 +57,8 @@ const formatForMemo = Utils.toBytes('jaypeg')
  * @param sequenceNumber - The sequence number for the sending account.
  * @param senderAddress - The address of the sending account.
  * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
- */
-/* eslint-disable no-shadow, max-params --
- * The values we are shadowing are only used as inputs for this function,
- * and it's fine to have a ton of parameters because this function is only used for testing purposes.
+ *
+ * @returns A new `Transaction` object comprised of the provided Transaction properties.
  */
 function makeTransaction(
   value: string,

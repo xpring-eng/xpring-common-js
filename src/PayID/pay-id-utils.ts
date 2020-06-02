@@ -9,7 +9,7 @@ import PayIdComponents, { PayIDComponents } from './pay-id-components'
  */
 const payIdUtils = {
   /**
-   * Parse a PayID string to a set of PayIdComponents object
+   * Parse a PayID string to a set of PayIdComponents object.
    *
    * @param payID - The input Pay ID.
    * @returns A PayIdComponents object if the input was valid, otherwise undefined.
@@ -39,9 +39,9 @@ const payIdUtils = {
    * Validate if the input is ASCII based text.
    *
    * Shamelessly taken from:
-   * https://stackoverflow.com/questions/14313183/javascript-regex-how-do-i-check-if-the-string-is-ascii-only
+   * https://stackoverflow.com/questions/14313183/javascript-regex-how-do-i-check-if-the-string-is-ascii-only.
    *
-   * @param input - The input to check
+   * @param input - The input to check.
    * @returns A boolean indicating the result.
    */
   isASCII(input: string): boolean {

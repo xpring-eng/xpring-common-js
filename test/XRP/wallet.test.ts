@@ -6,7 +6,7 @@ import 'mocha'
 /**
  * A mapping of input and expected outputs for BIP39 and BIP44.
  *
- * @see [BIP39 - Mnemonic Code Converter]{@link https://iancoleman.io/bip39/#english}
+ * @see {@link https://iancoleman.io/bip39/#english|BIP39 - Mnemonic Code Converter}.
  */
 const derivationPathTestCases = {
   index0: {
@@ -19,7 +19,7 @@ const derivationPathTestCases = {
       '0090802A50AA84EFB6CDB225F17C27616EA94048C179142FECF03F4712A07EA7A4',
     expectedMainNetAddress: 'XVMFQQBMhdouRqhPMuawgBMN1AVFTofPAdRsXG5RkPtUPNQ',
     expectedTestNetAddress: 'TVHLFWLKvbMv1LFzd6FA2Bf9MPpcy4mRto4VFAAxLuNpvdW',
-    messageHex: Buffer.from('test message', 'utf-8').toString('hex'),
+    messageHex: Buffer.from('test message', 'utf8').toString('hex'),
     expectedSignature:
       '3045022100E10177E86739A9C38B485B6AA04BF2B9AA00E79189A1132E7172B70F400ED1170220566BD64AA3F01DDE8D99DFFF0523D165E7DD2B9891ABDA1944E2F3A52CCCB83A',
   },
@@ -45,7 +45,7 @@ describe('wallet', function (): void {
     assert.exists(walletGenerationResult!.mnemonic)
     assert.equal(
       walletGenerationResult!.derivationPath,
-      Wallet.getDefaultDerivationPath(),
+      Wallet.defaultDerivationPath,
     )
   })
 
@@ -63,7 +63,7 @@ describe('wallet', function (): void {
     )
     assert.equal(
       walletGenerationResult!.derivationPath,
-      Wallet.getDefaultDerivationPath(),
+      Wallet.defaultDerivationPath,
     )
     assert.equal(
       walletGenerationResult!.wallet.getAddress(),
@@ -86,7 +86,7 @@ describe('wallet', function (): void {
     )
     assert.equal(
       walletGenerationResult!.derivationPath,
-      Wallet.getDefaultDerivationPath(),
+      Wallet.defaultDerivationPath,
     )
     assert.equal(
       walletGenerationResult!.wallet.getAddress(),
@@ -113,8 +113,8 @@ describe('wallet', function (): void {
     )!
 
     // THEN the wallet has the expected address and keys.
-    assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey)
-    assert.equal(wallet.getPublicKey(), testData.expectedPublicKey)
+    assert.equal(wallet.privateKey, testData.expectedPrivateKey)
+    assert.equal(wallet.publicKey, testData.expectedPublicKey)
     assert.equal(wallet.getAddress(), testData.expectedMainNetAddress)
   })
 
@@ -130,8 +130,8 @@ describe('wallet', function (): void {
     )!
 
     // THEN the wallet has the expected address and keys.
-    assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey)
-    assert.equal(wallet.getPublicKey(), testData.expectedPublicKey)
+    assert.equal(wallet.privateKey, testData.expectedPrivateKey)
+    assert.equal(wallet.publicKey, testData.expectedPublicKey)
     assert.equal(wallet.getAddress(), testData.expectedTestNetAddress)
   })
 
@@ -146,8 +146,8 @@ describe('wallet', function (): void {
     )!
 
     // THEN the wallet has the expected address and keys.
-    assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey)
-    assert.equal(wallet.getPublicKey(), testData.expectedPublicKey)
+    assert.equal(wallet.privateKey, testData.expectedPrivateKey)
+    assert.equal(wallet.publicKey, testData.expectedPublicKey)
     assert.equal(wallet.getAddress(), testData.expectedAddress)
   })
 
@@ -159,8 +159,8 @@ describe('wallet', function (): void {
     const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic)!
 
     // THEN the wallet has the expected address and keys from the input mnemonic at the default derivation path.
-    assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey)
-    assert.equal(wallet.getPublicKey(), testData.expectedPublicKey)
+    assert.equal(wallet.privateKey, testData.expectedPrivateKey)
+    assert.equal(wallet.publicKey, testData.expectedPublicKey)
     assert.equal(wallet.getAddress(), testData.expectedMainNetAddress)
   })
 
