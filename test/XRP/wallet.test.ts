@@ -45,7 +45,7 @@ describe('wallet', function (): void {
     assert.exists(walletGenerationResult!.mnemonic)
     assert.equal(
       walletGenerationResult!.derivationPath,
-      Wallet.getDefaultDerivationPath(),
+      Wallet.defaultDerivationPath,
     )
   })
 
@@ -63,7 +63,7 @@ describe('wallet', function (): void {
     )
     assert.equal(
       walletGenerationResult!.derivationPath,
-      Wallet.getDefaultDerivationPath(),
+      Wallet.defaultDerivationPath,
     )
     assert.equal(
       walletGenerationResult!.wallet.getAddress(),
@@ -86,7 +86,7 @@ describe('wallet', function (): void {
     )
     assert.equal(
       walletGenerationResult!.derivationPath,
-      Wallet.getDefaultDerivationPath(),
+      Wallet.defaultDerivationPath,
     )
     assert.equal(
       walletGenerationResult!.wallet.getAddress(),
@@ -113,8 +113,8 @@ describe('wallet', function (): void {
     )!
 
     // THEN the wallet has the expected address and keys.
-    assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey)
-    assert.equal(wallet.getPublicKey(), testData.expectedPublicKey)
+    assert.equal(wallet.privateKey, testData.expectedPrivateKey)
+    assert.equal(wallet.publicKey, testData.expectedPublicKey)
     assert.equal(wallet.getAddress(), testData.expectedMainNetAddress)
   })
 
@@ -130,8 +130,8 @@ describe('wallet', function (): void {
     )!
 
     // THEN the wallet has the expected address and keys.
-    assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey)
-    assert.equal(wallet.getPublicKey(), testData.expectedPublicKey)
+    assert.equal(wallet.privateKey, testData.expectedPrivateKey)
+    assert.equal(wallet.publicKey, testData.expectedPublicKey)
     assert.equal(wallet.getAddress(), testData.expectedTestNetAddress)
   })
 
@@ -146,8 +146,8 @@ describe('wallet', function (): void {
     )!
 
     // THEN the wallet has the expected address and keys.
-    assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey)
-    assert.equal(wallet.getPublicKey(), testData.expectedPublicKey)
+    assert.equal(wallet.privateKey, testData.expectedPrivateKey)
+    assert.equal(wallet.publicKey, testData.expectedPublicKey)
     assert.equal(wallet.getAddress(), testData.expectedAddress)
   })
 
@@ -159,8 +159,8 @@ describe('wallet', function (): void {
     const wallet = Wallet.generateWalletFromMnemonic(testData.mnemonic)!
 
     // THEN the wallet has the expected address and keys from the input mnemonic at the default derivation path.
-    assert.equal(wallet.getPrivateKey(), testData.expectedPrivateKey)
-    assert.equal(wallet.getPublicKey(), testData.expectedPublicKey)
+    assert.equal(wallet.privateKey, testData.expectedPrivateKey)
+    assert.equal(wallet.publicKey, testData.expectedPublicKey)
     assert.equal(wallet.getAddress(), testData.expectedMainNetAddress)
   })
 

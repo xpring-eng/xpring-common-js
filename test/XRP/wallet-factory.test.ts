@@ -16,8 +16,8 @@ describe('Wallet Factory', function (): void {
     const wallet = walletFactory.walletFromKeys(publicKey, privateKey)
 
     // THEN the generated wallet has the correct keys.
-    assert.equal(wallet?.getPublicKey(), publicKey)
-    assert.equal(wallet?.getPrivateKey(), privateKey)
+    assert.equal(wallet?.publicKey, publicKey)
+    assert.equal(wallet?.privateKey, privateKey)
   })
 
   it('Wallet From Keys - Invalid Public Key', function (): void {
