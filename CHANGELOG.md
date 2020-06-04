@@ -104,9 +104,9 @@ This release fixes the empty typescript type definition exports.
 
 ## [3.0.0] - 2019-02-24
 
-This release adds support for (protocol buffers in rippled)[https://github.com/ripple/rippled/tree/develop/src/ripple/proto/rpc/v1]. The `Signer`'s `signTransaction` method previously returned a hex string representing the signature of the transaction. After this change, it returns the entire signed and encoded transaction as a byte array. This encapsulates the serialization and signing logic inside of this library, rather than forcing clients to understand it. This is a breaking change (See 'Breaking Changes') below.
+This release adds support for (protocol buffers in rippled)[https://github.com/ripple/rippled/tree/develop/src/ripple/proto/rpc/v1]. The `Signer`'s `signTransaction` method previously returned a hex string representing the signature of the transaction. After this change, it returns the entire signed and encoded transaction as a byte array. This encapsulates the serialization and signing logic inside of this library, rather than forcing clients to understand it. This is a breaking change (See 'Breaking Changes' below).
 
-This release also changes the protocol buffer compiler used to generate protocol buffers in order to make this library function inside of a browser environment. As part of this change, various optimizations to TypeScript and webpack compilation are also produced (see 'Breaking Changes') below.
+This release also changes the protocol buffer compiler used to generate protocol buffers in order to make this library function inside of a browser environment. As part of this change, various optimizations to TypeScript and webpack compilation are also produced (see 'Breaking Changes' below).
 
 ### Breaking Changes
 
@@ -130,7 +130,7 @@ This release also changes the protocol buffer compiler used to generate protocol
 
 ### Fixed
 
-This patch release locks the versions of `grpc-tools` and `grpc_tools_node_protoc_ts` dependencies. This allows client projects to be able to deterministicly generate compatible protocol buffers with this project's TypeScript.
+This patch release locks the versions of `grpc-tools` and `grpc_tools_node_protoc_ts` dependencies. This allows client projects to be able to deterministically generate compatible protocol buffers with this project's TypeScript.
 
 Previously, different versions of the protocol buffer compiler would (sometimes) produce slightly different output (generally by renaming fields).
 
