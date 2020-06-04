@@ -9,12 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- A new class `WalletFactory` encapsulates functionality for creating a `Wallet` object from a public and private key.
-- A new class `WalletFactory` encapsulates functionality for creating a `Wallet` object from a seed.
+- A new method, `walletFromSeed` in `WalletFactory` encapsulates functionality for creating a `Wallet` object from a seed.
 
 ### Deprecated
 
 - The `walletFromSeed` method of the `Wallet` class is deprecated. Please use the new `WalletFactory` to generate `Wallet`s from seeds.
+
+## [5.1.0] - 2020-06-01
+
+### Added
+
+- A new class `WalletFactory` encapsulates functionality for creating a `Wallet` object from a public and private key.
 
 ## [5.0.4] - 2020-05-15
 

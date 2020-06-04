@@ -6,12 +6,16 @@ import Utils from '../Common/utils'
  * Encapsulates various methods for generating Wallets.
  */
 export default class WalletFactory {
+  public readonly isTest: boolean
+
   /**
    * Initialize a new WalletFactory.
    *
-   * @param isTest Whether the wallet factory will generate wallets for a test network.
+   * @param isTest - Whether the wallet factory will generate wallets for a test network.
    */
-  public constructor(public readonly isTest: boolean) {}
+  public constructor(isTest: boolean) {
+    this.isTest = isTest
+  }
 
   /**
    * Generate a new wallet from the given seed.
@@ -26,13 +30,16 @@ export default class WalletFactory {
     } catch {
       return undefined
     }
-  }
+}
 
   /**
    * Generate a new wallet with the given keys.
    *
    * @param publicKey - A hexadecimal encoded public key.
    * @param privateKey -  A hexadecimal encoded private key.
+   *
+   * @returns A new wallet with a given public and private key,
+   *          on TESTNET or MAINNET depending on the WalletFactory instance.
    */
   public walletFromKeys(
     publicKey: string,

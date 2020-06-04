@@ -8,13 +8,17 @@ import {
   XRPDropsAmount,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
 import {
-  Destination,
+  Account,
   Amount,
+  Destination,
+  MemoData,
+  MemoFormat,
+  MemoType,
   Sequence,
   SigningPublicKey,
-  Account,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
+  Memo,
   Payment,
   Transaction,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
@@ -35,7 +39,14 @@ const publicKey =
 const fee = '10'
 const accountClassicAddress = 'r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ'
 const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
+const dataForMemo = Utils.toBytes('I forgot to pick up Carl...')
+const typeForMemo = Utils.toBytes('meme')
+const formatForMemo = Utils.toBytes('jaypeg')
 
+/* eslint-disable no-shadow, max-params --
+ * The values we are shadowing are only used as inputs for this function,
+ * and it's fine to have a ton of parameters because this function is only used for testing purposes.
+ */
 /**
  * Create a new `Transaction` object with the given inputs.
  *
@@ -46,8 +57,9 @@ const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
  * @param sequenceNumber - The sequence number for the sending account.
  * @param senderAddress - The address of the sending account.
  * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
+ *
+ * @returns A new `Transaction` object comprised of the provided Transaction properties.
  */
-/* eslint-disable no-shadow */
 function makeTransaction(
   value: string,
   destinationAddress: string,
@@ -108,7 +120,7 @@ function makeTransaction(
 
   return transaction
 }
-/* eslint-enable no-shadow */
+/* eslint-enable no-shadow, max-params */
 
 describe('serializer', function (): void {
   it('serializes a payment in XRP from a classic address', function (): void {
@@ -265,5 +277,96 @@ describe('serializer', function (): void {
       SigningPubKey: publicKey,
     }
     assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('serializes a payment with a memo', function (): void {
+    // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP, with a dank
+    // meme for a memo
+    const transaction = makeTransaction(
+      value,
+      destinationXAddressWithoutTag,
+      fee,
+      lastLedgerSequence,
+      sequence,
+      accountClassicAddress,
+      publicKey,
+    )
+
+    const memo = new Memo()
+    const memoData = new MemoData()
+    memoData.setValue(dataForMemo)
+    memo.setMemoData(memoData)
+    const memoType = new MemoType()
+    memoType.setValue(typeForMemo)
+    memo.setMemoType(memoType)
+    const memoFormat = new MemoFormat()
+    memoFormat.setValue(formatForMemo)
+    memo.setMemoFormat(memoFormat)
+
+    transaction.setMemosList([memo])
+
+    // WHEN the meme'd transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction)
+
+    // THEN the result still has the meme as expected.
+    const expectedJSON = {
+      Account: accountClassicAddress,
+      Amount: value.toString(),
+      Destination: destinationClassicAddress,
+      Fee: fee.toString(),
+      LastLedgerSequence: lastLedgerSequence,
+      Sequence: sequence,
+      TransactionType: 'Payment',
+      SigningPubKey: publicKey,
+      Memos: [
+        {
+          Memo: {
+            MemoData: dataForMemo,
+            MemoType: typeForMemo,
+            MemoFormat: formatForMemo,
+          },
+        },
+      ],
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('serializes empty or blank memo arrays or objects to undefined', function (): void {
+    assert.isUndefined(Serializer.memosToJSON([]))
+  })
+
+  it('serializes both memos with empty fields and complete fields correctly', function (): void {
+    const memo = new Memo()
+    const memoData = new MemoData()
+    memoData.setValue(dataForMemo)
+    memo.setMemoData(memoData)
+    const memoType = new MemoType()
+    memoType.setValue(typeForMemo)
+    memo.setMemoType(memoType)
+    const memoFormat = new MemoFormat()
+    memoFormat.setValue(formatForMemo)
+    memo.setMemoFormat(memoFormat)
+
+    const expectedJSON = {
+      Memo: {
+        MemoData: dataForMemo,
+        MemoType: typeForMemo,
+        MemoFormat: formatForMemo,
+      },
+    }
+
+    assert.deepEqual(Serializer.memoToJSON(memo), expectedJSON)
+
+    const emptyMemo = new Memo()
+
+    const expectedEmptyJSON = {
+      Memo: {
+        MemoData: undefined,
+        MemoType: undefined,
+        MemoFormat: undefined,
+      },
+    }
+
+    assert.deepEqual(Serializer.memoToJSON(emptyMemo), expectedEmptyJSON)
   })
 })

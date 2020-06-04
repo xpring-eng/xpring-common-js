@@ -1,5 +1,7 @@
 // Disable multiple classes to accommodate the switch to idiomatic style naming.
-/* eslint-disable import/no-deprecated */
+/* eslint-disable import/no-deprecated --
+ * We import a deprecated class because we have a deprecated class here that uses it.
+ */
 import PayIdComponents, { PayIDComponents } from './pay-id-components'
 
 /**
@@ -7,10 +9,10 @@ import PayIdComponents, { PayIDComponents } from './pay-id-components'
  */
 const payIdUtils = {
   /**
-   * Parse a PayID string to a set of PayIDComponents object
+   * Parse a PayID string to a set of PayIdComponents object.
    *
    * @param payID - The input Pay ID.
-   * @returns A PayIDComponents object if the input was valid, otherwise undefined.
+   * @returns A PayIdComponents object if the input was valid, otherwise undefined.
    */
   parsePayID(payID: string): PayIdComponents | undefined {
     if (!this.isASCII(payID)) {
@@ -37,13 +39,13 @@ const payIdUtils = {
    * Validate if the input is ASCII based text.
    *
    * Shamelessly taken from:
-   * https://stackoverflow.com/questions/14313183/javascript-regex-how-do-i-check-if-the-string-is-ascii-only
+   * https://stackoverflow.com/questions/14313183/javascript-regex-how-do-i-check-if-the-string-is-ascii-only.
    *
-   * @param input - The input to check
+   * @param input - The input to check.
    * @returns A boolean indicating the result.
    */
   isASCII(input: string): boolean {
-    // eslint-disable-next-line no-control-regex
+    // eslint-disable-next-line no-control-regex -- The ASCII regex uses control characters
     return /^[\x00-\x7F]*$/u.test(input)
   },
 }
@@ -54,12 +56,12 @@ export default payIdUtils
  *
  * @deprecated Please use the idiomatically named `PayIdUtils` class instead.
  */
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class -- This is deprecated anyways and will be removed.
 export abstract class PayIDUtils {
   /**
-   * Parse a PayID string to a set of PayIDComponents object
+   * Parse a PayID string to a set of PayIDComponents object.
    *
-   * @param parsePayID - The input Pay ID.
+   * @param payID - The PayID to parse.
    * @returns A PayIDComponents object if the input was valid, otherwise undefined.
    */
   public static parsePayID(payID: string): PayIDComponents | undefined {
