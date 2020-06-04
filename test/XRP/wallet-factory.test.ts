@@ -62,7 +62,7 @@ describe('Wallet Factory', function (): void {
 
     // THEN the wallet has the expected address.
     assert.equal(
-      wallet.getAddress(),
+      wallet?.getAddress(),
       'XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8',
     )
   })

@@ -1,6 +1,8 @@
 import * as rippleKeyPair from 'ripple-keypairs'
-import Wallet from './wallet'
+
 import Utils from '../Common/utils'
+
+import Wallet from './wallet'
 
 /**
  * Encapsulates various methods for generating Wallets.
@@ -30,7 +32,7 @@ export default class WalletFactory {
     } catch {
       return undefined
     }
-}
+  }
 
   /**
    * Generate a new wallet with the given keys.
