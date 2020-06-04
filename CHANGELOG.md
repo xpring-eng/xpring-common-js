@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.1.0] - 2020-06-01
+
+### Added
+
+- A new class `WalletFactory` encapsulates functionality for creating a `Wallet` object from a public and private key.
+
+## [5.0.4] - 2020-05-15
+
+This release contains minor deprecations of names of methods and classes to make this library more idiomatic with the wider JavaScript ecosystem.
+
+### Added
+- A new class, `PayIdUtils`, replaces the functionality in `PayIDUtils` with an idiomatically cased name.
+- A new class, `PayIdComponents`, replaces the functionality in `PayIDComponents` with an idiomatically cased name.
+
+### Deprecated
+- `PayIDUtils` is deprecated. Please use the idiomatically cased `PayIdUtils` class instead.
+- `PayIDComponents` is deprecated. Please use the idiomatically cased `PayIdComponents` class instead.
+
 ## [5.0.3] - 2020-04-10
 
 This fix release contains minor improvements to experimental components.

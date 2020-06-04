@@ -16,25 +16,33 @@ const defaultPrivateKey =
  * A fake wallet which always produces the given signature.
  */
 class FakeWallet extends Wallet {
+  private readonly signature: string
+
   /**
    * Initialize a wallet which will always produce the same signature when asked to sign a string.
    *
-   * @param {String} signature The signature this wallet will produce.
+   * @param signature - The signature this wallet will produce.
+   * @param publicKey - The public key associated with this wallet / account.
+   * @param privateKey - The private key associated with this wallet / account.
    */
-  constructor(
-    private signature: string,
+  public constructor(
+    signature: string,
     publicKey = defaultPublicKey,
     privateKey = defaultPrivateKey,
   ) {
     super(publicKey, privateKey)
+
+    this.signature = signature
   }
 
   /**
-   * Return a fake signature for any input.
+   * Return an identical fake signature for any input.
    *
-   * @param {String} hex The hex to sign.
+   * @param _hex - The hex to sign. (Unused - used only to maintain call signature).
+   *
+   * @returns A fake signature.
    */
-  sign(_hex: string): string {
+  public sign(_hex: string): string {
     return this.signature
   }
 }

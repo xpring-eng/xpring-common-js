@@ -1,12 +1,8 @@
 import * as bip32 from 'bip32'
 import * as bip39 from 'bip39'
 import * as rippleKeyPair from 'ripple-keypairs'
-import Utils from '../Common/utils'
 
-/**
- * The default derivation path to use with BIP44.
- */
-const defaultDerivationPath = "m/44'/144'/0'/0/0"
+import Utils from '../Common/utils'
 
 /**
  * An object which contains artifacts from generating a new wallet.
@@ -27,20 +23,38 @@ export interface WalletGenerationResult {
  */
 class Wallet {
   /**
-   * @returns {String} The default derivation path.
+   * The default derivation path to use with BIP44.
    */
-  public static getDefaultDerivationPath(): string {
-    return defaultDerivationPath
+  public static defaultDerivationPath = "m/44'/144'/0'/0/0"
+
+  public readonly publicKey: string
+  public readonly privateKey: string
+  private readonly test: boolean
+
+  /**
+   * Create a new Wallet object.
+   *
+   * @param publicKey - The given public key for the wallet.
+   * @param privateKey - The given private key for the wallet.
+   * @param test - Whether the address is for use on a test network, defaults to `false`.
+   */
+  public constructor(publicKey: string, privateKey: string, test = false) {
+    this.publicKey = publicKey
+    this.privateKey = privateKey
+    this.test = test
   }
 
   /**
    * Generate a new wallet hierarchical deterministic wallet with a random mnemonic and
    * default derivation path.
    *
-   * Secure random number generation is used when entropy is ommitted and when the runtime environment has the necessary support. Otherwise, an error is thrown. Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
+   * Secure random number generation is used when entropy is omitted and when the runtime environment has the necessary support.
+   * Otherwise, an error is thrown.
    *
-   * @param entropy A optional hex string of entropy.
-   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
+   *
+   * @param entropy - A optional hex string of entropy.
+   * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns Artifacts from the wallet generation.
    */
   public static generateRandomWallet(
@@ -55,7 +69,7 @@ class Wallet {
       entropy === undefined
         ? bip39.generateMnemonic()
         : bip39.entropyToMnemonic(entropy)
-    const derivationPath = Wallet.getDefaultDerivationPath()
+    const derivationPath = Wallet.defaultDerivationPath
     const wallet = Wallet.generateWalletFromMnemonic(
       mnemonic,
       derivationPath,
@@ -69,14 +83,14 @@ class Wallet {
   /**
    * Generate a new hierarchical deterministic wallet from a mnemonic and derivation path.
    *
-   * @param mnemonic The given mnemonic for the wallet.
-   * @param derivationPath The given derivation path to use. If undefined, the default path is used.
-   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @param mnemonic - The given mnemonic for the wallet.
+   * @param derivationPath - The given derivation path to use. If undefined, the default path is used.
+   * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
   public static generateWalletFromMnemonic(
     mnemonic: string,
-    derivationPath = Wallet.getDefaultDerivationPath(),
+    derivationPath = Wallet.defaultDerivationPath,
     test = false,
   ): Wallet | undefined {
     // Validate mnemonic and path are valid.
@@ -84,26 +98,32 @@ class Wallet {
       return undefined
     }
 
+    /* eslint-disable node/no-sync --
+     * TODO:(@keefertaylor) To be fixed when we make a WalletFactory
+     */
     const seed = bip39.mnemonicToSeedSync(mnemonic)
+    /* eslint-enable node/no-sync */
     return Wallet.generateHDWalletFromSeed(seed, derivationPath, test)
   }
 
   /**
    * Generate a new hierarchical deterministic wallet from a seed and derivation path.
    *
-   * @param seed The given seed for the wallet.
-   * @param derivationPath The given derivation path to use. If undefined, the default path is used.
-   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @param seed - The given seed for the wallet.
+   * @param derivationPath - The given derivation path to use. If undefined, the default path is used.
+   * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
   public static generateHDWalletFromSeed(
     seed: Buffer,
-    derivationPath = Wallet.getDefaultDerivationPath(),
+    derivationPath = Wallet.defaultDerivationPath,
     test = false,
   ): Wallet | undefined {
     const masterNode = bip32.fromSeed(seed)
     const node = masterNode.derivePath(derivationPath)
-    if (node.privateKey === undefined) return
+    if (node.privateKey === undefined) {
+      return undefined
+    }
 
     const publicKey = Wallet.hexFromBuffer(node.publicKey)
     const privateKey = Wallet.hexFromBuffer(node.privateKey)
@@ -113,8 +133,8 @@ class Wallet {
   /**
    * Generate a new wallet from the given seed.
    *
-   * @param seed The given seed for the wallet.
-   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @param seed - The given seed for the wallet.
+   * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns A new wallet from the given seed, or undefined if the seed was invalid.
    */
   public static generateWalletFromSeed(
@@ -124,43 +144,29 @@ class Wallet {
     try {
       const keyPair = rippleKeyPair.deriveKeypair(seed)
       return new Wallet(keyPair.publicKey, keyPair.privateKey, test)
-    } catch (exception) {
+    } catch {
       return undefined
     }
   }
 
   /**
-   * Create a new Wallet object.
+   * Converts a Buffer to an uppercase hexadecimal string.
    *
-   * @param publicKey The given public key for the wallet.
-   * @param privateKey The given private key for the wallet.
-   * @param test Whether the address is for use on a test network, defaults to `false`.
+   * @param buffer - A Buffer to be converted to hexadecimal.
+   *
+   * @returns A hexadecimal string.
    */
-  public constructor(
-    private readonly publicKey: string,
-    private readonly privateKey: string,
-    private readonly test: boolean = false,
-  ) {}
-
-  /**
-   * @returns {String} A string representing the public key for the wallet.
-   */
-  public getPublicKey(): string {
-    return this.publicKey
+  private static hexFromBuffer(buffer: Buffer): string {
+    return buffer.toString('hex').toUpperCase()
   }
 
   /**
-   * @returns {String} A string representing the private key for the wallet.
-   */
-  public getPrivateKey(): string {
-    return this.privateKey
-  }
-
-  /**
-   * @returns {String} A string representing the address of the wallet.
+   * Gets the x-address associated with a given wallet instance.
+   *
+   * @returns A string representing the x-address of the wallet.
    */
   public getAddress(): string {
-    const classicAddress = rippleKeyPair.deriveAddress(this.getPublicKey())
+    const classicAddress = rippleKeyPair.deriveAddress(this.publicKey)
     const xAddress = Utils.encodeXAddress(classicAddress, undefined, this.test)
     if (xAddress === undefined) {
       throw new Error('Unknown error deriving address')
@@ -171,22 +177,22 @@ class Wallet {
   /**
    * Sign an arbitrary hex string.
    *
-   * @param {String} hex An arbitrary hex string to sign.
-   * @returns {String} A signature in hexadecimal format if the input was valid, otherwise undefined.
+   * @param hex - An arbitrary hex string to sign.
+   * @returns A signature in hexadecimal format if the input was valid, otherwise undefined.
    */
   public sign(hex: string): string | undefined {
     if (!Utils.isHex(hex)) {
       return undefined
     }
-    return rippleKeyPair.sign(hex, this.getPrivateKey())
+    return rippleKeyPair.sign(hex, this.privateKey)
   }
 
   /**
    * Verify a signature is valid for a message.
    *
-   * @param {String} message A message in hex format.
-   * @param {String} signature A signature in hex format.
-   * @returns {Boolean} True if the signature is valid, otherwise false.
+   * @param message - A message in hex format.
+   * @param signature - A signature in hex format.
+   * @returns True if the signature is valid, otherwise false.
    */
   public verify(message: string, signature: string): boolean {
     if (!Utils.isHex(signature) || !Utils.isHex(message)) {
@@ -194,16 +200,12 @@ class Wallet {
     }
 
     try {
-      return rippleKeyPair.verify(message, signature, this.getPublicKey())
-    } catch (error) {
+      return rippleKeyPair.verify(message, signature, this.publicKey)
+    } catch {
       // The ripple-key-pair module may throw errors for some signatures rather than returning false.
       // If an error was thrown then the signature is definitely not valid.
       return false
     }
-  }
-
-  private static hexFromBuffer(buffer: Buffer): string {
-    return buffer.toString('hex').toUpperCase()
   }
 }
 
