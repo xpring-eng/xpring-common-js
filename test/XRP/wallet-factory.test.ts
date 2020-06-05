@@ -53,8 +53,8 @@ describe('Wallet Factory', function (): void {
   // walletFromSeed
 
   it('walletFromSeed - MainNet', function (): void {
-    // GIVEN a wallet factory and a valid seed.
-    const walletFactory = new WalletFactory(true)
+    // GIVEN a wallet factory attached to mainnet and a valid seed.
+    const walletFactory = new WalletFactory(false)
     const seed = 'snYP7oArxKepd3GPDcrjMsJYiJeJB'
 
     // WHEN a wallet is generated from the seed.
