@@ -2,15 +2,26 @@ import Utils from '../Common/utils'
 
 import { XRPDropsAmount } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
+  Memo,
   Payment,
   Transaction,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 
 interface PaymentJSON {
-  Amount: object | string
+  Amount: Record<string, unknown> | string
   Destination: string
   DestinationTag?: number
   TransactionType: string
+}
+
+interface MemoJSON {
+  Memo?: MemoDetailsJSON
+}
+
+interface MemoDetailsJSON {
+  MemoData?: Uint8Array
+  MemoType?: Uint8Array
+  MemoFormat?: Uint8Array
 }
 
 interface BaseTransactionJSON {
@@ -20,6 +31,7 @@ interface BaseTransactionJSON {
   Sequence: number
   SigningPubKey: string
   TxnSignature?: string
+  Memos?: MemoJSON[]
 }
 
 interface PaymentTransactionJSONAddition extends PaymentJSON {
@@ -42,6 +54,7 @@ const serializer = {
    * @param signature - An optional hex encoded signature to include in the transaction.
    * @returns The Transaction as JSON.
    */
+  // eslint-disable-next-line max-statements, max-lines-per-function -- No clear way to refactor this because gRPC is verbose.
   transactionToJSON(
     transaction: Transaction,
     signature?: string,
@@ -89,6 +102,8 @@ const serializer = {
       object.TxnSignature = signature
     }
 
+    Object.assign(object, this.memosToJSON(transaction.getMemosList()))
+
     return object
   },
 
@@ -98,7 +113,8 @@ const serializer = {
    * @param payment - The Payment to convert.
    * @returns The Payment as JSON.
    */
-  paymentToJSON(payment: Payment): object | undefined {
+  // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
+  paymentToJSON(payment: Payment): PaymentJSON | undefined {
     const json: PaymentJSON = {
       Amount: {},
       Destination: '',
@@ -134,6 +150,42 @@ const serializer = {
    */
   xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
     return `${xrpDropsAmount.getDrops()}`
+  },
+
+  /**
+   * Convert an array of Memo objects to a JSON representation keyed by
+   * a field called 'Memos' iff the array is not empty and it contains
+   * non-empty objects.
+   *
+   * @param memos - The Memos to convert.
+   *
+   * @returns An array of the Memos in JSON format, or undefined.
+   */
+  memosToJSON(memos: Memo[]): { Memos: MemoJSON[] } | undefined {
+    if (!memos.length) {
+      return undefined
+    }
+
+    const convertedMemos = memos.map((memo) => this.memoToJSON(memo))
+    return { Memos: convertedMemos }
+  },
+
+  /**
+   * Convert a Memo to a JSON representation.
+   *
+   * @param memo - The Memo to convert.
+   * @returns The Memo as JSON.
+   */
+  memoToJSON(memo: Memo): MemoJSON {
+    const jsonMemo: MemoDetailsJSON = {
+      MemoData: memo.getMemoData()?.getValue_asU8(),
+      MemoFormat: memo.getMemoFormat()?.getValue_asU8(),
+      MemoType: memo.getMemoType()?.getValue_asU8(),
+    }
+
+    return {
+      Memo: jsonMemo,
+    }
   },
 }
 
@@ -175,7 +227,7 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
  */
 function getAdditionalTransactionData(
   transaction: Transaction,
-): object | undefined {
+): PaymentJSON | undefined {
   const transactionDataCase = transaction.getTransactionDataCase()
 
   switch (transactionDataCase) {

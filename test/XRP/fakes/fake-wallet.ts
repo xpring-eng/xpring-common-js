@@ -22,6 +22,8 @@ class FakeWallet extends Wallet {
    * Initialize a wallet which will always produce the same signature when asked to sign a string.
    *
    * @param signature - The signature this wallet will produce.
+   * @param publicKey - The public key associated with this wallet / account.
+   * @param privateKey - The private key associated with this wallet / account.
    */
   public constructor(
     signature: string,
@@ -34,9 +36,11 @@ class FakeWallet extends Wallet {
   }
 
   /**
-   * Return a fake signature for any input.
+   * Return an identical fake signature for any input.
    *
-   * @param hex - The hex to sign.
+   * @param _hex - The hex to sign. (Unused - used only to maintain call signature).
+   *
+   * @returns A fake signature.
    */
   public sign(_hex: string): string {
     return this.signature

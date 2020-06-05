@@ -4,13 +4,14 @@ import XrpUtils from '../XRP/xrp-utils'
 const utils = {
   /**
    * Validate that the given string is a valid address for the XRP Ledger.
-   *
    * This function returns true for both X-addresses and classic addresses.
-   * @see https://xrpaddress.info/
+   *
+   * @see {@link https://xrpaddress.info/|XRPL X-Address Format}.
    *
    * @deprecated Please use the method provided by XrpUtils instead.
    *
    * @param address - An address to check.
+   *
    * @returns True if the address is valid, otherwise false.
    */
   isValidAddress: XrpUtils.isValidAddress.bind(XrpUtils),
@@ -18,7 +19,7 @@ const utils = {
   /**
    * Validate whether the given string is a valid X-address for the XRP Ledger.
    *
-   * @see https://xrpaddress.info/
+   * @see {@link https://xrpaddress.info/|XRPL X-Address Format}.
    *
    * @deprecated Please use the method provided by XrpUtils instead.
    *
@@ -30,7 +31,7 @@ const utils = {
   /**
    * Validate whether the given string is a valid classic address for the XRP Ledger.
    *
-   * @see https://xrpaddress.info/
+   * @see {@link https://xrpaddress.info/|XRPL X-Address Format}.
    *
    * @deprecated Please use the method provided by XrpUtils instead.
    *
@@ -42,7 +43,7 @@ const utils = {
   /**
    * Encode the given classic address and tag into an x-address.
    *
-   * @see https://xrpaddress.info/
+   * @see {@link https://xrpaddress.info/|XRPL X-Address Format}.
    *
    * @deprecated Please use the method provided by XrpUtils instead.
    *
@@ -56,19 +57,19 @@ const utils = {
   /**
    * Decode a `ClassicAddress` from a given x-address.
    *
-   * @see https://xrpaddress.info/
+   * @see {@link https://xrpaddress.info/|XRPL X-Address Format}.
    *
    * @deprecated Please use the method provided by XrpUtils instead.
    *
    * @param xAddress - The xAddress to decode.
-   * @returns A `ClassicAddress`
+   * @returns A `ClassicAddress`.
    */
   decodeXAddress: XrpUtils.decodeXAddress.bind(XrpUtils),
 
   /**
    * Convert the given byte array to a hexadecimal string.
    *
-   * @param bytes - An array of bytes
+   * @param bytes - An array of bytes.
    * @returns An encoded hexadecimal string.
    */
   toHex: XrpUtils.toHex.bind(XrpUtils),
@@ -101,7 +102,7 @@ const utils = {
    * Check if the given string is valid hex.
    *
    * @param input - The input to check.
-   * @returns true if the input is valid hex, otherwise false.
+   * @returns True if the input is valid hex, otherwise false.
    */
   isHex(input: string): boolean {
     const hexRegEx = /(?:[0-9]|[a-f])/gimu
@@ -111,7 +112,7 @@ const utils = {
   /**
    * Compute the SHA512 half hash of the given bytes.
    *
-   * @param input - The input to hash.
+   * @param bytes - The array of bytes to hash.
    * @returns The hash of the input.
    */
   sha512Half(bytes: Uint8Array): Uint8Array {
