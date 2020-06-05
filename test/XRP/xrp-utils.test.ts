@@ -153,33 +153,35 @@ describe('XrpUtils', function (): void {
   it('decodeXAddress() - Valid Mainnet Address with Tag', function (): void {
     // GIVEN an x-address that encodes an address and a tag.
     const address = 'XVfC9CTCJh6GN2x8bnrw3LtdbqiVCUvtU3HnooQDgBnUpQT'
+    const tag = 12345
 
     // WHEN it is decoded to an classic address
     const classicAddress = XrpUtils.decodeXAddress(address)
 
     // Then the decoded address and tag as are expected.
     assert.strictEqual(
-      classicAddress.address,
+      classicAddress?.address,
       'rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1',
     )
-    assert.strictEqual(classicAddress.tag, 12345)
-    assert.strictEqual(classicAddress.test, false)
+    assert.strictEqual(classicAddress?.tag, tag)
+    assert.strictEqual(classicAddress?.test, false)
   })
 
   it('decodeXAddress() - Valid Testnet Address with Tag', function (): void {
     // GIVEN an x-address that encodes an address and a tag.
     const address = 'TVsBZmcewpEHgajPi1jApLeYnHPJw82v9JNYf7dkGmWphmh'
+    const tag = 12345
 
     // WHEN it is decoded to an classic address
     const classicAddress = XrpUtils.decodeXAddress(address)
 
     // Then the decoded address and tag as are expected.
     assert.strictEqual(
-      classicAddress.address,
+      classicAddress?.address,
       'rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1',
     )
-    assert.strictEqual(classicAddress.tag, 12345)
-    assert.strictEqual(classicAddress.test, true)
+    assert.strictEqual(classicAddress?.tag, tag)
+    assert.strictEqual(classicAddress?.test, true)
   })
 
   it('decodeXAddress() - Valid Address without Tag', function (): void {
@@ -191,10 +193,10 @@ describe('XrpUtils', function (): void {
 
     // Then the decoded address and tag as are expected.
     assert.strictEqual(
-      classicAddress.address,
+      classicAddress?.address,
       'rU6K7V3Po4snVhBBaU29sesqs2qTQJWDw1',
     )
-    assert.isUndefined(classicAddress.tag)
+    assert.isUndefined(classicAddress?.tag)
   })
 
   it('decodeXAddress() - Invalid Address', function (): void {
