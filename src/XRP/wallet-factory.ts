@@ -1,26 +1,32 @@
 import Utils from '../Common/utils'
 
 import Wallet from './wallet'
+import XrpUtils from './xrp-utils'
+import XrplNetwork from './xrpl-network'
 
 /**
  * Encapsulates various methods for generating Wallets.
  */
 export default class WalletFactory {
-  public readonly isTest: boolean
+  /** The network the WalletFactory is attached to. */
+  public readonly network: XrplNetwork
+
+  private readonly isTest
 
   /**
    * Initialize a new WalletFactory.
    *
-   * @param isTest - Whether the wallet factory will generate wallets for a test network.
+   * @param network - The network the wallet factory is attached to.
    */
-  public constructor(isTest: boolean) {
-    this.isTest = isTest
+  public constructor(network: XrplNetwork) {
+    this.network = network
+    this.isTest = XrpUtils.isTestNetwork(network)
   }
 
   /**
    * Generate a new wallet with the given keys.
    *
-   * @param publicKey - A hexadecimal encoded public key.
+   * @param publicKey - A hexadencimal encoded public key.
    * @param privateKey -  A hexadecimal encoded private key.
    *
    * @returns A new wallet with a given public and private key,
