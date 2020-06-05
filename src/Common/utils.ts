@@ -9,7 +9,7 @@ const utils = {
    *
    * @see {@link https://xrpaddress.info/|XRPL X-Address Format}.
    *
-   * @deprecated Please use the method provided by XrpUtils instead.
+   * @deprecated Use the method provided by XrpUtils instead.
    *
    * @param address - An address to check.
    *
@@ -22,7 +22,7 @@ const utils = {
    *
    * @see {@link https://xrpaddress.info/|XRPL X-Address Format}.
    *
-   * @deprecated Please use the method provided by XrpUtils instead.
+   * @deprecated Use the method provided by XrpUtils instead.
    *
    * @param address - An address to check.
    * @returns True if the address is a valid X-address, otherwise false.
@@ -34,7 +34,7 @@ const utils = {
    *
    * @see {@link https://xrpaddress.info/|XRPL X-Address Format}.
    *
-   * @deprecated Please use the method provided by XrpUtils instead.
+   * @deprecated Use the method provided by XrpUtils instead.
    *
    * @param address - An address to check.
    * @returns True if the address is a valid classic address, otherwise false.
@@ -46,7 +46,7 @@ const utils = {
    *
    * @see {@link https://xrpaddress.info/|XRPL X-Address Format}.
    *
-   * @deprecated Please use the method provided by XrpUtils instead.
+   * @deprecated Use the method provided by XrpUtils instead.
    *
    * @param classicAddress - A classic address to encode.
    * @param tag - An optional tag to encode.
@@ -60,7 +60,7 @@ const utils = {
    *
    * @see {@link https://xrpaddress.info/|XRPL X-Address Format}.
    *
-   * @deprecated Please use the method provided by XrpUtils instead.
+   * @deprecated Use the method provided by XrpUtils instead.
    *
    * @param xAddress - The xAddress to decode.
    * @returns A `ClassicAddress`.
@@ -88,7 +88,7 @@ const utils = {
   /**
    * Convert the given transaction blob to a transaction hash.
    *
-   * @deprecated Please use the method provided by XrpUtils instead.
+   * @deprecated Use the method provided by XrpUtils instead.
    *
    * @param transactionBlobHex - A hexadecimal encoded transaction blob.
    * @returns A hex encoded hash if the input was valid, otherwise undefined.
