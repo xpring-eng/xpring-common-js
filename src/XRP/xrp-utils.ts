@@ -11,7 +11,7 @@ const signedTransactionPrefixHex = '54584E00'
 
 /**
  * A simple property bag which contains components of a classic address.
- * Components contained in this object are neither sanitized or validated.
+ * Components contained in this object are neither sanitized nor validated.
  */
 export interface ClassicAddress {
   /** A classic address. */
