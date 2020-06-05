@@ -24,7 +24,7 @@ export interface ClassicAddress {
   test: boolean
 }
 
-export default abstract class XrpUtils {
+const xrpUtils = {
   /**
    * Validate that the given string is a valid address for the XRP Ledger.
    *
@@ -34,12 +34,12 @@ export default abstract class XrpUtils {
    * @param address - An address to check.
    * @returns True if the address is valid, otherwise false.
    */
-  public static isValidAddress(address: string): boolean {
+  isValidAddress(address: string): boolean {
     return (
       addressCodec.isValidClassicAddress(address) ||
       addressCodec.isValidXAddress(address)
     )
-  }
+  },
 
   /**
    * Validate whether the given string is a valid X-address for the XRP Ledger.
@@ -49,9 +49,9 @@ export default abstract class XrpUtils {
    * @param address - An address to check.
    * @returns True if the address is a valid X-address, otherwise false.
    */
-  public static isValidXAddress(address: string): boolean {
+  isValidXAddress(address: string): boolean {
     return addressCodec.isValidXAddress(address)
-  }
+  },
 
   /**
    * Validate whether the given string is a valid classic address for the XRP Ledger.
@@ -61,9 +61,9 @@ export default abstract class XrpUtils {
    * @param address - An address to check.
    * @returns True if the address is a valid classic address, otherwise false.
    */
-  public static isValidClassicAddress(address: string): boolean {
+  isValidClassicAddress(address: string): boolean {
     return addressCodec.isValidClassicAddress(address)
-  }
+  },
 
   /**
    * Encode the given classic address and tag into an x-address.
@@ -75,7 +75,7 @@ export default abstract class XrpUtils {
    * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns A new x-address if inputs were valid, otherwise undefined.
    */
-  public static encodeXAddress(
+  encodeXAddress(
     classicAddress: string,
     tag: number | undefined,
     test = false,
@@ -91,7 +91,7 @@ export default abstract class XrpUtils {
       shimTagParameter,
       test,
     )
-  }
+  },
 
   /**
    * Decode a `ClassicAddress` from a given x-address.
@@ -101,7 +101,7 @@ export default abstract class XrpUtils {
    * @param xAddress - The xAddress to decode.
    * @returns A `ClassicAddress`
    */
-  public static decodeXAddress(xAddress: string): ClassicAddress | undefined {
+  decodeXAddress(xAddress: string): ClassicAddress | undefined {
     if (!addressCodec.isValidXAddress(xAddress)) {
       return undefined
     }
@@ -113,7 +113,7 @@ export default abstract class XrpUtils {
         shimClassicAddress.tag !== false ? shimClassicAddress.tag : undefined,
       test: shimClassicAddress.test,
     }
-  }
+  },
 
   /**
    * Convert the given byte array to a hexadecimal string.
@@ -124,9 +124,9 @@ export default abstract class XrpUtils {
    * @param bytes - An array of bytes
    * @returns An encoded hexadecimal string.
    */
-  public static toHex(bytes: Uint8Array): string {
+  toHex(bytes: Uint8Array): string {
     return Buffer.from(bytes).toString('hex').toUpperCase()
-  }
+  },
 
   /**
    * Convert the given hexadecimal string to a byte array.
@@ -137,9 +137,9 @@ export default abstract class XrpUtils {
    * @param hex - A hexadecimal string.
    * @returns A decoded byte array.
    */
-  private static toBytes(hex: string): Uint8Array {
+  toBytes(hex: string): Uint8Array {
     return Uint8Array.from(Buffer.from(hex, 'hex'))
-  }
+  },
 
   /**
    * Convert the given transaction blob to a transaction hash.
@@ -147,7 +147,7 @@ export default abstract class XrpUtils {
    * @param transactionBlobHex - A hexadecimal encoded transaction blob.
    * @returns A hex encoded hash if the input was valid, otherwise undefined.
    */
-  public static transactionBlobToTransactionHash(
+  transactionBlobToTransactionHash(
     transactionBlobHex: string,
   ): string | undefined {
     if (!this.isHex(transactionBlobHex)) {
@@ -159,7 +159,7 @@ export default abstract class XrpUtils {
     )
     const hash = this.sha512Half(prefixedTransactionBlob)
     return this.toHex(hash)
-  }
+  },
 
   /**
    * Check if the given string is valid hex.
@@ -170,10 +170,10 @@ export default abstract class XrpUtils {
    * @param input - The input to check.
    * @returns true if the input is valid hex, otherwise false.
    */
-  private static isHex(input: string): boolean {
+  isHex(input: string): boolean {
     const hexRegEx = /(?:[0-9]|[a-f])/gimu
     return (input.match(hexRegEx) ?? []).length === input.length
-  }
+  },
 
   /**
    * Compute the SHA512 half hash of the given bytes.
@@ -181,11 +181,13 @@ export default abstract class XrpUtils {
    * @param input - The input to hash.
    * @returns The hash of the input.
    */
-  private static sha512Half(bytes: Uint8Array): Uint8Array {
+  sha512Half(bytes: Uint8Array): Uint8Array {
     const sha512 = createHash('sha512')
     const hashHex = sha512.update(bytes).digest('hex').toUpperCase()
     const hash = this.toBytes(hashHex)
 
     return hash.slice(0, hash.length / 2)
-  }
+  },
 }
+
+export default xrpUtils

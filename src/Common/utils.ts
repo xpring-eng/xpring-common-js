@@ -1,4 +1,5 @@
 import { createHash } from 'crypto'
+
 import XrpUtils from '../XRP/xrp-utils'
 
 const utils = {
