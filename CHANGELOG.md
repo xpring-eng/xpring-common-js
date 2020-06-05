@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- A new class, `XrpUtils` contains utility functions for XRP specific actions. Previously, this functionality was available via the `Utils` class.
+- XRP-specific functionality on the `Utils` class is deprecated. Use the new `XrpUtils` class instead.
 
 ### Deprecated
 
