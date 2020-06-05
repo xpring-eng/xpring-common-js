@@ -85,7 +85,7 @@ const xrpUtils = {
     }
 
     // Xpring Common JS's API takes a string|undefined while the underlying address library wants string|false.
-    const shimTagParameter = tag !== undefined ? tag : false
+    const shimTagParameter = tag ?? false
     return addressCodec.classicAddressToXAddress(
       classicAddress,
       shimTagParameter,
@@ -110,7 +110,7 @@ const xrpUtils = {
     return {
       address: shimClassicAddress.classicAddress,
       tag:
-        shimClassicAddress.tag !== false ? shimClassicAddress.tag : undefined,
+        shimClassicAddress.tag === false ? undefined : shimClassicAddress.tag,
       test: shimClassicAddress.test,
     }
   },
