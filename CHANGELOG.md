@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
-- XRP specific functionality on the `Utils` class is deprecated. Please use the new `XrpUtils` class instead.
+- XRP specific functionality on the `Utils` class is deprecated. Use the new `XrpUtils` class instead.
 
 ## [5.0.4] - 2020-05-15
 
@@ -26,8 +26,8 @@ This release contains minor deprecations of names of methods and classes to make
 
 ### Deprecated
 
-- `PayIDUtils` is deprecated. Please use the idiomatically cased `PayIdUtils` class instead.
-- `PayIDComponents` is deprecated. Please use the idiomatically cased `PayIdComponents` class instead.
+- `PayIDUtils` is deprecated. Use the idiomatically cased `PayIdUtils` class instead.
+- `PayIDComponents` is deprecated. Use the idiomatically cased `PayIdComponents` class instead.
 
 ## [5.0.3] - 2020-04-10
 
