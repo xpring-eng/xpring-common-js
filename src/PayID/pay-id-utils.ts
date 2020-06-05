@@ -54,7 +54,7 @@ export default payIdUtils
 /**
  * A static utility class for PayID.
  *
- * @deprecated Please use the idiomatically named `PayIdUtils` class instead.
+ * @deprecated Use the idiomatically named `PayIdUtils` class instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class -- This is deprecated anyways and will be removed.
 export abstract class PayIDUtils {
