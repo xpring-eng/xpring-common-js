@@ -9,6 +9,7 @@
  */
 export default class PayIdComponents {
   public readonly host: string
+
   public readonly path: string
 
   /**
@@ -26,11 +27,13 @@ export default class PayIdComponents {
 /**
  * A class which encapsulates components of a Pay ID.
  *
- * @deprecated Please use the idiomatically named `PayIdComponents` class instead.
+ * @deprecated Use the idiomatically named `PayIdComponents` class instead.
  */
 export class PayIDComponents {
   public readonly host: string
+
   public readonly path: string
+
   /**
    * Create a new PayIDComponents.
    *
