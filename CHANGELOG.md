@@ -9,10 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- XRP specific functionality on the `Utils` class is deprecated. Use the new `XrpUtils` class instead.
 - A new method, `walletFromSeed` in `WalletFactory` encapsulates functionality for creating a `Wallet` object from a seed.
 
 ### Deprecated
 
+- XRP-specific functionality on the `Utils` class is deprecated. Use the new `XrpUtils` class instead.
 - The `walletFromSeed` method of the `Wallet` class is deprecated. Please use the new `WalletFactory` to generate `Wallet`s from seeds.
 
 ## [5.1.0] - 2020-06-01
@@ -32,8 +34,8 @@ This release contains minor deprecations of names of methods and classes to make
 
 ### Deprecated
 
-- `PayIDUtils` is deprecated. Please use the idiomatically cased `PayIdUtils` class instead.
-- `PayIDComponents` is deprecated. Please use the idiomatically cased `PayIdComponents` class instead.
+- `PayIDUtils` is deprecated. Use the idiomatically cased `PayIdUtils` class instead.
+- `PayIDComponents` is deprecated. Use the idiomatically cased `PayIdComponents` class instead.
 
 ## [5.0.3] - 2020-04-10
 
@@ -104,9 +106,9 @@ This release fixes the empty typescript type definition exports.
 
 ## [3.0.0] - 2019-02-24
 
-This release adds support for (protocol buffers in rippled)[https://github.com/ripple/rippled/tree/develop/src/ripple/proto/rpc/v1]. The `Signer`'s `signTransaction` method previously returned a hex string representing the signature of the transaction. After this change, it returns the entire signed and encoded transaction as a byte array. This encapsulates the serialization and signing logic inside of this library, rather than forcing clients to understand it. This is a breaking change (See 'Breaking Changes' below).
+This release adds support for (protocol buffers in rippled)[https://github.com/ripple/rippled/tree/develop/src/ripple/proto/rpc/v1]. The `Signer`'s `signTransaction` method previously returned a hex string representing the signature of the transaction. After this change, it returns the entire signed and encoded transaction as a byte array. This encapsulates the serialization and signing logic inside of this library, rather than forcing clients to understand it. This is a breaking change (See 'Breaking Changes') below.
 
-This release also changes the protocol buffer compiler used to generate protocol buffers in order to make this library function inside of a browser environment. As part of this change, various optimizations to TypeScript and webpack compilation are also produced (see 'Breaking Changes' below).
+This release also changes the protocol buffer compiler used to generate protocol buffers in order to make this library function inside of a browser environment. As part of this change, various optimizations to TypeScript and webpack compilation are also produced (see 'Breaking Changes') below.
 
 ### Breaking Changes
 
