@@ -133,6 +133,8 @@ class Wallet {
   /**
    * Generate a new wallet from the given seed.
    *
+   * @deprecated Please use `WalletFactory` instead.
+   *
    * @param seed - The given seed for the wallet.
    * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns A new wallet from the given seed, or undefined if the seed was invalid.

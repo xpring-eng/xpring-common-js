@@ -2,11 +2,12 @@ import { assert } from 'chai'
 
 import WalletFactory from '../../src/XRP/wallet-factory'
 import 'mocha'
+import XrplNetwork from '../../src/XRP/xrpl-network'
 
 describe('Wallet Factory', function (): void {
   it('Wallet From Keys - Valid Keys', function (): void {
     // GIVEN a wallet factory and set of valid keys.
-    const walletFactory = new WalletFactory(true)
+    const walletFactory = new WalletFactory(XrplNetwork.Test)
     const publicKey =
       '031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE'
     const privateKey =
@@ -22,7 +23,7 @@ describe('Wallet Factory', function (): void {
 
   it('Wallet From Keys - Invalid Public Key', function (): void {
     // GIVEN a wallet factory and an invalid public key
-    const walletFactory = new WalletFactory(true)
+    const walletFactory = new WalletFactory(XrplNetwork.Test)
     // The publicKey is not hex
     const publicKey = 'xrp'
     const privateKey =
@@ -37,7 +38,7 @@ describe('Wallet Factory', function (): void {
 
   it('Wallet From Keys - Invalid Private Key', function (): void {
     // GIVEN a wallet factory and an invalid private key
-    const walletFactory = new WalletFactory(true)
+    const walletFactory = new WalletFactory(XrplNetwork.Test)
     const publicKey =
       '031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE'
     // The privateKey is not hex
@@ -47,6 +48,35 @@ describe('Wallet Factory', function (): void {
     const wallet = walletFactory.walletFromKeys(publicKey, privateKey)
 
     // THEN the generated wallet is undefined.
+    assert.isUndefined(wallet)
+  })
+
+  // walletFromSeed
+
+  it('walletFromSeed - MainNet', function (): void {
+    // GIVEN a wallet factory attached to mainnet and a valid seed.
+    const walletFactory = new WalletFactory(XrplNetwork.Main)
+    const seed = 'snYP7oArxKepd3GPDcrjMsJYiJeJB'
+
+    // WHEN a wallet is generated from the seed.
+    const wallet = walletFactory.walletFromSeed(seed)
+
+    // THEN the wallet has the expected address.
+    assert.equal(
+      wallet?.getAddress(),
+      'XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8',
+    )
+  })
+
+  it('walletFromSeed - invalid seed', function (): void {
+    // GIVEN a wallet factory and an valid seed.
+    const walletFactory = new WalletFactory(XrplNetwork.Test)
+    const seed = 'xrp'
+
+    // WHEN a wallet is generated from the seed.
+    const wallet = walletFactory.walletFromSeed(seed)
+
+    // THEN the wallet is undefined.
     assert.isUndefined(wallet)
   })
 })
