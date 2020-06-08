@@ -5,11 +5,6 @@ import * as rippleKeyPair from 'ripple-keypairs'
 import Utils from '../Common/utils'
 
 /**
- * The default derivation path to use with BIP44.
- */
-const defaultDerivationPath = "m/44'/144'/0'/0/0"
-
-/**
  * An object which contains artifacts from generating a new wallet.
  */
 export interface WalletGenerationResult {
@@ -27,10 +22,13 @@ export interface WalletGenerationResult {
  * A wallet object that has an address and keypair.
  */
 class Wallet {
-  private readonly publicKey: string
+  /**
+   * The default derivation path to use with BIP44.
+   */
+  public static defaultDerivationPath = "m/44'/144'/0'/0/0"
 
-  private readonly privateKey: string
-
+  public readonly publicKey: string
+  public readonly privateKey: string
   private readonly test: boolean
 
   /**
@@ -44,13 +42,6 @@ class Wallet {
     this.publicKey = publicKey
     this.privateKey = privateKey
     this.test = test
-  }
-
-  /**
-   * @returns The default derivation path.
-   */
-  public static getDefaultDerivationPath(): string {
-    return defaultDerivationPath
   }
 
   /**
@@ -78,7 +69,7 @@ class Wallet {
       entropy === undefined
         ? bip39.generateMnemonic()
         : bip39.entropyToMnemonic(entropy)
-    const derivationPath = Wallet.getDefaultDerivationPath()
+    const derivationPath = Wallet.defaultDerivationPath
     const wallet = Wallet.generateWalletFromMnemonic(
       mnemonic,
       derivationPath,
@@ -99,7 +90,7 @@ class Wallet {
    */
   public static generateWalletFromMnemonic(
     mnemonic: string,
-    derivationPath = Wallet.getDefaultDerivationPath(),
+    derivationPath = Wallet.defaultDerivationPath,
     test = false,
   ): Wallet | undefined {
     // Validate mnemonic and path are valid.
@@ -107,8 +98,11 @@ class Wallet {
       return undefined
     }
 
-    /* eslint-disable-next-line no-sync */
+    /* eslint-disable node/no-sync --
+     * TODO:(@keefertaylor) To be fixed when we make a WalletFactory
+     */
     const seed = bip39.mnemonicToSeedSync(mnemonic)
+    /* eslint-enable node/no-sync */
     return Wallet.generateHDWalletFromSeed(seed, derivationPath, test)
   }
 
@@ -124,7 +118,7 @@ class Wallet {
    */
   public static generateHDWalletFromSeed(
     seed: Buffer,
-    derivationPath = Wallet.getDefaultDerivationPath(),
+    derivationPath = Wallet.defaultDerivationPath,
     test = false,
   ): Wallet | undefined {
     const masterNode = bip32.fromSeed(seed)
@@ -141,9 +135,9 @@ class Wallet {
   /**
    * Generate a new wallet from the given seed.
    *
-   * @deprecated Please use methods on `WalletFactory` to generate wallets instead.
+   * @deprecated Please use `WalletFactory` instead.
    *
-   * @param seed - A hex encoded seed string.
+   * @param seed - The given seed for the wallet.
    * @param test - Whether the address is for use on a test network, defaults to `false`.
    * @returns A new wallet from the given seed, or undefined if the seed was invalid.
    */
@@ -160,24 +154,12 @@ class Wallet {
   }
 
   /**
-   * @returns A string representing the public key for the wallet.
-   */
-  public getPublicKey(): string {
-    return this.publicKey
-  }
-
-  /**
-   * @returns A string representing the private key for the wallet.
-   */
-  public getPrivateKey(): string {
-    return this.privateKey
-  }
-
-  /**
-   * @returns A string representing the address of the wallet.
+   * Gets the x-address associated with a given wallet instance.
+   *
+   * @returns A string representing the x-address of the wallet.
    */
   public getAddress(): string {
-    const classicAddress = rippleKeyPair.deriveAddress(this.getPublicKey())
+    const classicAddress = rippleKeyPair.deriveAddress(this.publicKey)
     const xAddress = Utils.encodeXAddress(classicAddress, undefined, this.test)
     if (xAddress === undefined) {
       throw new Error('Unknown error deriving address')
@@ -195,7 +177,7 @@ class Wallet {
     if (!Utils.isHex(hex)) {
       return undefined
     }
-    return rippleKeyPair.sign(hex, this.getPrivateKey())
+    return rippleKeyPair.sign(hex, this.privateKey)
   }
 
   /**
@@ -211,7 +193,7 @@ class Wallet {
     }
 
     try {
-      return rippleKeyPair.verify(message, signature, this.getPublicKey())
+      return rippleKeyPair.verify(message, signature, this.publicKey)
     } catch {
       // The ripple-key-pair module may throw errors for some signatures rather than returning false.
       // If an error was thrown then the signature is definitely not valid.

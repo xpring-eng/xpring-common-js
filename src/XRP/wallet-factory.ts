@@ -1,18 +1,30 @@
-import * as rippleKeyPair from 'ripple-keypairs'
 import * as bip32 from 'bip32'
-import Wallet from './wallet'
+import * as rippleKeyPair from 'ripple-keypairs'
+
 import Utils from '../Common/utils'
+
+import Wallet from './wallet'
+import XrpUtils from './xrp-utils'
+import XrplNetwork from './xrpl-network'
 
 /**
  * Encapsulates various methods for generating Wallets.
  */
 export default class WalletFactory {
+  /** The network the WalletFactory is attached to. */
+  public readonly network: XrplNetwork
+
+  private readonly isTest
+
   /**
    * Initialize a new WalletFactory.
    *
-   * @param isTest Whether the wallet factory will generate wallets for a test network.
+   * @param network - The network the wallet factory is attached to.
    */
-  public constructor(public readonly isTest: boolean) {}
+  public constructor(network: XrplNetwork) {
+    this.network = network
+    this.isTest = XrpUtils.isTestNetwork(network)
+  }
 
   /**
    * Generate a new hierarchical deterministic wallet from a seed and derivation path.
@@ -58,6 +70,9 @@ export default class WalletFactory {
    *
    * @param publicKey - A hexadecimal encoded public key.
    * @param privateKey -  A hexadecimal encoded private key.
+   *
+   * @returns A new wallet with a given public and private key,
+   *          on TESTNET or MAINNET depending on the WalletFactory instance.
    */
   public walletFromKeys(
     publicKey: string,

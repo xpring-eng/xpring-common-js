@@ -9,14 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- A new class `WalletFactory` encapsulates functionality for creating a `Wallet` object from a public and private key.
-- A new class `WalletFactory` encapsulates functionality for creating a `Wallet` object from a seed.
-- A new class `WalletFactory` encapsulates functionality for creating a `Wallet` object from a seed and derivation path.
+- XRP specific functionality on the `Utils` class is deprecated. Use the new `XrpUtils` class instead.
+- A new method, `walletFromSeed` in `WalletFactory` encapsulates functionality for creating a `Wallet` object from a seed.
+- A new enum, `XrplNetwork`, identifies the XRP Ledger network that components are connected to.
+- A new method, `isTestNetwork`, is provided by `XrpUtils` to identify whether a given `XrplNetwork` is a test network.
 
 ### Deprecated
 
-- The `walletFromSeed` method of the `Wallet` class is deprecated. Please use the new `WalletFactory` class to generate `Wallet`s from seeds.
-- The `generateHDWalletFromSeed` method of the `Wallet` class is deprecated. Please use the new `WalletFactory` class to generate `Wallet`s from seeds.
+- XRP-specific functionality on the `Utils` class is deprecated. Use the new `XrpUtils` class instead.
+- The `walletFromSeed` method of the `Wallet` class is deprecated. Please use the new `WalletFactory` to generate `Wallet`s from seeds.
+
+### Breaking Changes
+
+- `WalletFactory`'s constructor takes an `XrplNetwork` enum instead of a boolean indicating if the network is a test network. Clients should pass `XrplNetwork.Test` if they were previously passing `true`, otherwise they should pass `XrplNetwork.Main`.
+
+## [5.1.0] - 2020-06-01
+
+### Added
+
+- A new class `WalletFactory` encapsulates functionality for creating a `Wallet` object from a public and private key.
 
 ## [5.0.4] - 2020-05-15
 
@@ -29,8 +40,8 @@ This release contains minor deprecations of names of methods and classes to make
 
 ### Deprecated
 
-- `PayIDUtils` is deprecated. Please use the idiomatically cased `PayIdUtils` class instead.
-- `PayIDComponents` is deprecated. Please use the idiomatically cased `PayIdComponents` class instead.
+- `PayIDUtils` is deprecated. Use the idiomatically cased `PayIdUtils` class instead.
+- `PayIDComponents` is deprecated. Use the idiomatically cased `PayIdComponents` class instead.
 
 ## [5.0.3] - 2020-04-10
 
@@ -127,7 +138,12 @@ This release also changes the protocol buffer compiler used to generate protocol
 
 ### Fixed
 
+<<<<<<< HEAD
 This patch release locks the versions of `grpc-tools` and `grpc_tools_node_protoc_ts` dependencies. This allows client projects to be able to deterministicly generate compatible protocol buffers with this project's TypeScript.
+=======
+This patch release locks the versions of `grpc-tools` and `grpc_tools_node_protoc_ts` dependencies. This allows client projects to be able to deterministically generate compatible protocol buffers with this project's TypeScript.
+
+> > > > > > > origin/master
 
 Previously, different versions of the protocol buffer compiler would (sometimes) produce slightly different output (generally by renaming fields).
 
