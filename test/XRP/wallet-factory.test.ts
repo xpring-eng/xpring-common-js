@@ -2,12 +2,12 @@ import { assert } from 'chai'
 
 import WalletFactory from '../../src/XRP/wallet-factory'
 import 'mocha'
-import XRPLNetwork from '../../src/XRP/xrpl-network'
+import XrplNetwork from '../../src/XRP/xrpl-network'
 
 describe('Wallet Factory', function (): void {
   it('Wallet From Keys - Valid Keys', function (): void {
     // GIVEN a wallet factory and set of valid keys.
-    const walletFactory = new WalletFactory(XRPLNetwork.Test)
+    const walletFactory = new WalletFactory(XrplNetwork.Test)
     const publicKey =
       '031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE'
     const privateKey =
@@ -23,7 +23,7 @@ describe('Wallet Factory', function (): void {
 
   it('Wallet From Keys - Invalid Public Key', function (): void {
     // GIVEN a wallet factory and an invalid public key
-    const walletFactory = new WalletFactory(XRPLNetwork.Test)
+    const walletFactory = new WalletFactory(XrplNetwork.Test)
     // The publicKey is not hex
     const publicKey = 'xrp'
     const privateKey =
@@ -38,7 +38,7 @@ describe('Wallet Factory', function (): void {
 
   it('Wallet From Keys - Invalid Private Key', function (): void {
     // GIVEN a wallet factory and an invalid private key
-    const walletFactory = new WalletFactory(XRPLNetwork.Test)
+    const walletFactory = new WalletFactory(XrplNetwork.Test)
     const publicKey =
       '031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE'
     // The privateKey is not hex
