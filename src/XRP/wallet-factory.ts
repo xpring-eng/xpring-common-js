@@ -3,20 +3,26 @@ import * as rippleKeyPair from 'ripple-keypairs'
 import Utils from '../Common/utils'
 
 import Wallet from './wallet'
+import XrpUtils from './xrp-utils'
+import XrplNetwork from './xrpl-network'
 
 /**
  * Encapsulates various methods for generating Wallets.
  */
 export default class WalletFactory {
-  public readonly isTest: boolean
+  /** The network the WalletFactory is attached to. */
+  public readonly network: XrplNetwork
+
+  private readonly isTest
 
   /**
    * Initialize a new WalletFactory.
    *
-   * @param isTest - Whether the wallet factory will generate wallets for a test network.
+   * @param network - The network the wallet factory is attached to.
    */
-  public constructor(isTest: boolean) {
-    this.isTest = isTest
+  public constructor(network: XrplNetwork) {
+    this.network = network
+    this.isTest = XrpUtils.isTestNetwork(network)
   }
 
   /**
