@@ -138,12 +138,7 @@ This release also changes the protocol buffer compiler used to generate protocol
 
 ### Fixed
 
-<<<<<<< HEAD
-This patch release locks the versions of `grpc-tools` and `grpc_tools_node_protoc_ts` dependencies. This allows client projects to be able to deterministicly generate compatible protocol buffers with this project's TypeScript.
-=======
 This patch release locks the versions of `grpc-tools` and `grpc_tools_node_protoc_ts` dependencies. This allows client projects to be able to deterministically generate compatible protocol buffers with this project's TypeScript.
-
-> > > > > > > origin/master
 
 Previously, different versions of the protocol buffer compiler would (sometimes) produce slightly different output (generally by renaming fields).
 
