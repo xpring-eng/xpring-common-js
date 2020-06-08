@@ -2,6 +2,8 @@ import { createHash } from 'crypto'
 
 import * as addressCodec from 'ripple-address-codec'
 
+import XrplNetwork from './xrpl-network'
+
 /**
  * A prefix applied when hashing a signed transaction blob.
  *
@@ -188,6 +190,16 @@ const xrpUtils = {
     const hash = this.toBytes(hashHex)
 
     return hash.slice(0, hash.length / 2)
+  },
+
+  /**
+   * Returns whether the given `XrplNetwork` is a test network.
+   *
+   * @param network - The network to check.
+   * @returns A boolean indicating if the network is a test network.
+   */
+  isTestNetwork(network: XrplNetwork): boolean {
+    return network === XrplNetwork.Test || network === XrplNetwork.Dev
   },
 }
 

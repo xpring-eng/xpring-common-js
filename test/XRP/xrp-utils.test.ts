@@ -2,6 +2,7 @@ import { assert } from 'chai'
 
 import XrpUtils from '../../src/XRP/xrp-utils'
 import 'mocha'
+import XrplNetwork from '../../src/XRP/xrpl-network'
 
 describe('XrpUtils', function (): void {
   it('isValidAddress() - Valid Classic Address', function (): void {
@@ -304,5 +305,32 @@ describe('XrpUtils', function (): void {
 
     // THEN the hash is undefined.
     assert.isUndefined(transactionHash)
+  })
+
+  it('isTestNetwork() - Mainnet', function (): void {
+    // GIVEN the Mainnet XrplNetwork
+    const network = XrplNetwork.Main
+
+    // WHEN the network is determined to be a test network
+    // THEN the network is reported as not being a test network.
+    assert.isFalse(XrpUtils.isTestNetwork(network))
+  })
+
+  it('isTestNetwork() - TestNet', function (): void {
+    // GIVEN the TestNet XrplNetwork
+    const network = XrplNetwork.Test
+
+    // WHEN the network is determined to be a test network
+    // THEN the network is reported as being a test network.
+    assert.isTrue(XrpUtils.isTestNetwork(network))
+  })
+
+  it('isTestNetwork() - Devnet', function (): void {
+    // GIVEN the Devnet XrplNetwork
+    const network = XrplNetwork.Dev
+
+    // WHEN the network is determined to be a test network
+    // THEN the network is reported as  being a test network.
+    assert.isTrue(XrpUtils.isTestNetwork(network))
   })
 })
