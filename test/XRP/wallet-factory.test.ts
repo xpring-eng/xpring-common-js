@@ -82,7 +82,7 @@ describe('Wallet Factory', function (): void {
 
   it('walletFromSeedAndDerivationPath - valid inputs - derivation path 0', function (): void {
     // GIVEN a wallet factory, a valid seed and a valid derivation path.
-    const walletFactory = new WalletFactory(XrplNetwork.Test)
+    const walletFactory = new WalletFactory(XrplNetwork.Main)
     const seed =
       'f5dd847bd41be2deeb5f3596ab614a95e3cebb73dcd4270df9681de9e3ee5fe34ef07beb05fea610bf2cfdffb6dc3f1593fd966ab5afd30e803af66b68df32d4'
     const derivationPath = "m/44'/144'/0'/0/0"
@@ -96,13 +96,13 @@ describe('Wallet Factory', function (): void {
     // THEN the wallet has the expected address.
     assert.equal(
       wallet?.getAddress(),
-      'XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8',
+      'XVCv9bkjjkAKrT4Xp2WtMEsrr3LP7cHUQEbQLibKk8y1n3i',
     )
   })
 
   it('walletFromSeedAndDerivationPath - valid inputs - derivation path 1', function (): void {
     // GIVEN a wallet factory, a valid seed and a valid derivation path.
-    const walletFactory = new WalletFactory(XrplNetwork.Test)
+    const walletFactory = new WalletFactory(XrplNetwork.Main)
     const seed =
       'f5dd847bd41be2deeb5f3596ab614a95e3cebb73dcd4270df9681de9e3ee5fe34ef07beb05fea610bf2cfdffb6dc3f1593fd966ab5afd30e803af66b68df32d4'
     const derivationPath = "m/44'/144'/0'/0/1"
@@ -116,7 +116,7 @@ describe('Wallet Factory', function (): void {
     // THEN the wallet has the expected address.
     assert.equal(
       wallet?.getAddress(),
-      'XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8',
+      'X7Fi1EkV5VgFUbzwDdoNX8yPeYHhTWvFWaZKjULJcJpTQKo',
     )
   })
 
