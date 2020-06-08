@@ -1,5 +1,5 @@
 /**
- * XRP Ledger networks components can be attached to.
+ * XRP Ledger networks that components can be attached to.
  */
 enum XrplNetwork {
   Dev = 'devnet',
