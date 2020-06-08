@@ -55,7 +55,7 @@ describe('Wallet Factory', function (): void {
 
   it('walletFromSeed - MainNet', function (): void {
     // GIVEN a wallet factory attached to mainnet and a valid seed.
-    const walletFactory = new WalletFactory(false)
+    const walletFactory = new WalletFactory(XrplNetwork.Main)
     const seed = 'snYP7oArxKepd3GPDcrjMsJYiJeJB'
 
     // WHEN a wallet is generated from the seed.
@@ -70,7 +70,7 @@ describe('Wallet Factory', function (): void {
 
   it('walletFromSeed - invalid seed', function (): void {
     // GIVEN a wallet factory and an valid seed.
-    const walletFactory = new WalletFactory(true)
+    const walletFactory = new WalletFactory(XrplNetwork.Test)
     const seed = 'xrp'
 
     // WHEN a wallet is generated from the seed.
