@@ -26,7 +26,7 @@ export default class WalletFactory {
   /**
    * Generate a new wallet with the given keys.
    *
-   * @param publicKey - A hexadencimal encoded public key.
+   * @param publicKey - A hexadecimal encoded public key.
    * @param privateKey -  A hexadecimal encoded private key.
    *
    * @returns A new wallet with a given public and private key,
