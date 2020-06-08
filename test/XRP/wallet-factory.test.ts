@@ -50,4 +50,33 @@ describe('Wallet Factory', function (): void {
     // THEN the generated wallet is undefined.
     assert.isUndefined(wallet)
   })
+
+  // walletFromSeed
+
+  it('walletFromSeed - MainNet', function (): void {
+    // GIVEN a wallet factory attached to mainnet and a valid seed.
+    const walletFactory = new WalletFactory(XrplNetwork.Main)
+    const seed = 'snYP7oArxKepd3GPDcrjMsJYiJeJB'
+
+    // WHEN a wallet is generated from the seed.
+    const wallet = walletFactory.walletFromSeed(seed)
+
+    // THEN the wallet has the expected address.
+    assert.equal(
+      wallet?.getAddress(),
+      'XVnJMYQFqA8EAijpKh5EdjEY5JqyxykMKKSbrUX8uchF6U8',
+    )
+  })
+
+  it('walletFromSeed - invalid seed', function (): void {
+    // GIVEN a wallet factory and an valid seed.
+    const walletFactory = new WalletFactory(XrplNetwork.Test)
+    const seed = 'xrp'
+
+    // WHEN a wallet is generated from the seed.
+    const wallet = walletFactory.walletFromSeed(seed)
+
+    // THEN the wallet is undefined.
+    assert.isUndefined(wallet)
+  })
 })
