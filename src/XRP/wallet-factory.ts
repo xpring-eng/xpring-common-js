@@ -11,6 +11,11 @@ import XrplNetwork from './xrpl-network'
  * Encapsulates various methods for generating Wallets.
  */
 export default class WalletFactory {
+  /**
+   * The default derivation path to use with BIP44.
+   */
+  public static defaultDerivationPath = "m/44'/144'/0'/0/0"
+
   /** The network the WalletFactory is attached to. */
   public readonly network: XrplNetwork
 
@@ -35,19 +40,24 @@ export default class WalletFactory {
    */
   public walletFromSeedAndDerivationPath(
     seed: string,
-    derivationPath = Wallet.getDefaultDerivationPath(),
+    derivationPath = WalletFactory.defaultDerivationPath,
   ): Wallet | undefined {
-    const seedBytes = Utils.toBytes(seed)
-    const seedBuffer = Buffer.from(seedBytes)
-    const masterNode = bip32.fromSeed(seedBuffer)
-    const node = masterNode.derivePath(derivationPath)
-    if (node.privateKey === undefined) {
+    try {
+      const seedBytes = Utils.toBytes(seed)
+      const seedBuffer = Buffer.from(seedBytes)
+      const masterNode = bip32.fromSeed(seedBuffer)
+      const node = masterNode.derivePath(derivationPath)
+      if (node.privateKey === undefined) {
+        return undefined
+      }
+
+      const publicKey = Utils.hexFromBuffer(node.publicKey)
+      const privateKey = Utils.hexFromBuffer(node.privateKey)
+      return new Wallet(publicKey, `00${privateKey}`, this.isTest)
+    } catch (error) {
+      console.log(error)
       return undefined
     }
-
-    const publicKey = Utils.hexFromBuffer(node.publicKey)
-    const privateKey = Utils.hexFromBuffer(node.privateKey)
-    return new Wallet(publicKey, `00${privateKey}`, this.isTest)
   }
 
   /**
