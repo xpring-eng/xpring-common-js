@@ -16,6 +16,7 @@ import {
   Account,
   Amount,
   Destination,
+  Domain,
   MemoData,
   MemoFormat,
   MemoType,
@@ -23,12 +24,19 @@ import {
   SigningPublicKey,
   Authorize,
   Unauthorize,
+  ClearFlag,
+  EmailHash,
+  MessageKey,
+  SetFlag,
+  TransferRate,
+  TickSize,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
   Payment,
   Transaction,
   DepositPreauth,
+  AccountSet,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer from '../../src/XRP/serializer'
 
@@ -50,6 +58,8 @@ const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
 const dataForMemo = Utils.toBytes('I forgot to pick up Carl...')
 const typeForMemo = Utils.toBytes('meme')
 const formatForMemo = Utils.toBytes('jaypeg')
+
+// TODO(keefertaylor): Helper functions are becoming unweildy. Refactor to an external helper file.
 
 /* eslint-disable no-shadow, max-params --
  * The values we are shadowing are only used as inputs for this function,
@@ -162,6 +172,127 @@ function makeDepositPreauth(
   transaction.setDepositPreauth(depositPreauth)
 
   return transaction
+}
+
+/**
+ * Make a Transaction representing an AccountSet operation.
+ *
+ * @param clearFlagValue - The ClearFlag value to use for the AccountSet.
+ * @param domainValue - The Domain value to use for the AccountSet.
+ * @param emailHashValue - The EmailHash value to use for the AccountSet.
+ * @param messageKeyValue - The MesssageKey value to use for AccountSet.
+ * @param setFlagValue - The SetFlag value to use for the AccountSet.
+ * @param transferRateValue - The TransferRate value to use for the Accountset.
+ * @param tickSizeValue - The TickSize value to use for the AccountSet.
+ * @param fee - The amount of XRP to use as a fee, in drops.
+ * @param lastLedgerSequenceNumber - The last ledger sequence the transaction will be valid in.
+ * @param sequenceNumber - The sequence number for the sending account.
+ * @param senderAddress - The address of the sending account.
+ * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
+ * @returns A new `Transaction` object comprised of the provided properties.
+ */
+function makeAccountSetTransaction(
+  clearFlagValue: number | undefined,
+  domainValue: string | undefined,
+  emailHashValue: Uint8Array | undefined,
+  messageKeyValue: Uint8Array | undefined,
+  setFlagValue: number | undefined,
+  transferRateValue: number | undefined,
+  tickSizeValue: number | undefined,
+  fee: string,
+  lastLedgerSequenceNumber: number,
+  sequenceNumber: number,
+  senderAddress: string | undefined,
+  publicKey: string,
+): Transaction {
+  const accountSet = makeAccountSet(
+    clearFlagValue,
+    domainValue,
+    emailHashValue,
+    messageKeyValue,
+    setFlagValue,
+    transferRateValue,
+    tickSizeValue,
+  )
+  const transaction = makeBaseTransaction(
+    fee,
+    lastLedgerSequenceNumber,
+    sequenceNumber,
+    senderAddress,
+    publicKey,
+  )
+  transaction.setAccountSet(accountSet)
+
+  return transaction
+}
+
+/**
+ * Make an AccountSet protocol buffer fro the given inputs.
+ *
+ * @param clearFlagValue - The ClearFlag value to use for the AccountSet.
+ * @param domainValue - The Domain value to use for the AccountSet.
+ * @param emailHashValue - The EmailHash value to use for the AccountSet.
+ * @param messageKeyValue - The MesssageKey value to use for AccountSet.
+ * @param setFlagValue - The SetFlag value to use for the AccountSet.
+ * @param transferRateValue - The TransferRate value to use for the Accountset.
+ * @param tickSizeValue - The TickSize value to use for the AccountSet.
+ * @returns An AccountSet protocol buffer from the given inputs.
+ */
+function makeAccountSet(
+  clearFlagValue: number | undefined,
+  domainValue: string | undefined,
+  emailHashValue: Uint8Array | undefined,
+  messageKeyValue: Uint8Array | undefined,
+  setFlagValue: number | undefined,
+  transferRateValue: number | undefined,
+  tickSizeValue: number | undefined,
+): AccountSet {
+  const accountSet = new AccountSet()
+  accountSet.setClearFlag()
+
+  if (clearFlagValue !== undefined) {
+    const clearFlag = new ClearFlag()
+    clearFlag.setValue(clearFlagValue)
+    accountSet.setClearFlag(clearFlag)
+  }
+
+  if (domainValue !== undefined) {
+    const domain = new Domain()
+    domain.setValue(domainValue)
+    accountSet.setDomain(domain)
+  }
+
+  if (emailHashValue !== undefined) {
+    const emailHash = new EmailHash()
+    emailHash.setValue(emailHashValue)
+    accountSet.setEmailHash(emailHash)
+  }
+
+  if (messageKeyValue !== undefined) {
+    const messageKey = new MessageKey()
+    messageKey.setValue(messageKeyValue)
+    accountSet.setMessageKey(messageKey)
+  }
+
+  if (setFlagValue !== undefined) {
+    const setFlag = new SetFlag()
+    setFlag.setValue(setFlagValue)
+    accountSet.setSetFlag(setFlag)
+  }
+
+  if (transferRateValue !== undefined) {
+    const transferRate = new TransferRate()
+    transferRate.setValue(transferRateValue)
+    accountSet.setTransferRate(transferRate)
+  }
+
+  if (tickSizeValue !== undefined) {
+    const tickSize = new TickSize()
+    tickSize.setValue(tickSizeValue)
+    accountSet.setTickSize(tickSize)
+  }
+
+  return accountSet
 }
 
 /**
@@ -552,7 +683,87 @@ describe('serializer', function (): void {
       publicKey,
     )
 
-    // WHEN the transaction is serialized THEN the result is unefined.
+    // WHEN the transaction is serialized THEN the result is undefined.
     assert.isUndefined(Serializer.transactionToJSON(transaction))
+  })
+
+  it('serializes an AccountSet with no fields set', function (): void {
+    // GIVEN an AccountSet with no fields set.
+    const accountSet = makeAccountSet(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    )
+    const expectedJSON = {}
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountSetToJSON(accountSet)
+
+    // THEN the result is as expected.
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('serializes an AccountSet with all fields set', function (): void {
+    // GIVEN an AccountSet with no fields set.
+    // Note: All constants are arbitrarily chosen but unique.
+    const clearFlagValue = 0
+    const domainValue = 'domain'
+    /* eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Magic numbers are an arbitrary byte array. */
+    const emailHashValue = new Uint8Array([0, 1, 2, 3])
+    /* eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Magic numbers are an arbitrary byte array. */
+    const messageKeyValue = new Uint8Array([4, 5, 6, 7])
+    const setFlagValue = 1
+    const transferRateValue = 2
+    const tickSizeValue = 3
+    const accountSet = makeAccountSet(
+      clearFlagValue,
+      domainValue,
+      emailHashValue,
+      messageKeyValue,
+      setFlagValue,
+      transferRateValue,
+      tickSizeValue,
+    )
+
+    const expectedJSON = {
+      ClearFlag: clearFlagValue,
+      Domain: domainValue,
+      EmailHash: Utils.toHex(emailHashValue),
+      MessageKey: Utils.toHex(messageKeyValue),
+      SetFlag: setFlagValue,
+      TransferRate: transferRateValue,
+      TickSize: tickSizeValue,
+    }
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountSetToJSON(accountSet)
+
+    // THEN the result is as expected.
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('serializes an AccountSet Transaction', function (): void {
+    // GIVEN an AccountAet with no fields set.
+    const transaction = makeAccountSetTransaction(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      fee,
+      lastLedgerSequence,
+      sequence,
+      accountClassicAddress,
+      publicKey,
+    )
+
+    // WHEN the transaction is serialized THEN the result exists.
+    assert.exists(Serializer.transactionToJSON(transaction))
   })
 })
