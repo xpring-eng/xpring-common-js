@@ -2,11 +2,8 @@
 export { default as Utils } from './Common/utils'
 
 // Pay ID Exports
-export { default as PayIdUtils, PayIDUtils } from './PayID/pay-id-utils'
-export {
-  default as PayIdComponents,
-  PayIDComponents,
-} from './PayID/pay-id-components'
+export { default as PayIdUtils } from './PayID/pay-id-utils'
+export { default as PayIdComponents } from './PayID/pay-id-components'
 
 // Exported XRP Functionality.
 export { default as FakeWallet } from '../test/XRP/fakes/fake-wallet'
