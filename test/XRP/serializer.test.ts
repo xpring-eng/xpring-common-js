@@ -68,7 +68,7 @@ const formatForMemo = Utils.toBytes('jaypeg')
  *
  * @returns A new `Transaction` object comprised of the provided Transaction properties.
  */
-function makeTransaction(
+function makePaymentTransaction(
   value: string,
   destinationAddress: string,
   fee: string,
@@ -96,6 +96,92 @@ function makeTransaction(
   payment.setDestination(destination)
   payment.setAmount(amount)
 
+  const transaction = makeBaseTransaction(
+    fee,
+    lastLedgerSequenceNumber,
+    sequenceNumber,
+    senderAddress,
+    publicKey,
+  )
+  transaction.setPayment(payment)
+
+  return transaction
+}
+
+/**
+ * Create a new `DepositPreauth` object with the given inputs.
+ *
+ * Note: Either the `authorizeAddress` or `unauthorizeAddress`, but not both, must be set to get a
+ * valid output. This precondition is not enforced by the function.
+ *
+ * @param authorizeAddress - The address to authorize.
+ * @param unauthorizeAddress - The address to unauthorize.
+ * @param fee - The amount of XRP to use as a fee, in drops.
+ * @param lastLedgerSequenceNumber - The last ledger sequence the transaction will be valid in.
+ * @param sequenceNumber - The sequence number for the sending account.
+ * @param senderAddress - The address of the sending account.
+ * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
+ *
+ * @returns A new `Transaction` object comprised of the provided properties.
+ */
+function makeDepositPreauth(
+  authorizeAddress: string | undefined,
+  unauthorizeAddress: string | undefined,
+  fee: string,
+  lastLedgerSequenceNumber: number,
+  sequenceNumber: number,
+  senderAddress: string | undefined,
+  publicKey: string,
+): Transaction {
+  const depositPreauth = new DepositPreauth()
+  if (authorizeAddress) {
+    const accountAddress = new AccountAddress()
+    accountAddress.setAddress(authorizeAddress)
+
+    const authorize = new Authorize()
+    authorize.setValue(accountAddress)
+
+    depositPreauth.setAuthorize(authorize)
+  } else if (unauthorizeAddress) {
+    const accountAddress = new AccountAddress()
+    accountAddress.setAddress(unauthorizeAddress)
+
+    const unauthorize = new Unauthorize()
+    unauthorize.setValue(accountAddress)
+
+    depositPreauth.setUnauthorize(unauthorize)
+  }
+
+  const transaction = makeBaseTransaction(
+    fee,
+    lastLedgerSequenceNumber,
+    sequenceNumber,
+    senderAddress,
+    publicKey,
+  )
+  transaction.setDepositPreauth(depositPreauth)
+
+  return transaction
+}
+
+/**
+ * Make a transaction protocol buffer containing all the common fields.
+ *
+ * @param fee - The amount of XRP to use as a fee, in drops.
+ * @param lastLedgerSequenceNumber - The last ledger sequence the transaction will be valid in.
+ * @param sequenceNumber - The sequence number for the sending account.
+ * @param senderAddress - The address of the sending account.
+ * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
+ *
+ * @returns A transaction with common fields set.
+ */
+function makeBaseTransaction(
+  fee: string,
+  lastLedgerSequenceNumber: number,
+  sequenceNumber: number,
+  senderAddress: string | undefined,
+  publicKey: string,
+): Transaction {
   const transactionFee = new XRPDropsAmount()
   transactionFee.setDrops(fee)
 
@@ -111,7 +197,6 @@ function makeTransaction(
   const transaction = new Transaction()
   transaction.setFee(transactionFee)
   transaction.setSequence(sequence)
-  transaction.setPayment(payment)
   transaction.setSigningPublicKey(signingPublicKey)
   transaction.setLastLedgerSequence(lastLedgerSequence)
 
@@ -133,7 +218,7 @@ function makeTransaction(
 describe('serializer', function (): void {
   it('serializes a payment in XRP from a classic address', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
-    const transaction = makeTransaction(
+    const transaction = makePaymentTransaction(
       value,
       destinationClassicAddress,
       fee,
@@ -162,7 +247,7 @@ describe('serializer', function (): void {
 
   it('serializes a payment in XRP from an X-Address with no tag', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
-    const transaction = makeTransaction(
+    const transaction = makePaymentTransaction(
       value,
       destinationClassicAddress,
       fee,
@@ -192,7 +277,7 @@ describe('serializer', function (): void {
   it('fails to serializes a payment in XRP from an X-Address with a tag', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP from a sender with a tag.
     const account = Utils.encodeXAddress(accountClassicAddress, tag)
-    const transaction = makeTransaction(
+    const transaction = makePaymentTransaction(
       value,
       destinationClassicAddress,
       fee,
@@ -211,7 +296,7 @@ describe('serializer', function (): void {
 
   it('fails to serializes a payment in XRP when account is undefined', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
-    const transaction = makeTransaction(
+    const transaction = makePaymentTransaction(
       value,
       destinationClassicAddress,
       fee,
@@ -230,7 +315,7 @@ describe('serializer', function (): void {
 
   it('serializes a payment to an X-address with a tag in XRP', function (): void {
     // GIVEN a transaction which represents a payment to a destination and tag, denominated in XRP.
-    const transaction = makeTransaction(
+    const transaction = makePaymentTransaction(
       value,
       destinationXAddressWithTag,
       fee,
@@ -260,7 +345,7 @@ describe('serializer', function (): void {
 
   it('serializes a payment to an X-address without a tag in XRP', function (): void {
     // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP.
-    const transaction = makeTransaction(
+    const transaction = makePaymentTransaction(
       value,
       destinationXAddressWithoutTag,
       fee,
@@ -290,7 +375,7 @@ describe('serializer', function (): void {
   it('serializes a payment with a memo', function (): void {
     // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP, with a dank
     // meme for a memo
-    const transaction = makeTransaction(
+    const transaction = makePaymentTransaction(
       value,
       destinationXAddressWithoutTag,
       fee,
@@ -435,5 +520,39 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined
     assert.isUndefined(serialized)
+  })
+
+  it('serializes a transaction representing a well formed DepositPreAuth', function (): void {
+    // GIVEN a transaction representing a well formed DepositPreauth.
+    const address = 'rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh'
+    const transaction = makeDepositPreauth(
+      address,
+      undefined,
+      fee,
+      lastLedgerSequence,
+      sequence,
+      accountClassicAddress,
+      publicKey,
+    )
+
+    // WHEN the transaction is serialized THEN the result exists.
+    assert.exists(Serializer.transactionToJSON(transaction))
+  })
+
+  it('serializes a transaction representing a malformed DepositPreAuth', function (): void {
+    // GIVEN a transaction representing a malformed DepositPreauth.
+    // Neither `authorizeAddress` or `unauthorizeAddress` are defined which creates a malformed transaction.
+    const transaction = makeDepositPreauth(
+      undefined,
+      undefined,
+      fee,
+      lastLedgerSequence,
+      sequence,
+      accountClassicAddress,
+      publicKey,
+    )
+
+    // WHEN the transaction is serialized THEN the result is unefined.
+    assert.isUndefined(Serializer.transactionToJSON(transaction))
   })
 })
