@@ -1,3 +1,8 @@
+/* eslint-disable  max-lines --
+ * Allow many lines of tests.
+ * TODO(keefertaylor): Remove this is hbergren@ agrees to disable this rule for tests globally.
+ */
+
 import 'mocha'
 import { assert } from 'chai'
 
@@ -16,11 +21,14 @@ import {
   MemoType,
   Sequence,
   SigningPublicKey,
+  Authorize,
+  Unauthorize,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
   Payment,
   Transaction,
+  DepositPreauth,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer from '../../src/XRP/serializer'
 
@@ -368,5 +376,64 @@ describe('serializer', function (): void {
     }
 
     assert.deepEqual(Serializer.memoToJSON(emptyMemo), expectedEmptyJSON)
+  })
+
+  it('serializes an authorize DepositPreauth correctly', function (): void {
+    // GIVEN a DepositPreauth protocol buffer representing an authorization.
+    const address = 'rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh'
+
+    const accountAddress = new AccountAddress()
+    accountAddress.setAddress(address)
+
+    const authorize = new Authorize()
+    authorize.setValue(accountAddress)
+
+    const depositPreauth = new DepositPreauth()
+    depositPreauth.setAuthorize(authorize)
+
+    const expectedJSON = {
+      Authorize: address,
+    }
+
+    // WHEN it is serialized.
+    const serialized = Serializer.depositPreauthToJSON(depositPreauth)
+
+    // THEN the protocol buffer is serialized as expected.
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('serializes an unauthorize DepositPreauth correctly', function (): void {
+    // GIVEN a DepositPreauth protocol buffer representing an unauthorization.
+    const address = 'rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh'
+
+    const accountAddress = new AccountAddress()
+    accountAddress.setAddress(address)
+
+    const unauthorize = new Unauthorize()
+    unauthorize.setValue(accountAddress)
+
+    const depositPreauth = new DepositPreauth()
+    depositPreauth.setUnauthorize(unauthorize)
+
+    const expectedJSON = {
+      Unauthorize: address,
+    }
+
+    // WHEN it is serialized.
+    const serialized = Serializer.depositPreauthToJSON(depositPreauth)
+
+    // THEN the protocol buffer is serialized as expected.
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('fails to serialize a malformed DepositPreauth', function (): void {
+    // GIVEN a DepositPreauth protocol buffer which has no operation set
+    const depositPreauth = new DepositPreauth()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.depositPreauthToJSON(depositPreauth)
+
+    // THEN the result is undefined
+    assert.isUndefined(serialized)
   })
 })
