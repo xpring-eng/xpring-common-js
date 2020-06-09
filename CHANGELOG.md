@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - XRP specific functionality on the `Utils` class is deprecated. Use the new `XrpUtils` class instead.
 - A new method, `walletFromSeed` in `WalletFactory` encapsulates functionality for creating a `Wallet` object from a seed.
-- A new method, `walletFromSeedAndDerivationPath` in `WalletFactory` encapsulates functionality for creating a `Wallet` object from a seed.
 - A new enum, `XrplNetwork`, identifies the XRP Ledger network that components are connected to.
 - A new method, `isTestNetwork`, is provided by `XrpUtils` to identify whether a given `XrplNetwork` is a test network.
 - `Serializer` can now support serialization of [DepositPreAuth](https://xrpl.org/depositpreauth.html) operations.
@@ -19,8 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 - XRP-specific functionality on the `Utils` class is deprecated. Use the new `XrpUtils` class instead.
-- The `walletFromSeed` method of the `Wallet` class is deprecated. Use the new `WalletFactory` to generate `Wallet`s from seeds.
-- The `generateHDWalletFromSeed` method of the `Wallet` class is deprecated. Use the new `WalletFactory` to generate `Wallet`s from seeds.
+- The `walletFromSeed` method of the `Wallet` class is deprecated. Please use the new `WalletFactory` to generate `Wallet`s from seeds.
 
 ### Breaking Changes
 
