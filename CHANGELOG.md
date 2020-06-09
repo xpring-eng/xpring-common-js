@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `WalletFactory`'s constructor takes an `XrplNetwork` enum instead of a boolean indicating if the network is a test network. Clients should pass `XrplNetwork.Test` if they were previously passing `true`, otherwise they should pass `XrplNetwork.Main`.
 
+### Removed
+
+- `PayIDUtils` is removed. The class has been deprecated for two releases.
+- `PayIDComponents` is removed. The class has been deprecated for two releases.
+
 ## [5.1.0] - 2020-06-01
 
 ### Added
