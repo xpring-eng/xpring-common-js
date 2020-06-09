@@ -83,13 +83,13 @@ describe('Wallet Factory', function (): void {
   it('walletFromSeedAndDerivationPath - valid inputs - derivation path 0', function (): void {
     // GIVEN a wallet factory, a valid seed and a valid derivation path.
     const walletFactory = new WalletFactory(XrplNetwork.Main)
-    const seed =
+    const seedHex =
       'f5dd847bd41be2deeb5f3596ab614a95e3cebb73dcd4270df9681de9e3ee5fe34ef07beb05fea610bf2cfdffb6dc3f1593fd966ab5afd30e803af66b68df32d4'
     const derivationPath = "m/44'/144'/0'/0/0"
 
     // WHEN a wallet is generated from the seed and derivation path.
     const wallet = walletFactory.walletFromSeedAndDerivationPath(
-      seed,
+      seedHex,
       derivationPath,
     )
 
@@ -103,13 +103,13 @@ describe('Wallet Factory', function (): void {
   it('walletFromSeedAndDerivationPath - valid inputs - derivation path 1', function (): void {
     // GIVEN a wallet factory, a valid seed and a valid derivation path.
     const walletFactory = new WalletFactory(XrplNetwork.Main)
-    const seed =
+    const seedHex =
       'f5dd847bd41be2deeb5f3596ab614a95e3cebb73dcd4270df9681de9e3ee5fe34ef07beb05fea610bf2cfdffb6dc3f1593fd966ab5afd30e803af66b68df32d4'
     const derivationPath = "m/44'/144'/0'/0/1"
 
     // WHEN a wallet is generated from the seed and derivation path.
     const wallet = walletFactory.walletFromSeedAndDerivationPath(
-      seed,
+      seedHex,
       derivationPath,
     )
 
