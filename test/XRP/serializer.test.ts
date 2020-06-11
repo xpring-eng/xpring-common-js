@@ -227,7 +227,7 @@ function makeAccountSetTransaction(
 }
 
 /**
- * Make an AccountSet protocol buffer fro the given inputs.
+ * Make an AccountSet protocol buffer from the given inputs.
  *
  * @param clearFlagValue - The ClearFlag value to use for the AccountSet.
  * @param domainValue - The Domain value to use for the AccountSet.
