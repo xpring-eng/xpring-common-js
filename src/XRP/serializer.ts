@@ -23,7 +23,6 @@ interface AccountSetJSON {
   TransferRate?: number
   TickSize?: number
 }
-
 interface PaymentJSON {
   Amount: Record<string, unknown> | string
   Destination: string

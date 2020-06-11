@@ -34,9 +34,6 @@ module.exports = {
     {
       files: 'test/**/*.test.ts',
       rules: {
-        // We use non-null assertions liberally in tests to allow TypeScript to build
-        '@typescript-eslint/no-non-null-assertion': 'off',
-
         // Because of gRPC, our tests have to have a ton of imports
         'import/max-dependencies': ['warn', { max: 11 }],
 

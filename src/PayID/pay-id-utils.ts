@@ -1,8 +1,4 @@
-// Disable multiple classes to accommodate the switch to idiomatic style naming.
-/* eslint-disable import/no-deprecated --
- * We import a deprecated class because we have a deprecated class here that uses it.
- */
-import PayIdComponents, { PayIDComponents } from './pay-id-components'
+import PayIdComponents from './pay-id-components'
 
 /**
  * A static utility class for Pay ID functionality.
@@ -11,16 +7,28 @@ const payIdUtils = {
   /**
    * Parse a PayID string to a set of PayIdComponents object.
    *
-   * @param payID - The input Pay ID.
+   * @deprecated Use parsePayId instead.
+   *
+   * @param payId - The input Pay ID.
    * @returns A PayIdComponents object if the input was valid, otherwise undefined.
    */
-  parsePayID(payID: string): PayIdComponents | undefined {
-    if (!this.isASCII(payID)) {
+  parsePayID(payId: string): PayIdComponents | undefined {
+    return this.parsePayId(payId)
+  },
+
+  /**
+   * Parse a PayID string to a set of PayIdComponents object.
+   *
+   * @param payId - The input Pay ID.
+   * @returns A PayIdComponents object if the input was valid, otherwise undefined.
+   */
+  parsePayId(payId: string): PayIdComponents | undefined {
+    if (!this.isASCII(payId)) {
       return undefined
     }
 
     // Validate there are two components of a payment pointer.
-    const components = payID.split('$')
+    const components = payId.split('$')
     if (components.length !== 2) {
       return undefined
     }
@@ -50,24 +58,3 @@ const payIdUtils = {
   },
 }
 export default payIdUtils
-
-/**
- * A static utility class for PayID.
- *
- * @deprecated Use the idiomatically named `PayIdUtils` class instead.
- */
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class -- This is deprecated anyways and will be removed.
-export abstract class PayIDUtils {
-  /**
-   * Parse a PayID string to a set of PayIDComponents object.
-   *
-   * @param payID - The PayID to parse.
-   * @returns A PayIDComponents object if the input was valid, otherwise undefined.
-   */
-  public static parsePayID(payID: string): PayIDComponents | undefined {
-    const components = payIdUtils.parsePayID(payID)
-    return components
-      ? new PayIDComponents(components.host, components.path)
-      : undefined
-  }
-}

@@ -1,6 +1,6 @@
 /* eslint-disable  max-lines --
  * Allow many lines of tests.
- * TODO(keefertaylor): Remove this is hbergren@ agrees to disable this rule for tests globally.
+ * TODO(keefertaylor): Remove this if hbergren@ agrees to disable this rule for tests globally.
  */
 
 import 'mocha'
