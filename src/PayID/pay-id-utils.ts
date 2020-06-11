@@ -7,16 +7,28 @@ const payIdUtils = {
   /**
    * Parse a PayID string to a set of PayIdComponents object.
    *
-   * @param payID - The input Pay ID.
+   * @deprecated Use parsePayId instead.
+   *
+   * @param payId - The input Pay ID.
    * @returns A PayIdComponents object if the input was valid, otherwise undefined.
    */
-  parsePayID(payID: string): PayIdComponents | undefined {
-    if (!this.isASCII(payID)) {
+  parsePayID(payId: string): PayIdComponents | undefined {
+    return this.parsePayId(payId)
+  },
+
+  /**
+   * Parse a PayID string to a set of PayIdComponents object.
+   *
+   * @param payId - The input Pay ID.
+   * @returns A PayIdComponents object if the input was valid, otherwise undefined.
+   */
+  parsePayId(payId: string): PayIdComponents | undefined {
+    if (!this.isASCII(payId)) {
       return undefined
     }
 
     // Validate there are two components of a payment pointer.
-    const components = payID.split('$')
+    const components = payId.split('$')
     if (components.length !== 2) {
       return undefined
     }
