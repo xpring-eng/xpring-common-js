@@ -27,15 +27,15 @@ const payIdUtils = {
       return undefined
     }
 
-    // Validate there are two components of a payment pointer.
-    const components = payId.split('$')
-    if (components.length !== 2) {
+    // Split on the last occurrence of '$'
+    const lastDollarIndex = payId.lastIndexOf('$')
+    if (lastDollarIndex === -1) {
       return undefined
     }
+    const path = payId.slice(0, lastDollarIndex)
+    const host = payId.slice(lastDollarIndex + 1)
 
     // Validate the host and path have values.
-    const path = components[0]
-    const host = components[1]
     if (host.length === 0 || path.length === 0) {
       return undefined
     }
