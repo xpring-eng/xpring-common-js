@@ -1,6 +1,10 @@
 import Utils from '../Common/utils'
 
-import { XRPDropsAmount } from './generated/org/xrpl/rpc/v1/amount_pb'
+import {
+  CurrencyAmount,
+  XRPDropsAmount,
+  IssuedCurrencyAmount,
+} from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Memo,
   Payment,
@@ -10,11 +14,31 @@ import {
 
 type TransactionDataJSON = PaymentJSON | DepositPreauthJSON
 
+type CurrencyAmountJSON = XRPAmountJSON | IssuedCurrencyAmountJSON
+
+type XRPAmountJSON = string
+
+interface IssuedCurrencyAmountJSON {
+  value: string
+  currency: string
+  issuer: string
+}
+
 interface PaymentJSON {
-  Amount: Record<string, unknown> | string
+  Amount: CurrencyAmountJSON
   Destination: string
   DestinationTag?: number
+  InvoiceID?: string
   TransactionType: string
+  SendMax?: CurrencyAmountJSON
+  DeliverMin?: CurrencyAmountJSON
+  Paths?: Array<Array<PathJSON>>
+}
+
+interface PathJSON {
+  account?: string
+  issuer?: string
+  currencyCode?: string
 }
 
 interface DepositPreauthJSON {
@@ -116,6 +140,71 @@ const serializer = {
   },
 
   /**
+   * Convert a {@link CurrencyAmount} to a JSON representation.
+   *
+   * @param currencyAmount - The {@link CurrencyAmount} to convert.
+   * @returns A JSON representation of the input.
+   */
+  currencyAmountToJSON(
+    currencyAmount: CurrencyAmount,
+  ): CurrencyAmountJSON | undefined {
+    switch (currencyAmount.getAmountCase()) {
+      case CurrencyAmount.AmountCase.XRP_AMOUNT: {
+        const xrpAmount = currencyAmount.getXrpAmount()
+        if (!xrpAmount) {
+          return undefined
+        }
+
+        return this.xrpAmountToJSON(xrpAmount)
+      }
+      case CurrencyAmount.AmountCase.ISSUED_CURRENCY_AMOUNT: {
+        const issuedCurrencyAmount = currencyAmount.getIssuedCurrencyAmount()
+        if (!issuedCurrencyAmount) {
+          return undefined
+        }
+
+        return this.issuedCurrencyAmountToJSON(issuedCurrencyAmount)
+      }
+
+      case CurrencyAmount.AmountCase.AMOUNT_NOT_SET: {
+        return undefined
+      }
+
+      default: {
+        return undefined
+      }
+    }
+  },
+
+  /**
+   * Convert a {@link IssuedCurrencyAmount} to a JSON representation.
+   *
+   * @param issuedCurrencyAmount - The {@link IssuedCurrencyAmount} to convert.
+   * @returns A JSON representation of the input.
+   */
+  issuedCurrencyAmountToJSON(
+    issuedCurrencyAmount: IssuedCurrencyAmount,
+  ): IssuedCurrencyAmountJSON | undefined {
+    const currencyWrapper = issuedCurrencyAmount.getCurrency()
+    const value = issuedCurrencyAmount.getValue()
+    const issuer = issuedCurrencyAmount.getIssuer()?.getAddress()
+    if (currencyWrapper === undefined || value === '' || issuer === undefined) {
+      return undefined
+    }
+
+    const currency =
+      currencyWrapper.getName() === ''
+        ? currencyWrapper.getName()
+        : Utils.toHex(currencyWrapper.getCode_asU8())
+
+    return {
+      currency,
+      value,
+      issuer,
+    }
+  },
+
+  /**
    * Convert a Payment to a JSON representation.
    *
    * @param payment - The Payment to convert.
@@ -124,7 +213,7 @@ const serializer = {
   // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
   paymentToJSON(payment: Payment): PaymentJSON | undefined {
     const json: PaymentJSON = {
-      Amount: {},
+      Amount: '',
       Destination: '',
       TransactionType: 'Payment',
     }
@@ -141,11 +230,47 @@ const serializer = {
       json.DestinationTag = decodedXAddress.tag
     }
 
-    const xrpAmount = payment.getAmount()?.getValue()?.getXrpAmount()
-    if (!xrpAmount) {
-      return undefined
+    const invoice = payment.getInvoiceId()?.getValue_asU8()
+    if (invoice) {
+      json.InvoiceID = Utils.toHex(invoice)
     }
-    json.Amount = this.xrpAmountToJSON(xrpAmount)
+
+    const currencyAmount = payment.getAmount()?.getValue()
+    if (currencyAmount) {
+      const amount = this.currencyAmountToJSON(currencyAmount)
+
+      if (amount === undefined) {
+        return undefined
+      }
+
+      json.Amount = amount
+    }
+
+    const deliverMinCurrencyAmount = payment.getDeliverMin()?.getValue()
+    if (deliverMinCurrencyAmount) {
+      const deliverMin = this.currencyAmountToJSON(deliverMinCurrencyAmount)
+      if (deliverMin === undefined) {
+        return undefined
+      }
+
+      json.DeliverMin = deliverMin
+    }
+
+    const sendMaxCurrencyAmount = payment.getSendMax()?.getValue()
+    if (sendMaxCurrencyAmount) {
+      const sendMax = this.currencyAmountToJSON(sendMaxCurrencyAmount)
+      if (sendMax === undefined) {
+        return undefined
+      }
+
+      json.SendMax = sendMax
+    }
+
+    const paths = payment.getPathsList()
+    if (paths.length > 0) {
+      json.Paths = paths.map((path) => { return this.pathToJSON(path) })
+    }
+      
 
     return json
   },
@@ -188,6 +313,32 @@ const serializer = {
         return undefined
       }
     }
+  },
+
+  pathToJSON(path: Payment.Path): Array<PathJSON> {
+    const elements = path.getElementsList()
+    return elements.map((element) => { return this.pathElementToJSON(element) })
+  },
+
+  pathElementToJSON(path: Payment.PathElement): PathJSON {
+    const json: PathJSON = {}
+
+    const issuer = path.getIssuer()?.getAddress()
+    if (issuer) {
+      json.issuer = issuer
+    }
+
+    const currencyCodeBytes = path.getCurrency()?.getCode_asU8()
+    if (currencyCodeBytes) {
+      json.currencyCode = Utils.toHex(currencyCodeBytes)
+    }
+
+    const account = path.getAccount()?.getAddress()
+    if (account) {
+      json.account = account
+    }
+
+    return json
   },
 
   /**
