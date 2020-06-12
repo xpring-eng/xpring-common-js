@@ -41,6 +41,16 @@ describe('PayIDUtils', function (): void {
     // WHEN it is parsed to components.
     const payIDComponents = PayIdUtils.parsePayID(rawPayID)
 
+    // THEN the Pay ID failed to parse.
+    assert.isUndefined(payIDComponents)
+  })
+
+  it('parse Pay ID - no dollar signs', function (): void {
+    // GIVEN a Pay ID that contains no dollar signs
+    const rawPayID = `georgewashington@xpring.money`
+
+    // WHEN it is parsed to components.
+    const payIDComponents = PayIdUtils.parsePayID(rawPayID)
 
     // THEN the Pay ID failed to parse.
     assert.isUndefined(payIDComponents)
