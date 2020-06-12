@@ -22,7 +22,7 @@ describe('PayIDUtils', function (): void {
     // GIVEN a Pay ID with more than one '$'.
     const host = 'xpring.money'
     const path = 'george$$$washington$'
-    const rawPayID = `${host}$${path}`
+    const rawPayID = `${path}$${host}`
 
     // WHEN it is parsed to components.
     const payIDComponents = PayIdUtils.parsePayID(rawPayID)
@@ -36,7 +36,7 @@ describe('PayIDUtils', function (): void {
     // GIVEN a Pay ID with an empty host.
     const host = ''
     const path = 'georgewashington'
-    const rawPayID = `${host}$${path}`
+    const rawPayID = `${path}$${host}`
 
     // WHEN it is parsed to components.
     const payIDComponents = PayIdUtils.parsePayID(rawPayID)
@@ -46,10 +46,10 @@ describe('PayIDUtils', function (): void {
   })
 
   it('parse Pay ID - empty path', function (): void {
-    // GIVEN a Pay ID with an empty host.
+    // GIVEN a Pay ID with an empty path.
     const host = 'xpring.money'
     const path = ''
-    const rawPayID = `${host}$${path}`
+    const rawPayID = `${path}$${host}`
 
     // WHEN it is parsed to components.
     const payIDComponents = PayIdUtils.parsePayID(rawPayID)
