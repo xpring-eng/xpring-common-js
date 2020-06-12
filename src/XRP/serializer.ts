@@ -6,6 +6,7 @@ import {
   Payment,
   Transaction,
   DepositPreauth,
+  Signer
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 
 type TransactionDataJSON = PaymentJSON | DepositPreauthJSON
@@ -26,6 +27,12 @@ interface MemoJSON {
   Memo?: MemoDetailsJSON
 }
 
+interface SignerJSON {
+  Account: string
+  TxnSignature: string
+  SigningPubKey: string
+}
+
 interface MemoDetailsJSON {
   MemoData?: Uint8Array
   MemoType?: Uint8Array
@@ -35,15 +42,19 @@ interface MemoDetailsJSON {
 interface BaseTransactionJSON {
   Account: string
   Fee: string
-  LastLedgerSequence: number
   Sequence: number
+  AccountTxnID?: string,
+  Flags?: number,
+  LastLedgerSequence?: number
+  Signers?: Array<SignerJSON>
+  SourceTag?: number
   SigningPubKey: string
   TxnSignature?: string
   Memos?: MemoJSON[]
 }
 
 interface PaymentTransactionJSONAddition extends PaymentJSON {
-  TransactionType: 'Payment'
+  TransactionType: 'Payment'  
 }
 
 type PaymentTransactionJSON = BaseTransactionJSON &
@@ -71,7 +82,6 @@ const serializer = {
       Account: '',
       Fee: '',
       Sequence: 0,
-      LastLedgerSequence: 0,
       SigningPubKey: '',
     }
 
@@ -112,7 +122,44 @@ const serializer = {
 
     Object.assign(object, this.memosToJSON(transaction.getMemosList()))
 
+    // TODO: Explicitly check undefined, otherwise 0 values trigger.
+    const accountTxnId = transaction.getAccountTransactionId()?.getValue_asU8()
+    if (accountTxnId) {
+      object.AccountTxnID = Utils.toHex(accountTxnId)
+    }
+
+    const flags = transaction.getFlags()?.getValue()
+    if (flags) {
+      object.Flags = flags
+    }
+
+    const sourceTag = getNormalizedSourceTag(transaction)
+    if (sourceTag) {
+      object.SourceTag = sourceTag
+    }
+
+    const signers = transaction.getSignersList()
+    if (signers !== undefined) {
+      object.Signers = signers.map((signer) => { return this.signerToJSON(signer) })
+    }
+
     return object
+  },
+
+  signerToJSON(signer: Signer): SignerJSON | undefined {
+    const account = signer.getAccount()?.getValue()?.getAddress()
+    const transactionSignature = signer.getTransactionSignature()?.getValue_asU8()
+    const signingPubKey = signer.getSigningPublicKey()?.getValue_asU8()
+
+    if (account === undefined || transactionSignature=== undefined || signingPubKey === undefined) {
+      return undefined
+    }
+
+    return {
+      Account: account,
+      TxnSignature: Utils.toHex(transactionSignature),
+      SigningPubKey: Utils.toHex(signingPubKey)
+    }
   },
 
   /**
@@ -265,6 +312,27 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
   }
 
   return decodedClassicAddress.address
+}
+
+/**
+ * Retrieves the source tag from a transaction.
+ *
+ * @param transaction - The transaction to scrape the sourceTag from.
+ *
+ * @returns A tag or undefined.
+ */
+function getNormalizedSourceTag(transaction: Transaction): number | undefined {
+  const account = transaction.getAccount()?.getValue()?.getAddress()
+  if (account === undefined) {
+    return undefined
+  }
+
+  const classicAddressComponents = Utils.decodeXAddress(account)
+  if (classicAddressComponents !== undefined) {
+    return classicAddressComponents.tag
+  } else {
+    return transaction.getSourceTag()?.getValue()
+  }
 }
 
 /**
