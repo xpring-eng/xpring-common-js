@@ -1,5 +1,5 @@
 /* eslint-disable  max-lines --
- * gRPC is verbose. Playing code golf wiht this file would decrease clarity for little readability gain.
+ * gRPC is verbose. Playing code golf with this file would decrease clarity for little readability gain.
  */
 import Utils from '../Common/utils'
 
