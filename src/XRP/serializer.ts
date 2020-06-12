@@ -271,7 +271,6 @@ const serializer = {
       json.Paths = paths.map((path) => { return this.pathToJSON(path) })
     }
       
-
     return json
   },
 
