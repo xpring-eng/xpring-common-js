@@ -18,7 +18,7 @@ describe('PayIDUtils', function (): void {
     assert.equal(payIDComponents?.path, `/${path}`)
   })
 
-  it('parse Pay ID - multiple dollar signs', function (): void {
+  it('parse Pay ID - valid multiple dollar signs', function (): void {
     // GIVEN a Pay ID with more than one '$'.
     const host = 'xpring.money'
     const path = 'george$$$washington$'
@@ -30,6 +30,20 @@ describe('PayIDUtils', function (): void {
     // THEN the host and path are set correctly.
     assert.equal(payIDComponents?.host, host)
     assert.equal(payIDComponents?.path, `/${path}`)  
+  })
+
+  it('parse Pay ID - invalid multiple dollar signs (ends with $)', function (): void {
+    // GIVEN a Pay ID in which the host ends with a $.
+    const host = 'xpring.money$'
+    const path = 'george$$$washington$'
+    const rawPayID = `${path}$${host}`
+
+    // WHEN it is parsed to components.
+    const payIDComponents = PayIdUtils.parsePayID(rawPayID)
+
+
+    // THEN the Pay ID failed to parse.
+    assert.isUndefined(payIDComponents)
   })
 
   it('parse Pay ID - empty host', function (): void {
