@@ -19,16 +19,17 @@ describe('PayIDUtils', function (): void {
   })
 
   it('parse Pay ID - multiple dollar signs', function (): void {
-    // GIVEN a Pay ID with too many '$'.
-    const host = 'xpring$money'
-    const path = 'georgewashington'
+    // GIVEN a Pay ID with more than one '$'.
+    const host = 'xpring.money'
+    const path = 'george$$$washington$'
     const rawPayID = `${host}$${path}`
 
     // WHEN it is parsed to components.
     const payIDComponents = PayIdUtils.parsePayID(rawPayID)
 
-    // THEN the Pay ID failed to parse.
-    assert.isUndefined(payIDComponents)
+    // THEN the host and path are set correctly.
+    assert.equal(payIDComponents?.host, host)
+    assert.equal(payIDComponents?.path, `/${path}`)  
   })
 
   it('parse Pay ID - empty host', function (): void {
