@@ -23,6 +23,7 @@ import {
   SigningPublicKey,
   Authorize,
   Unauthorize,
+  DestinationTag,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -245,11 +246,53 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized, expectedJSON)
   })
 
-  it('serializes a payment in XRP from an X-Address with no tag', function (): void {
+  it('serializes a payment in XRP from a classic address and tag', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
     const transaction = makePaymentTransaction(
       value,
       destinationClassicAddress,
+      fee,
+      lastLedgerSequence,
+      sequence,
+      accountClassicAddress,
+      publicKey,
+    )
+
+    // Manually set up a destination tag because the helper doesn't have an API.
+    const destinationTag = new DestinationTag()
+    destinationTag.setValue(tag)
+
+    const paymentWithDestinationTag = transaction.getPayment()!
+    paymentWithDestinationTag.setDestinationTag(destinationTag)
+    transaction.setPayment(paymentWithDestinationTag)
+
+    console.log(`Serializing with tag =`)
+
+    console.log(`${transaction.getPayment()!.getDestinationTag()!.getValue()!}`)
+
+    // WHEN the transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction)
+
+    // THEN the result is as expected.
+    const expectedJSON = {
+      Account: accountClassicAddress,
+      Amount: value.toString(),
+      Destination: destinationClassicAddress,
+      DestinationTag: tag,
+      Fee: fee.toString(),
+      LastLedgerSequence: lastLedgerSequence,
+      Sequence: sequence,
+      TransactionType: 'Payment',
+      SigningPubKey: publicKey,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('serializes a payment in XRP from an X-Address with no tag', function (): void {
+    // GIVEN a transaction which represents a payment denominated in XRP.
+    const transaction = makePaymentTransaction(
+      value,
+      destinationXAddressWithoutTag,
       fee,
       lastLedgerSequence,
       sequence,
@@ -261,10 +304,46 @@ describe('serializer', function (): void {
     const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
+    const expectedDestinationComponents = Utils.decodeXAddress(
+      destinationXAddressWithoutTag,
+    )!
     const expectedJSON = {
       Account: Utils.decodeXAddress(accountXAddress)!.address,
       Amount: value.toString(),
-      Destination: destinationClassicAddress,
+      Destination: expectedDestinationComponents.address,
+      Fee: fee.toString(),
+      LastLedgerSequence: lastLedgerSequence,
+      Sequence: sequence,
+      TransactionType: 'Payment',
+      SigningPubKey: publicKey,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('serializes a payment in XRP from an X-Address with a tag', function (): void {
+    // GIVEN a transaction which represents a payment denominated in XRP.
+    const transaction = makePaymentTransaction(
+      value,
+      destinationXAddressWithTag,
+      fee,
+      lastLedgerSequence,
+      sequence,
+      accountXAddress,
+      publicKey,
+    )
+
+    // WHEN the transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction)
+
+    // THEN the result is as expected.
+    const expectedDestinationComponents = Utils.decodeXAddress(
+      destinationXAddressWithTag,
+    )!
+    const expectedJSON = {
+      Account: Utils.decodeXAddress(accountXAddress)!.address,
+      Amount: value.toString(),
+      Destination: expectedDestinationComponents.address,
+      DestinationTag: expectedDestinationComponents.tag,
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequence,
       Sequence: sequence,

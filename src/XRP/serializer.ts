@@ -129,16 +129,38 @@ const serializer = {
       TransactionType: 'Payment',
     }
 
-    // If an x-address was able to be decoded, add the components to the json.
-    const destination = payment.getDestination()?.getValue()?.getAddress()
-    if (!destination) {
+    const destinationClassicOrXAddress = payment
+      .getDestination()
+      ?.getValue()
+      ?.getAddress()
+
+    // Destination is required.
+    if (
+      destinationClassicOrXAddress === undefined ||
+      !Utils.isValidAddress(destinationClassicOrXAddress)
+    ) {
       return undefined
     }
 
-    const decodedXAddress = Utils.decodeXAddress(destination)
-    json.Destination = decodedXAddress?.address ?? destination
-    if (decodedXAddress?.tag !== undefined) {
-      json.DestinationTag = decodedXAddress.tag
+    // Handle case if destinationClassicOrXAddress is a classic address.
+    if (Utils.isValidClassicAddress(destinationClassicOrXAddress)) {
+      json.Destination = destinationClassicOrXAddress
+
+      const destinationTag = payment.getDestinationTag()?.getValue()
+      if (destinationTag !== undefined) {
+        json.DestinationTag = destinationTag
+      }
+    } else {
+      // Otherwise, destinationClassicOrXAddress is an X-Address.
+      const decodedXAddress = Utils.decodeXAddress(destinationClassicOrXAddress)
+      if (decodedXAddress === undefined) {
+        return undefined
+      }
+
+      json.Destination = decodedXAddress.address
+      if (decodedXAddress.tag !== undefined) {
+        json.DestinationTag = decodedXAddress.tag
+      }
     }
 
     const xrpAmount = payment.getAmount()?.getValue()?.getXrpAmount()
