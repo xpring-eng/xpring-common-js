@@ -128,7 +128,7 @@ const utils = {
    * Convert a buffer to a hex string.
    *
    * @param buffer - The buffer to convert.
-   * @returns A string representing the buffer.
+   * @returns A hex string representing the buffer.
    */
   hexFromBuffer(buffer: Buffer): string {
     return buffer.toString('hex').toUpperCase()
