@@ -123,6 +123,16 @@ const utils = {
 
     return hash.slice(0, hash.length / 2)
   },
+
+  /**
+   * Convert a buffer to a hex string.
+   *
+   * @param buffer - The buffer to convert.
+   * @returns A hex string representing the buffer.
+   */
+  hexFromBuffer(buffer: Buffer): string {
+    return buffer.toString('hex').toUpperCase()
+  },
 }
 
 export default utils
