@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [5.1.1] - 2020-06-16
 
 ### Added
 
@@ -13,15 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A new method, `walletFromSeed` in `WalletFactory` encapsulates functionality for creating a `Wallet` object from a seed.
 - A new enum, `XrplNetwork`, identifies the XRP Ledger network that components are connected to.
 - A new method, `isTestNetwork`, is provided by `XrpUtils` to identify whether a given `XrplNetwork` is a test network.
+- `Serializer` can now support serialization of [DepositPreAuth](https://xrpl.org/depositpreauth.html) operations.
+- A new method, `parsePayId`, is provided by `PayIdUtils`, to replace the `parsePayID` method.
 
 ### Deprecated
 
 - XRP-specific functionality on the `Utils` class is deprecated. Use the new `XrpUtils` class instead.
-- The `walletFromSeed` method of the `Wallet` class is deprecated. Please use the new `WalletFactory` to generate `Wallet`s from seeds.
+- The `walletFromSeed` method of the `Wallet` class is deprecated. Use the new `WalletFactory` to generate `Wallet`s from seeds.
+- The `parsePayID` method on `PayIdUtils` is deprecated. Use the `parsePayId` method instead.
 
 ### Breaking Changes
 
 - `WalletFactory`'s constructor takes an `XrplNetwork` enum instead of a boolean indicating if the network is a test network. Clients should pass `XrplNetwork.Test` if they were previously passing `true`, otherwise they should pass `XrplNetwork.Main`.
+
+### Removed
+
+- `PayIDUtils` is removed. The class has been deprecated for two releases.
+- `PayIDComponents` is removed. The class has been deprecated for two releases.
 
 ## [5.1.0] - 2020-06-01
 

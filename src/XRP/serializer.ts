@@ -5,13 +5,21 @@ import {
   Memo,
   Payment,
   Transaction,
+  DepositPreauth,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
+
+type TransactionDataJSON = PaymentJSON | DepositPreauthJSON
 
 interface PaymentJSON {
   Amount: Record<string, unknown> | string
   Destination: string
   DestinationTag?: number
   TransactionType: string
+}
+
+interface DepositPreauthJSON {
+  Authorize?: string
+  Unauthorize?: string
 }
 
 interface MemoJSON {
@@ -143,6 +151,46 @@ const serializer = {
   },
 
   /**
+   * Convert a DepositPreauth to a JSON representation.
+   *
+   * @param depositPreauth - The DepositPreauth to convert.
+   * @returns The DepositPreauth as JSON.
+   */
+  depositPreauthToJSON(
+    depositPreauth: DepositPreauth,
+  ): DepositPreauthJSON | undefined {
+    const type = depositPreauth.getAuthorizationOneofCase()
+    switch (type) {
+      case DepositPreauth.AuthorizationOneofCase.AUTHORIZE: {
+        const authorize = depositPreauth
+          .getAuthorize()
+          ?.getValue()
+          ?.getAddress()
+
+        return {
+          Authorize: authorize,
+        }
+      }
+      case DepositPreauth.AuthorizationOneofCase.UNAUTHORIZE: {
+        const unauthorize = depositPreauth
+          .getUnauthorize()
+          ?.getValue()
+          ?.getAddress()
+
+        return {
+          Unauthorize: unauthorize,
+        }
+      }
+      case DepositPreauth.AuthorizationOneofCase.AUTHORIZATION_ONEOF_NOT_SET: {
+        return undefined
+      }
+      default: {
+        return undefined
+      }
+    }
+  },
+
+  /**
    * Convert an XRPDropsAmount to a JSON representation.
    *
    * @param xrpDropsAmount - The XRPAmount to convert.
@@ -227,7 +275,7 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
  */
 function getAdditionalTransactionData(
   transaction: Transaction,
-): PaymentJSON | undefined {
+): TransactionDataJSON | undefined {
   const transactionDataCase = transaction.getTransactionDataCase()
 
   switch (transactionDataCase) {
@@ -238,6 +286,14 @@ function getAdditionalTransactionData(
       }
 
       return serializer.paymentToJSON(payment)
+    }
+    case Transaction.TransactionDataCase.DEPOSIT_PREAUTH: {
+      const depositPreauth = transaction.getDepositPreauth()
+      if (depositPreauth === undefined) {
+        return undefined
+      }
+
+      return serializer.depositPreauthToJSON(depositPreauth)
     }
 
     default:
