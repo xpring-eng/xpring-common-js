@@ -53,7 +53,12 @@ export default class WalletFactory {
 
       const publicKey = Utils.hexFromBuffer(node.publicKey)
       const privateKey = Utils.hexFromBuffer(node.privateKey)
-      return new Wallet(publicKey, `00${privateKey}`, this.isTest)
+      
+      // Add a 1 byte prefix to indicate that this is a secp256k1 key.
+      // See: https://xrpl.org/cryptographic-keys.html#ed25519-key-derivation.
+      const prefixedPrivateKey = `00${privateKey}
+      
+      return new Wallet(publicKey, prefixedPrivateKey`, this.isTest)
     } catch (error) {
       console.log(error)
       return undefined
