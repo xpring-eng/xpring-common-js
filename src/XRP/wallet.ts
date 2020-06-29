@@ -157,6 +157,8 @@ class Wallet {
    * Gets the x-address associated with a given wallet instance.
    *
    * @returns A string representing the x-address of the wallet.
+   *
+   * @throws An error if we are unable to derive an address.
    */
   public getAddress(): string {
     const classicAddress = rippleKeyPair.deriveAddress(this.publicKey)

@@ -38,6 +38,7 @@ export default class WalletFactory {
    * @param derivationPath - The given derivation path to use. If undefined, the default path is used.
    * @returns A new wallet from the given mnemonic if the mnemonic was valid, otherwise undefined.
    */
+  // eslint-disable-next-line max-statements -- This does not read as too complex a function.
   public walletFromSeedAndDerivationPath(
     seed: string,
     derivationPath = WalletFactory.defaultDerivationPath,

@@ -28,7 +28,10 @@ module.exports = {
 
   extends: ['@xpring-eng/eslint-config-base/loose'],
 
-  rules: {},
+  rules: {
+    // TODO:(hbergren) Remove this rule when the PayID logger lives in a standalone library
+    'no-console': 'off',
+  },
 
   overrides: [
     {
