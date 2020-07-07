@@ -15,7 +15,10 @@ const signer = {
    *
    * @param transactionJSON - The raw transaction JSON object.
    * @param wallet - The wallet to sign the transaction with.
+   *
    * @returns A set of bytes representing the inputs and a signature.
+   *
+   * @throws An error if we are unable to sign the transaction.
    */
   signTransactionFromJSON(
     transactionJSON: TransactionJSON,

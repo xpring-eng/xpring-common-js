@@ -332,7 +332,10 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
  * Given a Transaction, get the JSON representation of data specific to that transaction type.
  *
  * @param transaction - A transaction to check for additional transaction-type specific data.
+ *
  * @returns A JSON representation of the transaction-type specific data, or undefined.
+ *
+ * @throws An error if given a transaction that we do not know how to handle.
  */
 // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
 function getAdditionalTransactionData(

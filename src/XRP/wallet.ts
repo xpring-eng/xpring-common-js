@@ -109,6 +109,8 @@ class Wallet {
   /**
    * Generate a new hierarchical deterministic wallet from a seed and derivation path.
    *
+   * @deprecated Please use methods on `WalletFactory` to generate wallets instead.
+   *
    * @param seed - The given seed for the wallet.
    * @param derivationPath - The given derivation path to use. If undefined, the default path is used.
    * @param test - Whether the address is for use on a test network, defaults to `false`.
@@ -125,8 +127,8 @@ class Wallet {
       return undefined
     }
 
-    const publicKey = Wallet.hexFromBuffer(node.publicKey)
-    const privateKey = Wallet.hexFromBuffer(node.privateKey)
+    const publicKey = Utils.hexFromBuffer(node.publicKey)
+    const privateKey = Utils.hexFromBuffer(node.privateKey)
     return new Wallet(publicKey, `00${privateKey}`, test)
   }
 
@@ -152,20 +154,11 @@ class Wallet {
   }
 
   /**
-   * Converts a Buffer to an uppercase hexadecimal string.
-   *
-   * @param buffer - A Buffer to be converted to hexadecimal.
-   *
-   * @returns A hexadecimal string.
-   */
-  private static hexFromBuffer(buffer: Buffer): string {
-    return buffer.toString('hex').toUpperCase()
-  }
-
-  /**
    * Gets the x-address associated with a given wallet instance.
    *
    * @returns A string representing the x-address of the wallet.
+   *
+   * @throws An error if we are unable to derive an address.
    */
   public getAddress(): string {
     const classicAddress = rippleKeyPair.deriveAddress(this.publicKey)
