@@ -31,6 +31,7 @@ import {
   DepositPreauth,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer from '../../src/XRP/serializer'
+import XrpUtils from '../../src/XRP/xrp-utils'
 
 /** Constants for transactions. */
 const value = '1000'
@@ -262,7 +263,7 @@ describe('serializer', function (): void {
 
     // THEN the result is as expected.
     const expectedJSON = {
-      Account: Utils.decodeXAddress(accountXAddress)!.address,
+      Account: XrpUtils.decodeXAddress(accountXAddress)!.address,
       Amount: value.toString(),
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
@@ -276,7 +277,7 @@ describe('serializer', function (): void {
 
   it('fails to serializes a payment in XRP from an X-Address with a tag', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP from a sender with a tag.
-    const account = Utils.encodeXAddress(accountClassicAddress, tag)
+    const account = XrpUtils.encodeXAddress(accountClassicAddress, tag)
     const transaction = makePaymentTransaction(
       value,
       destinationClassicAddress,

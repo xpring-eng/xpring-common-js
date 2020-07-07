@@ -1,15 +1,6 @@
-import { createHash } from 'crypto'
-
 import * as addressCodec from 'ripple-address-codec'
 
 import XrplNetwork from './xrpl-network'
-
-/**
- * A prefix applied when hashing a signed transaction blob.
- *
- * @see Https://xrpl.org/basic-data-types.html#hashes.
- */
-const signedTransactionPrefixHex = '54584E00'
 
 /**
  * A simple property bag which contains components of a classic address.
@@ -116,80 +107,6 @@ const xrpUtils = {
         shimClassicAddress.tag === false ? undefined : shimClassicAddress.tag,
       test: shimClassicAddress.test,
     }
-  },
-
-  /**
-   * Convert the given byte array to a hexadecimal string.
-   *
-   * This method exists to break a dependency cycle between XrpUtils and Utils while deprecated funtionality exists in the latter.
-   * TODO(keefertaylor): Remove this when methods in Utils are removed.
-   *
-   * @param bytes - An array of bytes.
-   * @returns An encoded hexadecimal string.
-   */
-  toHex(bytes: Uint8Array): string {
-    return Buffer.from(bytes).toString('hex').toUpperCase()
-  },
-
-  /**
-   * Convert the given hexadecimal string to a byte array.
-   *
-   * This method exists to break a dependency cycle between XrpUtils and Utils while deprecated funtionality exists in the latter.
-   * TODO(keefertaylor): Remove this when methods in Utils are removed.
-   *
-   * @param hex - A hexadecimal string.
-   * @returns A decoded byte array.
-   */
-  toBytes(hex: string): Uint8Array {
-    return Uint8Array.from(Buffer.from(hex, 'hex'))
-  },
-
-  /**
-   * Convert the given transaction blob to a transaction hash.
-   *
-   * @param transactionBlobHex - A hexadecimal encoded transaction blob.
-   * @returns A hex encoded hash if the input was valid, otherwise undefined.
-   */
-  transactionBlobToTransactionHash(
-    transactionBlobHex: string,
-  ): string | undefined {
-    if (!this.isHex(transactionBlobHex)) {
-      return undefined
-    }
-
-    const prefixedTransactionBlob = this.toBytes(
-      signedTransactionPrefixHex + transactionBlobHex,
-    )
-    const hash = this.sha512Half(prefixedTransactionBlob)
-    return this.toHex(hash)
-  },
-
-  /**
-   * Check if the given string is valid hex.
-   *
-   * This method exists to break a dependency cycle between XrpUtils and Utils while deprecated funtionality exists in the latter.
-   * TODO(keefertaylor): Remove this when methods in Utils are removed.
-   *
-   * @param input - The input to check.
-   * @returns True if the input is valid hex, otherwise false.
-   */
-  isHex(input: string): boolean {
-    const hexRegEx = /(?:[0-9]|[a-f])/gimu
-    return (input.match(hexRegEx) ?? []).length === input.length
-  },
-
-  /**
-   * Compute the SHA512 half hash of the given bytes.
-   *
-   * @param bytes - The input to hash.
-   * @returns The hash of the input.
-   */
-  sha512Half(bytes: Uint8Array): Uint8Array {
-    const sha512 = createHash('sha512')
-    const hashHex = sha512.update(bytes).digest('hex').toUpperCase()
-    const hash = this.toBytes(hashHex)
-
-    return hash.slice(0, hash.length / 2)
   },
 
   /**
