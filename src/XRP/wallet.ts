@@ -83,6 +83,8 @@ class Wallet {
   /**
    * Generate a new hierarchical deterministic wallet from a mnemonic and derivation path.
    *
+   * @deprecated Please use methods on `WalletFactory` to generate wallets instead.
+   *
    * @param mnemonic - The given mnemonic for the wallet.
    * @param derivationPath - The given derivation path to use. If undefined, the default path is used.
    * @param test - Whether the address is for use on a test network, defaults to `false`.
