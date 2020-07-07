@@ -1,6 +1,15 @@
 import * as addressCodec from 'ripple-address-codec'
 
+import Utils from '../Common/utils'
+
 import XrplNetwork from './xrpl-network'
+
+/**
+ * A prefix applied when hashing a signed transaction blob.
+ *
+ * @see Https://xrpl.org/basic-data-types.html#hashes.
+ */
+const signedTransactionPrefixHex = '54584E00'
 
 /**
  * A simple property bag which contains components of a classic address.
@@ -107,6 +116,26 @@ const xrpUtils = {
         shimClassicAddress.tag === false ? undefined : shimClassicAddress.tag,
       test: shimClassicAddress.test,
     }
+  },
+
+  /**
+   * Convert the given transaction blob to a transaction hash.
+   *
+   * @param transactionBlobHex - A hexadecimal encoded transaction blob.
+   * @returns A hex encoded hash if the input was valid, otherwise undefined.
+   */
+  transactionBlobToTransactionHash(
+    transactionBlobHex: string,
+  ): string | undefined {
+    if (!Utils.isHex(transactionBlobHex)) {
+      return undefined
+    }
+
+    const prefixedTransactionBlob = Utils.toBytes(
+      signedTransactionPrefixHex + transactionBlobHex,
+    )
+    const hash = Utils.sha512Half(prefixedTransactionBlob)
+    return Utils.toHex(hash)
   },
 
   /**
