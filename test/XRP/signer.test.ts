@@ -1,3 +1,4 @@
+/* eslint-disable import/max-dependencies -- Protocol buffer construction is verbose */
 import { assert } from 'chai'
 import * as rippleCodec from 'ripple-binary-codec'
 
