@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The `generateWalletFromMnemonic` method of the `Wallet` class is deprecated. Use the new `WalletFactory` class to generate `Wallet`s from mnemonics and derivation paths.
 
+### Removed
+
+- Deprecated XRP specific functionality in `Utils` is removed. Use `XrpUtils` instead.
+- Deprecated generic utils functionality in `XrpUtils` is removed. Use `Utils` instead.
+
 ## [5.1.1] - 2020-06-16
 
 ### Added

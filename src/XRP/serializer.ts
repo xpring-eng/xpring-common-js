@@ -11,6 +11,7 @@ import {
   Transaction,
   DepositPreauth,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
+import XrpUtils from './xrp-utils'
 
 type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
 
@@ -148,7 +149,7 @@ const serializer = {
       return undefined
     }
 
-    const decodedXAddress = Utils.decodeXAddress(destination)
+    const decodedXAddress = XrpUtils.decodeXAddress(destination)
     json.Destination = decodedXAddress?.address ?? destination
     if (decodedXAddress?.tag !== undefined) {
       json.DestinationTag = decodedXAddress.tag
@@ -309,17 +310,17 @@ export default serializer
  */
 function getNormalizedAccount(transaction: Transaction): string | undefined {
   const account = transaction.getAccount()?.getValue()?.getAddress()
-  if (!account || !Utils.isValidAddress(account)) {
+  if (!account || !XrpUtils.isValidAddress(account)) {
     return undefined
   }
 
-  if (Utils.isValidClassicAddress(account)) {
+  if (XrpUtils.isValidClassicAddress(account)) {
     return account
   }
 
   // We already checked that we're a valid address, and if we were a classic address,
   // so we are definitely an X-Address here.
-  const decodedClassicAddress = Utils.decodeXAddress(account)
+  const decodedClassicAddress = XrpUtils.decodeXAddress(account)
   if (!decodedClassicAddress || decodedClassicAddress.tag !== undefined) {
     // Accounts cannot have a tag.
     return undefined

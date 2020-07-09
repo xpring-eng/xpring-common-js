@@ -1,3 +1,4 @@
+/* eslint-disable import/max-dependencies -- Protocol buffer construction is verbose */
 import { assert } from 'chai'
 import * as rippleCodec from 'ripple-binary-codec'
 
@@ -20,6 +21,7 @@ import {
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer from '../../src/XRP/serializer'
 import Signer from '../../src/XRP/signer'
+import XrpUtils from '../../src/XRP/xrp-utils'
 
 import FakeWallet from './fakes/fake-wallet'
 
@@ -97,10 +99,10 @@ describe('signer', function (): void {
     // GIVEN an transaction and a wallet and expected signing artifacts.
     const fakeSignature = 'DEADBEEF'
     const wallet = new FakeWallet(fakeSignature)
-    const destinationAddress = Utils.decodeXAddress(
+    const destinationAddress = XrpUtils.decodeXAddress(
       'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc',
     )
-    const sourceAddress = Utils.decodeXAddress(
+    const sourceAddress = XrpUtils.decodeXAddress(
       'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4',
     )
 
