@@ -1,15 +1,28 @@
+/* eslint-disable  max-lines --
+ * gRPC is verbose. Playing code golf with this file would decrease clarity for little readability gain.
+ */
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
+  AccountSet,
   Memo,
   Payment,
   Transaction,
   DepositPreauth,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 
-type TransactionDataJSON = PaymentJSON | DepositPreauthJSON
+type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
 
+interface AccountSetJSON {
+  ClearFlag?: number
+  Domain?: string
+  EmailHash?: string
+  MessageKey?: string
+  SetFlag?: number
+  TransferRate?: number
+  TickSize?: number
+}
 interface PaymentJSON {
   Amount: Record<string, unknown> | string
   Destination: string
@@ -191,6 +204,54 @@ const serializer = {
   },
 
   /**
+   * Convert a AccountSet to a JSON representation.
+   *
+   * @param accountSet - The AccountSet to convert.
+   * @returns The AccountSet as JSON.
+   */
+  // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
+  accountSetToJSON(accountSet: AccountSet): AccountSetJSON | undefined {
+    const json: AccountSetJSON = {}
+
+    const clearFlag = accountSet.getClearFlag()?.getValue()
+    if (clearFlag !== undefined) {
+      json.ClearFlag = clearFlag
+    }
+
+    const domain = accountSet.getDomain()?.getValue()
+    if (domain !== undefined) {
+      json.Domain = domain
+    }
+
+    const emailHashBytes = accountSet.getEmailHash()?.getValue_asU8()
+    if (emailHashBytes !== undefined) {
+      json.EmailHash = Utils.toHex(emailHashBytes)
+    }
+
+    const messageKeyBytes = accountSet.getMessageKey()?.getValue_asU8()
+    if (messageKeyBytes !== undefined) {
+      json.MessageKey = Utils.toHex(messageKeyBytes)
+    }
+
+    const setFlag = accountSet.getSetFlag()?.getValue()
+    if (setFlag !== undefined) {
+      json.SetFlag = setFlag
+    }
+
+    const transferRate = accountSet.getTransferRate()?.getValue()
+    if (transferRate !== undefined) {
+      json.TransferRate = transferRate
+    }
+
+    const tickSize = accountSet.getTickSize()?.getValue()
+    if (tickSize !== undefined) {
+      json.TickSize = tickSize
+    }
+
+    return json
+  },
+
+  /**
    * Convert an XRPDropsAmount to a JSON representation.
    *
    * @param xrpDropsAmount - The XRPAmount to convert.
@@ -276,19 +337,19 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
  *
  * @throws An error if given a transaction that we do not know how to handle.
  */
+// eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
 function getAdditionalTransactionData(
   transaction: Transaction,
 ): TransactionDataJSON | undefined {
   const transactionDataCase = transaction.getTransactionDataCase()
 
   switch (transactionDataCase) {
-    case Transaction.TransactionDataCase.PAYMENT: {
-      const payment = transaction.getPayment()
-      if (payment === undefined) {
+    case Transaction.TransactionDataCase.ACCOUNT_SET: {
+      const accountSet = transaction.getAccountSet()
+      if (accountSet === undefined) {
         return undefined
       }
-
-      return serializer.paymentToJSON(payment)
+      return serializer.accountSetToJSON(accountSet)
     }
     case Transaction.TransactionDataCase.DEPOSIT_PREAUTH: {
       const depositPreauth = transaction.getDepositPreauth()
@@ -297,6 +358,14 @@ function getAdditionalTransactionData(
       }
 
       return serializer.depositPreauthToJSON(depositPreauth)
+    }
+    case Transaction.TransactionDataCase.PAYMENT: {
+      const payment = transaction.getPayment()
+      if (payment === undefined) {
+        return undefined
+      }
+
+      return serializer.paymentToJSON(payment)
     }
 
     default:
