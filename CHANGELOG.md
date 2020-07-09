@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A new method, `isTestNetwork`, is provided by `XrpUtils` to identify whether a given `XrplNetwork` is a test network.
 - `Serializer` can now support serialization of [DepositPreAuth](https://xrpl.org/depositpreauth.html) operations.
 - A new method, `parsePayId`, is provided by `PayIdUtils`, to replace the `parsePayID` method.
+- `Serializer` can now support serialization of [AccountSet](https://xrpl.org/accountset.html) operations.
 
 ### Deprecated
 
