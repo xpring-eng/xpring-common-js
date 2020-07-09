@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
-- The `generateWalletFromMnemonic` method of the `Wallet` class is deprecated. Use the new `WalletFactory` class to generate `Wallet`s from mnemonics and derivation paths..
+- The `generateWalletFromMnemonic` method of the `Wallet` class is deprecated. Use the new `WalletFactory` class to generate `Wallet`s from mnemonics and derivation paths.
 
 ## [5.1.1] - 2020-06-16
 
