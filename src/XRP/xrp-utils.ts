@@ -1,6 +1,6 @@
-import { createHash } from 'crypto'
-
 import * as addressCodec from 'ripple-address-codec'
+
+import Utils from '../Common/utils'
 
 import XrplNetwork from './xrpl-network'
 
@@ -119,32 +119,6 @@ const xrpUtils = {
   },
 
   /**
-   * Convert the given byte array to a hexadecimal string.
-   *
-   * This method exists to break a dependency cycle between XrpUtils and Utils while deprecated funtionality exists in the latter.
-   * TODO(keefertaylor): Remove this when methods in Utils are removed.
-   *
-   * @param bytes - An array of bytes.
-   * @returns An encoded hexadecimal string.
-   */
-  toHex(bytes: Uint8Array): string {
-    return Buffer.from(bytes).toString('hex').toUpperCase()
-  },
-
-  /**
-   * Convert the given hexadecimal string to a byte array.
-   *
-   * This method exists to break a dependency cycle between XrpUtils and Utils while deprecated funtionality exists in the latter.
-   * TODO(keefertaylor): Remove this when methods in Utils are removed.
-   *
-   * @param hex - A hexadecimal string.
-   * @returns A decoded byte array.
-   */
-  toBytes(hex: string): Uint8Array {
-    return Uint8Array.from(Buffer.from(hex, 'hex'))
-  },
-
-  /**
    * Convert the given transaction blob to a transaction hash.
    *
    * @param transactionBlobHex - A hexadecimal encoded transaction blob.
@@ -153,43 +127,15 @@ const xrpUtils = {
   transactionBlobToTransactionHash(
     transactionBlobHex: string,
   ): string | undefined {
-    if (!this.isHex(transactionBlobHex)) {
+    if (!Utils.isHex(transactionBlobHex)) {
       return undefined
     }
 
-    const prefixedTransactionBlob = this.toBytes(
+    const prefixedTransactionBlob = Utils.toBytes(
       signedTransactionPrefixHex + transactionBlobHex,
     )
-    const hash = this.sha512Half(prefixedTransactionBlob)
-    return this.toHex(hash)
-  },
-
-  /**
-   * Check if the given string is valid hex.
-   *
-   * This method exists to break a dependency cycle between XrpUtils and Utils while deprecated funtionality exists in the latter.
-   * TODO(keefertaylor): Remove this when methods in Utils are removed.
-   *
-   * @param input - The input to check.
-   * @returns True if the input is valid hex, otherwise false.
-   */
-  isHex(input: string): boolean {
-    const hexRegEx = /(?:[0-9]|[a-f])/gimu
-    return (input.match(hexRegEx) ?? []).length === input.length
-  },
-
-  /**
-   * Compute the SHA512 half hash of the given bytes.
-   *
-   * @param bytes - The input to hash.
-   * @returns The hash of the input.
-   */
-  sha512Half(bytes: Uint8Array): Uint8Array {
-    const sha512 = createHash('sha512')
-    const hashHex = sha512.update(bytes).digest('hex').toUpperCase()
-    const hash = this.toBytes(hashHex)
-
-    return hash.slice(0, hash.length / 2)
+    const hash = Utils.sha512Half(prefixedTransactionBlob)
+    return Utils.toHex(hash)
   },
 
   /**
