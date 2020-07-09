@@ -4,6 +4,8 @@ import * as rippleKeyPair from 'ripple-keypairs'
 
 import Utils from '../Common/utils'
 
+import XrpUtils from './xrp-utils'
+
 /**
  * An object which contains artifacts from generating a new wallet.
  */
@@ -162,7 +164,11 @@ class Wallet {
    */
   public getAddress(): string {
     const classicAddress = rippleKeyPair.deriveAddress(this.publicKey)
-    const xAddress = Utils.encodeXAddress(classicAddress, undefined, this.test)
+    const xAddress = XrpUtils.encodeXAddress(
+      classicAddress,
+      undefined,
+      this.test,
+    )
     if (xAddress === undefined) {
       throw new Error('Unknown error deriving address')
     }
