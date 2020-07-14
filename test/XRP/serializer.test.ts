@@ -610,6 +610,7 @@ describe('serializer', function (): void {
 
     const expectedJSON = {
       Authorize: address,
+      TransactionType: 'DepositPreauth',
     }
 
     // WHEN it is serialized.
@@ -633,6 +634,7 @@ describe('serializer', function (): void {
     depositPreauth.setUnauthorize(unauthorize)
 
     const expectedJSON = {
+      TransactionType: 'DepositPreauth',
       Unauthorize: address,
     }
 
@@ -699,7 +701,9 @@ describe('serializer', function (): void {
       undefined,
       undefined,
     )
-    const expectedJSON = {}
+    const expectedJSON = {
+      TransactionType: 'AccountSet',
+    }
 
     // WHEN it is serialized.
     const serialized = Serializer.accountSetToJSON(accountSet)
@@ -736,6 +740,7 @@ describe('serializer', function (): void {
       EmailHash: Utils.toHex(emailHashValue),
       MessageKey: Utils.toHex(messageKeyValue),
       SetFlag: setFlagValue,
+      TransactionType: 'AccountSet',
       TransferRate: transferRateValue,
       TickSize: tickSizeValue,
     }
