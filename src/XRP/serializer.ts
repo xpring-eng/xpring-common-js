@@ -21,6 +21,7 @@ interface AccountSetJSON {
   EmailHash?: string
   MessageKey?: string
   SetFlag?: number
+  TransactionType: string
   TransferRate?: number
   TickSize?: number
 }
@@ -33,6 +34,7 @@ interface PaymentJSON {
 
 interface DepositPreauthJSON {
   Authorize?: string
+  TransactionType: string
   Unauthorize?: string
 }
 
@@ -173,6 +175,9 @@ const serializer = {
   depositPreauthToJSON(
     depositPreauth: DepositPreauth,
   ): DepositPreauthJSON | undefined {
+    const json: DepositPreauthJSON = {
+      TransactionType: 'DepositPreauth',
+    }
     const type = depositPreauth.getAuthorizationOneofCase()
     switch (type) {
       case DepositPreauth.AuthorizationOneofCase.AUTHORIZE: {
@@ -180,10 +185,8 @@ const serializer = {
           .getAuthorize()
           ?.getValue()
           ?.getAddress()
-
-        return {
-          Authorize: authorize,
-        }
+        json.Authorize = authorize
+        return json
       }
       case DepositPreauth.AuthorizationOneofCase.UNAUTHORIZE: {
         const unauthorize = depositPreauth
@@ -191,9 +194,8 @@ const serializer = {
           ?.getValue()
           ?.getAddress()
 
-        return {
-          Unauthorize: unauthorize,
-        }
+        json.Unauthorize = unauthorize
+        return json
       }
       case DepositPreauth.AuthorizationOneofCase.AUTHORIZATION_ONEOF_NOT_SET: {
         return undefined
@@ -212,7 +214,7 @@ const serializer = {
    */
   // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
   accountSetToJSON(accountSet: AccountSet): AccountSetJSON | undefined {
-    const json: AccountSetJSON = {}
+    const json: AccountSetJSON = { TransactionType: 'AccountSet' }
 
     const clearFlag = accountSet.getClearFlag()?.getValue()
     if (clearFlag !== undefined) {
