@@ -25,17 +25,18 @@ interface AccountSetJSON {
   TransferRate?: number
   TickSize?: number
 }
-interface PaymentJSON {
-  Amount: Record<string, unknown> | string
-  Destination: string
-  DestinationTag?: number
-  TransactionType: string
-}
 
 interface DepositPreauthJSON {
   Authorize?: string
   TransactionType: string
   Unauthorize?: string
+}
+
+interface PaymentJSON {
+  Amount: Record<string, unknown> | string
+  Destination: string
+  DestinationTag?: number
+  TransactionType: string
 }
 
 interface MemoJSON {
@@ -58,14 +59,31 @@ interface BaseTransactionJSON {
   Memos?: MemoJSON[]
 }
 
+interface AccountSetJSONAddition extends AccountSetJSON {
+  TransactionType: 'AccountSet'
+}
+
+interface DepositPreauthJSONAddition extends DepositPreauthJSON {
+  TransactionType: 'DepositPreauth'
+}
+
 interface PaymentTransactionJSONAddition extends PaymentJSON {
   TransactionType: 'Payment'
 }
 
+type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
+
+type DepositPreauthTransactionJSON = BaseTransactionJSON &
+  DepositPreauthJSONAddition
+
 type PaymentTransactionJSON = BaseTransactionJSON &
   PaymentTransactionJSONAddition
 
-export type TransactionJSON = BaseTransactionJSON | PaymentTransactionJSON
+export type TransactionJSON =
+  | BaseTransactionJSON
+  | AccountSetTransactionJSON
+  | DepositPreauthTransactionJSON
+  | PaymentTransactionJSON
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
