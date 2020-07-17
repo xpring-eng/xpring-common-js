@@ -279,7 +279,7 @@ describe('Wallet Factory', function (): void {
 
   // generateRandomWallet
 
-  it('generateRandomWallet - correctly restores wallet', async function (): Promise<
+  it('generateRandomWallet - correctly restores random wallet', async function (): Promise<
     void
   > {
     // GIVEN a randomly generated wallet.
@@ -299,6 +299,22 @@ describe('Wallet Factory', function (): void {
       restoredWallet?.privateKey,
       walletGenerationResult.wallet.privateKey,
     )
+  })
+
+  it('generateRandomWallet - correctly generates wallet with entropy', async function (): Promise<
+    void
+  > {
+    // GIVEN a some entropy
+    const walletFactory = new WalletFactory(XrplNetwork.Main)
+    const entropy = '00000000000000000000000000000000'
+
+    // WHEN a wallet is gnerated.
+    const walletGenerationResult = await walletFactory.generateRandomWallet(
+      entropy,
+    )
+
+    // THEN the generated wallet exists.
+    assert.exists(walletGenerationResult?.wallet)
   })
 
   it('generateRandomWallet - fails with bad entropy', async function (): Promise<
