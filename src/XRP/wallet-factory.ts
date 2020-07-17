@@ -4,6 +4,7 @@ import * as rippleKeyPair from 'ripple-keypairs'
 
 import Utils from '../Common/utils'
 
+import SeedWalletGenerationResult from './seed-wallet-generation-result'
 import Wallet from './wallet'
 import XrpUtils from './xrp-utils'
 import XrplNetwork from './xrpl-network'
@@ -30,6 +31,38 @@ export default class WalletFactory {
   public constructor(network: XrplNetwork) {
     this.network = network
     this.isTest = XrpUtils.isTestNetwork(network)
+  }
+
+  /**
+   * Generate a new wallet with a random seed.
+   *
+   * Secure random number generation is used when entropy is omitted and when the runtime environment has the necessary support.
+   * Otherwise, an error is thrown.
+   *
+   * Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
+   *
+   * @param entropy - A optional hex string of entropy.
+   * @returns A result which contains the newly generated wallet and associated artifacts.
+   */
+  public async generateRandomWalletWithSeed(
+    entropy: string | undefined = undefined,
+  ): Promise<SeedWalletGenerationResult | undefined> {
+    if (entropy && !Utils.isHex(entropy)) {
+      return undefined
+    }
+
+    const mnemonic =
+      entropy === undefined
+        ? bip39.generateMnemonic()
+        : bip39.entropyToMnemonic(entropy)
+    const seedBytes = await bip39.mnemonicToSeed(mnemonic)
+    const seedHex = Utils.toHex(seedBytes)
+
+    const wallet = this.walletFromSeed(seedHex)
+
+    return wallet === undefined
+      ? undefined
+      : new SeedWalletGenerationResult(seedHex, wallet)
   }
 
   /**

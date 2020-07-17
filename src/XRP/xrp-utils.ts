@@ -1,9 +1,7 @@
-import { BigNumber } from 'bignumber.js'
 import * as addressCodec from 'ripple-address-codec'
 
 import Utils from '../Common/utils'
 
-import XrpError, { XrpErrorType } from './xrp-error'
 import XrplNetwork from './xrpl-network'
 
 /**
@@ -148,134 +146,6 @@ const xrpUtils = {
    */
   isTestNetwork(network: XrplNetwork): boolean {
     return network === XrplNetwork.Test || network === XrplNetwork.Dev
-  },
-
-  /**
-   * Convert drops to an XRP amount.
-   *
-   * @throws An {@link XrpError} if the inputs are invalid.
-   *
-   * @param drops - A number of drops to convert.
-   * @returns The equivalent amount of XRP.
-   */
-  // eslint-disable-next-line max-statements --  Disabled due to historical code imported from Xpring-JS
-  dropsToXrp(drops: BigNumber.Value): string {
-    const dropsRegEx = RegExp(/^-?[0-9]*\.?[0-9]*$/, 'u')
-
-    if (typeof drops === 'string') {
-      if (!dropsRegEx.exec(drops)) {
-        throw new XrpError(
-          XrpErrorType.InvalidInput,
-          `dropsToXrp: invalid value '${drops}',` +
-            ` should be a number matching (^-?[0-9]*\\.?[0-9]*$).`,
-        )
-      } else if (drops === '.') {
-        throw new XrpError(
-          XrpErrorType.InvalidInput,
-          `dropsToXrp: invalid value '${drops}',` +
-            ` should be a BigNumber or string-encoded number.`,
-        )
-      }
-    }
-
-    // Converting to BigNumber and then back to string should remove any
-    // decimal point followed by zeros, e.g. '1.00'.
-    // Important: specify base 10 to avoid exponential notation, e.g. '1e-7'.
-    const normalizedDrops = new BigNumber(drops).toString()
-
-    // drops are only whole units
-    if (normalizedDrops.includes('.')) {
-      throw new XrpError(
-        XrpErrorType.InvalidInput,
-        `dropsToXrp: value '${normalizedDrops}' has too many decimal places.`,
-      )
-    }
-
-    // This should never happen; the value has already been
-    // validated above. This just ensures BigNumber did not do
-    // something unexpected.
-    if (!dropsRegEx.exec(normalizedDrops)) {
-      throw new XrpError(
-        XrpErrorType.InvalidInput,
-        `dropsToXrp: failed sanity check -` +
-          ` value '${normalizedDrops}',` +
-          ` does not match (^-?[0-9]+$).`,
-      )
-    }
-    const maxPrecisionDigits = 6
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Doing base 10 manipulations
-    const dropsPerXrp = 10 ** maxPrecisionDigits
-    return new BigNumber(normalizedDrops).dividedBy(dropsPerXrp).toString()
-  },
-
-  /**
-   * Convert an XRP amount to drops.
-   *
-   * @throws An {@link XrpError} if the inputs are invalid.
-   *
-   * @param xrp - A amount of XRP to convert.
-   * @returns The equivalent amount of dropt.
-   */
-  // eslint-disable-next-line max-statements, max-lines-per-function -- Disabled due to historical code imported from Xpring-JS
-  xrpToDrops(xrp: BigNumber.Value): string {
-    const xrpRegEx = RegExp(/^-?[0-9]*\.?[0-9]*$/, 'u')
-
-    if (typeof xrp === 'string') {
-      if (!xrpRegEx.exec(xrp)) {
-        throw new XrpError(
-          XrpErrorType.InvalidInput,
-          `xrpToDrops: invalid value '${xrp}',` +
-            ` should be a number matching (^-?[0-9]*\\.?[0-9]*$).`,
-        )
-      } else if (xrp === '.') {
-        throw new XrpError(
-          XrpErrorType.InvalidInput,
-          `xrpToDrops: invalid value '${xrp}',` +
-            ` should be a BigNumber or string-encoded number.`,
-        )
-      }
-    }
-
-    // Important: specify base 10 to avoid exponential notation, e.g. '1e-7'.
-    const normalizedXrp = new BigNumber(xrp).toString()
-
-    // This should never happen; the value has already been
-    // validated above. This just ensures BigNumber did not do
-    // something unexpected.
-    if (!xrpRegEx.exec(normalizedXrp)) {
-      throw new XrpError(
-        XrpErrorType.InvalidInput,
-        `xrpToDrops: failed sanity check -` +
-          ` value '${normalizedXrp}',` +
-          ` does not match (^-?[0-9.]+$).`,
-      )
-    }
-
-    const components = normalizedXrp.split('.')
-    if (components.length > 2) {
-      throw new XrpError(
-        XrpErrorType.InvalidInput,
-        `xrpToDrops: failed sanity check -` +
-          ` value '${normalizedXrp}' has` +
-          ` too many decimal points.`,
-      )
-    }
-
-    const fraction = components[1] || '0'
-    const maxPrecisionDigits = 6
-    if (fraction.length > maxPrecisionDigits) {
-      throw new XrpError(
-        XrpErrorType.InvalidInput,
-        `xrpToDrops: value '${normalizedXrp}' has too many decimal places.`,
-      )
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- Doing base 10 manipulations
-    const dropsPerXrp = 10 ** maxPrecisionDigits
-    return new BigNumber(normalizedXrp)
-      .times(dropsPerXrp)
-      .integerValue(BigNumber.ROUND_FLOOR)
-      .toString()
   },
 }
 
