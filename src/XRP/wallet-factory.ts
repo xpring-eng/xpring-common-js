@@ -44,7 +44,7 @@ export default class WalletFactory {
    * @param entropy - A optional hex string of entropy.
    * @returns A result which contains the newly generated wallet and associated artifacts.
    */
-  public async generateRandomWalletWithSeed(
+  public async generateRandomWallet(
     entropy: string | undefined = undefined,
   ): Promise<SeedWalletGenerationResult | undefined> {
     if (entropy && !Utils.isHex(entropy)) {
