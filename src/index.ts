@@ -11,7 +11,6 @@ export { default as SeedWalletGenerationResult } from './XRP/seed-wallet-generat
 export { default as Serializer } from './XRP/serializer'
 export { default as Signer } from './XRP/signer'
 export { default as Wallet, WalletGenerationResult } from './XRP/wallet'
-export { default as XrpError, XrpErrorType } from './XRP/xrp-error'
 export { default as XrpUtils, ClassicAddress } from './XRP/xrp-utils'
 export { default as XrplNetwork } from './XRP/xrpl-network'
 export { default as WalletFactory } from './XRP/wallet-factory'
