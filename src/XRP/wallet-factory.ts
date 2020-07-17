@@ -51,18 +51,14 @@ export default class WalletFactory {
       return undefined
     }
 
-    const mnemonic =
-      entropy === undefined
-        ? bip39.generateMnemonic()
-        : bip39.entropyToMnemonic(entropy)
-    const seedBytes = await bip39.mnemonicToSeed(mnemonic)
-    const seedHex = Utils.toHex(seedBytes)
-
-    const wallet = this.walletFromSeed(seedHex)
+    const generationParameters =
+      entropy === undefined ? {} : { entropy: Utils.toBytes(entropy) }
+    const seed = rippleKeyPair.generateSeed(generationParameters)
+    const wallet = this.walletFromSeed(seed)
 
     return wallet === undefined
       ? undefined
-      : new SeedWalletGenerationResult(seedHex, wallet)
+      : new SeedWalletGenerationResult(seed, wallet)
   }
 
   /**
@@ -123,7 +119,7 @@ export default class WalletFactory {
   /**
    * Generate a new wallet from the given seed.
    *
-   * @param seed - A hex encoded seed string.
+   * @param seed - A base58check encoded seed string.
    * @returns A new wallet from the given seed, or undefined if the seed was invalid.
    */
   public walletFromSeed(seed: string): Wallet | undefined {
