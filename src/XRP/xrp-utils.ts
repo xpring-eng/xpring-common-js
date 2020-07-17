@@ -160,7 +160,7 @@ const xrpUtils = {
    */
   // eslint-disable-next-line max-statements --  Disabled due to historical code imported from Xpring-JS
   dropsToXrp(drops: BigNumber.Value): string {
-    const dropsRegEx = RegExp(/^-?[0-9]*\.?[0-9]*$/)
+    const dropsRegEx = RegExp(/^-?[0-9]*\.?[0-9]*$/, 'u')
 
     if (typeof drops === 'string') {
       if (!dropsRegEx.exec(drops)) {
@@ -218,7 +218,7 @@ const xrpUtils = {
    */
   // eslint-disable-next-line max-statements, max-lines-per-function -- Disabled due to historical code imported from Xpring-JS
   xrpToDrops(xrp: BigNumber.Value): string {
-    const xrpRegEx = RegExp(/^-?[0-9]*\.?[0-9]*$/)
+    const xrpRegEx = RegExp(/^-?[0-9]*\.?[0-9]*$/, 'u')
 
     if (typeof xrp === 'string') {
       if (!xrpRegEx.exec(xrp)) {
