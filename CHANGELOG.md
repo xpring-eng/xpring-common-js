@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### [6.0.0] - 2020-07-15
+
 ### Added
 
 - A new method, `walletFromMnemonicAndDerivationPath` in `WalletFactory` encapsulates functionality for creating a `Wallet` object from a mnemonic and derivation path.
