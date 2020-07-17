@@ -20,7 +20,6 @@
     "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && webpack && copyfiles -u 3 './src/XRP/generated/**/*' ./dist/XRP/generated"
   },
   "dependencies": {
-    "bignumber.js": "^9.0.0",
     "bip32": "2.0.5",
     "bip39": "^3.0.2",
     "google-protobuf": "3.12.2",
