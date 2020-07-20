@@ -4,6 +4,7 @@ import * as rippleKeyPair from 'ripple-keypairs'
 
 import Utils from '../Common/utils'
 
+import HdWalletGenerationResult from './hd-wallet-generation-result'
 import SeedWalletGenerationResult from './seed-wallet-generation-result'
 import Wallet from './wallet'
 import XrpUtils from './xrp-utils'
@@ -31,6 +32,38 @@ export default class WalletFactory {
   public constructor(network: XrplNetwork) {
     this.network = network
     this.isTest = XrpUtils.isTestNetwork(network)
+  }
+
+  /**
+   * Generate a new HD wallet with a random mnemonic and the default XRP derivation path.
+   *
+   * Secure random number generation is used when entropy is omitted and when the runtime environment has the necessary support.
+   * Otherwise, an error is thrown.
+   *
+   * Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
+   *
+   * @param entropy - A optional hex string of entropy.
+   * @returns A result which contains the newly generated wallet and associated artifacts.
+   */
+  public async generateRandomHdWallet(
+    entropy: string | undefined = undefined,
+  ): Promise<HdWalletGenerationResult | undefined> {
+    if (entropy && !Utils.isHex(entropy)) {
+      return undefined
+    }
+
+    const mnemonic =
+      entropy === undefined
+        ? bip39.generateMnemonic()
+        : bip39.entropyToMnemonic(entropy)
+    const derivationPath = WalletFactory.defaultDerivationPath
+    const wallet = await this.walletFromMnemonicAndDerivationPath(
+      mnemonic,
+      derivationPath,
+    )
+    return wallet === undefined
+      ? undefined
+      : new HdWalletGenerationResult(mnemonic, derivationPath, wallet)
   }
 
   /**

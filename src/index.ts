@@ -7,6 +7,7 @@ export { default as PayIdComponents } from './PayID/pay-id-components'
 
 // Exported XRP Functionality.
 export { default as FakeWallet } from '../test/XRP/fakes/fake-wallet'
+export { default as HdWalletGenerationResult } from './XRP/hd-wallet-generation-result'
 export { default as SeedWalletGenerationResult } from './XRP/seed-wallet-generation-result'
 export { default as Serializer } from './XRP/serializer'
 export { default as Signer } from './XRP/signer'
