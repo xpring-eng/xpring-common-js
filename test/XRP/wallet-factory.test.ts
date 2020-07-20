@@ -308,7 +308,7 @@ describe('Wallet Factory', function (): void {
     const walletFactory = new WalletFactory(XrplNetwork.Main)
     const entropy = '00000000000000000000000000000000'
 
-    // WHEN a wallet is gnerated.
+    // WHEN a wallet is generated.
     const walletGenerationResult = await walletFactory.generateRandomWallet(
       entropy,
     )
