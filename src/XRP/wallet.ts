@@ -8,6 +8,8 @@ import XrpUtils from './xrp-utils'
 
 /**
  * An object which contains artifacts from generating a new wallet.
+ *
+ * @deprecated Use the WalletFactory class to vend wallets instead.
  */
 export interface WalletGenerationResult {
   /** The newly generated Wallet. */
@@ -54,6 +56,8 @@ class Wallet {
    * Otherwise, an error is thrown.
    *
    * Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
+   *
+   * @deprecated Please use methods on `WalletFactory` to generate wallets instead.
    *
    * @param entropy - A optional hex string of entropy.
    * @param test - Whether the address is for use on a test network, defaults to `false`.

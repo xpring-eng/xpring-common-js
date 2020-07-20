@@ -10,7 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - A new method, `generateRandomWallet` in `WalletFactory` provides functionality to generate random `Wallet`s.
+- A new method, `generateRandomHdWallet` in `WalletFactory` provides functionality to generate random hierarchical deterministic (HD) `Wallet`s.
 - A new model, `SeedWalletGenerationResult` encapsulates the results of generating a random seed based `Wallet`.
+- A new model, `HdWalletGenerationResult` encapsulates the results of generating a random hierarchical deterministic `Wallet`.
+
+### Deprecated
 
 ### [6.0.0] - 2020-07-15
 
