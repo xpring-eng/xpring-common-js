@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- A new method, `generateRandomWallet` in `WalletFactory` provides functionality to generate random `Wallet`s.
+- A new model, `SeedWalletGenerationResult` encapsulates the results of generating a random seed based `Wallet`.
+
 ### [6.0.0] - 2020-07-15
 
 ### Added

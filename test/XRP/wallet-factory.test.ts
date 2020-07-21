@@ -276,4 +276,58 @@ describe('Wallet Factory', function (): void {
     // THEN the wallet is undefined.
     assert.isUndefined(wallet)
   })
+
+  // generateRandomWallet
+
+  it('generateRandomWallet - correctly restores random wallet', async function (): Promise<
+    void
+  > {
+    // GIVEN a randomly generated wallet.
+    const walletFactory = new WalletFactory(XrplNetwork.Main)
+    const walletGenerationResult = await walletFactory.generateRandomWallet()
+    if (walletGenerationResult === undefined) {
+      throw new Error('Precondition failed: wallet could not be generated.')
+    }
+
+    // WHEN a wallet is restored with the seed.
+    const restoredWallet = walletFactory.walletFromSeed(
+      walletGenerationResult.seed,
+    )
+
+    // THEN the restored wallet and generated wallet are the same.
+    assert.equal(
+      restoredWallet?.privateKey,
+      walletGenerationResult.wallet.privateKey,
+    )
+  })
+
+  it('generateRandomWallet - correctly generates wallet with entropy', async function (): Promise<
+    void
+  > {
+    // GIVEN a some entropy
+    const walletFactory = new WalletFactory(XrplNetwork.Main)
+    const entropy = '00000000000000000000000000000000'
+
+    // WHEN a wallet is generated.
+    const walletGenerationResult = await walletFactory.generateRandomWallet(
+      entropy,
+    )
+
+    // THEN the generated wallet exists.
+    assert.exists(walletGenerationResult?.wallet)
+  })
+
+  it('generateRandomWallet - fails with bad entropy', async function (): Promise<
+    void
+  > {
+    // GIVEN invalid entropy.
+    const walletFactory = new WalletFactory(XrplNetwork.Main)
+    const entropy = 'xrp'
+
+    // WHEN a wallet is generated from the entropy.
+    const wallet = await walletFactory.generateRandomWallet(entropy)
+
+    // THEN the wallet is undefined.
+    assert.isUndefined(wallet)
+  })
 })

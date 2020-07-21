@@ -4,6 +4,7 @@ import * as rippleKeyPair from 'ripple-keypairs'
 
 import Utils from '../Common/utils'
 
+import SeedWalletGenerationResult from './seed-wallet-generation-result'
 import Wallet from './wallet'
 import XrpUtils from './xrp-utils'
 import XrplNetwork from './xrpl-network'
@@ -30,6 +31,34 @@ export default class WalletFactory {
   public constructor(network: XrplNetwork) {
     this.network = network
     this.isTest = XrpUtils.isTestNetwork(network)
+  }
+
+  /**
+   * Generate a new wallet with a random seed.
+   *
+   * Secure random number generation is used when entropy is omitted and when the runtime environment has the necessary support.
+   * Otherwise, an error is thrown.
+   *
+   * Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
+   *
+   * @param entropy - A optional hex string of entropy.
+   * @returns A result which contains the newly generated wallet and associated artifacts.
+   */
+  public async generateRandomWallet(
+    entropy: string | undefined = undefined,
+  ): Promise<SeedWalletGenerationResult | undefined> {
+    if (entropy && !Utils.isHex(entropy)) {
+      return undefined
+    }
+
+    const generationParameters =
+      entropy === undefined ? {} : { entropy: Utils.toBytes(entropy) }
+    const seed = rippleKeyPair.generateSeed(generationParameters)
+    const wallet = this.walletFromSeed(seed)
+
+    return wallet === undefined
+      ? undefined
+      : new SeedWalletGenerationResult(seed, wallet)
   }
 
   /**
@@ -90,7 +119,7 @@ export default class WalletFactory {
   /**
    * Generate a new wallet from the given seed.
    *
-   * @param seed - A hex encoded seed string.
+   * @param seed - A base58check encoded seed string.
    * @returns A new wallet from the given seed, or undefined if the seed was invalid.
    */
   public walletFromSeed(seed: string): Wallet | undefined {
