@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A new model, `HdWalletGenerationResult` encapsulates the results of generating a random hierarchical deterministic `Wallet`.
 
 ### Deprecated
+- A new model, `SeedWalletGenerationResult` encapsulates the results of generating a random seed based `Wallet`.
+- 
 
 - The static method, `generateRandomWallet`, in the `Wallet` class is deprecated. Use `WalletFactory` instead.
 
