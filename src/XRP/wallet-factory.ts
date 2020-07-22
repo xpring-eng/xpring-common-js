@@ -42,7 +42,7 @@ export default class WalletFactory {
    *
    * Runtime environments that do not have secure random number generation should pass their own buffer of entropy.
    *
-   * @param entropy - A optional hex string of entropy.
+   * @param entropy - An optional hex string of entropy.
    * @returns A result which contains the newly generated wallet and associated artifacts.
    */
   public async generateRandomHdWallet(
