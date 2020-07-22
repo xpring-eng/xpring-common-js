@@ -304,7 +304,7 @@ describe('Wallet Factory', function (): void {
   it('generateRandomWallet - correctly generates wallet with entropy', async function (): Promise<
     void
   > {
-    // GIVEN a some entropy.
+    // GIVEN a specified constant of entropy
     const walletFactory = new WalletFactory(XrplNetwork.Main)
     const entropy = '00000000000000000000000000000000'
 
@@ -359,7 +359,7 @@ describe('Wallet Factory', function (): void {
   it('generateRandomHdWallet - correctly generates wallet with entropy', async function (): Promise<
     void
   > {
-    // GIVEN a some entropy.
+    // GIVEN a specified constant of entropy.
     const walletFactory = new WalletFactory(XrplNetwork.Main)
     const entropy = '00000000000000000000000000000000'
 
