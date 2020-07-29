@@ -32,7 +32,7 @@ interface PaymentJSON {
   TransactionType: string
   SendMax?: CurrencyAmountJSON
   DeliverMin?: CurrencyAmountJSON
-  Paths?: Array<Array<PathJSON>>
+  Paths?: PathJSON[][]
 }
 
 interface PathJSON {
@@ -268,9 +268,11 @@ const serializer = {
 
     const paths = payment.getPathsList()
     if (paths.length > 0) {
-      json.Paths = paths.map((path) => { return this.pathToJSON(path) })
+      json.Paths = paths.map((path) => {
+        return this.pathToJSON(path)
+      })
     }
-      
+
     return json
   },
 
@@ -314,11 +316,19 @@ const serializer = {
     }
   },
 
-  pathToJSON(path: Payment.Path): Array<PathJSON> {
+  /**
+   * @param path
+   */
+  pathToJSON(path: Payment.Path): PathJSON[] {
     const elements = path.getElementsList()
-    return elements.map((element) => { return this.pathElementToJSON(element) })
+    return elements.map((element) => {
+      return this.pathElementToJSON(element)
+    })
   },
 
+  /**
+   * @param path
+   */
   pathElementToJSON(path: Payment.PathElement): PathJSON {
     const json: PathJSON = {}
 
