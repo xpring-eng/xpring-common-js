@@ -1,3 +1,6 @@
+/* eslint-disable  max-lines --
+ * gRPC is verbose. Playing code golf with this file would decrease clarity for little readability gain.
+ */
 import Utils from '../Common/utils'
 
 import {
@@ -6,13 +9,15 @@ import {
   IssuedCurrencyAmount,
 } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
+  AccountSet,
   Memo,
   Payment,
   Transaction,
   DepositPreauth,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
+import XrpUtils from './xrp-utils'
 
-type TransactionDataJSON = PaymentJSON | DepositPreauthJSON
+type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
 
 type CurrencyAmountJSON = XRPAmountJSON | IssuedCurrencyAmountJSON
 
@@ -41,9 +46,28 @@ interface PathJSON {
   currencyCode?: string
 }
 
+interface AccountSetJSON {
+  ClearFlag?: number
+  Domain?: string
+  EmailHash?: string
+  MessageKey?: string
+  SetFlag?: number
+  TransactionType: string
+  TransferRate?: number
+  TickSize?: number
+}
+
 interface DepositPreauthJSON {
   Authorize?: string
+  TransactionType: string
   Unauthorize?: string
+}
+
+interface PaymentJSON {
+  Amount: Record<string, unknown> | string
+  Destination: string
+  DestinationTag?: number
+  TransactionType: string
 }
 
 interface MemoJSON {
@@ -66,14 +90,31 @@ interface BaseTransactionJSON {
   Memos?: MemoJSON[]
 }
 
+interface AccountSetJSONAddition extends AccountSetJSON {
+  TransactionType: 'AccountSet'
+}
+
+interface DepositPreauthJSONAddition extends DepositPreauthJSON {
+  TransactionType: 'DepositPreauth'
+}
+
 interface PaymentTransactionJSONAddition extends PaymentJSON {
   TransactionType: 'Payment'
 }
 
+type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
+
+type DepositPreauthTransactionJSON = BaseTransactionJSON &
+  DepositPreauthJSONAddition
+
 type PaymentTransactionJSON = BaseTransactionJSON &
   PaymentTransactionJSONAddition
 
-export type TransactionJSON = BaseTransactionJSON | PaymentTransactionJSON
+export type TransactionJSON =
+  | BaseTransactionJSON
+  | AccountSetTransactionJSON
+  | DepositPreauthTransactionJSON
+  | PaymentTransactionJSON
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -224,7 +265,7 @@ const serializer = {
       return undefined
     }
 
-    const decodedXAddress = Utils.decodeXAddress(destination)
+    const decodedXAddress = XrpUtils.decodeXAddress(destination)
     json.Destination = decodedXAddress?.address ?? destination
     if (decodedXAddress?.tag !== undefined) {
       json.DestinationTag = decodedXAddress.tag
@@ -285,6 +326,9 @@ const serializer = {
   depositPreauthToJSON(
     depositPreauth: DepositPreauth,
   ): DepositPreauthJSON | undefined {
+    const json: DepositPreauthJSON = {
+      TransactionType: 'DepositPreauth',
+    }
     const type = depositPreauth.getAuthorizationOneofCase()
     switch (type) {
       case DepositPreauth.AuthorizationOneofCase.AUTHORIZE: {
@@ -292,10 +336,8 @@ const serializer = {
           .getAuthorize()
           ?.getValue()
           ?.getAddress()
-
-        return {
-          Authorize: authorize,
-        }
+        json.Authorize = authorize
+        return json
       }
       case DepositPreauth.AuthorizationOneofCase.UNAUTHORIZE: {
         const unauthorize = depositPreauth
@@ -303,9 +345,8 @@ const serializer = {
           ?.getValue()
           ?.getAddress()
 
-        return {
-          Unauthorize: unauthorize,
-        }
+        json.Unauthorize = unauthorize
+        return json
       }
       case DepositPreauth.AuthorizationOneofCase.AUTHORIZATION_ONEOF_NOT_SET: {
         return undefined
@@ -345,6 +386,54 @@ const serializer = {
     const account = path.getAccount()?.getAddress()
     if (account) {
       json.account = account
+    }
+
+    return json
+  }
+    
+  /**
+   * Convert a AccountSet to a JSON representation.
+   *
+   * @param accountSet - The AccountSet to convert.
+   * @returns The AccountSet as JSON.
+   */
+  // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
+  accountSetToJSON(accountSet: AccountSet): AccountSetJSON | undefined {
+    const json: AccountSetJSON = { TransactionType: 'AccountSet' }
+
+    const clearFlag = accountSet.getClearFlag()?.getValue()
+    if (clearFlag !== undefined) {
+      json.ClearFlag = clearFlag
+    }
+
+    const domain = accountSet.getDomain()?.getValue()
+    if (domain !== undefined) {
+      json.Domain = domain
+    }
+
+    const emailHashBytes = accountSet.getEmailHash()?.getValue_asU8()
+    if (emailHashBytes !== undefined) {
+      json.EmailHash = Utils.toHex(emailHashBytes)
+    }
+
+    const messageKeyBytes = accountSet.getMessageKey()?.getValue_asU8()
+    if (messageKeyBytes !== undefined) {
+      json.MessageKey = Utils.toHex(messageKeyBytes)
+    }
+
+    const setFlag = accountSet.getSetFlag()?.getValue()
+    if (setFlag !== undefined) {
+      json.SetFlag = setFlag
+    }
+
+    const transferRate = accountSet.getTransferRate()?.getValue()
+    if (transferRate !== undefined) {
+      json.TransferRate = transferRate
+    }
+
+    const tickSize = accountSet.getTickSize()?.getValue()
+    if (tickSize !== undefined) {
+      json.TickSize = tickSize
     }
 
     return json
@@ -408,17 +497,17 @@ export default serializer
  */
 function getNormalizedAccount(transaction: Transaction): string | undefined {
   const account = transaction.getAccount()?.getValue()?.getAddress()
-  if (!account || !Utils.isValidAddress(account)) {
+  if (!account || !XrpUtils.isValidAddress(account)) {
     return undefined
   }
 
-  if (Utils.isValidClassicAddress(account)) {
+  if (XrpUtils.isValidClassicAddress(account)) {
     return account
   }
 
   // We already checked that we're a valid address, and if we were a classic address,
   // so we are definitely an X-Address here.
-  const decodedClassicAddress = Utils.decodeXAddress(account)
+  const decodedClassicAddress = XrpUtils.decodeXAddress(account)
   if (!decodedClassicAddress || decodedClassicAddress.tag !== undefined) {
     // Accounts cannot have a tag.
     return undefined
@@ -431,21 +520,24 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
  * Given a Transaction, get the JSON representation of data specific to that transaction type.
  *
  * @param transaction - A transaction to check for additional transaction-type specific data.
+ *
  * @returns A JSON representation of the transaction-type specific data, or undefined.
+ *
+ * @throws An error if given a transaction that we do not know how to handle.
  */
+// eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
 function getAdditionalTransactionData(
   transaction: Transaction,
 ): TransactionDataJSON | undefined {
   const transactionDataCase = transaction.getTransactionDataCase()
 
   switch (transactionDataCase) {
-    case Transaction.TransactionDataCase.PAYMENT: {
-      const payment = transaction.getPayment()
-      if (payment === undefined) {
+    case Transaction.TransactionDataCase.ACCOUNT_SET: {
+      const accountSet = transaction.getAccountSet()
+      if (accountSet === undefined) {
         return undefined
       }
-
-      return serializer.paymentToJSON(payment)
+      return serializer.accountSetToJSON(accountSet)
     }
     case Transaction.TransactionDataCase.DEPOSIT_PREAUTH: {
       const depositPreauth = transaction.getDepositPreauth()
@@ -454,6 +546,14 @@ function getAdditionalTransactionData(
       }
 
       return serializer.depositPreauthToJSON(depositPreauth)
+    }
+    case Transaction.TransactionDataCase.PAYMENT: {
+      const payment = transaction.getPayment()
+      if (payment === undefined) {
+        return undefined
+      }
+
+      return serializer.paymentToJSON(payment)
     }
 
     default:

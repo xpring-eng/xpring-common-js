@@ -5,7 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## Unreleased
+
+### Added
+
+- A new method, `generateRandomWallet` in `WalletFactory` provides functionality to generate random `Wallet`s.
+- A new method, `generateRandomHdWallet` in `WalletFactory` provides functionality to generate random hierarchical deterministic (HD) `Wallet`s.
+- A new model, `SeedWalletGenerationResult` encapsulates the results of generating a random seed based `Wallet`.
+- A new model, `HdWalletGenerationResult` encapsulates the results of generating a random hierarchical deterministic `Wallet`.
+
+### Deprecated
+- The static method, `generateRandomWallet`, in the `Wallet` class is deprecated. Use `WalletFactory` instead.
+
+### [6.0.0] - 2020-07-15
+
+### Added
+
+- A new method, `walletFromMnemonicAndDerivationPath` in `WalletFactory` encapsulates functionality for creating a `Wallet` object from a mnemonic and derivation path.
+
+### Deprecated
+
+- The `generateWalletFromMnemonic` method of the `Wallet` class is deprecated. Use the new `WalletFactory` class to generate `Wallet`s from mnemonics and derivation paths.
+
+### Removed
+
+- Deprecated XRP specific functionality in `Utils` is removed. Use `XrpUtils` instead.
+- Deprecated generic utils functionality in `XrpUtils` is removed. Use `Utils` instead.
+
+## [5.1.1] - 2020-06-16
 
 ### Added
 
@@ -15,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A new method, `isTestNetwork`, is provided by `XrpUtils` to identify whether a given `XrplNetwork` is a test network.
 - `Serializer` can now support serialization of [DepositPreAuth](https://xrpl.org/depositpreauth.html) operations.
 - A new method, `parsePayId`, is provided by `PayIdUtils`, to replace the `parsePayID` method.
+- `Serializer` can now support serialization of [AccountSet](https://xrpl.org/accountset.html) operations.
 
 ### Deprecated
 
