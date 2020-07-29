@@ -11,6 +11,7 @@ import { AccountAddress } from '../../src/XRP/generated/org/xrpl/rpc/v1/account_
 import {
   CurrencyAmount,
   XRPDropsAmount,
+  Currency,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Account,
@@ -59,6 +60,9 @@ const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
 const dataForMemo = Utils.toBytes('I forgot to pick up Carl...')
 const typeForMemo = Utils.toBytes('meme')
 const formatForMemo = Utils.toBytes('jaypeg')
+
+const testAccountAddress = new AccountAddress()
+testAccountAddress.setAddress(destinationClassicAddress)
 
 // TODO(keefertaylor): Helper functions are becoming unweildy. Refactor to an external helper file.
 
@@ -753,7 +757,7 @@ describe('serializer', function (): void {
   })
 
   it('serializes an AccountSet Transaction', function (): void {
-    // GIVEN an AccountAet with no fields set.
+    // GIVEN an AccountSet with no fields set.
     const transaction = makeAccountSetTransaction(
       undefined,
       undefined,
@@ -771,5 +775,42 @@ describe('serializer', function (): void {
 
     // WHEN the transaction is serialized THEN the result exists.
     assert.exists(Serializer.transactionToJSON(transaction))
+  })
+
+  it('serializes a PathElement with account', function (): void {
+    // GIVEN a PathElement with an account set.
+    const pathElement = new Payment.PathElement()
+    pathElement.setAccount(testAccountAddress)
+
+    // WHEN the transaction is serialized.
+    const serialized = Serializer.pathElementToJSON(pathElement)
+
+    // THEN the account is set.
+    assert.equal(serialized.account, testAccountAddress.getAddress())
+
+    // AND the currency and issuer fields are undefined.
+    assert.isUndefined(serialized.currencyCode)
+    assert.isUndefined(serialized.issuer)
+  })
+
+  it('serializes a PathElement with issued currency', function (): void {
+    // GIVEN a PathElement with a currency code and an issuer.
+    const currencyCode= new Uint8Array([0, 1, 2, 3])
+    const currency = new Currency()
+    currency.setCode(currencyCode)
+
+    const pathElement = new Payment.PathElement()
+    pathElement.setCurrency(currency)
+    pathElement.setIssuer(testAccountAddress)
+
+    // WHEN the transaction is serialized.
+    const serialized = Serializer.pathElementToJSON(pathElement)
+
+    // THEN the currency and issuer fields are set.
+    assert.deepEqual(serialized.currencyCode, Utils.toHex(currencyCode))
+    assert.equal(serialized.issuer, testAccountAddress.getAddress())
+
+    // AND the account is undefined.
+    assert.isUndefined(serialized.account)
   })
 })

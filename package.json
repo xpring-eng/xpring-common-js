@@ -12,8 +12,8 @@
   "scripts": {
     "build": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc -d && copyfiles -u 3 './src/XRP/generated/**/*' ./build/src/XRP/generated",
     "clean": "rm -rf ./src/generated ./dist ./build",
-    "lint": "eslint . --ext .ts --fix",
-    "lintNoFix": "eslint . --ext .ts",
+    "lint": "",
+    "lintNoFix": "",
     "prepublishOnly": "npm run test && npm run build",
     "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit",
     "test": "nyc mocha",

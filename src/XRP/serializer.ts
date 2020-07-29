@@ -71,6 +71,12 @@ interface PaymentTransactionJSONAddition extends PaymentJSON {
   TransactionType: 'Payment'
 }
 
+interface PathJSON {
+  account?: string
+  issuer?: string
+  currencyCode?: string
+}
+
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
 
 type DepositPreauthTransactionJSON = BaseTransactionJSON &
@@ -280,6 +286,47 @@ const serializer = {
    */
   xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
     return `${xrpDropsAmount.getDrops()}`
+  },
+
+  /**
+   * Convert a payment's Path to a JSON representation.
+   *
+   * @param path - The payment's Path to convert.
+   * @returns The Path as JSON.
+   */
+  pathToJSON(path: Payment.Path): PathJSON[] {
+    const elements = path.getElementsList()
+    return elements.map((element) => {
+      return this.pathElementToJSON(element)
+    })
+  },
+
+  /**
+   * Convert a payment's PathElement to a JSON representation.
+   *
+   * @param pathElement - The PathElement to convert.
+   * @param path
+   * @returns The PathElement as JSON.
+   */
+  pathElementToJSON(path: Payment.PathElement): PathJSON {
+    const json: PathJSON = {}
+
+    const issuer = path.getIssuer()?.getAddress()
+    if (issuer) {
+      json.issuer = issuer
+    }
+
+    const currencyCodeBytes = path.getCurrency()?.getCode_asU8()
+    if (currencyCodeBytes) {
+      json.currencyCode = Utils.toHex(currencyCodeBytes)
+    }
+
+    const account = path.getAccount()?.getAddress()
+    if (account) {
+      json.account = account
+    }
+
+    return json
   },
 
   /**
