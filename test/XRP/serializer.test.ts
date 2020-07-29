@@ -795,7 +795,7 @@ describe('serializer', function (): void {
 
   it('serializes a PathElement with issued currency', function (): void {
     // GIVEN a PathElement with a currency code and an issuer.
-    const currencyCode= new Uint8Array([0, 1, 2, 3])
+    const currencyCode = new Uint8Array([0, 1, 2, 3])
     const currency = new Currency()
     currency.setCode(currencyCode)
 
