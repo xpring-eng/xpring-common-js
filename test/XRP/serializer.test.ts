@@ -351,6 +351,40 @@ function makeBaseTransaction(
 }
 /* eslint-enable no-shadow, max-params */
 
+/**
+ * Make a PathElement.
+ *
+ * Note: A valid path element should have either an account OR a currency and issuer but never both.
+ *
+ * @param account - The account to ripple through. Must not be provided if currency and issuer are provided.
+ * @param currencyCode - The currency code of the new currency on the path. Must not be provided if account is provided.
+ * @param issuer - The issuer of the new currency. Must not be provided if account is provided.
+ * @returns A PathElement with the given properties.
+ */
+function makePathElement(
+  account: AccountAddress | undefined,
+  currencyCode: Uint8Array | undefined,
+  issuer: AccountAddress | undefined,
+) {
+  const pathElement = new Payment.PathElement()
+
+  if (account !== undefined) {
+    pathElement.setAccount(account)
+  }
+
+  if (currencyCode !== undefined) {
+    const currency = new Currency()
+    currency.setCode(currencyCode)
+    pathElement.setCurrency(currency)
+  }
+
+  if (issuer !== undefined) {
+    pathElement.setIssuer(issuer)
+  }
+
+  return pathElement
+}
+
 describe('serializer', function (): void {
   it('serializes a payment in XRP from a classic address', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
@@ -779,10 +813,13 @@ describe('serializer', function (): void {
 
   it('serializes a PathElement with account', function (): void {
     // GIVEN a PathElement with an account set.
-    const pathElement = new Payment.PathElement()
-    pathElement.setAccount(testAccountAddress)
+    const pathElement = makePathElement(
+      testAccountAddress,
+      undefined,
+      undefined,
+    )
 
-    // WHEN the transaction is serialized.
+    // WHEN the PathElement is serialized.
     const serialized = Serializer.pathElementToJSON(pathElement)
 
     // THEN the account is set.
@@ -796,14 +833,13 @@ describe('serializer', function (): void {
   it('serializes a PathElement with issued currency', function (): void {
     // GIVEN a PathElement with a currency code and an issuer.
     const currencyCode = new Uint8Array([0, 1, 2, 3])
-    const currency = new Currency()
-    currency.setCode(currencyCode)
+    const pathElement = makePathElement(
+      undefined,
+      currencyCode,
+      testAccountAddress,
+    )
 
-    const pathElement = new Payment.PathElement()
-    pathElement.setCurrency(currency)
-    pathElement.setIssuer(testAccountAddress)
-
-    // WHEN the transaction is serialized.
+    // WHEN the PathElement is serialized.
     const serialized = Serializer.pathElementToJSON(pathElement)
 
     // THEN the currency and issuer fields are set.
@@ -812,5 +848,16 @@ describe('serializer', function (): void {
 
     // AND the account is undefined.
     assert.isUndefined(serialized.account)
+  })
+
+  it('serializes a Path with no elements.', function (): void {
+    // GIVEN a Path with no elements.
+    const path = new Payment.Path()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.pathToJSON(path)
+
+    // THEN the result is an empty JSON array.
+    assert.deepEqual(serialized, [])
   })
 })

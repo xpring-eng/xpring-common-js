@@ -71,11 +71,13 @@ interface PaymentTransactionJSONAddition extends PaymentJSON {
   TransactionType: 'Payment'
 }
 
-interface PathJSON {
+interface PathElementJSON {
   account?: string
   issuer?: string
   currencyCode?: string
 }
+
+type PathJSON = PathElementJSON[]
 
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
 
@@ -289,13 +291,26 @@ const serializer = {
   },
 
   /**
+   * Convert a payment's Path to a JSON representation.
+   *
+   * @param path - The Path to convert.
+   * @returns The PathElement as JSON.
+   */
+  pathToJSON(path: Payment.Path): PathJSON {
+    const elements = path.getElementsList()
+    return elements.map((element) => {
+      return this.pathElementToJSON(element)
+    })
+  },
+
+  /**
    * Convert a payment's PathElement to a JSON representation.
    *
    * @param pathElement - The PathElement to convert.
    * @returns The PathElement as JSON.
    */
-  pathElementToJSON(pathElement: Payment.PathElement): PathJSON {
-    const json: PathJSON = {}
+  pathElementToJSON(pathElement: Payment.PathElement): PathElementJSON {
+    const json: PathElementJSON = {}
 
     const issuer = pathElement.getIssuer()?.getAddress()
     if (issuer) {
