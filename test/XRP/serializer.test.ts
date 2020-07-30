@@ -782,7 +782,7 @@ describe('serializer', function (): void {
     const pathElement = new Payment.PathElement()
     pathElement.setAccount(testAccountAddress)
 
-    // WHEN the transaction is serialized.
+    // WHEN the PathElement is serialized.
     const serialized = Serializer.pathElementToJSON(pathElement)
 
     // THEN the account is set.
@@ -803,7 +803,7 @@ describe('serializer', function (): void {
     pathElement.setCurrency(currency)
     pathElement.setIssuer(testAccountAddress)
 
-    // WHEN the transaction is serialized.
+    // WHEN the PathElement is serialized.
     const serialized = Serializer.pathElementToJSON(pathElement)
 
     // THEN the currency and issuer fields are set.
