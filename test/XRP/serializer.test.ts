@@ -860,4 +860,32 @@ describe('serializer', function (): void {
     // THEN the result is an empty JSON array.
     assert.deepEqual(serialized, [])
   })
+
+  it('serializes a Path with multiple elements.', function (): void {
+    // GIVEN a Path with two elements.
+    const pathElement1 = makePathElement(
+      testAccountAddress,
+      undefined,
+      undefined,
+    )
+
+    const currencyCode = new Uint8Array([0, 1, 2, 3])
+    const pathElement2 = makePathElement(
+      undefined,
+      currencyCode,
+      testAccountAddress,
+    )
+
+    const path = new Payment.Path()
+    path.addElements(pathElement1)
+    path.addElements(pathElement2)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.pathToJSON(path)
+
+    // THEN the result is the serialized array of the input elements.
+    assert.equal(serialized.length, 2)
+    assert.deepEqual(serialized[0], Serializer.pathElementToJSON(pathElement1))
+    assert.deepEqual(serialized[1], Serializer.pathElementToJSON(pathElement2))
+  })
 })
