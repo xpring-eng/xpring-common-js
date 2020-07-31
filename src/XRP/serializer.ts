@@ -295,7 +295,7 @@ const serializer = {
    * @returns The PathElement as JSON.
    */
   pathElementToJSON(pathElement: Payment.PathElement): PathElementJSON {
-    const json: PathJSON = {}
+    const json: PathElementJSON = {}
 
     const issuer = pathElement.getIssuer()?.getAddress()
     if (issuer) {
