@@ -813,4 +813,21 @@ describe('serializer', function (): void {
     // AND the account is undefined.
     assert.isUndefined(serialized.account)
   })
+
+  it('serializes a Currency with fields set', function (): void {
+    // GIVEN a Currency with fields set.
+    const currencyName = "USD"
+    const currencyCode = new Uint8Array([1, 2, 3, 4])
+
+    const currency = new Currency()
+    currency.setName(currencyName)
+    currency.setCode(currencyCode)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyToJSON(currency)
+
+    // THEN the outputs are the inputs.
+    assert.equal(serialized.name, currencyName)
+    assert.deepEqual(serialized.code, currencyCode)
+  })
 })
