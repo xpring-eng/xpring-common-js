@@ -904,6 +904,11 @@ describe('serializer', function (): void {
     // WHEN it is serialized.
     const serialized = Serializer.issuedCurrencyAmountToJSON(issuedCurrency)
 
-    // THEN it works!
+    // THEN the issuer and the value are the same as the inputs.
+    assert.equal(serialized.issuer, testAccountAddress.getAddress())
+    assert.equal(serialized.value, value)
+
+    // AND the currency is the serialized version of the input.
+    assert.deepEqual(serialized.currency, Serializer.ser)
   })
 })
