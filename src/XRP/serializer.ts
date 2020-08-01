@@ -5,7 +5,8 @@ import Utils from '../Common/utils'
 
 import {
   XRPDropsAmount,
-  IssuedCurrencyAmount,
+  Currency,
+  IssuedCurrencyAmount
 } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   AccountSet,
@@ -87,6 +88,11 @@ interface IssuedCurrencyAmountJSON {
 }
 
 type PathJSON = PathElementJSON[]
+
+interface CurrencyJSON {
+  name?: string
+  code?: Uint8Array
+}
 
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
 
@@ -400,6 +406,19 @@ const serializer = {
       currency,
       value,
       issuer,
+    },
+  }
+
+  /**
+   * Convert a Currency to a JSON representation.
+   *
+   * @param currency - The Currency to convert.
+   * @returns The Currency as JSON.
+   */
+  currencyToJSON(currency: Currency): CurrencyJSON {
+    return {
+      name: currency.getName(),
+      code: currency.getCode_asU8()
     }
   },
 }
