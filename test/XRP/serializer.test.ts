@@ -906,7 +906,7 @@ describe('serializer', function (): void {
     assert.equal(serialized.value, value)
 
     // AND the currency is the serialized version of the input.
-    assert.deepEqual(serialized.currency, Serializer.ser)
+    assert.deepEqual(serialized.currency, Serializer.currencyToJSON(currency))
   })
 
   it('serializes a Currency with fields set', function (): void {
