@@ -12,6 +12,7 @@ import {
   CurrencyAmount,
   XRPDropsAmount,
   Currency,
+  IssuedCurrencyAmount,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Account,
@@ -887,5 +888,22 @@ describe('serializer', function (): void {
     assert.equal(serialized.length, 2)
     assert.deepEqual(serialized[0], Serializer.pathElementToJSON(pathElement1))
     assert.deepEqual(serialized[1], Serializer.pathElementToJSON(pathElement2))
+  })
+
+  it('serializes an Issued Currency.', function (): void {
+    // GIVEN an IssuedCurrencyAmount.
+    const currency = new Currency()
+    currency.setName('USD')
+    currency.setCode(new Uint8Array([1, 2, 3, 4]))
+
+    const issuedCurrency = new IssuedCurrencyAmount()
+    issuedCurrency.setIssuer(testAccountAddress)
+    issuedCurrency.setValue(value)
+    issuedCurrency.setCurrency(currency)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.issuedCurrencyAmountToJSON(issuedCurrency)
+
+    // THEN it works!
   })
 })

@@ -3,7 +3,10 @@
  */
 import Utils from '../Common/utils'
 
-import { XRPDropsAmount } from './generated/org/xrpl/rpc/v1/amount_pb'
+import {
+  XRPDropsAmount,
+  IssuedCurrencyAmount,
+} from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   AccountSet,
   Memo,
@@ -75,6 +78,12 @@ interface PathElementJSON {
   account?: string
   issuer?: string
   currencyCode?: string
+}
+
+interface IssuedCurrencyAmountJSON {
+  value: string
+  currency: string
+  issuer: string
 }
 
 type PathJSON = PathElementJSON[]
@@ -363,6 +372,34 @@ const serializer = {
 
     return {
       Memo: jsonMemo,
+    }
+  },
+
+  /**
+   * Convert a {@link IssuedCurrencyAmount} to a JSON representation.
+   *
+   * @param issuedCurrencyAmount - The {@link IssuedCurrencyAmount} to convert.
+   * @returns A JSON representation of the input.
+   */
+  issuedCurrencyAmountToJSON(
+    issuedCurrencyAmount: IssuedCurrencyAmount,
+  ): IssuedCurrencyAmountJSON | undefined {
+    const currencyWrapper = issuedCurrencyAmount.getCurrency()
+    const value = issuedCurrencyAmount.getValue()
+    const issuer = issuedCurrencyAmount.getIssuer()?.getAddress()
+    if (currencyWrapper === undefined || value === '' || issuer === undefined) {
+      return undefined
+    }
+
+    const currency =
+      currencyWrapper.getName() === ''
+        ? currencyWrapper.getName()
+        : Utils.toHex(currencyWrapper.getCode_asU8())
+
+    return {
+      currency,
+      value,
+      issuer,
     }
   },
 }
