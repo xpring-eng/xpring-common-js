@@ -77,11 +77,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
-interface CurrencyJSON {
-  name?: string
-  code?: Uint8Array
-}
-
+type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
 
 type DepositPreauthTransactionJSON = BaseTransactionJSON &
@@ -362,11 +358,18 @@ const serializer = {
    * @param currency - The Currency to convert.
    * @returns The Currency as JSON.
    */
-  currencyToJSON(currency: Currency): CurrencyJSON {
-    return {
-      name: currency.getName(),
-      code: currency.getCode_asU8()
+  currencyToJSON(currency: Currency): CurrencyJSON | undefined {
+    const currencyName = currency.getName()
+    if (currencyName !== '') {
+      return currencyName
     }
+
+    const currencyCodeBytes = currency.getCode_asU8()
+    if (currencyCodeBytes.length !== 0) {
+      return Utils.toHex(currencyCodeBytes)
+    }
+
+    return undefined
   },
 }
 
