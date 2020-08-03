@@ -814,8 +814,11 @@ describe('serializer', function (): void {
 
   it('serializes a PathElement with account', function (): void {
     // GIVEN a PathElement with an account set.
-    const pathElement = new Payment.PathElement()
-    pathElement.setAccount(testAccountAddress)
+    const pathElement = makePathElement(
+      testAccountAddress,
+      undefined,
+      undefined,
+    )
 
     // WHEN the PathElement is serialized.
     const serialized = Serializer.pathElementToJSON(pathElement)
