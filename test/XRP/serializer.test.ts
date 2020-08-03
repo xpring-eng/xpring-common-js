@@ -889,8 +889,22 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized[0], Serializer.pathElementToJSON(pathElement1))
     assert.deepEqual(serialized[1], Serializer.pathElementToJSON(pathElement2))
   })
+  it('Serializes a Currency with a name field set', function (): void {
+    // GIVEN a Currency with a name field set.
+    const currencyName = 'USD'
+    const currency = new Currency()
+    currency.setName(currencyName)
 
-  it('serializes an Issued Currency.', function (): void {
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyToJSON(currency)
+
+    // THEN the outputs are the inputs.
+    assert.equal(serialized, currencyName)
+  })
+
+  // TODO(keefertaylor): Merge currency tests here.
+
+  it('serializes an Issued Currency - valid currency', function (): void {
     // GIVEN an IssuedCurrencyAmount.
     const currency = new Currency()
     currency.setName('USD')
@@ -904,10 +918,37 @@ describe('serializer', function (): void {
     const serialized = Serializer.issuedCurrencyAmountToJSON(issuedCurrency)
 
     // THEN the issuer and the value are the same as the inputs.
-    assert.equal(serialized.issuer, testAccountAddress.getAddress())
-    assert.equal(serialized.value, value)
+    assert.equal(serialized?.issuer, testAccountAddress.getAddress())
+    assert.equal(serialized?.value, value)
 
     // AND the currency is the serialized version of the input.
-    assert.deepEqual(serialized.currency, Serializer.currencyToJSON(currency))
+    assert.deepEqual(serialized?.currency, Serializer.currencyToJSON(currency))
+  })
+
+  it('serializes an Issued Currency - missing inputs', function (): void {
+    // GIVEN an IssuedCurrencyAmount with missing inputs.
+    const issuedCurrency = new IssuedCurrencyAmount()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.issuedCurrencyAmountToJSON(issuedCurrency)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('serializes an Issued Currency - malformed currency', function (): void {
+    // GIVEN an IssuedCurrencyAmount with a malformed Currency.
+    const currency = new Currency()
+
+    const issuedCurrency = new IssuedCurrencyAmount()
+    issuedCurrency.setIssuer(testAccountAddress)
+    issuedCurrency.setValue(value)
+    issuedCurrency.setCurrency(currency)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.issuedCurrencyAmountToJSON(issuedCurrency)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 })

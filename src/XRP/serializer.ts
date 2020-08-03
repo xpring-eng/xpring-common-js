@@ -6,7 +6,7 @@ import Utils from '../Common/utils'
 import {
   XRPDropsAmount,
   Currency,
-  IssuedCurrencyAmount
+  IssuedCurrencyAmount,
 } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   AccountSet,
@@ -89,12 +89,7 @@ interface IssuedCurrencyAmountJSON {
 
 type PathJSON = PathElementJSON[]
 
-interface CurrencyJSON {
-  name?: string
-  code?: Uint8Array
-}
-
-type PathJSON = PathElementJSON[]
+type CurrencyJSON = string
 
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
 
@@ -399,17 +394,17 @@ const serializer = {
       return undefined
     }
 
-    const currency =
-      currencyWrapper.getName() === ''
-        ? currencyWrapper.getName()
-        : Utils.toHex(currencyWrapper.getCode_asU8())
+    const currency = this.currencyToJSON(currencyWrapper)
+    if (currency === undefined) {
+      return undefined
+    }
 
     return {
       currency,
       value,
       issuer,
-    },
-  }
+    }
+  },
 
   /**
    * Convert a Currency to a JSON representation.
@@ -417,11 +412,18 @@ const serializer = {
    * @param currency - The Currency to convert.
    * @returns The Currency as JSON.
    */
-  currencyToJSON(currency: Currency): CurrencyJSON {
-    return {
-      name: currency.getName(),
-      code: currency.getCode_asU8()
+  currencyToJSON(currency: Currency): CurrencyJSON | undefined {
+    const currencyName = currency.getName()
+    if (currencyName !== '') {
+      return currencyName
     }
+
+    const currencyCodeBytes = currency.getCode_asU8()
+    if (currencyCodeBytes.length !== 0) {
+      return Utils.toHex(currencyCodeBytes)
+    }
+
+    return undefined
   },
 }
 
