@@ -94,6 +94,8 @@ interface CurrencyJSON {
   code?: Uint8Array
 }
 
+type PathJSON = PathElementJSON[]
+
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
 
 type DepositPreauthTransactionJSON = BaseTransactionJSON &
