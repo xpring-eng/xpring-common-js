@@ -3,7 +3,7 @@
  */
 import Utils from '../Common/utils'
 
-import { XRPDropsAmount } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   AccountSet,
   Memo,
@@ -77,6 +77,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
 
 type DepositPreauthTransactionJSON = BaseTransactionJSON &
@@ -349,6 +350,26 @@ const serializer = {
     return {
       Memo: jsonMemo,
     }
+  },
+
+  /**
+   * Convert a Currency to a JSON representation.
+   *
+   * @param currency - The Currency to convert.
+   * @returns The Currency as JSON.
+   */
+  currencyToJSON(currency: Currency): CurrencyJSON | undefined {
+    const currencyName = currency.getName()
+    if (currencyName !== '') {
+      return currencyName
+    }
+
+    const currencyCodeBytes = currency.getCode_asU8()
+    if (currencyCodeBytes.length !== 0) {
+      return Utils.toHex(currencyCodeBytes)
+    }
+
+    return undefined
   },
 }
 
