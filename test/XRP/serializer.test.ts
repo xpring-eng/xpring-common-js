@@ -888,4 +888,39 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized[0], Serializer.pathElementToJSON(pathElement1))
     assert.deepEqual(serialized[1], Serializer.pathElementToJSON(pathElement2))
   })
+    
+  it('Serializes a Currency with a name field set', function (): void {
+    // GIVEN a Currency with a name field set.
+    const currencyName = 'USD'
+    const currency = new Currency()
+    currency.setName(currencyName)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyToJSON(currency)
+
+    // THEN the outputs are the inputs.
+    assert.equal(serialized, currencyName)
+  })
+
+  it('Serializes a Currency with a code field set', function (): void {
+    // GIVEN a Currency with a code field set.
+    const currencyCode = new Uint8Array([1, 2, 3, 4])
+
+    const currency = new Currency()
+    currency.setCode(currencyCode)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyToJSON(currency)
+
+    // THEN the outputs are the inputs.
+    assert.equal(serialized, Utils.toHex(currencyCode))
+  })
+
+  it('Serializes a Currency with no fields set', function (): void {
+    // GIVEN a Currency with no fields set.
+    const currency = new Currency()
+
+    // WHEN it is serialized THEN the result is undefined.
+    assert.isUndefined(Serializer.currencyToJSON(currency))
+  })
 })
