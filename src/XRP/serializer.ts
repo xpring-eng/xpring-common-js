@@ -294,7 +294,7 @@ const serializer = {
    * Convert a payment's Path to a JSON representation.
    *
    * @param path - The Path to convert.
-   * @returns The PathElement as JSON.
+   * @returns The Path as JSON.
    */
   pathToJSON(path: Payment.Path): PathJSON {
     const elements = path.getElementsList()
