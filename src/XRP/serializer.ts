@@ -77,6 +77,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
 
@@ -287,6 +288,19 @@ const serializer = {
    */
   xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
     return `${xrpDropsAmount.getDrops()}`
+  },
+
+  /**
+   * Convert a payment's Path to a JSON representation.
+   *
+   * @param path - The Path to convert.
+   * @returns The Path as JSON.
+   */
+  pathToJSON(path: Payment.Path): PathJSON {
+    const elements = path.getElementsList()
+    return elements.map((element) => {
+      return this.pathElementToJSON(element)
+    })
   },
 
   /**
