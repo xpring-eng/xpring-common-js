@@ -3,7 +3,7 @@
  */
 import Utils from '../Common/utils'
 
-import { XRPDropsAmount } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   AccountSet,
   Memo,
@@ -77,6 +77,8 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type PathJSON = PathElementJSON[]
+type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
 
 type DepositPreauthTransactionJSON = BaseTransactionJSON &
@@ -289,6 +291,19 @@ const serializer = {
   },
 
   /**
+   * Convert a payment's Path to a JSON representation.
+   *
+   * @param path - The Path to convert.
+   * @returns The Path as JSON.
+   */
+  pathToJSON(path: Payment.Path): PathJSON {
+    const elements = path.getElementsList()
+    return elements.map((element) => {
+      return this.pathElementToJSON(element)
+    })
+  },
+
+  /**
    * Convert a payment's PathElement to a JSON representation.
    *
    * @param pathElement - The PathElement to convert.
@@ -349,6 +364,26 @@ const serializer = {
     return {
       Memo: jsonMemo,
     }
+  },
+
+  /**
+   * Convert a Currency to a JSON representation.
+   *
+   * @param currency - The Currency to convert.
+   * @returns The Currency as JSON.
+   */
+  currencyToJSON(currency: Currency): CurrencyJSON | undefined {
+    const currencyName = currency.getName()
+    if (currencyName !== '') {
+      return currencyName
+    }
+
+    const currencyCodeBytes = currency.getCode_asU8()
+    if (currencyCodeBytes.length !== 0) {
+      return Utils.toHex(currencyCodeBytes)
+    }
+
+    return undefined
   },
 }
 
