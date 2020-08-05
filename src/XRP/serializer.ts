@@ -4,6 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { Authorize } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -77,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type AuthorizeJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
@@ -207,11 +209,13 @@ const serializer = {
     const type = depositPreauth.getAuthorizationOneofCase()
     switch (type) {
       case DepositPreauth.AuthorizationOneofCase.AUTHORIZE: {
-        const authorize = depositPreauth
-          .getAuthorize()
-          ?.getValue()
-          ?.getAddress()
-        json.Authorize = authorize
+        const authorize = depositPreauth.getAuthorize()
+        if (authorize === undefined) {
+          return undefined
+        }
+
+        const authorizeJSON = this.authorizeToJSON(authorize)
+        json.Authorize = authorizeJSON
         return json
       }
       case DepositPreauth.AuthorizationOneofCase.UNAUTHORIZE: {
@@ -384,6 +388,21 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert an Authorize to a JSON representation.
+   *
+   * @param authorize - The Authorize to convert.
+   * @returns The Authorize as JSON.
+   */
+  authorizeToJSON(authorize: Authorize): AuthorizeJSON | undefined {
+    const accountAddress = authorize.getValue()
+
+    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
+    return accountAddress === undefined
+      ? undefined
+      : accountAddress.getAddress()
   },
 }
 
