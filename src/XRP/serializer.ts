@@ -4,6 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { Unauthorize } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -29,7 +30,7 @@ interface AccountSetJSON {
 interface DepositPreauthJSON {
   Authorize?: string
   TransactionType: string
-  Unauthorize?: string
+  Unauthorize?: UnauthorizeJSON
 }
 
 interface PaymentJSON {
@@ -77,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type UnauthorizeJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
@@ -215,12 +217,13 @@ const serializer = {
         return json
       }
       case DepositPreauth.AuthorizationOneofCase.UNAUTHORIZE: {
-        const unauthorize = depositPreauth
-          .getUnauthorize()
-          ?.getValue()
-          ?.getAddress()
+        const unauthorize = depositPreauth.getUnauthorize()
+        if (unauthorize === undefined) {
+          return undefined
+        }
+        const unauthorizeJSON = this.unauthorizeToJSON(unauthorize)
 
-        json.Unauthorize = unauthorize
+        json.Unauthorize = unauthorizeJSON
         return json
       }
       case DepositPreauth.AuthorizationOneofCase.AUTHORIZATION_ONEOF_NOT_SET: {
@@ -384,6 +387,21 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert an Unauthorize to a JSON representation.
+   *
+   * @param unauthorize - The Unauthorize to convert.
+   * @returns The Unauthorize as JSON.
+   */
+  unauthorizeToJSON(unauthorize: Unauthorize): UnauthorizeJSON | undefined {
+    const accountAddress = unauthorize.getValue()
+
+    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
+    return accountAddress === undefined
+      ? undefined
+      : accountAddress.getAddress()
   },
 }
 
