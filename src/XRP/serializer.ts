@@ -28,7 +28,7 @@ interface AccountSetJSON {
 }
 
 interface DepositPreauthJSON {
-  Authorize?: string
+  Authorize?: AuthorizeJSON
   TransactionType: string
   Unauthorize?: string
 }
