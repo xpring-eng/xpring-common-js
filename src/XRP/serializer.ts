@@ -74,7 +74,7 @@ interface PaymentTransactionJSONAddition extends PaymentJSON {
 interface PathElementJSON {
   account?: string
   issuer?: string
-  currencyCode?: string
+  currencyCode?: CurrencyJSON
 }
 
 type PathJSON = PathElementJSON[]
