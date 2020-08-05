@@ -317,9 +317,9 @@ const serializer = {
       json.issuer = issuer
     }
 
-    const currencyCodeBytes = pathElement.getCurrency()?.getCode_asU8()
-    if (currencyCodeBytes) {
-      json.currencyCode = Utils.toHex(currencyCodeBytes)
+    const currency = pathElement.getCurrency()
+    if (currency) {
+      json.currencyCode = this.currencyToJSON(currency)
     }
 
     const account = pathElement.getAccount()?.getAddress()
