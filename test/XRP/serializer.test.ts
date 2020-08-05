@@ -31,6 +31,7 @@ import {
   SetFlag,
   TransferRate,
   TickSize,
+  InvoiceID,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -888,7 +889,7 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized[0], Serializer.pathElementToJSON(pathElement1))
     assert.deepEqual(serialized[1], Serializer.pathElementToJSON(pathElement2))
   })
-    
+
   it('Serializes a Currency with a name field set', function (): void {
     // GIVEN a Currency with a name field set.
     const currencyName = 'USD'
@@ -922,5 +923,19 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized THEN the result is undefined.
     assert.isUndefined(Serializer.currencyToJSON(currency))
+  })
+
+  it('Serializes an InvoiceId', function (): void {
+    // GIVEN a InvoiceId with some bytes
+    const invoiceIdBytes = new Uint8Array([0, 1, 2, 3])
+
+    const invoiceId = new InvoiceID()
+    invoiceId.setValue(invoiceIdBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.invoiceIdToJSON(invoiceId)
+
+    // THEN the result is the hex representation of the invoiceId.
+    assert.equal(serialized, Utils.toHex(invoiceIdBytes))
   })
 })

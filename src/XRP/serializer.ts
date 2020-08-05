@@ -4,6 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { InvoiceID } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -77,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type InvoiceIdJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
@@ -384,6 +386,16 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert an InvoiceID to a JSON representation.
+   *
+   * @param invoiceId - The InvoiceID to convert.
+   * @returns The InvoiceID as JSON.
+   */
+  invoiceIdToJSON(invoiceId: InvoiceID): InvoiceIdJSON {
+    return Utils.toHex(invoiceId.getValue_asU8())
   },
 }
 
