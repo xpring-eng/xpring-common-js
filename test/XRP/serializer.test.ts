@@ -888,7 +888,7 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized[0], Serializer.pathElementToJSON(pathElement1))
     assert.deepEqual(serialized[1], Serializer.pathElementToJSON(pathElement2))
   })
-    
+
   it('Serializes a Currency with a name field set', function (): void {
     // GIVEN a Currency with a name field set.
     const currencyName = 'USD'
@@ -922,5 +922,19 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized THEN the result is undefined.
     assert.isUndefined(Serializer.currencyToJSON(currency))
+  })
+
+  it('Serializes a TickSize', function (): void {
+    // GIVEN a TickSize.
+    const tickSizeValue = 1
+
+    const tickSize = new TickSize()
+    tickSize.setValue(tickSizeValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.tickSizeToJSON(tickSize)
+
+    // THEN the result is the same as the input.
+    assert.deepEqual(serialized, tickSizeValue)
   })
 })
