@@ -4,6 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { Domain } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -17,7 +18,7 @@ type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
 
 interface AccountSetJSON {
   ClearFlag?: number
-  Domain?: string
+  Domain?: DomainJSON
   EmailHash?: string
   MessageKey?: string
   SetFlag?: number
@@ -77,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type DomainJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
@@ -247,9 +249,9 @@ const serializer = {
       json.ClearFlag = clearFlag
     }
 
-    const domain = accountSet.getDomain()?.getValue()
+    const domain = accountSet.getDomain()
     if (domain !== undefined) {
-      json.Domain = domain
+      json.Domain = this.domainToJSON(domain)
     }
 
     const emailHashBytes = accountSet.getEmailHash()?.getValue_asU8()
@@ -384,6 +386,16 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert a Domain to a JSON representation.
+   *
+   * @param domain - The Domain to convert.
+   * @returns The Domain as JSON.
+   */
+  domainToJSON(domain: Domain): DomainJSON {
+    return domain.getValue()
   },
 }
 

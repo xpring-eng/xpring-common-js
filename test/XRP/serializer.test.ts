@@ -888,7 +888,7 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized[0], Serializer.pathElementToJSON(pathElement1))
     assert.deepEqual(serialized[1], Serializer.pathElementToJSON(pathElement2))
   })
-    
+
   it('Serializes a Currency with a name field set', function (): void {
     // GIVEN a Currency with a name field set.
     const currencyName = 'USD'
@@ -922,5 +922,19 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized THEN the result is undefined.
     assert.isUndefined(Serializer.currencyToJSON(currency))
+  })
+
+  it('Serializes a Domain', function (): void {
+    // GIVEN a Domain
+    const domainValue = 'https://xpring.io'
+
+    const domain = new Domain()
+    domain.setValue(domainValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.domainToJSON(domain)
+
+    // THEN the result is the same as the inputs.
+    assert.equal(serialized, domainValue)
   })
 })
