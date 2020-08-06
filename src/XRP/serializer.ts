@@ -4,6 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { LastLedgerSequence } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -52,7 +53,7 @@ interface MemoDetailsJSON {
 interface BaseTransactionJSON {
   Account: string
   Fee: string
-  LastLedgerSequence: number
+  LastLedgerSequence: LastLedgerSequenceJSON
   Sequence: number
   SigningPubKey: string
   TxnSignature?: string
@@ -77,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type LastLedgerSequenceJSON = number
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
@@ -132,8 +134,12 @@ const serializer = {
 
     // Set sequence numbers
     object.Sequence = transaction.getSequence()?.getValue() ?? 0
+
+    const lastLedgerSequence = transaction.getLastLedgerSequence()
     object.LastLedgerSequence =
-      transaction.getLastLedgerSequence()?.getValue() ?? 0
+      lastLedgerSequence !== undefined
+        ? this.lastLedgerSequenceToJSON(lastLedgerSequence)
+        : 0
 
     const signingPubKeyBytes = transaction
       .getSigningPublicKey()
@@ -384,6 +390,18 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert a LastLedgerSequence to a JSON representation.
+   *
+   * @param lastLedgerSequence - The LastLedgerSequence to convert.
+   * @returns The LastLedgerSequence as JSON.
+   */
+  lastLedgerSequenceToJSON(
+    lastLedgerSequence: LastLedgerSequence,
+  ): LastLedgerSequenceJSON {
+    return lastLedgerSequence.getValue()
   },
 }
 

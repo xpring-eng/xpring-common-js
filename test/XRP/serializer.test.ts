@@ -31,6 +31,7 @@ import {
   SetFlag,
   TransferRate,
   TickSize,
+  LastLedgerSequence,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -51,7 +52,7 @@ const destinationXAddressWithTag =
   'XVPcpSm47b1CZkf5AkKM9a84dQHe3mTAxgxfLw2qYoe7Boa'
 const tag = 12345
 const sequence = 1
-const lastLedgerSequence = 20
+const lastLedgerSequenceValue = 20
 const publicKey =
   '031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE'
 const fee = '10'
@@ -392,7 +393,7 @@ describe('serializer', function (): void {
       value,
       destinationClassicAddress,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequence,
       accountClassicAddress,
       publicKey,
@@ -407,7 +408,7 @@ describe('serializer', function (): void {
       Amount: value.toString(),
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
-      LastLedgerSequence: lastLedgerSequence,
+      LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequence,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
@@ -421,7 +422,7 @@ describe('serializer', function (): void {
       value,
       destinationClassicAddress,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequence,
       accountXAddress,
       publicKey,
@@ -436,7 +437,7 @@ describe('serializer', function (): void {
       Amount: value.toString(),
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
-      LastLedgerSequence: lastLedgerSequence,
+      LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequence,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
@@ -451,7 +452,7 @@ describe('serializer', function (): void {
       value,
       destinationClassicAddress,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequence,
       account,
       publicKey,
@@ -470,7 +471,7 @@ describe('serializer', function (): void {
       value,
       destinationClassicAddress,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequence,
       undefined,
       publicKey,
@@ -489,7 +490,7 @@ describe('serializer', function (): void {
       value,
       destinationXAddressWithTag,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequence,
       accountClassicAddress,
       publicKey,
@@ -505,7 +506,7 @@ describe('serializer', function (): void {
       Destination: destinationClassicAddress,
       DestinationTag: tag,
       Fee: fee.toString(),
-      LastLedgerSequence: lastLedgerSequence,
+      LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequence,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
@@ -519,7 +520,7 @@ describe('serializer', function (): void {
       value,
       destinationXAddressWithoutTag,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequence,
       accountClassicAddress,
       publicKey,
@@ -534,7 +535,7 @@ describe('serializer', function (): void {
       Amount: value.toString(),
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
-      LastLedgerSequence: lastLedgerSequence,
+      LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequence,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
@@ -549,7 +550,7 @@ describe('serializer', function (): void {
       value,
       destinationXAddressWithoutTag,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequence,
       accountClassicAddress,
       publicKey,
@@ -577,7 +578,7 @@ describe('serializer', function (): void {
       Amount: value.toString(),
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
-      LastLedgerSequence: lastLedgerSequence,
+      LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequence,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
@@ -701,7 +702,7 @@ describe('serializer', function (): void {
       address,
       undefined,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequence,
       accountClassicAddress,
       publicKey,
@@ -718,7 +719,7 @@ describe('serializer', function (): void {
       undefined,
       undefined,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequence,
       accountClassicAddress,
       publicKey,
@@ -801,7 +802,7 @@ describe('serializer', function (): void {
       undefined,
       undefined,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequence,
       accountClassicAddress,
       publicKey,
@@ -888,7 +889,7 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized[0], Serializer.pathElementToJSON(pathElement1))
     assert.deepEqual(serialized[1], Serializer.pathElementToJSON(pathElement2))
   })
-    
+
   it('Serializes a Currency with a name field set', function (): void {
     // GIVEN a Currency with a name field set.
     const currencyName = 'USD'
@@ -922,5 +923,17 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized THEN the result is undefined.
     assert.isUndefined(Serializer.currencyToJSON(currency))
+  })
+
+  it('Serializes a LastLedgerSequence', function (): void {
+    // GIVEN a LastLedgerSequence.
+    const lastLedgerSequence = new LastLedgerSequence()
+    lastLedgerSequence.setValue(lastLedgerSequenceValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.lastLedgerSequenceToJSON(lastLedgerSequence)
+
+    // THEN the result is the same as the input.
+    assert.deepEqual(serialized, lastLedgerSequenceValue)
   })
 })
