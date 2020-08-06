@@ -4,6 +4,7 @@
  */
 
 import 'mocha'
+
 import { assert } from 'chai'
 
 import Utils from '../../src/Common/utils'
@@ -888,7 +889,7 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized[0], Serializer.pathElementToJSON(pathElement1))
     assert.deepEqual(serialized[1], Serializer.pathElementToJSON(pathElement2))
   })
-    
+
   it('Serializes a Currency with a name field set', function (): void {
     // GIVEN a Currency with a name field set.
     const currencyName = 'USD'
@@ -922,5 +923,19 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized THEN the result is undefined.
     assert.isUndefined(Serializer.currencyToJSON(currency))
+  })
+
+  it('Serializes a ClearFlag', function (): void {
+    // GIVEN a ClearFlag with no fields set.
+    const flagValues = 1
+
+    const clearFlag = new ClearFlag()
+    clearFlag.setValue(flagValues)
+
+    // WHEN it is serialized
+    const serialized = Serializer.clearFlagToJSON(clearFlag)
+
+    // THEN the result is the input.
+    assert.equal(serialized, flagValues)
   })
 })
