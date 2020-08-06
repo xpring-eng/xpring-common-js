@@ -4,6 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { TransferRate } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -22,7 +23,7 @@ interface AccountSetJSON {
   MessageKey?: string
   SetFlag?: number
   TransactionType: string
-  TransferRate?: number
+  TransferRate?: TransferRateJSON
   TickSize?: number
 }
 
@@ -77,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type TransferRateJSON = number
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
@@ -267,9 +269,9 @@ const serializer = {
       json.SetFlag = setFlag
     }
 
-    const transferRate = accountSet.getTransferRate()?.getValue()
+    const transferRate = accountSet.getTransferRate()
     if (transferRate !== undefined) {
-      json.TransferRate = transferRate
+      json.TransferRate = this.transferRateToJSON(transferRate)
     }
 
     const tickSize = accountSet.getTickSize()?.getValue()
@@ -384,6 +386,16 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert a TransferRate to a JSON representation.
+   *
+   * @param transferRate - The TransferRate to convert.
+   * @returns The TransferRate as JSON.
+   */
+  transferRateToJSON(transferRate: TransferRate): TransferRateJSON {
+    return transferRate.getValue()
   },
 }
 
