@@ -404,7 +404,7 @@ const serializer = {
     return accountAddress === undefined
       ? undefined
       : accountAddress.getAddress()
-  }
+  },
 
   /**
    * Convert an InvoiceID to a JSON representation.
