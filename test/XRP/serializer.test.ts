@@ -31,6 +31,7 @@ import {
   SetFlag,
   TransferRate,
   TickSize,
+  InvoiceID,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -936,5 +937,33 @@ describe('serializer', function (): void {
 
     // THEN the result is the same as the inputs.
     assert.equal(serialized, domainValue)
+  })
+  
+  it('Serializes a MessageKey', function (): void {
+    // GIVEN a MessageKey.
+    const messageKeyBytes = new Uint8Array([1, 2, 3, 4])
+
+    const messageKey = new MessageKey()
+    messageKey.setValue(messageKeyBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.messageKeyToJSON(messageKey)
+
+    // THEN the result is the same as the input bytes encoded to hex.
+    assert.deepEqual(serialized, Utils.toHex(messageKeyBytes))
+  })
+     
+  it('Serializes an InvoiceId', function (): void {
+    // GIVEN a InvoiceId with some bytes
+    const invoiceIdBytes = new Uint8Array([0, 1, 2, 3])
+
+    const invoiceId = new InvoiceID()
+    invoiceId.setValue(invoiceIdBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.invoiceIdToJSON(invoiceId)
+
+    // THEN the result is the hex representation of the invoiceId.
+    assert.equal(serialized, Utils.toHex(invoiceIdBytes))
   })
 })
