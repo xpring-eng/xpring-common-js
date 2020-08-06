@@ -925,6 +925,20 @@ describe('serializer', function (): void {
     assert.isUndefined(Serializer.currencyToJSON(currency))
   })
 
+  it('Serializes a MessageKey', function (): void {
+    // GIVEN a MessageKey.
+    const messageKeyBytes = new Uint8Array([1, 2, 3, 4])
+
+    const messageKey = new MessageKey()
+    messageKey.setValue(messageKeyBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.messageKeyToJSON(messageKey)
+
+    // THEN the result is the same as the input bytes encoded to hex.
+    assert.deepEqual(serialized, Utils.toHex(messageKeyBytes))
+  })
+     
   it('Serializes an InvoiceId', function (): void {
     // GIVEN a InvoiceId with some bytes
     const invoiceIdBytes = new Uint8Array([0, 1, 2, 3])
