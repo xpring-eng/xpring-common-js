@@ -4,6 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { Sequence } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -53,7 +54,7 @@ interface BaseTransactionJSON {
   Account: string
   Fee: string
   LastLedgerSequence: number
-  Sequence: number
+  Sequence: SequenceJSON
   SigningPubKey: string
   TxnSignature?: string
   Memos?: MemoJSON[]
@@ -77,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type SequenceJSON = number
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
@@ -384,6 +386,16 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert a Sequence to a JSON representation.
+   *
+   * @param sequence - The Sequence to convert.
+   * @returns The Sequence as JSON.
+   */
+  sequenceToJSON(sequence: Sequence): SequenceJSON {
+    return sequence.getValue()
   },
 }
 
