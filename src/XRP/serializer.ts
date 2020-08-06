@@ -4,6 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { MessageKey } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -19,7 +20,7 @@ interface AccountSetJSON {
   ClearFlag?: number
   Domain?: string
   EmailHash?: string
-  MessageKey?: string
+  MessageKey?: MessageKeyJSON
   SetFlag?: number
   TransactionType: string
   TransferRate?: number
@@ -77,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type MessageKeyJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
@@ -257,9 +259,9 @@ const serializer = {
       json.EmailHash = Utils.toHex(emailHashBytes)
     }
 
-    const messageKeyBytes = accountSet.getMessageKey()?.getValue_asU8()
-    if (messageKeyBytes !== undefined) {
-      json.MessageKey = Utils.toHex(messageKeyBytes)
+    const messageKey = accountSet.getMessageKey()
+    if (messageKey !== undefined) {
+      json.MessageKey = this.messageKeyToJSON(messageKey)
     }
 
     const setFlag = accountSet.getSetFlag()?.getValue()
@@ -384,6 +386,17 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert a MessageKey to a JSON representation.
+   *
+   * @param messageKey - The MessageKey to convert.
+   * @returns The MessageKey as JSON.
+   */
+  messageKeyToJSON(messageKey: MessageKey): MessageKeyJSON {
+    const messageKeyBytes = messageKey.getValue_asU8()
+    return Utils.toHex(messageKeyBytes)
   },
 }
 
