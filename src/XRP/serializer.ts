@@ -4,6 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { SetFlag } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -20,7 +21,7 @@ interface AccountSetJSON {
   Domain?: string
   EmailHash?: string
   MessageKey?: string
-  SetFlag?: number
+  SetFlag?: SetFlagJSON
   TransactionType: string
   TransferRate?: number
   TickSize?: number
@@ -77,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type SetFlagJSON = number
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
@@ -262,9 +264,9 @@ const serializer = {
       json.MessageKey = Utils.toHex(messageKeyBytes)
     }
 
-    const setFlag = accountSet.getSetFlag()?.getValue()
+    const setFlag = accountSet.getSetFlag()
     if (setFlag !== undefined) {
-      json.SetFlag = setFlag
+      json.SetFlag = this.setFlagToJSON(setFlag)
     }
 
     const transferRate = accountSet.getTransferRate()?.getValue()
@@ -384,6 +386,16 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert a SetFlag to a JSON representation.
+   *
+   * @param setFlag - The SetFlag to convert.
+   * @returns The SetFlag as JSON.
+   */
+  setFlagToJSON(setFlag: SetFlag): SetFlagJSON {
+    return setFlag.getValue()
   },
 }
 
