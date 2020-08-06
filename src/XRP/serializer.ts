@@ -4,7 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
-import { Authorize, InvoiceID, MessageKey } from './generated/org/xrpl/rpc/v1/common_pb'
+import { Authorize, Domain, InvoiceID, MessageKey } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -18,7 +18,7 @@ type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
 
 interface AccountSetJSON {
   ClearFlag?: number
-  Domain?: string
+  Domain?: DomainJSON
   EmailHash?: string
   MessageKey?: MessageKeyJSON
   SetFlag?: number
@@ -78,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: CurrencyJSON
 }
 
+type DomainJSON = string
 type MessageKeyJSON = string
 type AuthorizeJSON = string
 type InvoiceIdJSON = string
@@ -253,9 +254,9 @@ const serializer = {
       json.ClearFlag = clearFlag
     }
 
-    const domain = accountSet.getDomain()?.getValue()
+    const domain = accountSet.getDomain()
     if (domain !== undefined) {
-      json.Domain = domain
+      json.Domain = this.domainToJSON(domain)
     }
 
     const emailHashBytes = accountSet.getEmailHash()?.getValue_asU8()
@@ -393,6 +394,16 @@ const serializer = {
   },
 
   /**
+   * Convert a Domain to a JSON representation.
+   *
+   * @param domain - The Domain to convert.
+   * @returns The Domain as JSON.
+   */
+  domainToJSON(domain: Domain): DomainJSON {
+    return domain.getValue()
+  },
+
+  /**      
    * Convert a MessageKey to a JSON representation.
    *
    * @param messageKey - The MessageKey to convert.

@@ -925,6 +925,20 @@ describe('serializer', function (): void {
     assert.isUndefined(Serializer.currencyToJSON(currency))
   })
 
+  it('Serializes a Domain', function (): void {
+    // GIVEN a Domain
+    const domainValue = 'https://xpring.io'
+
+    const domain = new Domain()
+    domain.setValue(domainValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.domainToJSON(domain)
+
+    // THEN the result is the same as the inputs.
+    assert.equal(serialized, domainValue)
+  })
+  
   it('Serializes a MessageKey', function (): void {
     // GIVEN a MessageKey.
     const messageKeyBytes = new Uint8Array([1, 2, 3, 4])
