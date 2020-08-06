@@ -31,6 +31,7 @@ import {
   SetFlag,
   TransferRate,
   TickSize,
+  DestinationTag,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -888,7 +889,7 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized[0], Serializer.pathElementToJSON(pathElement1))
     assert.deepEqual(serialized[1], Serializer.pathElementToJSON(pathElement2))
   })
-    
+
   it('Serializes a Currency with a name field set', function (): void {
     // GIVEN a Currency with a name field set.
     const currencyName = 'USD'
@@ -922,5 +923,19 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized THEN the result is undefined.
     assert.isUndefined(Serializer.currencyToJSON(currency))
+  })
+
+  it('Serializes a DestinationTag', function (): void {
+    // GIVEN a DestinationTag.
+    const destinationTagValue = 123
+
+    const destinationTag = new DestinationTag()
+    destinationTag.setValue(destinationTagValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.destinationTagToJSON(destinationTag)
+
+    // THEN the result is the same as the input.
+    assert.equal(serialized, destinationTagValue)
   })
 })

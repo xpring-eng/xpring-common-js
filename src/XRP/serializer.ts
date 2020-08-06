@@ -4,6 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { DestinationTag } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -35,7 +36,7 @@ interface DepositPreauthJSON {
 interface PaymentJSON {
   Amount: Record<string, unknown> | string
   Destination: string
-  DestinationTag?: number
+  DestinationTag?: DestinationTagJSON
   TransactionType: string
 }
 
@@ -77,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type DestinationTagJSON = number
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
@@ -177,6 +179,7 @@ const serializer = {
       return undefined
     }
 
+    // TODO(keefertaylor): Use `destinationTagToJSON` here when X-Addresses are supported in ripple-binary-codec.
     const decodedXAddress = XrpUtils.decodeXAddress(destination)
     json.Destination = decodedXAddress?.address ?? destination
     if (decodedXAddress?.tag !== undefined) {
@@ -384,6 +387,16 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert a DestinationTag to a JSON representation.
+   *
+   * @param destinationTag - The DestinationTag to convert.
+   * @returns The DestinationTag as JSON.
+   */
+  destinationTagToJSON(destinationTag: DestinationTag): DestinationTagJSON {
+    return destinationTag.getValue()
   },
 }
 
