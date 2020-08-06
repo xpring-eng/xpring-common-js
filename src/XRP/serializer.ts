@@ -133,7 +133,9 @@ const serializer = {
     object.Fee = this.xrpAmountToJSON(txFee)
 
     // Set sequence numbers
-    object.Sequence = transaction.getSequence()?.getValue() ?? 0
+    const sequence = transaction.getSequence()
+    object.Sequence = sequence !== undefined ? this.sequenceToJSON(sequence) : 0
+
     object.LastLedgerSequence =
       transaction.getLastLedgerSequence()?.getValue() ?? 0
 
