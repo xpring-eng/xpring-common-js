@@ -4,6 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
+import { EmailHash } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -18,7 +19,7 @@ type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
 interface AccountSetJSON {
   ClearFlag?: number
   Domain?: string
-  EmailHash?: string
+  EmailHash?: EmailHashJSON
   MessageKey?: string
   SetFlag?: number
   TransactionType: string
@@ -77,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: string
 }
 
+type EmailHashJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
@@ -252,9 +254,9 @@ const serializer = {
       json.Domain = domain
     }
 
-    const emailHashBytes = accountSet.getEmailHash()?.getValue_asU8()
-    if (emailHashBytes !== undefined) {
-      json.EmailHash = Utils.toHex(emailHashBytes)
+    const emailHash = accountSet.getEmailHash()
+    if (emailHash !== undefined) {
+      json.EmailHash = this.emailHashToJSON(emailHash)
     }
 
     const messageKeyBytes = accountSet.getMessageKey()?.getValue_asU8()
@@ -384,6 +386,17 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert an EmailHash to a JSON representation.
+   *
+   * @param emailHash - The EmailHash to convert.
+   * @returns The EmailHash as JSON.
+   */
+  emailHashToJSON(emailHash: EmailHash): EmailHashJSON {
+    const emailHashBytes = emailHash.getValue_asU8()
+    return Utils.toHex(emailHashBytes)
   },
 }
 
