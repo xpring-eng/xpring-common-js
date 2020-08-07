@@ -925,6 +925,20 @@ describe('serializer', function (): void {
     assert.isUndefined(Serializer.currencyToJSON(currency))
   })
 
+  it('Serializes a TransferRate', function (): void {
+    // GIVEN a TransferRate.
+    const transferRateValue = 1
+
+    const transferRate = new TransferRate()
+    transferRate.setValue(transferRateValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.transferRateToJSON(transferRate)
+
+    // THEN the result is the same as the input.
+    assert.deepEqual(serialized, transferRateValue)
+  })
+    
   it('Serializes a Domain', function (): void {
     // GIVEN a Domain
     const domainValue = 'https://xpring.io'
