@@ -406,7 +406,7 @@ const serializer = {
   emailHashToJSON(emailHash: EmailHash): EmailHashJSON {
     const emailHashBytes = emailHash.getValue_asU8()
     return Utils.toHex(emailHashBytes)
-  } 
+  },
    
   /**
    * Convert a DestinationTag to a JSON representation.
