@@ -940,6 +940,22 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('serializes an Issued Currency - no value', function (): void {
+    // GIVEN an IssuedCurrencyAmount with no value set.
+    const currency = new Currency()
+    currency.setName('USD')
+
+    const issuedCurrency = new IssuedCurrencyAmount()
+    issuedCurrency.setIssuer(testAccountAddress)
+    issuedCurrency.setCurrency(currency)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.issuedCurrencyAmountToJSON(issuedCurrency)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
   it('Serializes a Currency with a name field set', function (): void {
     // GIVEN a Currency with a name field set.
     const currencyName = 'USD'
