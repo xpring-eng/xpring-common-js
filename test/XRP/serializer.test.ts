@@ -926,6 +926,20 @@ describe('serializer', function (): void {
     assert.isUndefined(Serializer.currencyToJSON(currency))
   })
 
+  it('Serializes a TickSize', function (): void {
+    // GIVEN a TickSize.
+    const tickSizeValue = 1
+
+    const tickSize = new TickSize()
+    tickSize.setValue(tickSizeValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.tickSizeToJSON(tickSize)
+
+    // THEN the result is the same as the input.
+    assert.deepEqual(serialized, tickSizeValue)
+  })
+
   it('Serializes a DestinationTag', function (): void {
     // GIVEN a DestinationTag.
     const destinationTagValue = 123

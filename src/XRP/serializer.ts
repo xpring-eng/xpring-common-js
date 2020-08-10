@@ -4,7 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
-import { Authorize,DestinationTag, Domain, InvoiceID, MessageKey, TransferRate } from './generated/org/xrpl/rpc/v1/common_pb'
+import { Authorize,DestinationTag, Domain, InvoiceID, MessageKey, TransferRate, TickSize } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -24,7 +24,7 @@ interface AccountSetJSON {
   SetFlag?: number
   TransactionType: string
   TransferRate?: TransferRateJSON
-  TickSize?: number
+  TickSize?: TickSizeJSON
 }
 
 interface DepositPreauthJSON {
@@ -78,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: CurrencyJSON
 }
 
+type TickSizeJSON = number
 type DestinationTagJSON = number
 type TransferRateJSON = number
 type DomainJSON = string
@@ -397,6 +398,16 @@ const serializer = {
   },
 
   /**
+   * Convert a TickSize to a JSON representation.
+   *
+   * @param tickSize - The TickSize to convert.
+   * @returns The TickSize as JSON.
+   */
+  tickSizeToJSON(tickSize: TickSize): TickSizeJSON {
+    return tickSize.getValue()
+  },
+
+  /**    
    * Convert a DestinationTag to a JSON representation.
    *
    * @param destinationTag - The DestinationTag to convert.
