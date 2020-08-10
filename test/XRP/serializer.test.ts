@@ -1027,6 +1027,20 @@ describe('serializer', function (): void {
     assert.isUndefined(Serializer.currencyToJSON(currency))
   })
 
+  it('Serializes an EmailHash', function (): void {
+    // GIVEN an EmailHash.
+    const emailHashBytes = new Uint8Array([1, 2, 3, 4])
+
+    const emailHash = new EmailHash()
+    emailHash.setValue(emailHashBytes)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.emailHashToJSON(emailHash)
+
+    // THEN the result is the same as the input bytes encoded to hex.
+    assert.deepEqual(serialized, Utils.toHex(emailHashBytes))
+  })
+
   it('Serializes a SetFlag', function (): void {
     // GIVEN a SetFlag.
     const setFlagValue = 1
