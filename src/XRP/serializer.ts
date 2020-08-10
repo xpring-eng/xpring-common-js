@@ -7,6 +7,7 @@ import {
   XRPDropsAmount,
   Currency,
   IssuedCurrencyAmount,
+  CurrencyAmount,
 } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Authorize,
@@ -97,6 +98,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type CurrencyAmountJSON = IssuedCurrencyAmountJSON | XRPDropsAmount
 type SetFlagJSON = number
 type TickSizeJSON = number
 type DestinationTagJSON = number
@@ -532,6 +534,31 @@ const serializer = {
   invoiceIdToJSON(invoiceId: InvoiceID): InvoiceIdJSON {
     return Utils.toHex(invoiceId.getValue_asU8())
   },
+
+  /**
+   * Convert a CurrencyAmount to a JSON representation.
+   *
+   * @param currencyAmount - The CurrencyAmount to convert.
+   * @returns The CurrencyAmount as JSON.
+   */
+  currencyAmounttoJSON(currencyAmount: CurrencyAmount): CurrencyAmountJSON | undefined {
+    switch (currencyAmount.getAmountCase()) {
+      case CurrencyAmount.AmountCase.ISSUED_CURRENCY_AMOUNT:
+        const issuedCurrencyAmount = currencyAmount.getIssuedCurrencyAmount()
+        if (issuedCurrencyAmount === undefined) {
+          return undefined
+        }
+        return this.issuedCurrencyAmountToJSON(issuedCurrencyAmount)
+      case CurrencyAmount.AmountCase.XRP_AMOUNT:
+        const xrpAmount = currencyAmount.getXrpAmount()
+        if (xrpAmount === undefined) {
+          return undefined
+        }
+        return this.xrpAmountToJSON(xrpAmount)
+      case CurrencyAmount.AmountCase.AMOUNT_NOT_SET:
+        return undefined
+    }
+  }
 }
 
 export default serializer
