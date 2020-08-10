@@ -3,8 +3,22 @@
  */
 import Utils from '../Common/utils'
 
-import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
-import { Authorize, DestinationTag, Domain, EmailHash, InvoiceID, MessageKey, TransferRate } from './generated/org/xrpl/rpc/v1/common_pb'
+import {
+  XRPDropsAmount,
+  Currency,
+  IssuedCurrencyAmount,
+} from './generated/org/xrpl/rpc/v1/amount_pb'
+import {
+  Authorize,
+  DestinationTag,
+  Domain,
+  EmailHash,
+  InvoiceID,
+  MessageKey,
+  SetFlag,
+  TransferRate,
+  TickSize,
+} from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -21,10 +35,10 @@ interface AccountSetJSON {
   Domain?: DomainJSON
   EmailHash?: EmailHashJSON
   MessageKey?: MessageKeyJSON
-  SetFlag?: number
+  SetFlag?: SetFlagJSON
   TransactionType: string
   TransferRate?: TransferRateJSON
-  TickSize?: number
+  TickSize?: TickSizeJSON
 }
 
 interface DepositPreauthJSON {
@@ -78,7 +92,15 @@ interface PathElementJSON {
   currencyCode?: CurrencyJSON
 }
 
+interface IssuedCurrencyAmountJSON {
+  value: string
+  currency: CurrencyJSON
+  issuer: string
+}
+
 type EmailHashJSON = string
+type SetFlagJSON = number
+type TickSizeJSON = number
 type DestinationTagJSON = number
 type TransferRateJSON = number
 type DomainJSON = string
@@ -273,9 +295,9 @@ const serializer = {
       json.MessageKey = this.messageKeyToJSON(messageKey)
     }
 
-    const setFlag = accountSet.getSetFlag()?.getValue()
+    const setFlag = accountSet.getSetFlag()
     if (setFlag !== undefined) {
-      json.SetFlag = setFlag
+      json.SetFlag = this.setFlagToJSON(setFlag)
     }
 
     const transferRate = accountSet.getTransferRate()
@@ -378,6 +400,36 @@ const serializer = {
   },
 
   /**
+   * Convert a {@link IssuedCurrencyAmount} to a JSON representation.
+   *
+   * @param issuedCurrencyAmount - The {@link IssuedCurrencyAmount} to convert.
+   * @returns A JSON representation of the input.
+   */
+  issuedCurrencyAmountToJSON(
+    issuedCurrencyAmount: IssuedCurrencyAmount,
+  ): IssuedCurrencyAmountJSON | undefined {
+    const currencyWrapper = issuedCurrencyAmount.getCurrency()
+    const value = issuedCurrencyAmount.getValue()
+    // TODO(keefertaylor): Use accountAddressToJSON here.
+    const issuer = issuedCurrencyAmount.getIssuer()?.getAddress()
+
+    if (currencyWrapper === undefined || value === '' || issuer === undefined) {
+      return undefined
+    }
+
+    const currency = this.currencyToJSON(currencyWrapper)
+    if (currency === undefined) {
+      return undefined
+    }
+
+    return {
+      currency,
+      value,
+      issuer,
+    }
+  },
+
+  /**
    * Convert a Currency to a JSON representation.
    *
    * @param currency - The Currency to convert.
@@ -409,6 +461,26 @@ const serializer = {
   },
    
   /**
+   * Convert a SetFlag to a JSON representation.
+   *
+   * @param setFlag - The SetFlag to convert.
+   * @returns The SetFlag as JSON.
+   */
+  setFlagToJSON(setFlag: SetFlag): SetFlagJSON {
+    return setFlag.getValue()
+  },
+
+  /**
+   * Convert a TickSize to a JSON representation.
+   *
+   * @param tickSize - The TickSize to convert.
+   * @returns The TickSize as JSON.
+   */
+  tickSizeToJSON(tickSize: TickSize): TickSizeJSON {
+    return tickSize.getValue()
+  },
+
+  /**
    * Convert a DestinationTag to a JSON representation.
    *
    * @param destinationTag - The DestinationTag to convert.
@@ -417,7 +489,7 @@ const serializer = {
   destinationTagToJSON(destinationTag: DestinationTag): DestinationTagJSON {
     return destinationTag.getValue()
   },
-  
+
   /**
    * Convert a TransferRate to a JSON representation.
    *
@@ -427,7 +499,7 @@ const serializer = {
   transferRateToJSON(transferRate: TransferRate): TransferRateJSON {
     return transferRate.getValue()
   },
-      
+
   /**
    * Convert a Domain to a JSON representation.
    *
@@ -438,7 +510,7 @@ const serializer = {
     return domain.getValue()
   },
 
-  /**      
+  /**
    * Convert a MessageKey to a JSON representation.
    *
    * @param messageKey - The MessageKey to convert.
@@ -448,8 +520,8 @@ const serializer = {
     const messageKeyBytes = messageKey.getValue_asU8()
     return Utils.toHex(messageKeyBytes)
   },
-    
-  /**      
+
+  /**
    * Convert an Authorize to a JSON representation.
    *
    * @param authorize - The Authorize to convert.
