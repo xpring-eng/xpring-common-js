@@ -25,7 +25,6 @@ interface AccountSetJSON {
   TransactionType: string
   TransferRate?: TransferRateJSON
   TickSize?: TickSizeJSON
-  TickSize?: number
 }
 
 interface DepositPreauthJSON {
