@@ -926,7 +926,7 @@ describe('serializer', function (): void {
   })
 
   it('Serializes a ClearFlag', function (): void {
-    // GIVEN a ClearFlag with no fields set.
+    // GIVEN a ClearFlag.
     const flagValues = 1
 
     const clearFlag = new ClearFlag()
