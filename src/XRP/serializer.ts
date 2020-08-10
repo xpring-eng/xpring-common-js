@@ -3,6 +3,7 @@
  */
 import Utils from '../Common/utils'
 
+
 import {
   XRPDropsAmount,
   Currency,
@@ -10,6 +11,7 @@ import {
 } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Authorize,
+  ClearFlag,
   DestinationTag,
   Domain,
   EmailHash,
@@ -31,7 +33,7 @@ import XrpUtils from './xrp-utils'
 type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
 
 interface AccountSetJSON {
-  ClearFlag?: number
+  ClearFlag?: ClearFlagJSON
   Domain?: DomainJSON
   EmailHash?: EmailHashJSON
   MessageKey?: MessageKeyJSON
@@ -98,6 +100,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type ClearFlagJSON = number
 type EmailHashJSON = string
 type SetFlagJSON = number
 type TickSizeJSON = number
@@ -275,9 +278,9 @@ const serializer = {
   accountSetToJSON(accountSet: AccountSet): AccountSetJSON | undefined {
     const json: AccountSetJSON = { TransactionType: 'AccountSet' }
 
-    const clearFlag = accountSet.getClearFlag()?.getValue()
+    const clearFlag = accountSet.getClearFlag()
     if (clearFlag !== undefined) {
-      json.ClearFlag = clearFlag
+      json.ClearFlag = this.clearFlagToJSON(clearFlag)
     }
 
     const domain = accountSet.getDomain()
@@ -449,6 +452,16 @@ const serializer = {
     return undefined
   },
 
+  /**
+   * Convert a ClearFlag to a JSON representation.
+   *
+   * @param clearFlag - The ClearFlag to convert.
+   * @returns The ClearFlag as JSON.
+   */
+  clearFlagToJSON(clearFlag: ClearFlag): ClearFlagJSON {
+    return clearFlag.getValue()
+  },
+    
   /**
    * Convert an EmailHash to a JSON representation.
    *
