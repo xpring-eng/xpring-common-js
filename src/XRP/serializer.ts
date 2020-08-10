@@ -14,6 +14,7 @@ import {
   Domain,
   InvoiceID,
   MessageKey,
+  SetFlag,
   TransferRate,
   TickSize,
 } from './generated/org/xrpl/rpc/v1/common_pb'
@@ -33,7 +34,7 @@ interface AccountSetJSON {
   Domain?: DomainJSON
   EmailHash?: string
   MessageKey?: MessageKeyJSON
-  SetFlag?: number
+  SetFlag?: SetFlagJSON
   TransactionType: string
   TransferRate?: TransferRateJSON
   TickSize?: TickSizeJSON
@@ -96,6 +97,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type SetFlagJSON = number
 type TickSizeJSON = number
 type DestinationTagJSON = number
 type TransferRateJSON = number
@@ -291,9 +293,9 @@ const serializer = {
       json.MessageKey = this.messageKeyToJSON(messageKey)
     }
 
-    const setFlag = accountSet.getSetFlag()?.getValue()
+    const setFlag = accountSet.getSetFlag()
     if (setFlag !== undefined) {
-      json.SetFlag = setFlag
+      json.SetFlag = this.setFlagToJSON(setFlag)
     }
 
     const transferRate = accountSet.getTransferRate()
@@ -443,6 +445,16 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert a SetFlag to a JSON representation.
+   *
+   * @param setFlag - The SetFlag to convert.
+   * @returns The SetFlag as JSON.
+   */
+  setFlagToJSON(setFlag: SetFlag): SetFlagJSON {
+    return setFlag.getValue()
   },
 
   /**

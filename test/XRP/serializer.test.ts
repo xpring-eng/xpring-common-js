@@ -991,6 +991,20 @@ describe('serializer', function (): void {
     assert.isUndefined(Serializer.currencyToJSON(currency))
   })
 
+  it('Serializes a SetFlag', function (): void {
+    // GIVEN a SetFlag.
+    const setFlagValue = 1
+
+    const setFlag = new SetFlag()
+    setFlag.setValue(setFlagValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.setFlagToJSON(setFlag)
+
+    // THEN the result is the same as the input.
+    assert.deepEqual(serialized, setFlagValue)
+  })
+
   it('Serializes a TickSize', function (): void {
     // GIVEN a TickSize.
     const tickSizeValue = 1
