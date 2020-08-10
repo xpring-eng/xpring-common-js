@@ -3,8 +3,21 @@
  */
 import Utils from '../Common/utils'
 
-import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
-import { Authorize, DestinationTag, Domain, InvoiceID, MessageKey, SetFlag, TransferRate, TickSize } from './generated/org/xrpl/rpc/v1/common_pb'
+import {
+  XRPDropsAmount,
+  Currency,
+  IssuedCurrencyAmount,
+} from './generated/org/xrpl/rpc/v1/amount_pb'
+import {
+  Authorize,
+  DestinationTag,
+  Domain,
+  InvoiceID,
+  MessageKey,
+  SetFlag,
+  TransferRate,
+  TickSize,
+} from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -76,6 +89,12 @@ interface PathElementJSON {
   account?: string
   issuer?: string
   currencyCode?: CurrencyJSON
+}
+
+interface IssuedCurrencyAmountJSON {
+  value: string
+  currency: CurrencyJSON
+  issuer: string
 }
 
 type SetFlagJSON = number
@@ -379,6 +398,36 @@ const serializer = {
   },
 
   /**
+   * Convert a {@link IssuedCurrencyAmount} to a JSON representation.
+   *
+   * @param issuedCurrencyAmount - The {@link IssuedCurrencyAmount} to convert.
+   * @returns A JSON representation of the input.
+   */
+  issuedCurrencyAmountToJSON(
+    issuedCurrencyAmount: IssuedCurrencyAmount,
+  ): IssuedCurrencyAmountJSON | undefined {
+    const currencyWrapper = issuedCurrencyAmount.getCurrency()
+    const value = issuedCurrencyAmount.getValue()
+    // TODO(keefertaylor): Use accountAddressToJSON here.
+    const issuer = issuedCurrencyAmount.getIssuer()?.getAddress()
+
+    if (currencyWrapper === undefined || value === '' || issuer === undefined) {
+      return undefined
+    }
+
+    const currency = this.currencyToJSON(currencyWrapper)
+    if (currency === undefined) {
+      return undefined
+    }
+
+    return {
+      currency,
+      value,
+      issuer,
+    }
+  },
+
+  /**
    * Convert a Currency to a JSON representation.
    *
    * @param currency - The Currency to convert.
@@ -408,7 +457,7 @@ const serializer = {
     return setFlag.getValue()
   },
 
-  /**      
+  /**
    * Convert a TickSize to a JSON representation.
    *
    * @param tickSize - The TickSize to convert.
@@ -418,7 +467,7 @@ const serializer = {
     return tickSize.getValue()
   },
 
-  /**    
+  /**
    * Convert a DestinationTag to a JSON representation.
    *
    * @param destinationTag - The DestinationTag to convert.
@@ -427,7 +476,7 @@ const serializer = {
   destinationTagToJSON(destinationTag: DestinationTag): DestinationTagJSON {
     return destinationTag.getValue()
   },
-  
+
   /**
    * Convert a TransferRate to a JSON representation.
    *
@@ -437,7 +486,7 @@ const serializer = {
   transferRateToJSON(transferRate: TransferRate): TransferRateJSON {
     return transferRate.getValue()
   },
-      
+
   /**
    * Convert a Domain to a JSON representation.
    *
@@ -448,7 +497,7 @@ const serializer = {
     return domain.getValue()
   },
 
-  /**      
+  /**
    * Convert a MessageKey to a JSON representation.
    *
    * @param messageKey - The MessageKey to convert.
@@ -458,8 +507,8 @@ const serializer = {
     const messageKeyBytes = messageKey.getValue_asU8()
     return Utils.toHex(messageKeyBytes)
   },
-    
-  /**      
+
+  /**
    * Convert an Authorize to a JSON representation.
    *
    * @param authorize - The Authorize to convert.
