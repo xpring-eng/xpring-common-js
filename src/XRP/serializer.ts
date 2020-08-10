@@ -4,7 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
-import { Authorize, Domain, InvoiceID, MessageKey, SetFlag } from './generated/org/xrpl/rpc/v1/common_pb'
+import { Authorize, DestinationTag, Domain, InvoiceID, MessageKey, SetFlag, TransferRate, TickSize } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -23,8 +23,8 @@ interface AccountSetJSON {
   MessageKey?: MessageKeyJSON
   SetFlag?: SetFlagJSON
   TransactionType: string
-  TransferRate?: number
-  TickSize?: number
+  TransferRate?: TransferRateJSON
+  TickSize?: TickSizeJSON
 }
 
 interface DepositPreauthJSON {
@@ -36,7 +36,7 @@ interface DepositPreauthJSON {
 interface PaymentJSON {
   Amount: Record<string, unknown> | string
   Destination: string
-  DestinationTag?: number
+  DestinationTag?: DestinationTagJSON
   TransactionType: string
 }
 
@@ -79,6 +79,9 @@ interface PathElementJSON {
 }
 
 type SetFlagJSON = number
+type TickSizeJSON = number
+type DestinationTagJSON = number
+type TransferRateJSON = number
 type DomainJSON = string
 type MessageKeyJSON = string
 type AuthorizeJSON = string
@@ -183,6 +186,7 @@ const serializer = {
       return undefined
     }
 
+    // TODO(keefertaylor): Use `destinationTagToJSON` here when X-Addresses are supported in ripple-binary-codec.
     const decodedXAddress = XrpUtils.decodeXAddress(destination)
     json.Destination = decodedXAddress?.address ?? destination
     if (decodedXAddress?.tag !== undefined) {
@@ -275,9 +279,9 @@ const serializer = {
       json.SetFlag = this.setFlagToJSON(setFlag)
     }
 
-    const transferRate = accountSet.getTransferRate()?.getValue()
+    const transferRate = accountSet.getTransferRate()
     if (transferRate !== undefined) {
-      json.TransferRate = transferRate
+      json.TransferRate = this.transferRateToJSON(transferRate)
     }
 
     const tickSize = accountSet.getTickSize()?.getValue()
@@ -405,6 +409,36 @@ const serializer = {
   },
 
   /**      
+   * Convert a TickSize to a JSON representation.
+   *
+   * @param tickSize - The TickSize to convert.
+   * @returns The TickSize as JSON.
+   */
+  tickSizeToJSON(tickSize: TickSize): TickSizeJSON {
+    return tickSize.getValue()
+  },
+
+  /**    
+   * Convert a DestinationTag to a JSON representation.
+   *
+   * @param destinationTag - The DestinationTag to convert.
+   * @returns The DestinationTag as JSON.
+   */
+  destinationTagToJSON(destinationTag: DestinationTag): DestinationTagJSON {
+    return destinationTag.getValue()
+  },
+  
+  /**
+   * Convert a TransferRate to a JSON representation.
+   *
+   * @param transferRate - The TransferRate to convert.
+   * @returns The TransferRate as JSON.
+   */
+  transferRateToJSON(transferRate: TransferRate): TransferRateJSON {
+    return transferRate.getValue()
+  },
+      
+  /**
    * Convert a Domain to a JSON representation.
    *
    * @param domain - The Domain to convert.

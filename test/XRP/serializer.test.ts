@@ -31,6 +31,7 @@ import {
   SetFlag,
   TransferRate,
   TickSize,
+  DestinationTag,
   InvoiceID,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
@@ -939,6 +940,48 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized, setFlagValue)
   })
   
+  it('Serializes a TickSize', function (): void {
+    // GIVEN a TickSize.
+    const tickSizeValue = 1
+
+    const tickSize = new TickSize()
+    tickSize.setValue(tickSizeValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.tickSizeToJSON(tickSize)
+
+    // THEN the result is the same as the input.
+    assert.deepEqual(serialized, tickSizeValue)
+  })
+
+  it('Serializes a DestinationTag', function (): void {
+    // GIVEN a DestinationTag.
+    const destinationTagValue = 123
+
+    const destinationTag = new DestinationTag()
+    destinationTag.setValue(destinationTagValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.destinationTagToJSON(destinationTag)
+
+    // THEN the result is the same as the input.
+    assert.equal(serialized, destinationTagValue)
+  })
+
+  it('Serializes a TransferRate', function (): void {
+    // GIVEN a TransferRate.
+    const transferRateValue = 1
+
+    const transferRate = new TransferRate()
+    transferRate.setValue(transferRateValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.transferRateToJSON(transferRate)
+
+    // THEN the result is the same as the input.
+    assert.deepEqual(serialized, transferRateValue)
+  })
+    
   it('Serializes a Domain', function (): void {
     // GIVEN a Domain
     const domainValue = 'https://xpring.io'
