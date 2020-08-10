@@ -3,8 +3,24 @@
  */
 import Utils from '../Common/utils'
 
-import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
-import { LastLedgerSequence } from './generated/org/xrpl/rpc/v1/common_pb'
+import {
+  XRPDropsAmount,
+  Currency,
+  IssuedCurrencyAmount,
+} from './generated/org/xrpl/rpc/v1/amount_pb'
+import {
+  Authorize,
+  ClearFlag,
+  DestinationTag,
+  Domain,
+  EmailHash,
+  InvoiceID,
+  LastLedgerSequence  
+  MessageKey,
+  SetFlag,
+  TransferRate,
+  TickSize,
+} from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -17,18 +33,18 @@ import XrpUtils from './xrp-utils'
 type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
 
 interface AccountSetJSON {
-  ClearFlag?: number
-  Domain?: string
-  EmailHash?: string
-  MessageKey?: string
-  SetFlag?: number
+  ClearFlag?: ClearFlagJSON
+  Domain?: DomainJSON
+  EmailHash?: EmailHashJSON
+  MessageKey?: MessageKeyJSON
+  SetFlag?: SetFlagJSON
   TransactionType: string
-  TransferRate?: number
-  TickSize?: number
+  TransferRate?: TransferRateJSON
+  TickSize?: TickSizeJSON
 }
 
 interface DepositPreauthJSON {
-  Authorize?: string
+  Authorize?: AuthorizeJSON
   TransactionType: string
   Unauthorize?: string
 }
@@ -36,7 +52,7 @@ interface DepositPreauthJSON {
 interface PaymentJSON {
   Amount: Record<string, unknown> | string
   Destination: string
-  DestinationTag?: number
+  DestinationTag?: DestinationTagJSON
   TransactionType: string
 }
 
@@ -75,10 +91,26 @@ interface PaymentTransactionJSONAddition extends PaymentJSON {
 interface PathElementJSON {
   account?: string
   issuer?: string
-  currencyCode?: string
+  currencyCode?: CurrencyJSON
+}
+
+interface IssuedCurrencyAmountJSON {
+  value: string
+  currency: CurrencyJSON
+  issuer: string
 }
 
 type LastLedgerSequenceJSON = number
+type ClearFlagJSON = number
+type EmailHashJSON = string
+type SetFlagJSON = number
+type TickSizeJSON = number
+type DestinationTagJSON = number
+type TransferRateJSON = number
+type DomainJSON = string
+type MessageKeyJSON = string
+type AuthorizeJSON = string
+type InvoiceIdJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
@@ -183,6 +215,7 @@ const serializer = {
       return undefined
     }
 
+    // TODO(keefertaylor): Use `destinationTagToJSON` here when X-Addresses are supported in ripple-binary-codec.
     const decodedXAddress = XrpUtils.decodeXAddress(destination)
     json.Destination = decodedXAddress?.address ?? destination
     if (decodedXAddress?.tag !== undefined) {
@@ -213,11 +246,13 @@ const serializer = {
     const type = depositPreauth.getAuthorizationOneofCase()
     switch (type) {
       case DepositPreauth.AuthorizationOneofCase.AUTHORIZE: {
-        const authorize = depositPreauth
-          .getAuthorize()
-          ?.getValue()
-          ?.getAddress()
-        json.Authorize = authorize
+        const authorize = depositPreauth.getAuthorize()
+        if (authorize === undefined) {
+          return undefined
+        }
+
+        const authorizeJSON = this.authorizeToJSON(authorize)
+        json.Authorize = authorizeJSON
         return json
       }
       case DepositPreauth.AuthorizationOneofCase.UNAUTHORIZE: {
@@ -248,34 +283,34 @@ const serializer = {
   accountSetToJSON(accountSet: AccountSet): AccountSetJSON | undefined {
     const json: AccountSetJSON = { TransactionType: 'AccountSet' }
 
-    const clearFlag = accountSet.getClearFlag()?.getValue()
+    const clearFlag = accountSet.getClearFlag()
     if (clearFlag !== undefined) {
-      json.ClearFlag = clearFlag
+      json.ClearFlag = this.clearFlagToJSON(clearFlag)
     }
 
-    const domain = accountSet.getDomain()?.getValue()
+    const domain = accountSet.getDomain()
     if (domain !== undefined) {
-      json.Domain = domain
+      json.Domain = this.domainToJSON(domain)
     }
 
-    const emailHashBytes = accountSet.getEmailHash()?.getValue_asU8()
-    if (emailHashBytes !== undefined) {
-      json.EmailHash = Utils.toHex(emailHashBytes)
+    const emailHash = accountSet.getEmailHash()
+    if (emailHash !== undefined) {
+      json.EmailHash = this.emailHashToJSON(emailHash)
     }
 
-    const messageKeyBytes = accountSet.getMessageKey()?.getValue_asU8()
-    if (messageKeyBytes !== undefined) {
-      json.MessageKey = Utils.toHex(messageKeyBytes)
+    const messageKey = accountSet.getMessageKey()
+    if (messageKey !== undefined) {
+      json.MessageKey = this.messageKeyToJSON(messageKey)
     }
 
-    const setFlag = accountSet.getSetFlag()?.getValue()
+    const setFlag = accountSet.getSetFlag()
     if (setFlag !== undefined) {
-      json.SetFlag = setFlag
+      json.SetFlag = this.setFlagToJSON(setFlag)
     }
 
-    const transferRate = accountSet.getTransferRate()?.getValue()
+    const transferRate = accountSet.getTransferRate()
     if (transferRate !== undefined) {
-      json.TransferRate = transferRate
+      json.TransferRate = this.transferRateToJSON(transferRate)
     }
 
     const tickSize = accountSet.getTickSize()?.getValue()
@@ -323,9 +358,9 @@ const serializer = {
       json.issuer = issuer
     }
 
-    const currencyCodeBytes = pathElement.getCurrency()?.getCode_asU8()
-    if (currencyCodeBytes) {
-      json.currencyCode = Utils.toHex(currencyCodeBytes)
+    const currency = pathElement.getCurrency()
+    if (currency) {
+      json.currencyCode = this.currencyToJSON(currency)
     }
 
     const account = pathElement.getAccount()?.getAddress()
@@ -373,6 +408,36 @@ const serializer = {
   },
 
   /**
+   * Convert a {@link IssuedCurrencyAmount} to a JSON representation.
+   *
+   * @param issuedCurrencyAmount - The {@link IssuedCurrencyAmount} to convert.
+   * @returns A JSON representation of the input.
+   */
+  issuedCurrencyAmountToJSON(
+    issuedCurrencyAmount: IssuedCurrencyAmount,
+  ): IssuedCurrencyAmountJSON | undefined {
+    const currencyWrapper = issuedCurrencyAmount.getCurrency()
+    const value = issuedCurrencyAmount.getValue()
+    // TODO(keefertaylor): Use accountAddressToJSON here.
+    const issuer = issuedCurrencyAmount.getIssuer()?.getAddress()
+
+    if (currencyWrapper === undefined || value === '' || issuer === undefined) {
+      return undefined
+    }
+
+    const currency = this.currencyToJSON(currencyWrapper)
+    if (currency === undefined) {
+      return undefined
+    }
+
+    return {
+      currency,
+      value,
+      issuer,
+    }
+  },
+
+  /**
    * Convert a Currency to a JSON representation.
    *
    * @param currency - The Currency to convert.
@@ -402,6 +467,113 @@ const serializer = {
     lastLedgerSequence: LastLedgerSequence,
   ): LastLedgerSequenceJSON {
     return lastLedgerSequence.getValue()
+  },
+  
+  /**
+   * Convert a ClearFlag to a JSON representation.
+   *
+   * @param clearFlag - The ClearFlag to convert.
+   * @returns The ClearFlag as JSON.
+   */
+  clearFlagToJSON(clearFlag: ClearFlag): ClearFlagJSON {
+    return clearFlag.getValue()
+  },
+    
+  /**
+   * Convert an EmailHash to a JSON representation.
+   *
+   * @param emailHash - The EmailHash to convert.
+   * @returns The EmailHash as JSON.
+   */
+  emailHashToJSON(emailHash: EmailHash): EmailHashJSON {
+    const emailHashBytes = emailHash.getValue_asU8()
+    return Utils.toHex(emailHashBytes)
+  },
+   
+  /**
+   * Convert a SetFlag to a JSON representation.
+   *
+   * @param setFlag - The SetFlag to convert.
+   * @returns The SetFlag as JSON.
+   */
+  setFlagToJSON(setFlag: SetFlag): SetFlagJSON {
+    return setFlag.getValue()
+  },
+
+  /**
+   * Convert a TickSize to a JSON representation.
+   *
+   * @param tickSize - The TickSize to convert.
+   * @returns The TickSize as JSON.
+   */
+  tickSizeToJSON(tickSize: TickSize): TickSizeJSON {
+    return tickSize.getValue()
+  },
+
+  /**
+   * Convert a DestinationTag to a JSON representation.
+   *
+   * @param destinationTag - The DestinationTag to convert.
+   * @returns The DestinationTag as JSON.
+   */
+  destinationTagToJSON(destinationTag: DestinationTag): DestinationTagJSON {
+    return destinationTag.getValue()
+  },
+
+  /**
+   * Convert a TransferRate to a JSON representation.
+   *
+   * @param transferRate - The TransferRate to convert.
+   * @returns The TransferRate as JSON.
+   */
+  transferRateToJSON(transferRate: TransferRate): TransferRateJSON {
+    return transferRate.getValue()
+  },
+
+  /**
+   * Convert a Domain to a JSON representation.
+   *
+   * @param domain - The Domain to convert.
+   * @returns The Domain as JSON.
+   */
+  domainToJSON(domain: Domain): DomainJSON {
+    return domain.getValue()
+  },
+
+  /**
+   * Convert a MessageKey to a JSON representation.
+   *
+   * @param messageKey - The MessageKey to convert.
+   * @returns The MessageKey as JSON.
+   */
+  messageKeyToJSON(messageKey: MessageKey): MessageKeyJSON {
+    const messageKeyBytes = messageKey.getValue_asU8()
+    return Utils.toHex(messageKeyBytes)
+  },
+
+  /**
+   * Convert an Authorize to a JSON representation.
+   *
+   * @param authorize - The Authorize to convert.
+   * @returns The Authorize as JSON.
+   */
+  authorizeToJSON(authorize: Authorize): AuthorizeJSON | undefined {
+    const accountAddress = authorize.getValue()
+
+    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
+    return accountAddress === undefined
+      ? undefined
+      : accountAddress.getAddress()
+  },
+
+  /**
+   * Convert an InvoiceID to a JSON representation.
+   *
+   * @param invoiceId - The InvoiceID to convert.
+   * @returns The InvoiceID as JSON.
+   */
+  invoiceIdToJSON(invoiceId: InvoiceID): InvoiceIdJSON {
+    return Utils.toHex(invoiceId.getValue_asU8())
   },
 }
 
