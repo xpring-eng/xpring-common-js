@@ -31,6 +31,8 @@ import {
   SetFlag,
   TransferRate,
   TickSize,
+  DestinationTag,
+  InvoiceID,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -936,5 +938,75 @@ describe('serializer', function (): void {
 
     // THEN the result is the same as the input.
     assert.deepEqual(serialized, tickSizeValue)
+  })
+
+  it('Serializes a DestinationTag', function (): void {
+    // GIVEN a DestinationTag.
+    const destinationTagValue = 123
+
+    const destinationTag = new DestinationTag()
+    destinationTag.setValue(destinationTagValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.destinationTagToJSON(destinationTag)
+
+    // THEN the result is the same as the input.
+    assert.equal(serialized, destinationTagValue)
+  })
+
+  it('Serializes a TransferRate', function (): void {
+    // GIVEN a TransferRate.
+    const transferRateValue = 1
+
+    const transferRate = new TransferRate()
+    transferRate.setValue(transferRateValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.transferRateToJSON(transferRate)
+
+    // THEN the result is the same as the input.
+    assert.deepEqual(serialized, transferRateValue)
+  })
+    
+  it('Serializes a Domain', function (): void {
+    // GIVEN a Domain
+    const domainValue = 'https://xpring.io'
+
+    const domain = new Domain()
+    domain.setValue(domainValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.domainToJSON(domain)
+
+    // THEN the result is the same as the inputs.
+    assert.equal(serialized, domainValue)
+  })
+  
+  it('Serializes a MessageKey', function (): void {
+    // GIVEN a MessageKey.
+    const messageKeyBytes = new Uint8Array([1, 2, 3, 4])
+
+    const messageKey = new MessageKey()
+    messageKey.setValue(messageKeyBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.messageKeyToJSON(messageKey)
+
+    // THEN the result is the same as the input bytes encoded to hex.
+    assert.deepEqual(serialized, Utils.toHex(messageKeyBytes))
+  })
+     
+  it('Serializes an InvoiceId', function (): void {
+    // GIVEN a InvoiceId with some bytes
+    const invoiceIdBytes = new Uint8Array([0, 1, 2, 3])
+
+    const invoiceId = new InvoiceID()
+    invoiceId.setValue(invoiceIdBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.invoiceIdToJSON(invoiceId)
+
+    // THEN the result is the hex representation of the invoiceId.
+    assert.equal(serialized, Utils.toHex(invoiceIdBytes))
   })
 })
