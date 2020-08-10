@@ -12,6 +12,7 @@ import {
   Authorize,
   DestinationTag,
   Domain,
+  EmailHash,
   InvoiceID,
   MessageKey,
   SetFlag,
@@ -32,7 +33,7 @@ type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
 interface AccountSetJSON {
   ClearFlag?: number
   Domain?: DomainJSON
-  EmailHash?: string
+  EmailHash?: EmailHashJSON
   MessageKey?: MessageKeyJSON
   SetFlag?: SetFlagJSON
   TransactionType: string
@@ -97,6 +98,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type EmailHashJSON = string
 type SetFlagJSON = number
 type TickSizeJSON = number
 type DestinationTagJSON = number
@@ -283,9 +285,9 @@ const serializer = {
       json.Domain = this.domainToJSON(domain)
     }
 
-    const emailHashBytes = accountSet.getEmailHash()?.getValue_asU8()
-    if (emailHashBytes !== undefined) {
-      json.EmailHash = Utils.toHex(emailHashBytes)
+    const emailHash = accountSet.getEmailHash()
+    if (emailHash !== undefined) {
+      json.EmailHash = this.emailHashToJSON(emailHash)
     }
 
     const messageKey = accountSet.getMessageKey()
@@ -447,6 +449,17 @@ const serializer = {
     return undefined
   },
 
+  /**
+   * Convert an EmailHash to a JSON representation.
+   *
+   * @param emailHash - The EmailHash to convert.
+   * @returns The EmailHash as JSON.
+   */
+  emailHashToJSON(emailHash: EmailHash): EmailHashJSON {
+    const emailHashBytes = emailHash.getValue_asU8()
+    return Utils.toHex(emailHashBytes)
+  },
+   
   /**
    * Convert a SetFlag to a JSON representation.
    *
