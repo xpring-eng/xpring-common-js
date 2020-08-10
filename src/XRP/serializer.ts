@@ -15,7 +15,7 @@ import {
   Domain,
   EmailHash,
   InvoiceID,
-  LastLedgerSequence  
+  LastLedgerSequence,
   MessageKey,
   SetFlag,
   TransferRate,
