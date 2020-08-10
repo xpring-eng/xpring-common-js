@@ -388,6 +388,40 @@ function makePathElement(
   return pathElement
 }
 
+/**
+ * Make an XRPDropsAmount.
+ *
+ * @param drops - A numeric string representing the number of drops.
+ * @returns A new XRPCurrencyAmount.
+ */
+function makeXrpDropsAmount(drops: string) {
+  const xrpDropsAmount = new XRPDropsAmount()
+  xrpDropsAmount.setDrops(drops)
+
+  return xrpDropsAmount
+}
+
+/**
+ * Make an IssuedCurrencyAmount.
+ *
+ * @param accountAddress - The account address.
+ * @param issuedCurrencyCalue - The value.
+ * @param currency - The currency.
+ * @returns A new IssuedCurrencyAmount.
+ */
+function makeIssuedCurrencyAmount(
+  accountAddress: AccountAddress,
+  issuedCurrencyCalue: string,
+  currency: Currency,
+) {
+  const issuedCurrency = new IssuedCurrencyAmount()
+  issuedCurrency.setIssuer(accountAddress)
+  issuedCurrency.setValue(issuedCurrencyCalue)
+  issuedCurrency.setCurrency(currency)
+
+  return issuedCurrency
+}
+
 describe('serializer', function (): void {
   it('serializes a payment in XRP from a classic address', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
@@ -897,10 +931,11 @@ describe('serializer', function (): void {
     const currency = new Currency()
     currency.setName('USD')
 
-    const issuedCurrency = new IssuedCurrencyAmount()
-    issuedCurrency.setIssuer(testAccountAddress)
-    issuedCurrency.setValue(value)
-    issuedCurrency.setCurrency(currency)
+    const issuedCurrency = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      value,
+      currency,
+    )
 
     // WHEN it is serialized.
     const serialized = Serializer.issuedCurrencyAmountToJSON(issuedCurrency)
@@ -928,10 +963,11 @@ describe('serializer', function (): void {
     // GIVEN an IssuedCurrencyAmount with a malformed Currency.
     const currency = new Currency()
 
-    const issuedCurrency = new IssuedCurrencyAmount()
-    issuedCurrency.setIssuer(testAccountAddress)
-    issuedCurrency.setValue(value)
-    issuedCurrency.setCurrency(currency)
+    const issuedCurrency = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      value,
+      currency,
+    )
 
     // WHEN it is serialized.
     const serialized = Serializer.issuedCurrencyAmountToJSON(issuedCurrency)
@@ -1087,5 +1123,55 @@ describe('serializer', function (): void {
 
     // THEN the result is the hex representation of the invoiceId.
     assert.equal(serialized, Utils.toHex(invoiceIdBytes))
+  })
+
+  it('Serializes a CurrencyAmount with an XRPDropsAmount', function (): void {
+    // GIVEN an CurrencyAmount with an XRPDropsAmount.
+    const dropsValue = '123'
+    const xrpDropsAmount = makeXrpDropsAmount(dropsValue)
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyAmountToJSON(currencyAmount)
+
+    // THEN the result is the drops.
+    assert.equal(serialized, dropsValue)
+  })
+
+  it('Serializes a CurrencyAmount with an IssuedCurrencyAmount', function (): void {
+    // GIVEN an CurrencyAmount with an IssuedCurrencyAmount.
+    const currency = new Currency()
+    currency.setName('USD')
+
+    const issuedCurrencyAmount = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      value,
+      currency,
+    )
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setIssuedCurrencyAmount(issuedCurrencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyAmountToJSON(currencyAmount)
+
+    // THEN the result is the serialized value of the input.
+    assert.deepEqual(
+      serialized,
+      Serializer.issuedCurrencyAmountToJSON(issuedCurrencyAmount),
+    )
+  })
+
+  it('Fails to serialize a malformed CurrencyAmount', function (): void {
+    // GIVEN an CurrencyAmount with no fields set.
+    const currencyAmount = new CurrencyAmount()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyAmountToJSON(currencyAmount)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 })
