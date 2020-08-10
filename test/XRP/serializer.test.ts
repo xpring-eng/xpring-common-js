@@ -4,6 +4,7 @@
  */
 
 import 'mocha'
+
 import { assert } from 'chai'
 
 import Utils from '../../src/Common/utils'
@@ -1027,6 +1028,20 @@ describe('serializer', function (): void {
     assert.isUndefined(Serializer.currencyToJSON(currency))
   })
 
+  it('Serializes a ClearFlag', function (): void {
+    // GIVEN a ClearFlag.
+    const flagValues = 1
+
+    const clearFlag = new ClearFlag()
+    clearFlag.setValue(flagValues)
+
+    // WHEN it is serialized
+    const serialized = Serializer.clearFlagToJSON(clearFlag)
+
+    // THEN the result is the input.
+    assert.equal(serialized, flagValues)
+  })
+    
   it('Serializes an EmailHash', function (): void {
     // GIVEN an EmailHash.
     const emailHashBytes = new Uint8Array([1, 2, 3, 4])
