@@ -4,7 +4,7 @@
 import Utils from '../Common/utils'
 
 import { XRPDropsAmount, Currency } from './generated/org/xrpl/rpc/v1/amount_pb'
-import { Authorize,DestinationTag, Domain, InvoiceID, MessageKey, TransferRate, TickSize } from './generated/org/xrpl/rpc/v1/common_pb'
+import { Authorize, DestinationTag, Domain, InvoiceID, MessageKey, SetFlag, TransferRate, TickSize } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Memo,
@@ -21,7 +21,7 @@ interface AccountSetJSON {
   Domain?: DomainJSON
   EmailHash?: string
   MessageKey?: MessageKeyJSON
-  SetFlag?: number
+  SetFlag?: SetFlagJSON
   TransactionType: string
   TransferRate?: TransferRateJSON
   TickSize?: TickSizeJSON
@@ -78,6 +78,7 @@ interface PathElementJSON {
   currencyCode?: CurrencyJSON
 }
 
+type SetFlagJSON = number
 type TickSizeJSON = number
 type DestinationTagJSON = number
 type TransferRateJSON = number
@@ -273,9 +274,9 @@ const serializer = {
       json.MessageKey = this.messageKeyToJSON(messageKey)
     }
 
-    const setFlag = accountSet.getSetFlag()?.getValue()
+    const setFlag = accountSet.getSetFlag()
     if (setFlag !== undefined) {
-      json.SetFlag = setFlag
+      json.SetFlag = this.setFlagToJSON(setFlag)
     }
 
     const transferRate = accountSet.getTransferRate()
@@ -398,6 +399,16 @@ const serializer = {
   },
 
   /**
+   * Convert a SetFlag to a JSON representation.
+   *
+   * @param setFlag - The SetFlag to convert.
+   * @returns The SetFlag as JSON.
+   */
+  setFlagToJSON(setFlag: SetFlag): SetFlagJSON {
+    return setFlag.getValue()
+  },
+
+  /**      
    * Convert a TickSize to a JSON representation.
    *
    * @param tickSize - The TickSize to convert.
