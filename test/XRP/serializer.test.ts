@@ -417,7 +417,7 @@ function makeIssuedCurrencyAmount(
 ) {
   const issuedCurrency = new IssuedCurrencyAmount()
   issuedCurrency.setIssuer(accountAddress)
-  issuedCurrency.setValue(issuedCurrencyCalue)
+  issuedCurrency.setValue(issuedCurrencyValue)
   issuedCurrency.setCurrency(currency)
 
   return issuedCurrency
