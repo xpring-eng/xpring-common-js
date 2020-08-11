@@ -412,7 +412,7 @@ function makeXrpDropsAmount(drops: string) {
  */
 function makeIssuedCurrencyAmount(
   accountAddress: AccountAddress,
-  issuedCurrencyCalue: string,
+  issuedCurrencyValue: string,
   currency: Currency,
 ) {
   const issuedCurrency = new IssuedCurrencyAmount()
