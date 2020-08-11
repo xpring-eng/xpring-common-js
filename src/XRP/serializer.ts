@@ -7,6 +7,7 @@ import {
   XRPDropsAmount,
   Currency,
   IssuedCurrencyAmount,
+  CurrencyAmount,
 } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Authorize,
@@ -50,7 +51,7 @@ interface DepositPreauthJSON {
 }
 
 interface PaymentJSON {
-  Amount: Record<string, unknown> | string
+  Amount: CurrencyAmountJSON
   Destination: string
   DestinationTag?: DestinationTagJSON
   TransactionType: string
@@ -68,7 +69,7 @@ interface MemoDetailsJSON {
 
 interface BaseTransactionJSON {
   Account: string
-  Fee: string
+  Fee: XRPDropsAmountJSON
   LastLedgerSequence: LastLedgerSequenceJSON
   Sequence: number
   SigningPubKey: string
@@ -101,6 +102,8 @@ interface IssuedCurrencyAmountJSON {
 }
 
 type LastLedgerSequenceJSON = number
+type XRPDropsAmountJSON = string
+type CurrencyAmountJSON = IssuedCurrencyAmountJSON | XRPDropsAmountJSON
 type ClearFlagJSON = number
 type EmailHashJSON = string
 type SetFlagJSON = number
@@ -204,7 +207,7 @@ const serializer = {
   // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
   paymentToJSON(payment: Payment): PaymentJSON | undefined {
     const json: PaymentJSON = {
-      Amount: {},
+      Amount: '',
       Destination: '',
       TransactionType: 'Payment',
     }
@@ -222,11 +225,15 @@ const serializer = {
       json.DestinationTag = decodedXAddress.tag
     }
 
-    const xrpAmount = payment.getAmount()?.getValue()?.getXrpAmount()
-    if (!xrpAmount) {
+    const currencyAmount = payment.getAmount()?.getValue()
+    if (currencyAmount === undefined) {
       return undefined
     }
-    json.Amount = this.xrpAmountToJSON(xrpAmount)
+    const currencyAmountJSON = this.currencyAmountToJSON(currencyAmount)
+    if (currencyAmountJSON === undefined) {
+      return undefined
+    }
+    json.Amount = currencyAmountJSON
 
     return json
   },
@@ -489,7 +496,7 @@ const serializer = {
     const emailHashBytes = emailHash.getValue_asU8()
     return Utils.toHex(emailHashBytes)
   },
-   
+
   /**
    * Convert a SetFlag to a JSON representation.
    *
@@ -574,6 +581,36 @@ const serializer = {
    */
   invoiceIdToJSON(invoiceId: InvoiceID): InvoiceIdJSON {
     return Utils.toHex(invoiceId.getValue_asU8())
+  },
+
+  /**
+   * Convert a CurrencyAmount to a JSON representation.
+   *
+   * @param currencyAmount - The CurrencyAmount to convert.
+   * @returns The CurrencyAmount as JSON.
+   */
+  currencyAmountToJSON(
+    currencyAmount: CurrencyAmount,
+  ): CurrencyAmountJSON | undefined {
+    switch (currencyAmount.getAmountCase()) {
+      case CurrencyAmount.AmountCase.ISSUED_CURRENCY_AMOUNT: {
+        const issuedCurrencyAmount = currencyAmount.getIssuedCurrencyAmount()
+        if (issuedCurrencyAmount === undefined) {
+          return undefined
+        }
+        return this.issuedCurrencyAmountToJSON(issuedCurrencyAmount)
+      }
+      case CurrencyAmount.AmountCase.XRP_AMOUNT: {
+        const xrpAmount = currencyAmount.getXrpAmount()
+        if (xrpAmount === undefined) {
+          return undefined
+        }
+        return this.xrpAmountToJSON(xrpAmount)
+      }
+      case CurrencyAmount.AmountCase.AMOUNT_NOT_SET:
+      default:
+        return undefined
+    }
   },
 }
 
