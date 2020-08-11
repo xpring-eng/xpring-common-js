@@ -22,6 +22,7 @@ import {
   Sequence,
   TransferRate,
   TickSize,
+  Unauthorize,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -48,7 +49,7 @@ interface AccountSetJSON {
 interface DepositPreauthJSON {
   Authorize?: AuthorizeJSON
   TransactionType: string
-  Unauthorize?: string
+  Unauthorize?: UnauthorizeJSON
 }
 
 interface PaymentJSON {
@@ -102,6 +103,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type UnauthorizeJSON = string
 type SequenceJSON = number
 type LastLedgerSequenceJSON = number
 type XRPDropsAmountJSON = string
@@ -266,12 +268,13 @@ const serializer = {
         return json
       }
       case DepositPreauth.AuthorizationOneofCase.UNAUTHORIZE: {
-        const unauthorize = depositPreauth
-          .getUnauthorize()
-          ?.getValue()
-          ?.getAddress()
+        const unauthorize = depositPreauth.getUnauthorize()
+        if (unauthorize === undefined) {
+          return undefined
+        }
+        const unauthorizeJSON = this.unauthorizeToJSON(unauthorize)
 
-        json.Unauthorize = unauthorize
+        json.Unauthorize = unauthorizeJSON
         return json
       }
       case DepositPreauth.AuthorizationOneofCase.AUTHORIZATION_ONEOF_NOT_SET: {
@@ -465,6 +468,21 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert an Unauthorize to a JSON representation.
+   *
+   * @param unauthorize - The Unauthorize to convert.
+   * @returns The Unauthorize as JSON.
+   */
+  unauthorizeToJSON(unauthorize: Unauthorize): UnauthorizeJSON | undefined {
+    const accountAddress = unauthorize.getValue()
+
+    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
+    return accountAddress === undefined
+      ? undefined
+      : accountAddress.getAddress()
   },
 
   /**
