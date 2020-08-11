@@ -24,6 +24,7 @@ import {
   TickSize,
   MemoData,
   Unauthorize,
+  TransactionSignature,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -117,6 +118,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type TransactionSignatureJSON = string
 type MemoDataJSON = Uint8Array
 type UnauthorizeJSON = string
 type SequenceJSON = number
@@ -671,6 +673,18 @@ const serializer = {
       default:
         return undefined
     }
+  },
+
+  /**
+   * Convert an TransactionSignature to a JSON representation.
+   *
+   * @param transactionSignature - The TransactionSignature to convert.
+   * @returns The TransactionSignature as JSON.
+   */
+  transactionSignatureToJSON(
+    transactionSignature: TransactionSignature,
+  ): TransactionSignatureJSON {
+    return Utils.toHex(transactionSignature.getValue_asU8())
   },
 }
 

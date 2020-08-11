@@ -36,6 +36,7 @@ import {
   LastLedgerSequence,
   DestinationTag,
   InvoiceID,
+  TransactionSignature,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1231,5 +1232,21 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes a TransactionSignature', function (): void {
+    // GIVEN a TransactionSignature with some bytes
+    const transactionSignatureBytes = new Uint8Array([0, 1, 2, 3])
+
+    const transactionSignature = new TransactionSignature()
+    transactionSignature.setValue(transactionSignatureBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.transactionSignatureToJSON(
+      transactionSignature,
+    )
+
+    // THEN the result is the hex representation of the invoiceId.
+    assert.equal(serialized, Utils.toHex(transactionSignatureBytes))
   })
 })
