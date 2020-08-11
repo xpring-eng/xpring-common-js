@@ -21,6 +21,7 @@ import {
   SetFlag,
   TransferRate,
   TickSize,
+  MemoData,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -62,9 +63,9 @@ interface MemoJSON {
 }
 
 interface MemoDetailsJSON {
-  MemoData?: Uint8Array
-  MemoType?: Uint8Array
-  MemoFormat?: Uint8Array
+  MemoData?: MemoDataJSON
+  MemoType?: MemoDataJSON
+  MemoFormat?: MemoDataJSON
 }
 
 interface BaseTransactionJSON {
@@ -101,6 +102,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type MemoDataJSON = Uint8Array
 type LastLedgerSequenceJSON = number
 type XRPDropsAmountJSON = string
 type CurrencyAmountJSON = IssuedCurrencyAmountJSON | XRPDropsAmountJSON
@@ -403,15 +405,39 @@ const serializer = {
    * @returns The Memo as JSON.
    */
   memoToJSON(memo: Memo): MemoJSON {
-    const jsonMemo: MemoDetailsJSON = {
-      MemoData: memo.getMemoData()?.getValue_asU8(),
-      MemoFormat: memo.getMemoFormat()?.getValue_asU8(),
-      MemoType: memo.getMemoType()?.getValue_asU8(),
+    const memoData = memo.getMemoData()
+    const memoFormat = memo.getMemoFormat()
+    const memoType = memo.getMemoType()
+
+    const jsonMemo: MemoDetailsJSON = {}
+
+    if (memoData !== undefined) {
+      jsonMemo.MemoData = this.memoDataToJSON(memoData)
+    }
+
+    if (memoFormat !== undefined) {
+      jsonMemo.MemoFormat = this.memoDataToJSON(memoFormat)
+    }
+
+    if (memoType !== undefined) {
+      jsonMemo.MemoType = this.memoDataToJSON(memoType)
     }
 
     return {
       Memo: jsonMemo,
     }
+  },
+
+  /**
+   * Convert a MemoData to a JSON representation.
+   *
+   * @param memoData - The MemoData to convert.
+   * @returns The MemoData as JSON.
+   */
+  memoDataToJSON(memoData: MemoData): MemoDataJSON | undefined {
+    return memoData.getValue_asU8().length > 0
+      ? memoData.getValue_asU8()
+      : undefined
   },
 
   /**
@@ -475,7 +501,7 @@ const serializer = {
   ): LastLedgerSequenceJSON {
     return lastLedgerSequence.getValue()
   },
-  
+
   /**
    * Convert a ClearFlag to a JSON representation.
    *
@@ -485,7 +511,7 @@ const serializer = {
   clearFlagToJSON(clearFlag: ClearFlag): ClearFlagJSON {
     return clearFlag.getValue()
   },
-    
+
   /**
    * Convert an EmailHash to a JSON representation.
    *

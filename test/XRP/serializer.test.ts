@@ -1054,7 +1054,7 @@ describe('serializer', function (): void {
     // THEN the result is the input.
     assert.equal(serialized, flagValues)
   })
-    
+
   it('Serializes an EmailHash', function (): void {
     // GIVEN an EmailHash.
     const emailHashBytes = new Uint8Array([1, 2, 3, 4])
