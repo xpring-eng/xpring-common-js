@@ -389,6 +389,40 @@ function makePathElement(
   return pathElement
 }
 
+/**
+ * Make an XRPDropsAmount.
+ *
+ * @param drops - A numeric string representing the number of drops.
+ * @returns A new XRPDropsAmount.
+ */
+function makeXrpDropsAmount(drops: string) {
+  const xrpDropsAmount = new XRPDropsAmount()
+  xrpDropsAmount.setDrops(drops)
+
+  return xrpDropsAmount
+}
+
+/**
+ * Make an IssuedCurrencyAmount.
+ *
+ * @param accountAddress - The account address.
+ * @param issuedCurrencyValue - The value.
+ * @param currency - The currency.
+ * @returns A new IssuedCurrencyAmount.
+ */
+function makeIssuedCurrencyAmount(
+  accountAddress: AccountAddress,
+  issuedCurrencyValue: string,
+  currency: Currency,
+) {
+  const issuedCurrency = new IssuedCurrencyAmount()
+  issuedCurrency.setIssuer(accountAddress)
+  issuedCurrency.setValue(issuedCurrencyValue)
+  issuedCurrency.setCurrency(currency)
+
+  return issuedCurrency
+}
+
 describe('serializer', function (): void {
   it('serializes a payment in XRP from a classic address', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
@@ -898,10 +932,11 @@ describe('serializer', function (): void {
     const currency = new Currency()
     currency.setName('USD')
 
-    const issuedCurrency = new IssuedCurrencyAmount()
-    issuedCurrency.setIssuer(testAccountAddress)
-    issuedCurrency.setValue(value)
-    issuedCurrency.setCurrency(currency)
+    const issuedCurrency = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      value,
+      currency,
+    )
 
     // WHEN it is serialized.
     const serialized = Serializer.issuedCurrencyAmountToJSON(issuedCurrency)
@@ -929,10 +964,11 @@ describe('serializer', function (): void {
     // GIVEN an IssuedCurrencyAmount with a malformed Currency.
     const currency = new Currency()
 
-    const issuedCurrency = new IssuedCurrencyAmount()
-    issuedCurrency.setIssuer(testAccountAddress)
-    issuedCurrency.setValue(value)
-    issuedCurrency.setCurrency(currency)
+    const issuedCurrency = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      value,
+      currency,
+    )
 
     // WHEN it is serialized.
     const serialized = Serializer.issuedCurrencyAmountToJSON(issuedCurrency)
@@ -1005,7 +1041,7 @@ describe('serializer', function (): void {
     // THEN the result is the input.
     assert.equal(serialized, flagValues)
   })
-    
+
   it('Serializes an EmailHash', function (): void {
     // GIVEN an EmailHash.
     const emailHashBytes = new Uint8Array([1, 2, 3, 4])
@@ -1019,7 +1055,7 @@ describe('serializer', function (): void {
     // THEN the result is the same as the input bytes encoded to hex.
     assert.deepEqual(serialized, Utils.toHex(emailHashBytes))
   })
-    
+
   it('Serializes a SetFlag', function (): void {
     // GIVEN a SetFlag.
     const setFlagValue = 1
@@ -1116,5 +1152,84 @@ describe('serializer', function (): void {
 
     // THEN the result is the hex representation of the invoiceId.
     assert.equal(serialized, Utils.toHex(invoiceIdBytes))
+  })
+
+  it('Serializes a CurrencyAmount with an XRPDropsAmount', function (): void {
+    // GIVEN an CurrencyAmount with an XRPDropsAmount.
+    const dropsValue = '123'
+    const xrpDropsAmount = makeXrpDropsAmount(dropsValue)
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyAmountToJSON(currencyAmount)
+
+    // THEN the result is the drops.
+    assert.equal(serialized, dropsValue)
+  })
+
+  it('Serializes a CurrencyAmount with an IssuedCurrencyAmount', function (): void {
+    // GIVEN an CurrencyAmount with an IssuedCurrencyAmount.
+    const currency = new Currency()
+    currency.setName('USD')
+
+    const issuedCurrencyAmount = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      value,
+      currency,
+    )
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setIssuedCurrencyAmount(issuedCurrencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyAmountToJSON(currencyAmount)
+
+    // THEN the result is the serialized value of the input.
+    assert.deepEqual(
+      serialized,
+      Serializer.issuedCurrencyAmountToJSON(issuedCurrencyAmount),
+    )
+  })
+
+  it('Fails to serialize a malformed CurrencyAmount', function (): void {
+    // GIVEN an CurrencyAmount with no fields set.
+    const currencyAmount = new CurrencyAmount()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyAmountToJSON(currencyAmount)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes an Amount with an CurencyAmount', function (): void {
+    // GIVEN an Amount wrapping a CurrencyAmount.
+    const dropsValue = '123'
+    const xrpDropsAmount = makeXrpDropsAmount(dropsValue)
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.amountToJSON(amount)
+
+    // THEN the result is the serialized CurrencyAmount.
+    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
+  })
+
+  it('Failes to serialize a malformed CurrencyAmount', function (): void {
+    // GIVEN an Amount with no value.
+    const amount = new Amount()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.amountToJSON(amount)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 })

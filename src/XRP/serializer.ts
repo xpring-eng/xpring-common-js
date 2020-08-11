@@ -3,7 +3,6 @@
  */
 import Utils from '../Common/utils'
 
-
 import {
   XRPDropsAmount,
   Currency,
@@ -52,7 +51,7 @@ interface DepositPreauthJSON {
 }
 
 interface PaymentJSON {
-  Amount: Record<string, unknown> | string
+  Amount: AmountJSON
   Destination: string
   DestinationTag?: DestinationTagJSON
   TransactionType: string
@@ -70,7 +69,7 @@ interface MemoDetailsJSON {
 
 interface BaseTransactionJSON {
   Account: string
-  Fee: string
+  Fee: XRPDropsAmountJSON
   LastLedgerSequence: number
   Sequence: number
   SigningPubKey: string
@@ -103,6 +102,8 @@ interface IssuedCurrencyAmountJSON {
 }
 
 type AmountJSON = CurrencyAmountJSON
+type XRPDropsAmountJSON = string
+type CurrencyAmountJSON = IssuedCurrencyAmountJSON | XRPDropsAmountJSON
 type ClearFlagJSON = number
 type EmailHashJSON = string
 type SetFlagJSON = number
@@ -202,7 +203,7 @@ const serializer = {
   // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
   paymentToJSON(payment: Payment): PaymentJSON | undefined {
     const json: PaymentJSON = {
-      Amount: {},
+      Amount: '',
       Destination: '',
       TransactionType: 'Payment',
     }
@@ -220,11 +221,15 @@ const serializer = {
       json.DestinationTag = decodedXAddress.tag
     }
 
-    const xrpAmount = payment.getAmount()?.getValue()?.getXrpAmount()
-    if (!xrpAmount) {
+    const amount = payment.getAmount()
+    if (amount === undefined) {
       return undefined
     }
-    json.Amount = this.xrpAmountToJSON(xrpAmount)
+    const amountJSON = this.amountToJSON(amount)
+    if (amountJSON === undefined) {
+      return undefined
+    }
+    json.Amount = amountJSON
 
     return json
   },
@@ -563,18 +568,48 @@ const serializer = {
   },
 
   /**
- * Convert an Amount to a JSON representation.
- *
- * @param amount - The Amount to convert.
- * @returns The Amount as JSON.
- */
+   * Convert an Amount to a JSON representation.
+   *
+   * @param amount - The Amount to convert.
+   * @returns The Amount as JSON.
+   */
   amountToJSON(amount: Amount): AmountJSON | undefined {
     const currencyAmount = amount.getValue()
     if (currencyAmount === undefined) {
       return undefined
     }
 
-    return this.currencyAmount(currencyAmount)
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert a CurrencyAmount to a JSON representation.
+   *
+   * @param currencyAmount - The CurrencyAmount to convert.
+   * @returns The CurrencyAmount as JSON.
+   */
+  currencyAmountToJSON(
+    currencyAmount: CurrencyAmount,
+  ): CurrencyAmountJSON | undefined {
+    switch (currencyAmount.getAmountCase()) {
+      case CurrencyAmount.AmountCase.ISSUED_CURRENCY_AMOUNT: {
+        const issuedCurrencyAmount = currencyAmount.getIssuedCurrencyAmount()
+        if (issuedCurrencyAmount === undefined) {
+          return undefined
+        }
+        return this.issuedCurrencyAmountToJSON(issuedCurrencyAmount)
+      }
+      case CurrencyAmount.AmountCase.XRP_AMOUNT: {
+        const xrpAmount = currencyAmount.getXrpAmount()
+        if (xrpAmount === undefined) {
+          return undefined
+        }
+        return this.xrpAmountToJSON(xrpAmount)
+      }
+      case CurrencyAmount.AmountCase.AMOUNT_NOT_SET:
+      default:
+        return undefined
+    }
   },
 }
 
