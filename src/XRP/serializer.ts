@@ -24,6 +24,7 @@ import {
   TickSize,
   MemoData,
   Unauthorize,
+  Account,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -117,6 +118,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type AccountJSON = string
 type MemoDataJSON = Uint8Array
 type UnauthorizeJSON = string
 type SequenceJSON = number
@@ -671,6 +673,17 @@ const serializer = {
       default:
         return undefined
     }
+  },
+
+  /**
+   * Convert an Account to a JSON representation.
+   *
+   * @param account - The Account to convert.
+   * @returns The Account as JSON.
+   */
+  accountToJSON(account: Account): AccountJSON | undefined {
+    // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
+    return account.getValue()?.getAddress()
   },
 }
 
