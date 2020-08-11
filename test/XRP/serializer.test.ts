@@ -393,7 +393,7 @@ function makePathElement(
  * Make an XRPDropsAmount.
  *
  * @param drops - A numeric string representing the number of drops.
- * @returns A new XRPCurrencyAmount.
+ * @returns A new XRPDropsAmount.
  */
 function makeXrpDropsAmount(drops: string) {
   const xrpDropsAmount = new XRPDropsAmount()
