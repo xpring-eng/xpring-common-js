@@ -22,7 +22,7 @@ import {
   Sequence,
   TransferRate,
   TickSize,
-  Unauthorize
+  Unauthorize,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -478,8 +478,13 @@ const serializer = {
    */
   unauthorizeToJSON(unauthorize: Unauthorize): UnauthorizeJSON | undefined {
     const accountAddress = unauthorize.getValue()
+
+    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
+    return accountAddress === undefined
+      ? undefined
+      : accountAddress.getAddress()
   },
-    
+
   /**
    * Convert a Sequence to a JSON representation.
    *
