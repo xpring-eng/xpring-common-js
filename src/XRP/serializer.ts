@@ -173,6 +173,7 @@ const serializer = {
     const sequence = transaction.getSequence()
     object.Sequence = sequence !== undefined ? this.sequenceToJSON(sequence) : 0
 
+    const lastLedgerSequence = transaction.getLastLedgerSequence()
     object.LastLedgerSequence =
       lastLedgerSequence !== undefined
         ? this.lastLedgerSequenceToJSON(lastLedgerSequence)
@@ -475,7 +476,7 @@ const serializer = {
   sequenceToJSON(sequence: Sequence): SequenceJSON {
     return sequence.getValue()
   },
-    
+
   /**
    * Convert a LastLedgerSequence to a JSON representation.
    *
@@ -487,7 +488,7 @@ const serializer = {
   ): LastLedgerSequenceJSON {
     return lastLedgerSequence.getValue()
   },
-  
+
   /**
    * Convert a ClearFlag to a JSON representation.
    *
@@ -497,7 +498,7 @@ const serializer = {
   clearFlagToJSON(clearFlag: ClearFlag): ClearFlagJSON {
     return clearFlag.getValue()
   },
-    
+
   /**
    * Convert an EmailHash to a JSON representation.
    *
