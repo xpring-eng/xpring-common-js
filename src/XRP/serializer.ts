@@ -3,11 +3,11 @@
  */
 import Utils from '../Common/utils'
 
-
 import {
   XRPDropsAmount,
   Currency,
   IssuedCurrencyAmount,
+  CurrencyAmount,
 } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Authorize,
@@ -16,10 +16,13 @@ import {
   Domain,
   EmailHash,
   InvoiceID,
+  LastLedgerSequence,
   MessageKey,
   SetFlag,
+  Sequence,
   TransferRate,
   TickSize,
+  Unauthorize,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -46,11 +49,11 @@ interface AccountSetJSON {
 interface DepositPreauthJSON {
   Authorize?: AuthorizeJSON
   TransactionType: string
-  Unauthorize?: string
+  Unauthorize?: UnauthorizeJSON
 }
 
 interface PaymentJSON {
-  Amount: Record<string, unknown> | string
+  Amount: CurrencyAmountJSON
   Destination: string
   DestinationTag?: DestinationTagJSON
   TransactionType: string
@@ -68,9 +71,9 @@ interface MemoDetailsJSON {
 
 interface BaseTransactionJSON {
   Account: string
-  Fee: string
-  LastLedgerSequence: number
-  Sequence: number
+  Fee: XRPDropsAmountJSON
+  LastLedgerSequence: LastLedgerSequenceJSON
+  Sequence: SequenceJSON
   SigningPubKey: string
   TxnSignature?: string
   Memos?: MemoJSON[]
@@ -100,6 +103,11 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type UnauthorizeJSON = string
+type SequenceJSON = number
+type LastLedgerSequenceJSON = number
+type XRPDropsAmountJSON = string
+type CurrencyAmountJSON = IssuedCurrencyAmountJSON | XRPDropsAmountJSON
 type ClearFlagJSON = number
 type EmailHashJSON = string
 type SetFlagJSON = number
@@ -164,9 +172,14 @@ const serializer = {
     object.Fee = this.xrpAmountToJSON(txFee)
 
     // Set sequence numbers
-    object.Sequence = transaction.getSequence()?.getValue() ?? 0
+    const sequence = transaction.getSequence()
+    object.Sequence = sequence !== undefined ? this.sequenceToJSON(sequence) : 0
+
+    const lastLedgerSequence = transaction.getLastLedgerSequence()
     object.LastLedgerSequence =
-      transaction.getLastLedgerSequence()?.getValue() ?? 0
+      lastLedgerSequence !== undefined
+        ? this.lastLedgerSequenceToJSON(lastLedgerSequence)
+        : 0
 
     const signingPubKeyBytes = transaction
       .getSigningPublicKey()
@@ -199,7 +212,7 @@ const serializer = {
   // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
   paymentToJSON(payment: Payment): PaymentJSON | undefined {
     const json: PaymentJSON = {
-      Amount: {},
+      Amount: '',
       Destination: '',
       TransactionType: 'Payment',
     }
@@ -217,11 +230,15 @@ const serializer = {
       json.DestinationTag = decodedXAddress.tag
     }
 
-    const xrpAmount = payment.getAmount()?.getValue()?.getXrpAmount()
-    if (!xrpAmount) {
+    const currencyAmount = payment.getAmount()?.getValue()
+    if (currencyAmount === undefined) {
       return undefined
     }
-    json.Amount = this.xrpAmountToJSON(xrpAmount)
+    const currencyAmountJSON = this.currencyAmountToJSON(currencyAmount)
+    if (currencyAmountJSON === undefined) {
+      return undefined
+    }
+    json.Amount = currencyAmountJSON
 
     return json
   },
@@ -251,12 +268,13 @@ const serializer = {
         return json
       }
       case DepositPreauth.AuthorizationOneofCase.UNAUTHORIZE: {
-        const unauthorize = depositPreauth
-          .getUnauthorize()
-          ?.getValue()
-          ?.getAddress()
+        const unauthorize = depositPreauth.getUnauthorize()
+        if (unauthorize === undefined) {
+          return undefined
+        }
+        const unauthorizeJSON = this.unauthorizeToJSON(unauthorize)
 
-        json.Unauthorize = unauthorize
+        json.Unauthorize = unauthorizeJSON
         return json
       }
       case DepositPreauth.AuthorizationOneofCase.AUTHORIZATION_ONEOF_NOT_SET: {
@@ -453,6 +471,43 @@ const serializer = {
   },
 
   /**
+   * Convert an Unauthorize to a JSON representation.
+   *
+   * @param unauthorize - The Unauthorize to convert.
+   * @returns The Unauthorize as JSON.
+   */
+  unauthorizeToJSON(unauthorize: Unauthorize): UnauthorizeJSON | undefined {
+    const accountAddress = unauthorize.getValue()
+
+    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
+    return accountAddress === undefined
+      ? undefined
+      : accountAddress.getAddress()
+  },
+
+  /**
+   * Convert a Sequence to a JSON representation.
+   *
+   * @param sequence - The Sequence to convert.
+   * @returns The Sequence as JSON.
+   */
+  sequenceToJSON(sequence: Sequence): SequenceJSON {
+    return sequence.getValue()
+  },
+
+  /**
+   * Convert a LastLedgerSequence to a JSON representation.
+   *
+   * @param lastLedgerSequence - The LastLedgerSequence to convert.
+   * @returns The LastLedgerSequence as JSON.
+   */
+  lastLedgerSequenceToJSON(
+    lastLedgerSequence: LastLedgerSequence,
+  ): LastLedgerSequenceJSON {
+    return lastLedgerSequence.getValue()
+  },
+
+  /**
    * Convert a ClearFlag to a JSON representation.
    *
    * @param clearFlag - The ClearFlag to convert.
@@ -461,7 +516,7 @@ const serializer = {
   clearFlagToJSON(clearFlag: ClearFlag): ClearFlagJSON {
     return clearFlag.getValue()
   },
-    
+
   /**
    * Convert an EmailHash to a JSON representation.
    *
@@ -472,7 +527,7 @@ const serializer = {
     const emailHashBytes = emailHash.getValue_asU8()
     return Utils.toHex(emailHashBytes)
   },
-   
+
   /**
    * Convert a SetFlag to a JSON representation.
    *
@@ -557,6 +612,36 @@ const serializer = {
    */
   invoiceIdToJSON(invoiceId: InvoiceID): InvoiceIdJSON {
     return Utils.toHex(invoiceId.getValue_asU8())
+  },
+
+  /**
+   * Convert a CurrencyAmount to a JSON representation.
+   *
+   * @param currencyAmount - The CurrencyAmount to convert.
+   * @returns The CurrencyAmount as JSON.
+   */
+  currencyAmountToJSON(
+    currencyAmount: CurrencyAmount,
+  ): CurrencyAmountJSON | undefined {
+    switch (currencyAmount.getAmountCase()) {
+      case CurrencyAmount.AmountCase.ISSUED_CURRENCY_AMOUNT: {
+        const issuedCurrencyAmount = currencyAmount.getIssuedCurrencyAmount()
+        if (issuedCurrencyAmount === undefined) {
+          return undefined
+        }
+        return this.issuedCurrencyAmountToJSON(issuedCurrencyAmount)
+      }
+      case CurrencyAmount.AmountCase.XRP_AMOUNT: {
+        const xrpAmount = currencyAmount.getXrpAmount()
+        if (xrpAmount === undefined) {
+          return undefined
+        }
+        return this.xrpAmountToJSON(xrpAmount)
+      }
+      case CurrencyAmount.AmountCase.AMOUNT_NOT_SET:
+      default:
+        return undefined
+    }
   },
 }
 
