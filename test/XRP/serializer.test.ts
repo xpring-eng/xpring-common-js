@@ -406,7 +406,7 @@ function makeXrpDropsAmount(drops: string) {
  * Make an IssuedCurrencyAmount.
  *
  * @param accountAddress - The account address.
- * @param issuedCurrencyCalue - The value.
+ * @param issuedCurrencyValue - The value.
  * @param currency - The currency.
  * @returns A new IssuedCurrencyAmount.
  */
