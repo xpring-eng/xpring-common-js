@@ -33,6 +33,7 @@ import {
   SetFlag,
   TransferRate,
   TickSize,
+  LastLedgerSequence,
   DestinationTag,
   InvoiceID,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
@@ -55,7 +56,7 @@ const destinationXAddressWithTag =
   'XVPcpSm47b1CZkf5AkKM9a84dQHe3mTAxgxfLw2qYoe7Boa'
 const tag = 12345
 const sequenceValue = 1
-const lastLedgerSequence = 20
+const lastLedgerSequenceValue = 20
 const publicKey =
   '031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE'
 const fee = '10'
@@ -389,6 +390,40 @@ function makePathElement(
   return pathElement
 }
 
+/**
+ * Make an XRPDropsAmount.
+ *
+ * @param drops - A numeric string representing the number of drops.
+ * @returns A new XRPDropsAmount.
+ */
+function makeXrpDropsAmount(drops: string) {
+  const xrpDropsAmount = new XRPDropsAmount()
+  xrpDropsAmount.setDrops(drops)
+
+  return xrpDropsAmount
+}
+
+/**
+ * Make an IssuedCurrencyAmount.
+ *
+ * @param accountAddress - The account address.
+ * @param issuedCurrencyValue - The value.
+ * @param currency - The currency.
+ * @returns A new IssuedCurrencyAmount.
+ */
+function makeIssuedCurrencyAmount(
+  accountAddress: AccountAddress,
+  issuedCurrencyValue: string,
+  currency: Currency,
+) {
+  const issuedCurrency = new IssuedCurrencyAmount()
+  issuedCurrency.setIssuer(accountAddress)
+  issuedCurrency.setValue(issuedCurrencyValue)
+  issuedCurrency.setCurrency(currency)
+
+  return issuedCurrency
+}
+
 describe('serializer', function (): void {
   it('serializes a payment in XRP from a classic address', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
@@ -396,7 +431,7 @@ describe('serializer', function (): void {
       value,
       destinationClassicAddress,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
       publicKey,
@@ -411,7 +446,7 @@ describe('serializer', function (): void {
       Amount: value.toString(),
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
-      LastLedgerSequence: lastLedgerSequence,
+      LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
@@ -425,7 +460,7 @@ describe('serializer', function (): void {
       value,
       destinationClassicAddress,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequenceValue,
       accountXAddress,
       publicKey,
@@ -440,7 +475,7 @@ describe('serializer', function (): void {
       Amount: value.toString(),
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
-      LastLedgerSequence: lastLedgerSequence,
+      LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
@@ -455,7 +490,7 @@ describe('serializer', function (): void {
       value,
       destinationClassicAddress,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequenceValue,
       account,
       publicKey,
@@ -474,7 +509,7 @@ describe('serializer', function (): void {
       value,
       destinationClassicAddress,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequenceValue,
       undefined,
       publicKey,
@@ -493,7 +528,7 @@ describe('serializer', function (): void {
       value,
       destinationXAddressWithTag,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
       publicKey,
@@ -509,7 +544,7 @@ describe('serializer', function (): void {
       Destination: destinationClassicAddress,
       DestinationTag: tag,
       Fee: fee.toString(),
-      LastLedgerSequence: lastLedgerSequence,
+      LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
@@ -523,7 +558,7 @@ describe('serializer', function (): void {
       value,
       destinationXAddressWithoutTag,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
       publicKey,
@@ -538,7 +573,7 @@ describe('serializer', function (): void {
       Amount: value.toString(),
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
-      LastLedgerSequence: lastLedgerSequence,
+      LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
@@ -553,7 +588,7 @@ describe('serializer', function (): void {
       value,
       destinationXAddressWithoutTag,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
       publicKey,
@@ -581,7 +616,7 @@ describe('serializer', function (): void {
       Amount: value.toString(),
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
-      LastLedgerSequence: lastLedgerSequence,
+      LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
@@ -705,7 +740,7 @@ describe('serializer', function (): void {
       address,
       undefined,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
       publicKey,
@@ -722,7 +757,7 @@ describe('serializer', function (): void {
       undefined,
       undefined,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
       publicKey,
@@ -805,7 +840,7 @@ describe('serializer', function (): void {
       undefined,
       undefined,
       fee,
-      lastLedgerSequence,
+      lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
       publicKey,
@@ -898,10 +933,11 @@ describe('serializer', function (): void {
     const currency = new Currency()
     currency.setName('USD')
 
-    const issuedCurrency = new IssuedCurrencyAmount()
-    issuedCurrency.setIssuer(testAccountAddress)
-    issuedCurrency.setValue(value)
-    issuedCurrency.setCurrency(currency)
+    const issuedCurrency = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      value,
+      currency,
+    )
 
     // WHEN it is serialized.
     const serialized = Serializer.issuedCurrencyAmountToJSON(issuedCurrency)
@@ -929,10 +965,11 @@ describe('serializer', function (): void {
     // GIVEN an IssuedCurrencyAmount with a malformed Currency.
     const currency = new Currency()
 
-    const issuedCurrency = new IssuedCurrencyAmount()
-    issuedCurrency.setIssuer(testAccountAddress)
-    issuedCurrency.setValue(value)
-    issuedCurrency.setCurrency(currency)
+    const issuedCurrency = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      value,
+      currency,
+    )
 
     // WHEN it is serialized.
     const serialized = Serializer.issuedCurrencyAmountToJSON(issuedCurrency)
@@ -1003,7 +1040,19 @@ describe('serializer', function (): void {
     // THEN the result is the same as the input.
     assert.deepEqual(serialized, sequenceValue)
   })
-    
+ 
+  it('Serializes a LastLedgerSequence', function (): void {
+    // GIVEN a LastLedgerSequence.
+    const lastLedgerSequence = new LastLedgerSequence()
+    lastLedgerSequence.setValue(lastLedgerSequenceValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.lastLedgerSequenceToJSON(lastLedgerSequence)
+
+    // THEN the result is the same as the input.
+    assert.deepEqual(serialized, lastLedgerSequenceValue)
+  })
+
   it('Serializes a ClearFlag', function (): void {
     // GIVEN a ClearFlag.
     const flagValues = 1
@@ -1031,7 +1080,7 @@ describe('serializer', function (): void {
     // THEN the result is the same as the input bytes encoded to hex.
     assert.deepEqual(serialized, Utils.toHex(emailHashBytes))
   })
-    
+
   it('Serializes a SetFlag', function (): void {
     // GIVEN a SetFlag.
     const setFlagValue = 1
@@ -1128,5 +1177,55 @@ describe('serializer', function (): void {
 
     // THEN the result is the hex representation of the invoiceId.
     assert.equal(serialized, Utils.toHex(invoiceIdBytes))
+  })
+
+  it('Serializes a CurrencyAmount with an XRPDropsAmount', function (): void {
+    // GIVEN an CurrencyAmount with an XRPDropsAmount.
+    const dropsValue = '123'
+    const xrpDropsAmount = makeXrpDropsAmount(dropsValue)
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyAmountToJSON(currencyAmount)
+
+    // THEN the result is the drops.
+    assert.equal(serialized, dropsValue)
+  })
+
+  it('Serializes a CurrencyAmount with an IssuedCurrencyAmount', function (): void {
+    // GIVEN an CurrencyAmount with an IssuedCurrencyAmount.
+    const currency = new Currency()
+    currency.setName('USD')
+
+    const issuedCurrencyAmount = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      value,
+      currency,
+    )
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setIssuedCurrencyAmount(issuedCurrencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyAmountToJSON(currencyAmount)
+
+    // THEN the result is the serialized value of the input.
+    assert.deepEqual(
+      serialized,
+      Serializer.issuedCurrencyAmountToJSON(issuedCurrencyAmount),
+    )
+  })
+
+  it('Fails to serialize a malformed CurrencyAmount', function (): void {
+    // GIVEN an CurrencyAmount with no fields set.
+    const currencyAmount = new CurrencyAmount()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.currencyAmountToJSON(currencyAmount)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 })
