@@ -19,6 +19,7 @@ import {
   LastLedgerSequence,
   MessageKey,
   SetFlag,
+  Sequence,
   TransferRate,
   TickSize,
 } from './generated/org/xrpl/rpc/v1/common_pb'
@@ -71,7 +72,7 @@ interface BaseTransactionJSON {
   Account: string
   Fee: XRPDropsAmountJSON
   LastLedgerSequence: LastLedgerSequenceJSON
-  Sequence: number
+  Sequence: SequenceJSON
   SigningPubKey: string
   TxnSignature?: string
   Memos?: MemoJSON[]
@@ -101,6 +102,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type SequenceJSON = number
 type LastLedgerSequenceJSON = number
 type XRPDropsAmountJSON = string
 type CurrencyAmountJSON = IssuedCurrencyAmountJSON | XRPDropsAmountJSON
@@ -168,7 +170,8 @@ const serializer = {
     object.Fee = this.xrpAmountToJSON(txFee)
 
     // Set sequence numbers
-    object.Sequence = transaction.getSequence()?.getValue() ?? 0
+    const sequence = transaction.getSequence()
+    object.Sequence = sequence !== undefined ? this.sequenceToJSON(sequence) : 0
 
     const lastLedgerSequence = transaction.getLastLedgerSequence()
     object.LastLedgerSequence =
@@ -465,6 +468,16 @@ const serializer = {
   },
 
   /**
+   * Convert a Sequence to a JSON representation.
+   *
+   * @param sequence - The Sequence to convert.
+   * @returns The Sequence as JSON.
+   */
+  sequenceToJSON(sequence: Sequence): SequenceJSON {
+    return sequence.getValue()
+  },
+
+  /**
    * Convert a LastLedgerSequence to a JSON representation.
    *
    * @param lastLedgerSequence - The LastLedgerSequence to convert.
@@ -475,7 +488,7 @@ const serializer = {
   ): LastLedgerSequenceJSON {
     return lastLedgerSequence.getValue()
   },
-  
+
   /**
    * Convert a ClearFlag to a JSON representation.
    *
@@ -485,7 +498,7 @@ const serializer = {
   clearFlagToJSON(clearFlag: ClearFlag): ClearFlagJSON {
     return clearFlag.getValue()
   },
-    
+
   /**
    * Convert an EmailHash to a JSON representation.
    *
