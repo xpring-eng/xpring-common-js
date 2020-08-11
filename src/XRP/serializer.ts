@@ -3,7 +3,6 @@
  */
 import Utils from '../Common/utils'
 
-
 import {
   XRPDropsAmount,
   Currency,
@@ -17,6 +16,7 @@ import {
   Domain,
   EmailHash,
   InvoiceID,
+  LastLedgerSequence,
   MessageKey,
   SetFlag,
   TransferRate,
@@ -70,7 +70,7 @@ interface MemoDetailsJSON {
 interface BaseTransactionJSON {
   Account: string
   Fee: XRPDropsAmountJSON
-  LastLedgerSequence: number
+  LastLedgerSequence: LastLedgerSequenceJSON
   Sequence: number
   SigningPubKey: string
   TxnSignature?: string
@@ -101,6 +101,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type LastLedgerSequenceJSON = number
 type XRPDropsAmountJSON = string
 type CurrencyAmountJSON = IssuedCurrencyAmountJSON | XRPDropsAmountJSON
 type ClearFlagJSON = number
@@ -168,8 +169,12 @@ const serializer = {
 
     // Set sequence numbers
     object.Sequence = transaction.getSequence()?.getValue() ?? 0
+
+    const lastLedgerSequence = transaction.getLastLedgerSequence()
     object.LastLedgerSequence =
-      transaction.getLastLedgerSequence()?.getValue() ?? 0
+      lastLedgerSequence !== undefined
+        ? this.lastLedgerSequenceToJSON(lastLedgerSequence)
+        : 0
 
     const signingPubKeyBytes = transaction
       .getSigningPublicKey()
@@ -459,6 +464,18 @@ const serializer = {
     return undefined
   },
 
+  /**
+   * Convert a LastLedgerSequence to a JSON representation.
+   *
+   * @param lastLedgerSequence - The LastLedgerSequence to convert.
+   * @returns The LastLedgerSequence as JSON.
+   */
+  lastLedgerSequenceToJSON(
+    lastLedgerSequence: LastLedgerSequence,
+  ): LastLedgerSequenceJSON {
+    return lastLedgerSequence.getValue()
+  },
+  
   /**
    * Convert a ClearFlag to a JSON representation.
    *
