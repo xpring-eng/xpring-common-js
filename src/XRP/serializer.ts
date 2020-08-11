@@ -32,42 +32,9 @@ import {
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
-type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
-
-interface AccountSetJSON {
-  ClearFlag?: ClearFlagJSON
-  Domain?: DomainJSON
-  EmailHash?: EmailHashJSON
-  MessageKey?: MessageKeyJSON
-  SetFlag?: SetFlagJSON
-  TransactionType: string
-  TransferRate?: TransferRateJSON
-  TickSize?: TickSizeJSON
-}
-
-interface DepositPreauthJSON {
-  Authorize?: AuthorizeJSON
-  TransactionType: string
-  Unauthorize?: string
-}
-
-interface PaymentJSON {
-  Amount: CurrencyAmountJSON
-  Destination: string
-  DestinationTag?: DestinationTagJSON
-  TransactionType: string
-}
-
-interface MemoJSON {
-  Memo?: MemoDetailsJSON
-}
-
-interface MemoDetailsJSON {
-  MemoData?: MemoDataJSON
-  MemoType?: MemoDataJSON
-  MemoFormat?: MemoDataJSON
-}
-
+/**
+ * Common fields on a transaction.
+ */
 interface BaseTransactionJSON {
   Account: string
   Fee: XRPDropsAmountJSON
@@ -78,16 +45,62 @@ interface BaseTransactionJSON {
   Memos?: MemoJSON[]
 }
 
-interface AccountSetJSONAddition extends AccountSetJSON {
+/**
+ * Transaction Specific Fields.
+ */
+export interface AccountSetJSON {
+  ClearFlag?: ClearFlagJSON
+  Domain?: DomainJSON
+  EmailHash?: EmailHashJSON
+  MessageKey?: MessageKeyJSON
+  SetFlag?: SetFlagJSON
+  TransferRate?: TransferRateJSON
+  TickSize?: TickSizeJSON
   TransactionType: 'AccountSet'
 }
 
-interface DepositPreauthJSONAddition extends DepositPreauthJSON {
+export interface DepositPreauthJSON {
+  Authorize?: AuthorizeJSON
+  Unauthorize?: string
   TransactionType: 'DepositPreauth'
 }
 
-interface PaymentTransactionJSONAddition extends PaymentJSON {
+interface PaymentJSON {
+  Amount: CurrencyAmountJSON
+  Destination: string
+  DestinationTag?: DestinationTagJSON
   TransactionType: 'Payment'
+}
+
+// Generic field representing an OR of all above fields.
+type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
+
+/**
+ * Individual Transaction Types.
+ */
+type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
+type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
+type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
+
+/**
+ * All Transactions.
+ */
+export type TransactionJSON =
+  | AccountSetTransactionJSON
+  | DepositPreauthTransactionJSON
+  | PaymentTransactionJSON
+
+/**
+ * Types for serialized sub-objects.
+ */
+interface MemoJSON {
+  Memo?: MemoDetailsJSON
+}
+
+interface MemoDetailsJSON {
+  MemoData?: MemoDataJSON
+  MemoType?: MemoDataJSON
+  MemoFormat?: MemoDataJSON
 }
 
 interface PathElementJSON {
@@ -118,19 +131,6 @@ type AuthorizeJSON = string
 type InvoiceIdJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
-type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
-
-type DepositPreauthTransactionJSON = BaseTransactionJSON &
-  DepositPreauthJSONAddition
-
-type PaymentTransactionJSON = BaseTransactionJSON &
-  PaymentTransactionJSONAddition
-
-export type TransactionJSON =
-  | BaseTransactionJSON
-  | AccountSetTransactionJSON
-  | DepositPreauthTransactionJSON
-  | PaymentTransactionJSON
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -148,7 +148,7 @@ const serializer = {
     transaction: Transaction,
     signature?: string,
   ): TransactionJSON | undefined {
-    const object: TransactionJSON = {
+    const object: BaseTransactionJSON = {
       Account: '',
       Fee: '',
       Sequence: 0,
@@ -185,19 +185,22 @@ const serializer = {
       object.SigningPubKey = Utils.toHex(signingPubKeyBytes)
     }
 
-    const additionalTransactionData = getAdditionalTransactionData(transaction)
-    if (additionalTransactionData === undefined) {
-      return undefined
-    }
-    Object.assign(object, additionalTransactionData)
-
     if (signature) {
       object.TxnSignature = signature
     }
 
     Object.assign(object, this.memosToJSON(transaction.getMemosList()))
 
-    return object
+    const additionalTransactionData = getAdditionalTransactionData(transaction)
+    if (additionalTransactionData === undefined) {
+      return undefined
+    }
+
+    const transactionJSON: TransactionJSON = {
+      ...object,
+      ...additionalTransactionData,
+    }
+    return transactionJSON
   },
 
   /**
