@@ -435,9 +435,7 @@ const serializer = {
    * @returns The MemoData as JSON.
    */
   memoDataToJSON(memoData: MemoData): MemoDataJSON | undefined {
-    return memoData.getValue_asU8().length > 0
-      ? memoData.getValue_asU8()
-      : undefined
+    return memoData.getValue_asU8()
   },
 
   /**
