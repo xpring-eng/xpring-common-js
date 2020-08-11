@@ -8,6 +8,7 @@ import {
   XRPDropsAmount,
   Currency,
   IssuedCurrencyAmount,
+  CurrencyAmount,
 } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Authorize,
@@ -20,6 +21,7 @@ import {
   SetFlag,
   TransferRate,
   TickSize,
+  Amount,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -100,6 +102,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type AmountJSON = CurrencyAmountJSON
 type ClearFlagJSON = number
 type EmailHashJSON = string
 type SetFlagJSON = number
@@ -461,7 +464,7 @@ const serializer = {
   clearFlagToJSON(clearFlag: ClearFlag): ClearFlagJSON {
     return clearFlag.getValue()
   },
-    
+
   /**
    * Convert an EmailHash to a JSON representation.
    *
@@ -472,7 +475,7 @@ const serializer = {
     const emailHashBytes = emailHash.getValue_asU8()
     return Utils.toHex(emailHashBytes)
   },
-   
+
   /**
    * Convert a SetFlag to a JSON representation.
    *
@@ -557,6 +560,21 @@ const serializer = {
    */
   invoiceIdToJSON(invoiceId: InvoiceID): InvoiceIdJSON {
     return Utils.toHex(invoiceId.getValue_asU8())
+  },
+
+  /**
+ * Convert an Amount to a JSON representation.
+ *
+ * @param amount - The Amount to convert.
+ * @returns The Amount as JSON.
+ */
+  amountToJSON(amount: Amount): AmountJSON | undefined {
+    const currencyAmount = amount.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmount(currencyAmount)
   },
 }
 
