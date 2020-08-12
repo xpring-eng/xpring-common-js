@@ -22,7 +22,6 @@ import {
   Sequence,
   TransferRate,
   TickSize,
-  MemoData,
   Unauthorize,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
@@ -34,75 +33,62 @@ import {
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
-/**
- * Common fields on a transaction.
- */
-interface BaseTransactionJSON {
-  Account: string
-  Fee: XRPDropsAmountJSON
-  LastLedgerSequence: LastLedgerSequenceJSON
-  Sequence: number
-  SigningPubKey: string
-  TxnSignature?: string
-  Memos?: MemoJSON[]
-}
+type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
 
-/**
- * Transaction Specific Fields.
- */
-export interface AccountSetJSON {
+interface AccountSetJSON {
   ClearFlag?: ClearFlagJSON
   Domain?: DomainJSON
   EmailHash?: EmailHashJSON
   MessageKey?: MessageKeyJSON
   SetFlag?: SetFlagJSON
+  TransactionType: string
   TransferRate?: TransferRateJSON
   TickSize?: TickSizeJSON
-  TransactionType: 'AccountSet'
 }
 
-export interface DepositPreauthJSON {
+interface DepositPreauthJSON {
   Authorize?: AuthorizeJSON
+  TransactionType: string
   Unauthorize?: UnauthorizeJSON
-  TransactionType: 'DepositPreauth'
 }
 
 interface PaymentJSON {
   Amount: CurrencyAmountJSON
   Destination: string
   DestinationTag?: DestinationTagJSON
-  TransactionType: 'Payment'
+  TransactionType: string
 }
 
-// Generic field representing an OR of all above fields.
-type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
-
-/**
- * Individual Transaction Types.
- */
-type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
-type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
-type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
-
-/**
- * All Transactions.
- */
-export type TransactionJSON =
-  | AccountSetTransactionJSON
-  | DepositPreauthTransactionJSON
-  | PaymentTransactionJSON
-
-/**
- * Types for serialized sub-objects.
- */
 interface MemoJSON {
   Memo?: MemoDetailsJSON
 }
 
 interface MemoDetailsJSON {
-  MemoData?: MemoDataJSON
-  MemoType?: MemoDataJSON
-  MemoFormat?: MemoDataJSON
+  MemoData?: Uint8Array
+  MemoType?: Uint8Array
+  MemoFormat?: Uint8Array
+}
+
+interface BaseTransactionJSON {
+  Account: string
+  Fee: XRPDropsAmountJSON
+  LastLedgerSequence: LastLedgerSequenceJSON
+  Sequence: SequenceJSON
+  SigningPubKey: string
+  TxnSignature?: string
+  Memos?: MemoJSON[]
+}
+
+interface AccountSetJSONAddition extends AccountSetJSON {
+  TransactionType: 'AccountSet'
+}
+
+interface DepositPreauthJSONAddition extends DepositPreauthJSON {
+  TransactionType: 'DepositPreauth'
+}
+
+interface PaymentTransactionJSONAddition extends PaymentJSON {
+  TransactionType: 'Payment'
 }
 
 interface PathElementJSON {
@@ -117,7 +103,6 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
-type MemoDataJSON = Uint8Array
 type UnauthorizeJSON = string
 type SequenceJSON = number
 type LastLedgerSequenceJSON = number
@@ -135,6 +120,19 @@ type AuthorizeJSON = string
 type InvoiceIdJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
+type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSONAddition
+
+type DepositPreauthTransactionJSON = BaseTransactionJSON &
+  DepositPreauthJSONAddition
+
+type PaymentTransactionJSON = BaseTransactionJSON &
+  PaymentTransactionJSONAddition
+
+export type TransactionJSON =
+  | BaseTransactionJSON
+  | AccountSetTransactionJSON
+  | DepositPreauthTransactionJSON
+  | PaymentTransactionJSON
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -152,7 +150,7 @@ const serializer = {
     transaction: Transaction,
     signature?: string,
   ): TransactionJSON | undefined {
-    const object: BaseTransactionJSON = {
+    const object: TransactionJSON = {
       Account: '',
       Fee: '',
       Sequence: 0,
@@ -190,22 +188,19 @@ const serializer = {
       object.SigningPubKey = Utils.toHex(signingPubKeyBytes)
     }
 
+    const additionalTransactionData = getAdditionalTransactionData(transaction)
+    if (additionalTransactionData === undefined) {
+      return undefined
+    }
+    Object.assign(object, additionalTransactionData)
+
     if (signature) {
       object.TxnSignature = signature
     }
 
     Object.assign(object, this.memosToJSON(transaction.getMemosList()))
 
-    const additionalTransactionData = getAdditionalTransactionData(transaction)
-    if (additionalTransactionData === undefined) {
-      return undefined
-    }
-
-    const transactionJSON: TransactionJSON = {
-      ...object,
-      ...additionalTransactionData,
-    }
-    return transactionJSON
+    return object
   },
 
   /**
@@ -414,39 +409,15 @@ const serializer = {
    * @returns The Memo as JSON.
    */
   memoToJSON(memo: Memo): MemoJSON {
-    const memoData = memo.getMemoData()
-    const memoFormat = memo.getMemoFormat()
-    const memoType = memo.getMemoType()
-
-    const jsonMemo: MemoDetailsJSON = {}
-
-    if (memoData !== undefined) {
-      jsonMemo.MemoData = this.memoDataToJSON(memoData)
-    }
-
-    if (memoFormat !== undefined) {
-      jsonMemo.MemoFormat = this.memoDataToJSON(memoFormat)
-    }
-
-    if (memoType !== undefined) {
-      jsonMemo.MemoType = this.memoDataToJSON(memoType)
+    const jsonMemo: MemoDetailsJSON = {
+      MemoData: memo.getMemoData()?.getValue_asU8(),
+      MemoFormat: memo.getMemoFormat()?.getValue_asU8(),
+      MemoType: memo.getMemoType()?.getValue_asU8(),
     }
 
     return {
       Memo: jsonMemo,
     }
-  },
-
-  /**
-   * Convert a MemoData to a JSON representation.
-   *
-   * @param memoData - The MemoData to convert.
-   * @returns The MemoData as JSON.
-   */
-  memoDataToJSON(memoData: MemoData): MemoDataJSON | undefined {
-    return memoData.getValue_asU8().length > 0
-      ? memoData.getValue_asU8()
-      : undefined
   },
 
   /**
