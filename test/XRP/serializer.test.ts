@@ -44,11 +44,7 @@ import {
   DepositPreauth,
   AccountSet,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
-import Serializer, {
-  AccountSetJSON,
-  DepositPreauthJSON,
-  TransactionJSON,
-} from '../../src/XRP/serializer'
+import Serializer from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
 /** Constants for transactions. */
@@ -445,7 +441,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
-    const expectedJSON: TransactionJSON = {
+    const expectedJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
       Destination: destinationClassicAddress,
@@ -474,7 +470,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
-    const expectedJSON: TransactionJSON = {
+    const expectedJSON = {
       Account: XrpUtils.decodeXAddress(accountXAddress)!.address,
       Amount: value.toString(),
       Destination: destinationClassicAddress,
@@ -542,7 +538,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
-    const expectedJSON: TransactionJSON = {
+    const expectedJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
       Destination: destinationClassicAddress,
@@ -572,7 +568,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
-    const expectedJSON: TransactionJSON = {
+    const expectedJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
       Destination: destinationClassicAddress,
@@ -615,7 +611,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result still has the meme as expected.
-    const expectedJSON: TransactionJSON = {
+    const expectedJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
       Destination: destinationClassicAddress,
@@ -689,7 +685,7 @@ describe('serializer', function (): void {
     const depositPreauth = new DepositPreauth()
     depositPreauth.setAuthorize(authorize)
 
-    const expectedJSON: DepositPreauthJSON = {
+    const expectedJSON = {
       Authorize: address,
       TransactionType: 'DepositPreauth',
     }
@@ -714,7 +710,7 @@ describe('serializer', function (): void {
     const depositPreauth = new DepositPreauth()
     depositPreauth.setUnauthorize(unauthorize)
 
-    const expectedJSON: DepositPreauthJSON = {
+    const expectedJSON = {
       TransactionType: 'DepositPreauth',
       Unauthorize: address,
     }
@@ -782,7 +778,7 @@ describe('serializer', function (): void {
       undefined,
       undefined,
     )
-    const expectedJSON: AccountSetJSON = {
+    const expectedJSON = {
       TransactionType: 'AccountSet',
     }
 
@@ -815,7 +811,7 @@ describe('serializer', function (): void {
       tickSizeValue,
     )
 
-    const expectedJSON: AccountSetJSON = {
+    const expectedJSON = {
       ClearFlag: clearFlagValue,
       Domain: domainValue,
       EmailHash: Utils.toHex(emailHashValue),
