@@ -1229,7 +1229,7 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
-  it('Serializes an MemoData', function (): void {
+  it('Serializes a MemoData', function (): void {
     // GIVEN a MemoData with some bytes
     const memoDataBytes = new Uint8Array([0, 1, 2, 3])
 
