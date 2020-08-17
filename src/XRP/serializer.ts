@@ -22,6 +22,9 @@ import {
   Sequence,
   TransferRate,
   TickSize,
+  MemoData,
+  MemoFormat,
+  MemoType,
   Unauthorize,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
@@ -64,9 +67,9 @@ interface MemoJSON {
 }
 
 interface MemoDetailsJSON {
-  MemoData?: Uint8Array
-  MemoType?: Uint8Array
-  MemoFormat?: Uint8Array
+  MemoData?: MemoDataJSON
+  MemoType?: MemoTypeJSON
+  MemoFormat?: MemoFormatJSON
 }
 
 interface BaseTransactionJSON {
@@ -103,6 +106,9 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type MemoDataJSON = string
+type MemoTypeJSON = string
+type MemoFormatJSON = string
 type UnauthorizeJSON = string
 type SequenceJSON = number
 type LastLedgerSequenceJSON = number
@@ -409,15 +415,61 @@ const serializer = {
    * @returns The Memo as JSON.
    */
   memoToJSON(memo: Memo): MemoJSON {
+    const memoData = memo.getMemoData()
+    const memoFormat = memo.getMemoFormat()
+    const memoType = memo.getMemoType()
+
     const jsonMemo: MemoDetailsJSON = {
-      MemoData: memo.getMemoData()?.getValue_asU8(),
-      MemoFormat: memo.getMemoFormat()?.getValue_asU8(),
-      MemoType: memo.getMemoType()?.getValue_asU8(),
+      MemoData: undefined,
+      MemoFormat: undefined,
+      MemoType: undefined,
+    }
+
+    if (memoData !== undefined) {
+      jsonMemo.MemoData = this.memoDataToJSON(memoData)
+    }
+
+    if (memoFormat !== undefined) {
+      jsonMemo.MemoFormat = this.memoFormatToJSON(memoFormat)
+    }
+
+    if (memoType !== undefined) {
+      jsonMemo.MemoType = this.memoTypeToJSON(memoType)
     }
 
     return {
       Memo: jsonMemo,
     }
+  },
+
+  /**
+   * Convert a MemoData to a JSON representation.
+   *
+   * @param memoData - The MemoData to convert.
+   * @returns The MemoData as JSON.
+   */
+  memoDataToJSON(memoData: MemoData): MemoDataJSON {
+    return Utils.toHex(memoData.getValue_asU8())
+  },
+
+  /**
+   * Convert a MemoFormat to a JSON representation.
+   *
+   * @param memoFormat - The MemoFormat to convert.
+   * @returns The MemoFormat as JSON.
+   */
+  memoFormatToJSON(memoFormat: MemoFormat): MemoFormatJSON {
+    return Utils.toHex(memoFormat.getValue_asU8())
+  },
+
+  /**
+   * Convert a MemoType to a JSON representation.
+   *
+   * @param memoType - The MemoType to convert.
+   * @returns The MemoType as JSON.
+   */
+  memoTypeToJSON(memoType: MemoType): MemoTypeJSON {
+    return Utils.toHex(memoType.getValue_asU8())
   },
 
   /**
