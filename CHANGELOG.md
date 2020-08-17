@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This release contains updated versions of dependencies for security and stability.
 
+### Removed
+
+- The deprecated method `parsePayID` is removed from `PayIdUtils`. Use `parsePayId` instead.
+
 ### [6.1.0] - 2020-08-01
 
 ### Added
@@ -21,6 +25,7 @@ This release contains updated versions of dependencies for security and stabilit
 - A new model, `HdWalletGenerationResult` encapsulates the results of generating a random hierarchical deterministic `Wallet`.
 
 ### Deprecated
+
 - The static method, `generateRandomWallet`, in the `Wallet` class is deprecated. Use `WalletFactory` instead.
 
 ### [6.0.0] - 2020-07-15
