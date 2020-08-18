@@ -1235,7 +1235,7 @@ describe('serializer', function (): void {
     assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
   })
 
-  it('Failes to serialize a malformed CurrencyAmount', function (): void {
+  it('Fails to serialize a malformed CurrencyAmount', function (): void {
     // GIVEN an Amount with no value.
     const amount = new Amount()
 
