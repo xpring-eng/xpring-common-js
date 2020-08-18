@@ -22,6 +22,7 @@ import {
   Sequence,
   TransferRate,
   TickSize,
+  Amount,
   MemoData,
   MemoFormat,
   MemoType,
@@ -56,7 +57,7 @@ interface DepositPreauthJSON {
 }
 
 interface PaymentJSON {
-  Amount: CurrencyAmountJSON
+  Amount: AmountJSON
   Destination: string
   DestinationTag?: DestinationTagJSON
   TransactionType: string
@@ -106,6 +107,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
 type MemoFormatJSON = string
@@ -236,15 +238,15 @@ const serializer = {
       json.DestinationTag = decodedXAddress.tag
     }
 
-    const currencyAmount = payment.getAmount()?.getValue()
-    if (currencyAmount === undefined) {
+    const amount = payment.getAmount()
+    if (amount === undefined) {
       return undefined
     }
-    const currencyAmountJSON = this.currencyAmountToJSON(currencyAmount)
-    if (currencyAmountJSON === undefined) {
+    const amountJSON = this.amountToJSON(amount)
+    if (amountJSON === undefined) {
       return undefined
     }
-    json.Amount = currencyAmountJSON
+    json.Amount = amountJSON
 
     return json
   },
@@ -664,6 +666,21 @@ const serializer = {
    */
   invoiceIdToJSON(invoiceId: InvoiceID): InvoiceIdJSON {
     return Utils.toHex(invoiceId.getValue_asU8())
+  },
+
+  /**
+   * Convert an Amount to a JSON representation.
+   *
+   * @param amount - The Amount to convert.
+   * @returns The Amount as JSON.
+   */
+  amountToJSON(amount: Amount): AmountJSON | undefined {
+    const currencyAmount = amount.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
   },
 
   /**
