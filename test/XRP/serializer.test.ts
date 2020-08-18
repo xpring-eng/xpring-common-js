@@ -55,7 +55,7 @@ const destinationXAddressWithoutTag =
 const destinationXAddressWithTag =
   'XVPcpSm47b1CZkf5AkKM9a84dQHe3mTAxgxfLw2qYoe7Boa'
 const tag = 12345
-const sequence = 1
+const sequenceValue = 1
 const lastLedgerSequenceValue = 20
 const publicKey =
   '031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE'
@@ -432,7 +432,7 @@ describe('serializer', function (): void {
       destinationClassicAddress,
       fee,
       lastLedgerSequenceValue,
-      sequence,
+      sequenceValue,
       accountClassicAddress,
       publicKey,
     )
@@ -447,7 +447,7 @@ describe('serializer', function (): void {
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequenceValue,
-      Sequence: sequence,
+      Sequence: sequenceValue,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
     }
@@ -461,7 +461,7 @@ describe('serializer', function (): void {
       destinationClassicAddress,
       fee,
       lastLedgerSequenceValue,
-      sequence,
+      sequenceValue,
       accountXAddress,
       publicKey,
     )
@@ -476,7 +476,7 @@ describe('serializer', function (): void {
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequenceValue,
-      Sequence: sequence,
+      Sequence: sequenceValue,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
     }
@@ -491,7 +491,7 @@ describe('serializer', function (): void {
       destinationClassicAddress,
       fee,
       lastLedgerSequenceValue,
-      sequence,
+      sequenceValue,
       account,
       publicKey,
     )
@@ -510,7 +510,7 @@ describe('serializer', function (): void {
       destinationClassicAddress,
       fee,
       lastLedgerSequenceValue,
-      sequence,
+      sequenceValue,
       undefined,
       publicKey,
     )
@@ -529,7 +529,7 @@ describe('serializer', function (): void {
       destinationXAddressWithTag,
       fee,
       lastLedgerSequenceValue,
-      sequence,
+      sequenceValue,
       accountClassicAddress,
       publicKey,
     )
@@ -545,7 +545,7 @@ describe('serializer', function (): void {
       DestinationTag: tag,
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequenceValue,
-      Sequence: sequence,
+      Sequence: sequenceValue,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
     }
@@ -559,7 +559,7 @@ describe('serializer', function (): void {
       destinationXAddressWithoutTag,
       fee,
       lastLedgerSequenceValue,
-      sequence,
+      sequenceValue,
       accountClassicAddress,
       publicKey,
     )
@@ -574,7 +574,7 @@ describe('serializer', function (): void {
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequenceValue,
-      Sequence: sequence,
+      Sequence: sequenceValue,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
     }
@@ -589,7 +589,7 @@ describe('serializer', function (): void {
       destinationXAddressWithoutTag,
       fee,
       lastLedgerSequenceValue,
-      sequence,
+      sequenceValue,
       accountClassicAddress,
       publicKey,
     )
@@ -617,15 +617,15 @@ describe('serializer', function (): void {
       Destination: destinationClassicAddress,
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequenceValue,
-      Sequence: sequence,
+      Sequence: sequenceValue,
       TransactionType: 'Payment',
       SigningPubKey: publicKey,
       Memos: [
         {
           Memo: {
-            MemoData: dataForMemo,
-            MemoType: typeForMemo,
-            MemoFormat: formatForMemo,
+            MemoData: Utils.toHex(dataForMemo),
+            MemoType: Utils.toHex(typeForMemo),
+            MemoFormat: Utils.toHex(formatForMemo),
           },
         },
       ],
@@ -651,9 +651,9 @@ describe('serializer', function (): void {
 
     const expectedJSON = {
       Memo: {
-        MemoData: dataForMemo,
-        MemoType: typeForMemo,
-        MemoFormat: formatForMemo,
+        MemoData: Utils.toHex(dataForMemo),
+        MemoType: Utils.toHex(typeForMemo),
+        MemoFormat: Utils.toHex(formatForMemo),
       },
     }
 
@@ -741,7 +741,7 @@ describe('serializer', function (): void {
       undefined,
       fee,
       lastLedgerSequenceValue,
-      sequence,
+      sequenceValue,
       accountClassicAddress,
       publicKey,
     )
@@ -758,7 +758,7 @@ describe('serializer', function (): void {
       undefined,
       fee,
       lastLedgerSequenceValue,
-      sequence,
+      sequenceValue,
       accountClassicAddress,
       publicKey,
     )
@@ -841,7 +841,7 @@ describe('serializer', function (): void {
       undefined,
       fee,
       lastLedgerSequenceValue,
-      sequence,
+      sequenceValue,
       accountClassicAddress,
       publicKey,
     )
@@ -1027,6 +1027,18 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized THEN the result is undefined.
     assert.isUndefined(Serializer.currencyToJSON(currency))
+  })
+
+  it('Serializes a Sequence', function (): void {
+    // GIVEN a Sequence.
+    const sequence = new Sequence()
+    sequence.setValue(sequenceValue)
+
+    // WHEN it is serialized
+    const serialized = Serializer.sequenceToJSON(sequence)
+
+    // THEN the result is the same as the input.
+    assert.deepEqual(serialized, sequenceValue)
   })
 
   it('Serializes a LastLedgerSequence', function (): void {
@@ -1244,5 +1256,47 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
+  })
+    
+  it('Serializes a MemoData', function (): void {
+    // GIVEN a MemoData with some bytes
+    const memoDataBytes = new Uint8Array([0, 1, 2, 3])
+
+    const memoData = new MemoData()
+    memoData.setValue(memoDataBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.memoDataToJSON(memoData)
+
+    // THEN the result is the hex representation of the bytes.
+    assert.equal(serialized, Utils.toHex(memoDataBytes))
+  })
+
+  it('Serializes an MemoType', function (): void {
+    // GIVEN a MemoType with some bytes
+    const memoTypeBytes = new Uint8Array([0, 1, 2, 3])
+
+    const memoType = new MemoType()
+    memoType.setValue(memoTypeBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.memoDataToJSON(memoType)
+
+    // THEN the result is the hex representation of the bytes.
+    assert.equal(serialized, Utils.toHex(memoTypeBytes))
+  })
+
+  it('Serializes an MemoFormat', function (): void {
+    // GIVEN a MemoFormat with some bytes
+    const memoFormatBytes = new Uint8Array([0, 1, 2, 3])
+
+    const memoFormat = new MemoFormat()
+    memoFormat.setValue(memoFormatBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.memoDataToJSON(memoFormat)
+
+    // THEN the result is the hex representation of the bytes.
+    assert.equal(serialized, Utils.toHex(memoFormatBytes))
   })
 })

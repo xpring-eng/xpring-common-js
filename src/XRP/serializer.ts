@@ -19,9 +19,14 @@ import {
   LastLedgerSequence,
   MessageKey,
   SetFlag,
+  Sequence,
   TransferRate,
   TickSize,
   Amount,
+  MemoData,
+  MemoFormat,
+  MemoType,
+  Unauthorize,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -48,7 +53,7 @@ interface AccountSetJSON {
 interface DepositPreauthJSON {
   Authorize?: AuthorizeJSON
   TransactionType: string
-  Unauthorize?: string
+  Unauthorize?: UnauthorizeJSON
 }
 
 interface PaymentJSON {
@@ -63,16 +68,16 @@ interface MemoJSON {
 }
 
 interface MemoDetailsJSON {
-  MemoData?: Uint8Array
-  MemoType?: Uint8Array
-  MemoFormat?: Uint8Array
+  MemoData?: MemoDataJSON
+  MemoType?: MemoTypeJSON
+  MemoFormat?: MemoFormatJSON
 }
 
 interface BaseTransactionJSON {
   Account: string
   Fee: XRPDropsAmountJSON
   LastLedgerSequence: LastLedgerSequenceJSON
-  Sequence: number
+  Sequence: SequenceJSON
   SigningPubKey: string
   TxnSignature?: string
   Memos?: MemoJSON[]
@@ -103,6 +108,11 @@ interface IssuedCurrencyAmountJSON {
 }
 
 type AmountJSON = CurrencyAmountJSON
+type MemoDataJSON = string
+type MemoTypeJSON = string
+type MemoFormatJSON = string
+type UnauthorizeJSON = string
+type SequenceJSON = number
 type LastLedgerSequenceJSON = number
 type XRPDropsAmountJSON = string
 type CurrencyAmountJSON = IssuedCurrencyAmountJSON | XRPDropsAmountJSON
@@ -170,7 +180,8 @@ const serializer = {
     object.Fee = this.xrpAmountToJSON(txFee)
 
     // Set sequence numbers
-    object.Sequence = transaction.getSequence()?.getValue() ?? 0
+    const sequence = transaction.getSequence()
+    object.Sequence = sequence !== undefined ? this.sequenceToJSON(sequence) : 0
 
     const lastLedgerSequence = transaction.getLastLedgerSequence()
     object.LastLedgerSequence =
@@ -265,12 +276,13 @@ const serializer = {
         return json
       }
       case DepositPreauth.AuthorizationOneofCase.UNAUTHORIZE: {
-        const unauthorize = depositPreauth
-          .getUnauthorize()
-          ?.getValue()
-          ?.getAddress()
+        const unauthorize = depositPreauth.getUnauthorize()
+        if (unauthorize === undefined) {
+          return undefined
+        }
+        const unauthorizeJSON = this.unauthorizeToJSON(unauthorize)
 
-        json.Unauthorize = unauthorize
+        json.Unauthorize = unauthorizeJSON
         return json
       }
       case DepositPreauth.AuthorizationOneofCase.AUTHORIZATION_ONEOF_NOT_SET: {
@@ -405,15 +417,61 @@ const serializer = {
    * @returns The Memo as JSON.
    */
   memoToJSON(memo: Memo): MemoJSON {
+    const memoData = memo.getMemoData()
+    const memoFormat = memo.getMemoFormat()
+    const memoType = memo.getMemoType()
+
     const jsonMemo: MemoDetailsJSON = {
-      MemoData: memo.getMemoData()?.getValue_asU8(),
-      MemoFormat: memo.getMemoFormat()?.getValue_asU8(),
-      MemoType: memo.getMemoType()?.getValue_asU8(),
+      MemoData: undefined,
+      MemoFormat: undefined,
+      MemoType: undefined,
+    }
+
+    if (memoData !== undefined) {
+      jsonMemo.MemoData = this.memoDataToJSON(memoData)
+    }
+
+    if (memoFormat !== undefined) {
+      jsonMemo.MemoFormat = this.memoFormatToJSON(memoFormat)
+    }
+
+    if (memoType !== undefined) {
+      jsonMemo.MemoType = this.memoTypeToJSON(memoType)
     }
 
     return {
       Memo: jsonMemo,
     }
+  },
+
+  /**
+   * Convert a MemoData to a JSON representation.
+   *
+   * @param memoData - The MemoData to convert.
+   * @returns The MemoData as JSON.
+   */
+  memoDataToJSON(memoData: MemoData): MemoDataJSON {
+    return Utils.toHex(memoData.getValue_asU8())
+  },
+
+  /**
+   * Convert a MemoFormat to a JSON representation.
+   *
+   * @param memoFormat - The MemoFormat to convert.
+   * @returns The MemoFormat as JSON.
+   */
+  memoFormatToJSON(memoFormat: MemoFormat): MemoFormatJSON {
+    return Utils.toHex(memoFormat.getValue_asU8())
+  },
+
+  /**
+   * Convert a MemoType to a JSON representation.
+   *
+   * @param memoType - The MemoType to convert.
+   * @returns The MemoType as JSON.
+   */
+  memoTypeToJSON(memoType: MemoType): MemoTypeJSON {
+    return Utils.toHex(memoType.getValue_asU8())
   },
 
   /**
@@ -467,6 +525,31 @@ const serializer = {
   },
 
   /**
+   * Convert an Unauthorize to a JSON representation.
+   *
+   * @param unauthorize - The Unauthorize to convert.
+   * @returns The Unauthorize as JSON.
+   */
+  unauthorizeToJSON(unauthorize: Unauthorize): UnauthorizeJSON | undefined {
+    const accountAddress = unauthorize.getValue()
+
+    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
+    return accountAddress === undefined
+      ? undefined
+      : accountAddress.getAddress()
+  },
+
+  /**
+   * Convert a Sequence to a JSON representation.
+   *
+   * @param sequence - The Sequence to convert.
+   * @returns The Sequence as JSON.
+   */
+  sequenceToJSON(sequence: Sequence): SequenceJSON {
+    return sequence.getValue()
+  },
+
+  /**
    * Convert a LastLedgerSequence to a JSON representation.
    *
    * @param lastLedgerSequence - The LastLedgerSequence to convert.
@@ -477,7 +560,7 @@ const serializer = {
   ): LastLedgerSequenceJSON {
     return lastLedgerSequence.getValue()
   },
-  
+
   /**
    * Convert a ClearFlag to a JSON representation.
    *
