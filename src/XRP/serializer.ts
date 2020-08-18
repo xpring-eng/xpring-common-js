@@ -24,6 +24,8 @@ import {
   TickSize,
   Amount,
   MemoData,
+  MemoFormat,	
+  MemoType,
   Unauthorize,
   Account,
 } from './generated/org/xrpl/rpc/v1/common_pb'
