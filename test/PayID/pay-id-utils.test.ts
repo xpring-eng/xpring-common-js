@@ -81,12 +81,4 @@ describe('PayIDUtils', function (): void {
     // THEN the Pay ID failed to parse.
     assert.isUndefined(payIDComponents)
   })
-
-  it('parse Pay ID - non-ascii characters', function (): void {
-    // GIVEN a Pay ID with non-ascii characters.
-    const rawPayID = 'ZA̡͊͠͝LGΌIS̯͈͕̹̘̱ͮ$TO͇̹̺ͅƝ̴ȳ̳TH̘Ë͖́̉ ͠P̯͍̭O̚N̐Y̡'
-
-    // WHEN it is parsed to components THEN the result is undefined
-    assert.isUndefined(PayIdUtils.parsePayId(rawPayID))
-  })
 })
