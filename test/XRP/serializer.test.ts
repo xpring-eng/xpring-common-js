@@ -1229,6 +1229,24 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes an Amount with a CurrencyAmount', function (): void {
+    // GIVEN an Amount wrapping a CurrencyAmount.
+    const dropsValue = '123'
+    const xrpDropsAmount = makeXrpDropsAmount(dropsValue)
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.amountToJSON(amount)
+
+    // THEN the result is the serialized CurrencyAmount.
+    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
+  })
+
   it('Serializes a MemoData', function (): void {
     // GIVEN a MemoData with some bytes
     const memoDataBytes = new Uint8Array([0, 1, 2, 3])
