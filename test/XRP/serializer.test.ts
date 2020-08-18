@@ -1247,17 +1247,6 @@ describe('serializer', function (): void {
     assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
   })
 
-  it('Fails to serialize a malformed CurrencyAmount', function (): void {
-    // GIVEN an Amount with no value.
-    const amount = new Amount()
-
-    // WHEN it is serialized.
-    const serialized = Serializer.amountToJSON(amount)
-
-    // THEN the result is undefined.
-    assert.isUndefined(serialized)
-  })
-    
   it('Serializes a MemoData', function (): void {
     // GIVEN a MemoData with some bytes
     const memoDataBytes = new Uint8Array([0, 1, 2, 3])
