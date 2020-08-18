@@ -1217,7 +1217,7 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
-  it('Serializes an Amount with an CurencyAmount', function (): void {
+  it('Serializes an Amount with a CurrencyAmount', function (): void {
     // GIVEN an Amount wrapping a CurrencyAmount.
     const dropsValue = '123'
     const xrpDropsAmount = makeXrpDropsAmount(dropsValue)
