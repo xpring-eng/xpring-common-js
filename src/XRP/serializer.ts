@@ -23,6 +23,10 @@ import {
   TransferRate,
   TickSize,
   MemoData,
+  Amount,
+  MemoData,
+  MemoFormat,
+  MemoType,
   Unauthorize,
   SigningPublicKey,
 } from './generated/org/xrpl/rpc/v1/common_pb'
@@ -69,7 +73,7 @@ export interface DepositPreauthJSON {
 }
 
 interface PaymentJSON {
-  Amount: CurrencyAmountJSON
+  Amount: AmountJSON
   Destination: string
   DestinationTag?: DestinationTagJSON
   TransactionType: 'Payment'
@@ -119,7 +123,10 @@ interface IssuedCurrencyAmountJSON {
 }
 
 type SigningPublicKeyJSON = string
-type MemoDataJSON = Uint8Array
+type AmountJSON = CurrencyAmountJSON
+type MemoDataJSON = string
+type MemoTypeJSON = string
+type MemoFormatJSON = string
 type UnauthorizeJSON = string
 type SequenceJSON = number
 type LastLedgerSequenceJSON = number
@@ -237,15 +244,15 @@ const serializer = {
       json.DestinationTag = decodedXAddress.tag
     }
 
-    const currencyAmount = payment.getAmount()?.getValue()
-    if (currencyAmount === undefined) {
+    const amount = payment.getAmount()
+    if (amount === undefined) {
       return undefined
     }
-    const currencyAmountJSON = this.currencyAmountToJSON(currencyAmount)
-    if (currencyAmountJSON === undefined) {
+    const amountJSON = this.amountToJSON(amount)
+    if (amountJSON === undefined) {
       return undefined
     }
-    json.Amount = currencyAmountJSON
+    json.Amount = amountJSON
 
     return json
   },
@@ -420,18 +427,22 @@ const serializer = {
     const memoFormat = memo.getMemoFormat()
     const memoType = memo.getMemoType()
 
-    const jsonMemo: MemoDetailsJSON = {}
+    const jsonMemo: MemoDetailsJSON = {
+      MemoData: undefined,
+      MemoFormat: undefined,
+      MemoType: undefined,
+    }
 
     if (memoData !== undefined) {
       jsonMemo.MemoData = this.memoDataToJSON(memoData)
     }
 
     if (memoFormat !== undefined) {
-      jsonMemo.MemoFormat = this.memoDataToJSON(memoFormat)
+      jsonMemo.MemoFormat = this.memoFormatToJSON(memoFormat)
     }
 
     if (memoType !== undefined) {
-      jsonMemo.MemoType = this.memoDataToJSON(memoType)
+      jsonMemo.MemoType = this.memoTypeToJSON(memoType)
     }
 
     return {
@@ -445,10 +456,28 @@ const serializer = {
    * @param memoData - The MemoData to convert.
    * @returns The MemoData as JSON.
    */
-  memoDataToJSON(memoData: MemoData): MemoDataJSON | undefined {
-    return memoData.getValue_asU8().length > 0
-      ? memoData.getValue_asU8()
-      : undefined
+  memoDataToJSON(memoData: MemoData): MemoDataJSON {
+    return Utils.toHex(memoData.getValue_asU8())
+  },
+
+  /**
+   * Convert a MemoFormat to a JSON representation.
+   *
+   * @param memoFormat - The MemoFormat to convert.
+   * @returns The MemoFormat as JSON.
+   */
+  memoFormatToJSON(memoFormat: MemoFormat): MemoFormatJSON {
+    return Utils.toHex(memoFormat.getValue_asU8())
+  },
+
+  /**
+   * Convert a MemoType to a JSON representation.
+   *
+   * @param memoType - The MemoType to convert.
+   * @returns The MemoType as JSON.
+   */
+  memoTypeToJSON(memoType: MemoType): MemoTypeJSON {
+    return Utils.toHex(memoType.getValue_asU8())
   },
 
   /**
@@ -643,6 +672,21 @@ const serializer = {
    */
   invoiceIdToJSON(invoiceId: InvoiceID): InvoiceIdJSON {
     return Utils.toHex(invoiceId.getValue_asU8())
+  },
+
+  /**
+   * Convert an Amount to a JSON representation.
+   *
+   * @param amount - The Amount to convert.
+   * @returns The Amount as JSON.
+   */
+  amountToJSON(amount: Amount): AmountJSON | undefined {
+    const currencyAmount = amount.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
   },
 
   /**
