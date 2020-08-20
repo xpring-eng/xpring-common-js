@@ -20,11 +20,10 @@
     "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && webpack && copyfiles -u 3 './src/XRP/generated/**/*' ./dist/XRP/generated"
   },
   "dependencies": {
-    "@payid-org/utils": "^1.0.0",
     "bip32": "2.0.5",
     "bip39": "^3.0.2",
     "google-protobuf": "3.13.0",
-    "grpc-web": "1.2.0",
+    "grpc-web": "1.2.1",
     "ripple-address-codec": "4.1.1",
     "ripple-binary-codec": "0.2.6",
     "ripple-keypairs": "^1.0.0"

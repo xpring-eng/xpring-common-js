@@ -24,7 +24,7 @@ import {
   TickSize,
   Amount,
   MemoData,
-  MemoFormat,	
+  MemoFormat,
   MemoType,
   Unauthorize,
   Account,
