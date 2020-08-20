@@ -7,18 +7,6 @@ const payIdUtils = {
   /**
    * Parse a PayID string to a set of PayIdComponents object.
    *
-   * @deprecated Use parsePayId instead.
-   *
-   * @param payId - The input Pay ID.
-   * @returns A PayIdComponents object if the input was valid, otherwise undefined.
-   */
-  parsePayID(payId: string): PayIdComponents | undefined {
-    return this.parsePayId(payId)
-  },
-
-  /**
-   * Parse a PayID string to a set of PayIdComponents object.
-   *
    * @param payId - The input Pay ID.
    * @returns A PayIdComponents object if the input was valid, otherwise undefined.
    */

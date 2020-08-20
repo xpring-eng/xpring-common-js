@@ -628,9 +628,9 @@ describe('serializer', function (): void {
       Memos: [
         {
           Memo: {
-            MemoData: dataForMemo,
-            MemoType: typeForMemo,
-            MemoFormat: formatForMemo,
+            MemoData: Utils.toHex(dataForMemo),
+            MemoType: Utils.toHex(typeForMemo),
+            MemoFormat: Utils.toHex(formatForMemo),
           },
         },
       ],
@@ -656,9 +656,9 @@ describe('serializer', function (): void {
 
     const expectedJSON = {
       Memo: {
-        MemoData: dataForMemo,
-        MemoType: typeForMemo,
-        MemoFormat: formatForMemo,
+        MemoData: Utils.toHex(dataForMemo),
+        MemoType: Utils.toHex(typeForMemo),
+        MemoFormat: Utils.toHex(formatForMemo),
       },
     }
 
@@ -1248,5 +1248,65 @@ describe('serializer', function (): void {
 
     // THEN the result is the hex representation of the invoiceId.
     assert.equal(serialized, Utils.toHex(transactionSignatureBytes))
+  })
+
+  it('Serializes an Amount with a CurrencyAmount', function (): void {
+    // GIVEN an Amount wrapping a CurrencyAmount.
+    const dropsValue = '123'
+    const xrpDropsAmount = makeXrpDropsAmount(dropsValue)
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.amountToJSON(amount)
+
+    // THEN the result is the serialized CurrencyAmount.
+    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
+  })
+
+  it('Serializes a MemoData', function (): void {
+    // GIVEN a MemoData with some bytes
+    const memoDataBytes = new Uint8Array([0, 1, 2, 3])
+
+    const memoData = new MemoData()
+    memoData.setValue(memoDataBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.memoDataToJSON(memoData)
+
+    // THEN the result is the hex representation of the bytes.
+    assert.equal(serialized, Utils.toHex(memoDataBytes))
+  })
+
+  it('Serializes an MemoType', function (): void {
+    // GIVEN a MemoType with some bytes
+    const memoTypeBytes = new Uint8Array([0, 1, 2, 3])
+
+    const memoType = new MemoType()
+    memoType.setValue(memoTypeBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.memoDataToJSON(memoType)
+
+    // THEN the result is the hex representation of the bytes.
+    assert.equal(serialized, Utils.toHex(memoTypeBytes))
+  })
+
+  it('Serializes an MemoFormat', function (): void {
+    // GIVEN a MemoFormat with some bytes
+    const memoFormatBytes = new Uint8Array([0, 1, 2, 3])
+
+    const memoFormat = new MemoFormat()
+    memoFormat.setValue(memoFormatBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.memoDataToJSON(memoFormat)
+
+    // THEN the result is the hex representation of the bytes.
+    assert.equal(serialized, Utils.toHex(memoFormatBytes))
   })
 })
