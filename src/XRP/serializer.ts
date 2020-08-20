@@ -79,7 +79,7 @@ interface PaymentJSON {
 }
 
 // Generic field representing an OR of all above fields.
-type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON	
+type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
 
 /**
  * Individual Transaction Types.
