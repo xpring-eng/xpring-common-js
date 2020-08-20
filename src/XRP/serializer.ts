@@ -22,7 +22,6 @@ import {
   Sequence,
   TransferRate,
   TickSize,
-  MemoData,
   Amount,
   MemoData,
   MemoFormat,
