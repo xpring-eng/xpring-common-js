@@ -78,11 +78,8 @@ interface PaymentJSON {
   TransactionType: 'Payment'
 }
 
-interface MemoDetailsJSON {
-  MemoData?: MemoDataJSON
-  MemoType?: MemoTypeJSON
-  MemoFormat?: MemoFormatJSON
-}
+// Generic field representing an OR of all above fields.
+type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON	
 
 /**
  * Individual Transaction Types.
@@ -458,7 +455,7 @@ const serializer = {
    * @param memoData - The MemoData to convert.
    * @returns The MemoData as JSON.
    */
-  memoDataToJSON(memoData: MemoData): MemoDataJSON | undefined {
+  memoDataToJSON(memoData: MemoData): MemoDataJSON {
     return Utils.toHex(memoData.getValue_asU8())
   },
 
