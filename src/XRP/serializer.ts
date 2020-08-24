@@ -28,6 +28,7 @@ import {
   MemoFormat,
   MemoType,
   Unauthorize,
+  DeliverMin,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -63,6 +64,12 @@ export interface AccountSetJSON {
   TransferRate?: TransferRateJSON
   TickSize?: TickSizeJSON
   TransactionType: 'AccountSet'
+}
+
+interface CheckCashJSON {
+  CheckId: CheckIDJSON,
+  Amount?: CurrencyAmountJSON,
+  DeliverMin?: DeliverMinJSON
 }
 
 export interface DepositPreauthJSON {
