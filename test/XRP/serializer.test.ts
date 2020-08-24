@@ -36,6 +36,7 @@ import {
   LastLedgerSequence,
   DestinationTag,
   InvoiceID,
+  SendMax,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1291,5 +1292,33 @@ describe('serializer', function (): void {
 
     // THEN the result is the hex representation of the bytes.
     assert.equal(serialized, Utils.toHex(memoFormatBytes))
+  })
+
+  it('Serializes a SendMax', function (): void {
+    // GIVEN a SendMax.
+    const xrpDropsAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const sendMax = new SendMax()
+    sendMax.setValue(currencyAmount)
+
+    // WHEN it is serialized
+    const serialized = Serializer.sendMaxToJSON(sendMax)
+
+    // THEN the result is the serialized representation of the input.
+    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
+  })
+
+  it('Fails to serialize a malformed SendMax', function (): void {
+    // GIVEN a DeliverMin with no value
+    const destination = new SendMax()
+
+    // WHEN it is serialized
+    const serialized = Serializer.sendMaxToJSON(destination)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 })
