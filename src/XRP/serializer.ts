@@ -29,6 +29,7 @@ import {
   MemoType,
   Unauthorize,
   Destination,
+  DeliverMin,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -122,6 +123,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type DeliverMinJSON = CurrencyAmountJSON
 type DestinationJSON = AccountAddressJSON
 type AccountAddressJSON = string
 type AmountJSON = CurrencyAmountJSON
@@ -742,6 +744,20 @@ const serializer = {
       return undefined
     }
     return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert a DeliverMin to a JSON respresentation.
+   *
+   * @param deliverMin - The DeliverMin to convert.
+   * @returns The DeliverMin as JSON.
+   */
+  deliverMinToJSON(deliverMin: DeliverMin): DeliverMinJSON | undefined {
+    const currencyAmount = deliverMin.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+    return this.currencyAmountToJSON(currencyAmount)
   },
 }
 
