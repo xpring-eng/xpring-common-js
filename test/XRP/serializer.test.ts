@@ -44,7 +44,11 @@ import {
   DepositPreauth,
   AccountSet,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
-import Serializer from '../../src/XRP/serializer'
+import Serializer, {
+  AccountSetJSON,
+  DepositPreauthJSON,
+  TransactionJSON,
+} from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
 /** Constants for transactions. */
@@ -441,7 +445,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
-    const expectedJSON = {
+    const expectedJSON: TransactionJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
       Destination: destinationClassicAddress,
@@ -470,7 +474,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
-    const expectedJSON = {
+    const expectedJSON: TransactionJSON = {
       Account: XrpUtils.decodeXAddress(accountXAddress)!.address,
       Amount: value.toString(),
       Destination: destinationClassicAddress,
@@ -538,7 +542,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
-    const expectedJSON = {
+    const expectedJSON: TransactionJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
       Destination: destinationClassicAddress,
@@ -568,7 +572,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result is as expected.
-    const expectedJSON = {
+    const expectedJSON: TransactionJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
       Destination: destinationClassicAddress,
@@ -611,7 +615,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.transactionToJSON(transaction)
 
     // THEN the result still has the meme as expected.
-    const expectedJSON = {
+    const expectedJSON: TransactionJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
       Destination: destinationClassicAddress,
@@ -685,7 +689,7 @@ describe('serializer', function (): void {
     const depositPreauth = new DepositPreauth()
     depositPreauth.setAuthorize(authorize)
 
-    const expectedJSON = {
+    const expectedJSON: DepositPreauthJSON = {
       Authorize: address,
       TransactionType: 'DepositPreauth',
     }
@@ -710,7 +714,7 @@ describe('serializer', function (): void {
     const depositPreauth = new DepositPreauth()
     depositPreauth.setUnauthorize(unauthorize)
 
-    const expectedJSON = {
+    const expectedJSON: DepositPreauthJSON = {
       TransactionType: 'DepositPreauth',
       Unauthorize: address,
     }
@@ -778,7 +782,7 @@ describe('serializer', function (): void {
       undefined,
       undefined,
     )
-    const expectedJSON = {
+    const expectedJSON: AccountSetJSON = {
       TransactionType: 'AccountSet',
     }
 
@@ -811,7 +815,7 @@ describe('serializer', function (): void {
       tickSizeValue,
     )
 
-    const expectedJSON = {
+    const expectedJSON: AccountSetJSON = {
       ClearFlag: clearFlagValue,
       Domain: domainValue,
       EmailHash: Utils.toHex(emailHashValue),
@@ -1227,6 +1231,24 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes an Amount with a CurrencyAmount', function (): void {
+    // GIVEN an Amount wrapping a CurrencyAmount.
+    const dropsValue = '123'
+    const xrpDropsAmount = makeXrpDropsAmount(dropsValue)
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.amountToJSON(amount)
+
+    // THEN the result is the serialized CurrencyAmount.
+    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
   })
 
   it('Serializes a MemoData', function (): void {

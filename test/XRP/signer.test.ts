@@ -19,7 +19,7 @@ import {
   Payment,
   Transaction,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
-import Serializer from '../../src/XRP/serializer'
+import Serializer, { TransactionJSON } from '../../src/XRP/serializer'
 import Signer from '../../src/XRP/signer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
@@ -106,7 +106,7 @@ describe('signer', function (): void {
       'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4',
     )
 
-    const transactionJSON = {
+    const transactionJSON: TransactionJSON = {
       Account: sourceAddress!.address,
       Fee: '10',
       Sequence: 1,
