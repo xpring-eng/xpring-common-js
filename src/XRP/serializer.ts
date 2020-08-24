@@ -11,6 +11,7 @@ import {
 } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Authorize,
+  CheckID,
   ClearFlag,
   DestinationTag,
   Domain,
@@ -120,6 +121,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type CheckIDJSON = string
 type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
@@ -714,6 +716,16 @@ const serializer = {
       default:
         return undefined
     }
+  },
+
+  /**
+   * Convert a CheckID to a JSON representation.
+   *
+   * @param checkId - The CheckID to convert.
+   * @returns The CheckID as JSON.
+   */
+  checkIDToJSON(checkId: CheckID): CheckIDJSON {
+    return Utils.toHex(checkId.getValue_asU8())
   },
 }
 

@@ -36,6 +36,7 @@ import {
   LastLedgerSequence,
   DestinationTag,
   InvoiceID,
+  CheckID,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1291,5 +1292,19 @@ describe('serializer', function (): void {
 
     // THEN the result is the hex representation of the bytes.
     assert.equal(serialized, Utils.toHex(memoFormatBytes))
+  })
+
+  it('Serializes a CheckID', function (): void {
+    // GIVEN a CheckID.
+    const checkIdValue = new Uint8Array([1, 2, 3, 4])
+
+    const checkId = new CheckID()
+    checkId.setValue(checkIdValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.checkIDToJSON(checkId)
+
+    // THEN the output is the input encoded as hex.
+    assert.equal(serialized, Utils.toHex(checkIdValue))
   })
 })
