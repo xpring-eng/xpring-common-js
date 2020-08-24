@@ -3,6 +3,7 @@
  */
 import Utils from '../Common/utils'
 
+import { AccountAddress } from './generated/org/xrpl/rpc/v1/account_pb'
 import {
   XRPDropsAmount,
   Currency,
@@ -27,6 +28,7 @@ import {
   MemoFormat,
   MemoType,
   Unauthorize,
+  Destination,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -120,6 +122,8 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type DestinationJSON = AccountAddressJSON
+type AccountAddressJSON = string
 type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
@@ -528,6 +532,16 @@ const serializer = {
   },
 
   /**
+   * Convert an Account Address to a JSON representation.
+   *
+   * @param accountAddress - The AccountAddress to convert.
+   * @returns The AccountAddress as JSON.
+   */
+  accountAddressToJSON(accountAddress: AccountAddress): AccountAddressJSON {
+    return accountAddress.getAddress()
+  },
+
+  /**
    * Convert an Unauthorize to a JSON representation.
    *
    * @param unauthorize - The Unauthorize to convert.
@@ -714,6 +728,20 @@ const serializer = {
       default:
         return undefined
     }
+  },
+
+  /**
+   * Convert a Destination to a JSON representation.
+   *
+   * @param destination - The Destination to convert.
+   * @returns The Destination as JSON.
+   */
+  destinationToJSON(destination: Destination): DestinationJSON | undefined {
+    const accountAddress = destination.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
+    return this.accountAddressToJSON(accountAddress)
   },
 }
 

@@ -1292,4 +1292,30 @@ describe('serializer', function (): void {
     // THEN the result is the hex representation of the bytes.
     assert.equal(serialized, Utils.toHex(memoFormatBytes))
   })
+
+  it('Serializes a Destination', function (): void {
+    // GIVEN a Destination
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    // WHEN it is serialized
+    const serialized = Serializer.destinationToJSON(destination)
+
+    // THEN the result is the serialized representation of the input.
+    assert.equal(
+      serialized,
+      Serializer.accountAddressToJSON(testAccountAddress),
+    )
+  })
+
+  it('Fails to serialize a malformed destination', function (): void {
+    // GIVEN a Destination with no address
+    const destination = new Destination()
+
+    // WHEN it is serialized
+    const serialized = Serializer.destinationToJSON(destination)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
 })
