@@ -1045,7 +1045,7 @@ describe('serializer', function (): void {
     // THEN the serialized representation is the same as the input.
     assert.equal(serialized, address)
   })
-  
+
   it('Serializes a Sequence', function (): void {
     // GIVEN a Sequence.
     const sequence = new Sequence()
