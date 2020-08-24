@@ -36,6 +36,7 @@ import {
   LastLedgerSequence,
   DestinationTag,
   InvoiceID,
+  Expiration,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1291,5 +1292,19 @@ describe('serializer', function (): void {
 
     // THEN the result is the hex representation of the bytes.
     assert.equal(serialized, Utils.toHex(memoFormatBytes))
+  })
+
+  it('Serializes an Expiration', function (): void {
+    // GIVEN an Expiration with an expiration time
+    const expirationTime = 12
+
+    const expiration = new Expiration()
+    expiration.setValue(expirationTime)
+
+    // WHEN it is serialized
+    const serialized = Serializer.expirationToJSON(expiration)
+
+    // THEN the result is the expiration time.
+    assert.equal(serialized, expirationTime)
   })
 })

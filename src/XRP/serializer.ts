@@ -27,6 +27,7 @@ import {
   MemoFormat,
   MemoType,
   Unauthorize,
+  Expiration,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -120,6 +121,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type ExpirationJSON = number
 type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
@@ -714,6 +716,16 @@ const serializer = {
       default:
         return undefined
     }
+  },
+
+  /**
+   * Convert an Expiration to a JSON representation.
+   *
+   * @param expiration - The Expiration to convert.
+   * @returns The Expiration as JSON.
+   */
+  expirationToJSON(expiration: Expiration): ExpirationJSON {
+    return expiration.getValue()
   },
 }
 
