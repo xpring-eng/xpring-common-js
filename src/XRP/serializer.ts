@@ -31,6 +31,7 @@ import {
   Unauthorize,
   Destination,
   DeliverMin,
+  Expiration,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -75,6 +76,14 @@ interface CheckCashJSON {
   DeliverMin?: DeliverMinJSON
 }
 
+interface CheckCreateJSON {
+  Destination: DestinationJSON
+  SendMax: SendMaxJSON
+  DestinationTag?: DestinationTagJSON
+  Expiration?: ExpirationJSON
+  InvoiceID?: InvoiceIdJSON
+}
+
 export interface DepositPreauthJSON {
   Authorize?: AuthorizeJSON
   Unauthorize?: UnauthorizeJSON
@@ -92,6 +101,7 @@ interface PaymentJSON {
 type TransactionDataJSON =
   | AccountSetJSON
   | CheckCashJSON
+  | CheckCreateJSON
   | DepositPreauthJSON
   | PaymentJSON
 
@@ -100,6 +110,7 @@ type TransactionDataJSON =
  */
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
 type CheckCashTransactionJSON = BaseTransactionJSON & CheckCashJSON
+type CheckCreateTransactionJSON = BaseTransactionJSON & CheckCreateJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
@@ -109,6 +120,7 @@ type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 export type TransactionJSON =
   | AccountSetTransactionJSON
   | CheckCashTransactionJSON
+  | CheckCreateTransactionJSON
   | DepositPreauthTransactionJSON
   | PaymentTransactionJSON
 
