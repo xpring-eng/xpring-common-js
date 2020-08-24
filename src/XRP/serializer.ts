@@ -35,6 +35,7 @@ import {
   Payment,
   Transaction,
   DepositPreauth,
+  CheckCancel,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -78,13 +79,22 @@ interface PaymentJSON {
   TransactionType: 'Payment'
 }
 
+interface CheckCancelJSON {
+  CheckID: CheckIDJSON
+}
+
 // Generic field representing an OR of all above fields.
-type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
+type TransactionDataJSON =
+  | AccountSetJSON
+  | CheckCancelJSON
+  | DepositPreauthJSON
+  | PaymentJSON
 
 /**
  * Individual Transaction Types.
  */
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
+type CheckCancelTransactionJSON = BaseTransactionJSON & CheckCancelJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
@@ -93,6 +103,7 @@ type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
  */
 export type TransactionJSON =
   | AccountSetTransactionJSON
+  | CheckCancelTransactionJSON
   | DepositPreauthTransactionJSON
   | PaymentTransactionJSON
 
@@ -726,6 +737,23 @@ const serializer = {
    */
   checkIDToJSON(checkId: CheckID): CheckIDJSON {
     return Utils.toHex(checkId.getValue_asU8())
+  },
+
+  /**
+   * Convert a CheckCancel to a JSON representation.
+   *
+   * @param checkCancel - The CheckCancel to convert.
+   * @returns The CheckCancel as JSON.
+   */
+  checkCancelToJSON(checkCancel: CheckCancel): CheckCancelJSON | undefined {
+    const checkId = checkCancel.getCheckId()
+    if (checkId === undefined) {
+      return undefined
+    }
+
+    return {
+      CheckID: this.checkIDToJSON(checkId),
+    }
   },
 }
 
