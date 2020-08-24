@@ -826,7 +826,14 @@ function getAdditionalTransactionData(
 
       return serializer.paymentToJSON(payment)
     }
+    case Transaction.TransactionDataCase.CHECK_CANCEL: {
+      const checkCancel = transaction.getCheckCancel()
+      if (checkCancel === undefined) {
+        return undefined
+      }
 
+      return serializer.checkCancelToJSON(checkCancel)
+    }
     default:
       throw new Error('Unexpected transactionDataCase')
   }

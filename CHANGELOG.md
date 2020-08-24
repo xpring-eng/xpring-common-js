@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-### [6.2.0] - 2020-08-17
+### Added 
+- Xpring-Common-JS can now serialize and sign CheckCancel transaction types.
+
+## [6.2.0] - 2020-08-17
 
 This release contains updated versions of dependencies for security and stability.
 
@@ -15,7 +18,7 @@ This release contains updated versions of dependencies for security and stabilit
 
 - The deprecated method `parsePayID` is removed from `PayIdUtils`. Use `parsePayId` instead.
 
-### [6.1.0] - 2020-08-01
+## [6.1.0] - 2020-08-01
 
 ### Added
 
