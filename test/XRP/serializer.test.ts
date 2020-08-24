@@ -37,6 +37,7 @@ import {
   DestinationTag,
   InvoiceID,
   CheckID,
+  DeliverMin,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -44,6 +45,7 @@ import {
   Transaction,
   DepositPreauth,
   AccountSet,
+  CheckCash,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   AccountSetJSON,
@@ -1306,5 +1308,144 @@ describe('serializer', function (): void {
 
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(checkIdValue))
+  })
+
+  it('Serializes a Destination', function (): void {
+    // GIVEN a Destination
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    // WHEN it is serialized
+    const serialized = Serializer.destinationToJSON(destination)
+
+    // THEN the result is the serialized representation of the input.
+    assert.equal(
+      serialized,
+      Serializer.accountAddressToJSON(testAccountAddress),
+    )
+  })
+
+  it('Fails to serialize a malformed Destination', function (): void {
+    // GIVEN a Destination with no address
+    const destination = new Destination()
+
+    // WHEN it is serialized
+    const serialized = Serializer.destinationToJSON(destination)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a DeliverMin', function (): void {
+    // GIVEN a DeliverMin.
+    const xrpDropsAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const deliverMin = new DeliverMin()
+    deliverMin.setValue(currencyAmount)
+
+    // WHEN it is serialized
+    const serialized = Serializer.deliverMinToJSON(deliverMin)
+
+    // THEN the result is the serialized representation of the input.
+    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
+  })
+
+  it('Fails to serialize a malformed DeliverMin', function (): void {
+    // GIVEN a DeliverMin with no value
+    const destination = new DeliverMin()
+
+    // WHEN it is serialized
+    const serialized = Serializer.deliverMinToJSON(destination)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a CheckCash with an Amount', function (): void {
+    // GIVEN a CheckCash with an AMount
+    const xrpDropsAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    const checkIdValue = new Uint8Array([1, 2, 3, 4])
+    const checkId = new CheckID()
+    checkId.setValue(checkIdValue)
+
+    const checkCash = new CheckCash()
+    checkCash.setCheckId(checkId)
+    checkCash.setAmount(amount)
+
+    // WHEN it is serialized
+    const serialized = Serializer.checkCashToJSON(checkCash)
+
+    // THEN the result is in the expected form.
+    const expected = {
+      CheckID: Serializer.checkIDToJSON(checkId),
+      Amount: Serializer.amountToJSON(amount),
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes a CheckCash with a DeliverMin', function (): void {
+    // GIVEN a CheckCash with all fields set.
+    const xrpDropsAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const deliverMin = new DeliverMin()
+    deliverMin.setValue(currencyAmount)
+
+    const checkIdValue = new Uint8Array([1, 2, 3, 4])
+    const checkId = new CheckID()
+    checkId.setValue(checkIdValue)
+
+    const checkCash = new CheckCash()
+    checkCash.setCheckId(checkId)
+    checkCash.setDeliverMin(deliverMin)
+
+    // WHEN it is serialized
+    const serialized = Serializer.checkCashToJSON(checkCash)
+
+    // THEN the result is in the expected form.
+    const expected = {
+      CheckID: Serializer.checkIDToJSON(checkId),
+      DeliverMin: Serializer.deliverMinToJSON(deliverMin),
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a malformed CheckCash with only a CheckId', function (): void {
+    // GIVEN a CheckCash with only a CheckID set.
+    const checkIdValue = new Uint8Array([1, 2, 3, 4])
+    const checkId = new CheckID()
+    checkId.setValue(checkIdValue)
+
+    const checkCash = new CheckCash()
+    checkCash.setCheckId(checkId)
+
+    // WHEN it is serialized
+    const serialized = Serializer.checkCashToJSON(checkCash)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a malformed CheckCash without a CheckID', function (): void {
+    // GIVEN a CheckCash missing the mandatory CheckID field.
+    const checkCash = new CheckCash()
+
+    // WHEN it is serialized
+    const serialized = Serializer.checkCashToJSON(checkCash)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 })

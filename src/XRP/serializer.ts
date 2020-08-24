@@ -3,6 +3,7 @@
  */
 import Utils from '../Common/utils'
 
+import { AccountAddress } from './generated/org/xrpl/rpc/v1/account_pb'
 import {
   XRPDropsAmount,
   Currency,
@@ -28,6 +29,7 @@ import {
   MemoFormat,
   MemoType,
   Unauthorize,
+  Destination,
   DeliverMin,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
@@ -36,6 +38,7 @@ import {
   Payment,
   Transaction,
   DepositPreauth,
+  CheckCash,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -67,8 +70,8 @@ export interface AccountSetJSON {
 }
 
 interface CheckCashJSON {
-  CheckId: CheckIDJSON,
-  Amount?: CurrencyAmountJSON,
+  CheckID: CheckIDJSON
+  Amount?: CurrencyAmountJSON
   DeliverMin?: DeliverMinJSON
 }
 
@@ -86,12 +89,17 @@ interface PaymentJSON {
 }
 
 // Generic field representing an OR of all above fields.
-type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
+type TransactionDataJSON =
+  | AccountSetJSON
+  | CheckCashJSON
+  | DepositPreauthJSON
+  | PaymentJSON
 
 /**
  * Individual Transaction Types.
  */
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
+type CheckCashTransactionJSON = BaseTransactionJSON & CheckCashJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
@@ -100,6 +108,7 @@ type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
  */
 export type TransactionJSON =
   | AccountSetTransactionJSON
+  | CheckCashTransactionJSON
   | DepositPreauthTransactionJSON
   | PaymentTransactionJSON
 
@@ -129,6 +138,9 @@ interface IssuedCurrencyAmountJSON {
 }
 
 type CheckIDJSON = string
+type DeliverMinJSON = CurrencyAmountJSON
+type DestinationJSON = AccountAddressJSON
+type AccountAddressJSON = string
 type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
@@ -537,6 +549,16 @@ const serializer = {
   },
 
   /**
+   * Convert an Account Address to a JSON representation.
+   *
+   * @param accountAddress - The AccountAddress to convert.
+   * @returns The AccountAddress as JSON.
+   */
+  accountAddressToJSON(accountAddress: AccountAddress): AccountAddressJSON {
+    return accountAddress.getAddress()
+  },
+
+  /**
    * Convert an Unauthorize to a JSON representation.
    *
    * @param unauthorize - The Unauthorize to convert.
@@ -733,6 +755,76 @@ const serializer = {
    */
   checkIDToJSON(checkId: CheckID): CheckIDJSON {
     return Utils.toHex(checkId.getValue_asU8())
+  },
+
+  /**
+   * Convert a Destination to a JSON representation.
+   *
+   * @param destination - The Destination to convert.
+   * @returns The Destination as JSON.
+   */
+  destinationToJSON(destination: Destination): DestinationJSON | undefined {
+    const accountAddress = destination.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
+    return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert a DeliverMin to a JSON respresentation.
+   *
+   * @param deliverMin - The DeliverMin to convert.
+   * @returns The DeliverMin as JSON.
+   */
+  deliverMinToJSON(deliverMin: DeliverMin): DeliverMinJSON | undefined {
+    const currencyAmount = deliverMin.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert a CheckCash to a JSON respresentation.
+   *
+   * @param checkCash - The CheckCash to convert.
+   * @returns The CheckCash as JSON.
+   */
+  checkCashToJSON(checkCash: CheckCash): CheckCashJSON | undefined {
+    // Process required fields.
+    const checkId = checkCash.getCheckId()
+    if (checkId === undefined) {
+      return undefined
+    }
+
+    const json: CheckCashJSON = {
+      CheckID: this.checkIDToJSON(checkId),
+    }
+
+    // One of the following fields must be set.
+    switch (checkCash.getAmountOneofCase()) {
+      case CheckCash.AmountOneofCase.AMOUNT: {
+        const amount = checkCash.getAmount()
+        if (amount === undefined) {
+          return undefined
+        }
+        json.Amount = this.amountToJSON(amount)
+        break
+      }
+      case CheckCash.AmountOneofCase.DELIVER_MIN: {
+        const deliverMin = checkCash.getDeliverMin()
+        if (deliverMin === undefined) {
+          return undefined
+        }
+        json.DeliverMin = this.deliverMinToJSON(deliverMin)
+        break
+      }
+      case CheckCash.AmountOneofCase.AMOUNT_ONEOF_NOT_SET:
+      default:
+        return undefined
+    }
+    return json
   },
 }
 
