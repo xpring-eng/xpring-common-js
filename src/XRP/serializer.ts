@@ -41,6 +41,7 @@ import {
   Transaction,
   DepositPreauth,
   CheckCash,
+  CheckCreate,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -77,7 +78,7 @@ interface CheckCashJSON {
   DeliverMin?: DeliverMinJSON
 }
 
-interface CheckCreateJSON {
+export interface CheckCreateJSON {
   Destination: DestinationJSON
   SendMax: SendMaxJSON
   DestinationTag?: DestinationTagJSON
@@ -864,6 +865,50 @@ const serializer = {
    */
   expirationToJSON(expiration: Expiration): ExpirationJSON {
     return expiration.getValue()
+  },
+
+  /**
+   * Convert a CheckCreate to a JSON representation.
+   *
+   * @param checkCreate - The CheckCreate to convert.
+   * @returns The CheckCreate as JSON.
+   */
+  checkCreateToJSON(checkCreate: CheckCreate): CheckCreateJSON | undefined {
+    // Process required fields.
+    const destination = checkCreate.getDestination()
+    const sendMax = checkCreate.getSendMax()
+    if (destination === undefined || sendMax === undefined) {
+      return undefined
+    }
+
+    const destinationJSON = this.destinationToJSON(destination)
+    const sendMaxJSON = this.sendMaxToJSON(sendMax)
+    if (destinationJSON === undefined || sendMaxJSON === undefined) {
+      return undefined
+    }
+
+    const json: CheckCreateJSON = {
+      Destination: destinationJSON,
+      SendMax: sendMaxJSON,
+    }
+
+    // Process optional fields.
+    const destinationTag = checkCreate.getDestinationTag()
+    if (destinationTag !== undefined) {
+      json.DestinationTag = this.destinationTagToJSON(destinationTag)
+    }
+
+    const expiration = checkCreate.getExpiration()
+    if (expiration !== undefined) {
+      json.Expiration = this.expirationToJSON(expiration)
+    }
+
+    const invoiceId = checkCreate.getInvoiceId()
+    if (invoiceId !== undefined) {
+      json.InvoiceID = this.invoiceIdToJSON(invoiceId)
+    }
+
+    return json
   },
 }
 
