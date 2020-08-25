@@ -153,6 +153,7 @@ type CheckIDJSON = string
 type DeliverMinJSON = CurrencyAmountJSON
 type DestinationJSON = AccountAddressJSON
 type AccountAddressJSON = string
+type ExpirationJSON = number
 type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
@@ -837,6 +838,16 @@ const serializer = {
         return undefined
     }
     return json
+  },
+
+  /**
+   * Convert an Expiration to a JSON representation.
+   *
+   * @param expiration - The Expiration to convert.
+   * @returns The Expiration as JSON.
+   */
+  expirationToJSON(expiration: Expiration): ExpirationJSON {
+    return expiration.getValue()
   },
 }
 
