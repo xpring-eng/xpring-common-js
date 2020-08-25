@@ -1324,7 +1324,7 @@ describe('serializer', function (): void {
     const expiration = new Expiration()
     expiration.setValue(expirationTime)
 
-    // WHEN it is serialized
+    // WHEN it is serialized.
     const serialized = Serializer.expirationToJSON(expiration)
 
     // THEN the result is the expiration time.
