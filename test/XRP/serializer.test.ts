@@ -37,6 +37,8 @@ import {
   DestinationTag,
   InvoiceID,
   SendMax,
+  TransactionSignature,
+  Expiration,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1234,6 +1236,59 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a TransactionSignature', function (): void {
+    // GIVEN a TransactionSignature with some bytes
+    const transactionSignatureBytes = new Uint8Array([0, 1, 2, 3])
+
+    const transactionSignature = new TransactionSignature()
+    transactionSignature.setValue(transactionSignatureBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.transactionSignatureToJSON(
+      transactionSignature,
+    )
+
+    // THEN the result is the hex representation of the invoiceId.
+    assert.equal(serialized, Utils.toHex(transactionSignatureBytes))
+  })
+    
+  it('Serializes a SigningPublicKey', function (): void {
+    // GIVEN a SigningPublicKey with some bytes
+    const signingPublicKeyBytes = new Uint8Array([0, 1, 2, 3])
+
+    const signingPublicKey = new SigningPublicKey()
+    signingPublicKey.setValue(signingPublicKeyBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.signingPublicKeyToJSON(signingPublicKey)
+
+    // THEN the result is the hex representation of the bytes.
+    assert.equal(serialized, Utils.toHex(signingPublicKeyBytes))
+  })
+
+  it('Serializes an Account', function (): void {
+    // GIVEN an Account wrapping an address
+    const account = new Account()
+    account.setValue(testAccountAddress)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountToJSON(account)
+
+    // THEN the result is the address
+    assert.equal(serialized, testAccountAddress.getAddress())
+  })
+
+  it('Fails to serialize an  Account with no AccountAddress', function (): void {
+    // GIVEN an empty Account.
+    const account = new Account()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountToJSON(account)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
   it('Serializes an Amount with a CurrencyAmount', function (): void {
     // GIVEN an Amount wrapping a CurrencyAmount.
     const dropsValue = '123'
@@ -1320,5 +1375,19 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes an Expiration', function (): void {
+    // GIVEN an Expiration with an expiration time.
+    const expirationTime = 12
+
+    const expiration = new Expiration()
+    expiration.setValue(expirationTime)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.expirationToJSON(expiration)
+
+    // THEN the result is the expiration time.
+    assert.equal(serialized, expirationTime)
   })
 })

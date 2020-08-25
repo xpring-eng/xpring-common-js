@@ -28,6 +28,10 @@ import {
   MemoType,
   Unauthorize,
   SendMax,
+  TransactionSignature,
+  SigningPublicKey,
+  Expiration,
+  Account,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -122,6 +126,10 @@ interface IssuedCurrencyAmountJSON {
 }
 
 type SendMaxJSON = CurrencyAmountJSON
+type TransactionSignatureJSON = string
+type SigningPublicKeyJSON = string
+type ExpirationJSON = number
+type AccountJSON = string
 type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
@@ -730,6 +738,51 @@ const serializer = {
       return undefined
     }
     return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert an TransactionSignature to a JSON representation.
+   *
+   * @param transactionSignature - The TransactionSignature to convert.
+   * @returns The TransactionSignature as JSON.
+   */
+  transactionSignatureToJSON(
+    transactionSignature: TransactionSignature,
+  ): TransactionSignatureJSON {
+    return Utils.toHex(transactionSignature.getValue_asU8())
+  },
+
+  /**
+   * Convert a SigningPublicKey to a JSON representation.
+   *
+   * @param signingPublicKey - The SigningPublicKey to convert.
+   * @returns The SigningPublicKey as JSON.
+   */
+  signingPublicKeyToJSON(
+    signingPublicKey: SigningPublicKey,
+  ): SigningPublicKeyJSON {
+    return Utils.toHex(signingPublicKey.getValue_asU8())
+  },
+    
+  /**
+   * Convert an Expiration to a JSON representation.
+   *
+   * @param expiration - The Expiration to convert.
+   * @returns The Expiration as JSON.
+   */
+  expirationToJSON(expiration: Expiration): ExpirationJSON {
+    return expiration.getValue()
+  },
+
+  /**
+   * Convert an Account to a JSON representation.
+   *
+   * @param account - The Account to convert.
+   * @returns The Account as JSON.
+   */
+  accountToJSON(account: Account): AccountJSON | undefined {
+    // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
+    return account.getValue()?.getAddress()
   },
 }
 
