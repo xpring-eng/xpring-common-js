@@ -1318,7 +1318,7 @@ describe('serializer', function (): void {
   })
 
   it('Serializes an Expiration', function (): void {
-    // GIVEN an Expiration with an expiration time
+    // GIVEN an Expiration with an expiration time.
     const expirationTime = 12
 
     const expiration = new Expiration()
