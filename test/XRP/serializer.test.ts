@@ -1234,6 +1234,29 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes an Account', function (): void {
+    // GIVEN an Account wrapping an address
+    const account = new Account()
+    account.setValue(testAccountAddress)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountToJSON(account)
+
+    // THEN the result is the address
+    assert.equal(serialized, testAccountAddress.getAddress())
+  })
+
+  it('Fails to serialize an  Account with no AccountAddress', function (): void {
+    // GIVEN an empty Account.
+    const account = new Account()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountToJSON(account)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
   it('Serializes an Amount with a CurrencyAmount', function (): void {
     // GIVEN an Amount wrapping a CurrencyAmount.
     const dropsValue = '123'

@@ -28,6 +28,7 @@ import {
   MemoType,
   Unauthorize,
   Expiration,
+  Account,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -122,6 +123,7 @@ interface IssuedCurrencyAmountJSON {
 }
 
 type ExpirationJSON = number
+type AccountJSON = string
 type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
@@ -726,6 +728,17 @@ const serializer = {
    */
   expirationToJSON(expiration: Expiration): ExpirationJSON {
     return expiration.getValue()
+  },
+
+  /**
+   * Convert an Account to a JSON representation.
+   *
+   * @param account - The Account to convert.
+   * @returns The Account as JSON.
+   */
+  accountToJSON(account: Account): AccountJSON | undefined {
+    // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
+    return account.getValue()?.getAddress()
   },
 }
 
