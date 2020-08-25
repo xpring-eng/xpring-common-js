@@ -36,6 +36,7 @@ import {
   LastLedgerSequence,
   DestinationTag,
   InvoiceID,
+  CheckID,
   SendMax,
   TransactionSignature,
   Expiration,
@@ -1349,6 +1350,20 @@ describe('serializer', function (): void {
     assert.equal(serialized, Utils.toHex(memoFormatBytes))
   })
 
+  it('Serializes a CheckID', function (): void {
+    // GIVEN a CheckID.
+    const checkIdValue = new Uint8Array([1, 2, 3, 4])
+
+    const checkId = new CheckID()
+    checkId.setValue(checkIdValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.checkIDToJSON(checkId)
+
+    // THEN the output is the input encoded as hex.
+    assert.equal(serialized, Utils.toHex(checkIdValue))
+  })
+    
   it('Serializes a SendMax', function (): void {
     // GIVEN a SendMax.
     const xrpDropsAmount = makeXrpDropsAmount('10')
