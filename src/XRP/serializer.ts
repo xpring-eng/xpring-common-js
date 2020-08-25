@@ -27,6 +27,7 @@ import {
   MemoFormat,
   MemoType,
   Unauthorize,
+  SendMax,
   TransactionSignature,
   SigningPublicKey,
   Expiration,
@@ -124,6 +125,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type SendMaxJSON = CurrencyAmountJSON
 type TransactionSignatureJSON = string
 type SigningPublicKeyJSON = string
 type ExpirationJSON = number
@@ -722,6 +724,20 @@ const serializer = {
       default:
         return undefined
     }
+  },
+
+  /**
+   * Convert a SendMax to a JSON respresentation.
+   *
+   * @param sendMax - The SendMax to convert.
+   * @returns The SendMax as JSON.
+   */
+  sendMaxToJSON(sendMax: SendMax): SendMaxJSON | undefined {
+    const currencyAmount = sendMax.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+    return this.currencyAmountToJSON(currencyAmount)
   },
 
   /**
