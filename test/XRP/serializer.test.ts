@@ -1304,7 +1304,7 @@ describe('serializer', function (): void {
     const sendMax = new SendMax()
     sendMax.setValue(currencyAmount)
 
-    // WHEN it is serialized
+    // WHEN it is serialized.
     const serialized = Serializer.sendMaxToJSON(sendMax)
 
     // THEN the result is the serialized representation of the input.
