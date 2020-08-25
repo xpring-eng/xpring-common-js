@@ -18,6 +18,8 @@ import {
 import {
   Account,
   Amount,
+  CheckID,
+  DeliverMin,
   Destination,
   Domain,
   MemoData,
@@ -37,6 +39,7 @@ import {
   DestinationTag,
   InvoiceID,
   Expiration,
+  SendMax,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1352,12 +1355,40 @@ describe('serializer', function (): void {
     assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
   })
 
+  it('Serializes a SendMax', function (): void {
+    // GIVEN a SendMax.
+    const xrpDropsAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const deliverMin = new DeliverMin()
+    deliverMin.setValue(currencyAmount)
+
+    // WHEN it is serialized
+    const serialized = Serializer.deliverMinToJSON(deliverMin)
+
+    // THEN the result is the serialized representation of the input.
+    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
+  })
+
   it('Fails to serialize a malformed DeliverMin', function (): void {
     // GIVEN a DeliverMin with no value
     const destination = new DeliverMin()
 
     // WHEN it is serialized
     const serialized = Serializer.deliverMinToJSON(destination)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a malformed SendMax', function (): void {
+    // GIVEN a DeliverMin with no value
+    const destination = new SendMax()
+
+    // WHEN it is serialized
+    const serialized = Serializer.sendMaxToJSON(destination)
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)

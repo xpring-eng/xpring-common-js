@@ -32,6 +32,7 @@ import {
   Destination,
   DeliverMin,
   Expiration,
+  SendMax,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -154,6 +155,7 @@ type DeliverMinJSON = CurrencyAmountJSON
 type DestinationJSON = AccountAddressJSON
 type AccountAddressJSON = string
 type ExpirationJSON = number
+type SendMaxJSON = CurrencyAmountJSON
 type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
@@ -792,6 +794,20 @@ const serializer = {
    */
   deliverMinToJSON(deliverMin: DeliverMin): DeliverMinJSON | undefined {
     const currencyAmount = deliverMin.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert a SendMax to a JSON respresentation.
+   *
+   * @param sendMax - The SendMax to convert.
+   * @returns The SendMax as JSON.
+   */
+  sendMaxToJSON(sendMax: SendMax): SendMaxJSON | undefined {
+    const currencyAmount = sendMax.getValue()
     if (currencyAmount === undefined) {
       return undefined
     }
