@@ -12,6 +12,7 @@ import {
 } from './generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Authorize,
+  CheckID,
   ClearFlag,
   DestinationTag,
   Domain,
@@ -30,6 +31,11 @@ import {
   Unauthorize,
   Destination,
   DeliverMin,
+  SendMax,
+  TransactionSignature,
+  SigningPublicKey,
+  Expiration,
+  Account,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -126,6 +132,12 @@ interface IssuedCurrencyAmountJSON {
 type DeliverMinJSON = CurrencyAmountJSON
 type DestinationJSON = AccountAddressJSON
 type AccountAddressJSON = string
+type CheckIDJSON = string
+type SendMaxJSON = CurrencyAmountJSON
+type TransactionSignatureJSON = string
+type SigningPublicKeyJSON = string
+type ExpirationJSON = number
+type AccountJSON = string
 type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
@@ -754,10 +766,75 @@ const serializer = {
    */
   deliverMinToJSON(deliverMin: DeliverMin): DeliverMinJSON | undefined {
     const currencyAmount = deliverMin.getValue()
+  },
+    
+  /**    
+   * Convert a CheckID to a JSON representation.
+   *
+   * @param checkId - The CheckID to convert.
+   * @returns The CheckID as JSON.
+   */
+  checkIDToJSON(checkId: CheckID): CheckIDJSON {
+    return Utils.toHex(checkId.getValue_asU8())
+  },
+    
+  /**    
+   * Convert a SendMax to a JSON respresentation.
+   *
+   * @param sendMax - The SendMax to convert.
+   * @returns The SendMax as JSON.
+   */
+  sendMaxToJSON(sendMax: SendMax): SendMaxJSON | undefined {
+    const currencyAmount = sendMax.getValue()
     if (currencyAmount === undefined) {
       return undefined
     }
     return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert an TransactionSignature to a JSON representation.
+   *
+   * @param transactionSignature - The TransactionSignature to convert.
+   * @returns The TransactionSignature as JSON.
+   */
+  transactionSignatureToJSON(
+    transactionSignature: TransactionSignature,
+  ): TransactionSignatureJSON {
+    return Utils.toHex(transactionSignature.getValue_asU8())
+  },
+
+  /**
+   * Convert a SigningPublicKey to a JSON representation.
+   *
+   * @param signingPublicKey - The SigningPublicKey to convert.
+   * @returns The SigningPublicKey as JSON.
+   */
+  signingPublicKeyToJSON(
+    signingPublicKey: SigningPublicKey,
+  ): SigningPublicKeyJSON {
+    return Utils.toHex(signingPublicKey.getValue_asU8())
+  },
+    
+  /**
+   * Convert an Expiration to a JSON representation.
+   *
+   * @param expiration - The Expiration to convert.
+   * @returns The Expiration as JSON.
+   */
+  expirationToJSON(expiration: Expiration): ExpirationJSON {
+    return expiration.getValue()
+  },
+
+  /**
+   * Convert an Account to a JSON representation.
+   *
+   * @param account - The Account to convert.
+   * @returns The Account as JSON.
+   */
+  accountToJSON(account: Account): AccountJSON | undefined {
+    // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
+    return account.getValue()?.getAddress()
   },
 }
 
