@@ -27,6 +27,7 @@ import {
   MemoFormat,
   MemoType,
   Unauthorize,
+  SigningPublicKey,
   Expiration,
   Account,
 } from './generated/org/xrpl/rpc/v1/common_pb'
@@ -122,6 +123,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type SigningPublicKeyJSON = string
 type ExpirationJSON = number
 type AccountJSON = string
 type AmountJSON = CurrencyAmountJSON
@@ -720,6 +722,18 @@ const serializer = {
     }
   },
 
+  /**
+   * Convert a SigningPublicKey to a JSON representation.
+   *
+   * @param signingPublicKey - The SigningPublicKey to convert.
+   * @returns The SigningPublicKey as JSON.
+   */
+  signingPublicKeyToJSON(
+    signingPublicKey: SigningPublicKey,
+  ): SigningPublicKeyJSON {
+    return Utils.toHex(signingPublicKey.getValue_asU8())
+  },
+    
   /**
    * Convert an Expiration to a JSON representation.
    *

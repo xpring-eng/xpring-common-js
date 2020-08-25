@@ -1234,6 +1234,20 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a SigningPublicKey', function (): void {
+    // GIVEN a SigningPublicKey with some bytes
+    const signingPublicKeyBytes = new Uint8Array([0, 1, 2, 3])
+
+    const signingPublicKey = new SigningPublicKey()
+    signingPublicKey.setValue(signingPublicKeyBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.signingPublicKeyToJSON(signingPublicKey)
+
+    // THEN the result is the hex representation of the bytes.
+    assert.equal(serialized, Utils.toHex(signingPublicKeyBytes))
+  })
+
   it('Serializes an Account', function (): void {
     // GIVEN an Account wrapping an address
     const account = new Account()
