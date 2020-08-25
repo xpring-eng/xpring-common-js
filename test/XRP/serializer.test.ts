@@ -1312,7 +1312,7 @@ describe('serializer', function (): void {
   })
 
   it('Fails to serialize a malformed SendMax', function (): void {
-    // GIVEN a DeliverMin with no value
+    // GIVEN a DeliverMin with no value.
     const destination = new SendMax()
 
     // WHEN it is serialized
