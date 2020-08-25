@@ -36,6 +36,7 @@ import {
   LastLedgerSequence,
   DestinationTag,
   InvoiceID,
+  Expiration,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1247,6 +1248,29 @@ describe('serializer', function (): void {
     assert.equal(serialized, Utils.toHex(signingPublicKeyBytes))
   })
 
+  it('Serializes an Account', function (): void {
+    // GIVEN an Account wrapping an address
+    const account = new Account()
+    account.setValue(testAccountAddress)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountToJSON(account)
+
+    // THEN the result is the address
+    assert.equal(serialized, testAccountAddress.getAddress())
+  })
+
+  it('Fails to serialize an  Account with no AccountAddress', function (): void {
+    // GIVEN an empty Account.
+    const account = new Account()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountToJSON(account)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
   it('Serializes an Amount with a CurrencyAmount', function (): void {
     // GIVEN an Amount wrapping a CurrencyAmount.
     const dropsValue = '123'
@@ -1305,5 +1329,19 @@ describe('serializer', function (): void {
 
     // THEN the result is the hex representation of the bytes.
     assert.equal(serialized, Utils.toHex(memoFormatBytes))
+  })
+
+  it('Serializes an Expiration', function (): void {
+    // GIVEN an Expiration with an expiration time.
+    const expirationTime = 12
+
+    const expiration = new Expiration()
+    expiration.setValue(expirationTime)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.expirationToJSON(expiration)
+
+    // THEN the result is the expiration time.
+    assert.equal(serialized, expirationTime)
   })
 })
