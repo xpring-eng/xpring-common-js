@@ -27,6 +27,7 @@ import {
   MemoFormat,
   MemoType,
   Unauthorize,
+  TransactionSignature,
   SigningPublicKey,
   Expiration,
   Account,
@@ -123,6 +124,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type TransactionSignatureJSON = string
 type SigningPublicKeyJSON = string
 type ExpirationJSON = number
 type AccountJSON = string
@@ -720,6 +722,18 @@ const serializer = {
       default:
         return undefined
     }
+  },
+
+  /**
+   * Convert an TransactionSignature to a JSON representation.
+   *
+   * @param transactionSignature - The TransactionSignature to convert.
+   * @returns The TransactionSignature as JSON.
+   */
+  transactionSignatureToJSON(
+    transactionSignature: TransactionSignature,
+  ): TransactionSignatureJSON {
+    return Utils.toHex(transactionSignature.getValue_asU8())
   },
 
   /**
