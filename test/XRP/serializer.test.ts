@@ -40,6 +40,8 @@ import {
   SendMax,
   TransactionSignature,
   Expiration,
+  OfferSequence,
+  Owner,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1252,7 +1254,7 @@ describe('serializer', function (): void {
     // THEN the result is the hex representation of the invoiceId.
     assert.equal(serialized, Utils.toHex(transactionSignatureBytes))
   })
-    
+
   it('Serializes a SigningPublicKey', function (): void {
     // GIVEN a SigningPublicKey with some bytes
     const signingPublicKeyBytes = new Uint8Array([0, 1, 2, 3])
@@ -1363,7 +1365,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(checkIdValue))
   })
-    
+
   it('Serializes a SendMax', function (): void {
     // GIVEN a SendMax.
     const xrpDropsAmount = makeXrpDropsAmount('10')
@@ -1404,5 +1406,42 @@ describe('serializer', function (): void {
 
     // THEN the result is the expiration time.
     assert.equal(serialized, expirationTime)
+  })
+
+  it('Serializes an OfferSequence', function (): void {
+    // GIVEN an OfferSequence with an offer sequence.
+    const offerSequenceNumber = 1234
+
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.offerSequenceToJSON(offerSequence)
+
+    // THEN the result is the expiration time.
+    assert.equal(serialized, offerSequenceNumber)
+  })
+
+  it('Serializes an Owner', function (): void {
+    // GIVEN an Owner wrapping an address.
+    const owner = new Owner()
+    owner.setValue(testAccountAddress)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountToJSON(owner)
+
+    // THEN the result is the address
+    assert.equal(serialized, testAccountAddress.getAddress())
+  })
+
+  it('Fails to serialize an Owner with no AccountAddress', function (): void {
+    // GIVEN an empty Owner.
+    const owner = new Owner()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.ownerToJSON(owner)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 })
