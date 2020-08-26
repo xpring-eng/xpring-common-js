@@ -1472,7 +1472,7 @@ describe('serializer', function (): void {
   })
 
   it('Fails to serialize an EscrowCancel missing an offerSequence', function (): void {
-    // GIVEN an EscrowCancel that's missing an offerSequence
+    // GIVEN an EscrowCancel that's missing an offerSequence.
     const owner = new Owner()
     owner.setValue(testAccountAddress)
 
@@ -1487,12 +1487,26 @@ describe('serializer', function (): void {
   })
 
   it('Fails to serialize an EscrowCancel missing an owner', function (): void {
-    // GIVEN an EscrowCancel that's missing an owner
+    // GIVEN an EscrowCancel that's missing an owner.
     const offerSequence = new OfferSequence()
     offerSequence.setValue(offerSequenceNumber)
 
     const escrowCancel = new EscrowCancel()
     escrowCancel.setOfferSequence(offerSequence)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize an EscrowCancel with a malformed owner', function (): void {
+    // GIVEN an EscrowCancel with a malformed owner.
+    const owner = new Owner()
+
+    const escrowCancel = new EscrowCancel()
+    escrowCancel.setOwner(owner)
 
     // WHEN it is serialized.
     const serialized = Serializer.escrowCancelToJSON(escrowCancel)
