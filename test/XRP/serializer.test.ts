@@ -52,6 +52,7 @@ import {
   EscrowCancel,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
+  EscrowCancelJSON,
   AccountSetJSON,
   DepositPreauthJSON,
   TransactionJSON,
@@ -1412,8 +1413,6 @@ describe('serializer', function (): void {
 
   it('Serializes an OfferSequence', function (): void {
     // GIVEN an OfferSequence with an offer sequence.
-    const offerSequenceNumber = 1234
-
     const offerSequence = new OfferSequence()
     offerSequence.setValue(offerSequenceNumber)
 
@@ -1462,7 +1461,7 @@ describe('serializer', function (): void {
     // WHEN it is serialized.
     const serialized = Serializer.escrowCancelToJSON(escrowCancel)
 
-    const expectedJSON = {
+    const expectedJSON: EscrowCancelJSON = {
       OfferSequence: offerSequenceNumber,
       Owner: testAccountAddress.toString(),
       TransactionType: 'EscrowCancel',
