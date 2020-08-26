@@ -1,4 +1,3 @@
-import { Owner, OfferSequence } from './generated/org/xrpl/rpc/v1/common_pb.d'
 /* eslint-disable  max-lines --
  * gRPC is verbose. Playing code golf with this file would decrease clarity for little readability gain.
  */
@@ -34,6 +33,8 @@ import {
   SigningPublicKey,
   Expiration,
   Account,
+  OfferSequence,
+  Owner,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
