@@ -349,7 +349,7 @@ const serializer = {
   /**
    * Convert an EscrowCancel to a JSON representation.
    *
-   * @param escrowCancel  - The EscrowCancel to convert.
+   * @param escrowCancel - The EscrowCancel to convert.
    * @returns The EscrowCancel as JSON.
    */
   escrowCancelToJSON(escrowCancel: EscrowCancel): EscrowCancelJSON | undefined {
