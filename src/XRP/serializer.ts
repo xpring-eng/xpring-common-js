@@ -803,7 +803,6 @@ const serializer = {
   checkIDToJSON(checkId: CheckID): CheckIDJSON {
     return Utils.toHex(checkId.getValue_asU8())
   },
-
   /**
    * Convert a SendMax to a JSON respresentation.
    *
@@ -841,7 +840,6 @@ const serializer = {
   ): SigningPublicKeyJSON {
     return Utils.toHex(signingPublicKey.getValue_asU8())
   },
-
   /**
    * Convert an Expiration to a JSON representation.
    *
