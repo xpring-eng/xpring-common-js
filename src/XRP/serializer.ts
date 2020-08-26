@@ -328,7 +328,7 @@ const serializer = {
   /**
    * Convert an OfferSequence to a JSON representation.
    *
-   * @param owner - The OfferSequence to convert.
+   * @param offerSequence - The OfferSequence to convert.
    * @returns The OfferSequence as JSON.
    */
   offerSequenceToJSON(offerSequence: OfferSequence): OfferSequenceJSON {
