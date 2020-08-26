@@ -1470,4 +1470,34 @@ describe('serializer', function (): void {
     // THEN the result is as expected.
     assert.deepEqual(serialized, expectedJSON)
   })
+
+  it('Fails to serialize an EscrowCancel missing an offerSequence', function (): void {
+    // GIVEN an EscrowCancel that's missing an offerSequence
+    const owner = new Owner()
+    owner.setValue(testAccountAddress)
+
+    const escrowCancel = new EscrowCancel()
+    escrowCancel.setOwner(owner)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize an EscrowCancel missing an owner', function (): void {
+    // GIVEN an EscrowCancel that's missing an owner
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const escrowCancel = new EscrowCancel()
+    escrowCancel.setOfferSequence(offerSequence)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
 })
