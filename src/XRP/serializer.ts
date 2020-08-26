@@ -1,3 +1,4 @@
+import { Owner, OfferSequence } from './generated/org/xrpl/rpc/v1/common_pb.d'
 /* eslint-disable  max-lines --
  * gRPC is verbose. Playing code golf with this file would decrease clarity for little readability gain.
  */
@@ -40,6 +41,7 @@ import {
   Payment,
   Transaction,
   DepositPreauth,
+  EscrowCancel,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -76,6 +78,12 @@ export interface DepositPreauthJSON {
   TransactionType: 'DepositPreauth'
 }
 
+export interface EscrowCancelJSON {
+  OfferSequence: OfferSequenceJSON
+  Owner: OwnerJSON
+  TransactionType: 'EscrowCancel'
+}
+
 interface PaymentJSON {
   Amount: AmountJSON
   Destination: string
@@ -84,13 +92,18 @@ interface PaymentJSON {
 }
 
 // Generic field representing an OR of all above fields.
-type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
+type TransactionDataJSON =
+  | AccountSetJSON
+  | DepositPreauthJSON
+  | EscrowCancelJSON
+  | PaymentJSON
 
 /**
  * Individual Transaction Types.
  */
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
+type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
 /**
@@ -99,6 +112,7 @@ type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 export type TransactionJSON =
   | AccountSetTransactionJSON
   | DepositPreauthTransactionJSON
+  | EscrowCancelTransactionJSON
   | PaymentTransactionJSON
 
 /**
@@ -153,6 +167,8 @@ type AuthorizeJSON = string
 type InvoiceIdJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
+type OfferSequenceJSON = number
+type OwnerJSON = string
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -306,6 +322,36 @@ const serializer = {
       default: {
         return undefined
       }
+    }
+  },
+
+  /**
+   * Convert an EscrowCancel to a JSON representation.
+   *
+   * @param escrowCancel  - The EscrowCancel to convert.
+   * @returns The EscrowCancel as JSON.
+   */
+  escrowCancelToJSON(escrowCancel: EscrowCancel): EscrowCancelJSON | undefined {
+    const offerSequence = escrowCancel.getOfferSequence()
+    if (!offerSequence) {
+      return undefined
+    }
+    const offerSequenceJSON = this.offerSequenceToJSON(offerSequence)
+
+    const owner = escrowCancel.getOwner()
+    if (!owner) {
+      return undefined
+    }
+
+    const ownerJSON = this.ownerToJSON(owner)
+    if (!ownerJSON) {
+      return undefined
+    }
+
+    return {
+      OfferSequence: offerSequenceJSON,
+      Owner: ownerJSON,
+      TransactionType: 'EscrowCancel',
     }
   },
 
@@ -737,8 +783,8 @@ const serializer = {
   checkIDToJSON(checkId: CheckID): CheckIDJSON {
     return Utils.toHex(checkId.getValue_asU8())
   },
-    
-  /**    
+
+  /**
    * Convert a SendMax to a JSON respresentation.
    *
    * @param sendMax - The SendMax to convert.
@@ -775,7 +821,7 @@ const serializer = {
   ): SigningPublicKeyJSON {
     return Utils.toHex(signingPublicKey.getValue_asU8())
   },
-    
+
   /**
    * Convert an Expiration to a JSON representation.
    *
@@ -795,6 +841,26 @@ const serializer = {
   accountToJSON(account: Account): AccountJSON | undefined {
     // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
     return account.getValue()?.getAddress()
+  },
+
+  /**
+   * Convert an OfferSequence to a JSON representation.
+   *
+   * @param owner - The OfferSequence to convert.
+   * @returns The OfferSequence as JSON.
+   */
+  offerSequenceToJSON(offerSequence: OfferSequence): OfferSequenceJSON {
+    return offerSequence.getValue()
+  },
+
+  /**
+   * Convert an Owner to a JSON representation.
+   *
+   * @param owner - The Owner to convert.
+   * @returns The Owner as JSON.
+   */
+  ownerToJSON(owner: Owner): OwnerJSON | undefined {
+    return owner.getValue()?.getAddress()
   },
 }
 
