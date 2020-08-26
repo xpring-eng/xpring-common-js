@@ -49,6 +49,7 @@ import {
   Transaction,
   DepositPreauth,
   AccountSet,
+  EscrowCancel,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   AccountSetJSON,
@@ -75,6 +76,7 @@ const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
 const dataForMemo = Utils.toBytes('I forgot to pick up Carl...')
 const typeForMemo = Utils.toBytes('meme')
 const formatForMemo = Utils.toBytes('jaypeg')
+const offerSequenceNumber = 1234
 
 const testAccountAddress = new AccountAddress()
 testAccountAddress.setAddress(destinationClassicAddress)
@@ -1443,5 +1445,30 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes an EscrowCancel with all fields set', function (): void {
+    // GIVEN an EscrowCancel with all fields set.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const owner = new Owner()
+    owner.setValue(testAccountAddress)
+
+    const escrowCancel = new EscrowCancel()
+    escrowCancel.setOfferSequence(offerSequence)
+    escrowCancel.setOwner(owner)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    const expectedJSON = {
+      OfferSequence: offerSequenceNumber,
+      Owner: testAccountAddress.toString(),
+      TransactionType: 'EscrowCancel',
+    }
+
+    // THEN the result is as expected.
+    assert.deepEqual(serialized, expectedJSON)
   })
 })
