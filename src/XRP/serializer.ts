@@ -326,6 +326,26 @@ const serializer = {
   },
 
   /**
+   * Convert an OfferSequence to a JSON representation.
+   *
+   * @param owner - The OfferSequence to convert.
+   * @returns The OfferSequence as JSON.
+   */
+  offerSequenceToJSON(offerSequence: OfferSequence): OfferSequenceJSON {
+    return offerSequence.getValue()
+  },
+
+  /**
+   * Convert an Owner to a JSON representation.
+   *
+   * @param owner - The Owner to convert.
+   * @returns The Owner as JSON.
+   */
+  ownerToJSON(owner: Owner): OwnerJSON | undefined {
+    return owner.getValue()?.getAddress()
+  },
+
+  /**
    * Convert an EscrowCancel to a JSON representation.
    *
    * @param escrowCancel  - The EscrowCancel to convert.
@@ -841,26 +861,6 @@ const serializer = {
   accountToJSON(account: Account): AccountJSON | undefined {
     // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
     return account.getValue()?.getAddress()
-  },
-
-  /**
-   * Convert an OfferSequence to a JSON representation.
-   *
-   * @param owner - The OfferSequence to convert.
-   * @returns The OfferSequence as JSON.
-   */
-  offerSequenceToJSON(offerSequence: OfferSequence): OfferSequenceJSON {
-    return offerSequence.getValue()
-  },
-
-  /**
-   * Convert an Owner to a JSON representation.
-   *
-   * @param owner - The Owner to convert.
-   * @returns The Owner as JSON.
-   */
-  ownerToJSON(owner: Owner): OwnerJSON | undefined {
-    return owner.getValue()?.getAddress()
   },
 }
 
