@@ -1432,7 +1432,7 @@ describe('serializer', function (): void {
     // WHEN it is serialized.
     const serialized = Serializer.offerSequenceToJSON(offerSequence)
 
-    // THEN the result is the expiration time.
+    // THEN the result is the offserSequence value.
     assert.equal(serialized, offerSequenceNumber)
   })
 
