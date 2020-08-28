@@ -356,16 +356,12 @@ const serializer = {
    */
   escrowCancelToJSON(escrowCancel: EscrowCancel): EscrowCancelJSON | undefined {
     const offerSequence = escrowCancel.getOfferSequence()
-    if (!offerSequence) {
-      return undefined
-    }
-    const offerSequenceJSON = this.offerSequenceToJSON(offerSequence)
-
     const owner = escrowCancel.getOwner()
-    if (!owner) {
+    if (offerSequence === undefined || owner === undefined) {
       return undefined
     }
 
+    const offerSequenceJSON = this.offerSequenceToJSON(offerSequence)
     const ownerJSON = this.ownerToJSON(owner)
     if (!ownerJSON) {
       return undefined
