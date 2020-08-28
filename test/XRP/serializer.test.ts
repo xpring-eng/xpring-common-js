@@ -57,6 +57,7 @@ import Serializer, {
   AccountSetJSON,
   DepositPreauthJSON,
   TransactionJSON,
+  PaymentJSON,
 } from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
@@ -1581,6 +1582,99 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized.
     const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a Payment with only mandatory fields set', function (): void {
+    // GIVEN a Payment with only mandatory fields.
+    const xrpAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const payment = new Payment()
+    payment.setAmount(amount)
+    payment.setDestination(destination)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentToJSON(payment)
+
+    // THEN the result is in the expected form.
+    const expected: PaymentJSON = {
+      Amount: Serializer.amountToJSON(amount)!,
+      Destination: Serializer.destinationToJSON(destination)!,
+      TransactionType: 'Payment',
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes a Payment with all fields set', function (): void {
+    // GIVEN a Payment with all mandatory fields.
+    // TODO(keefertaylor): Add additional fields here when they are implemented.
+    const xrpAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const destinationTag = new DestinationTag()
+    destinationTag.setValue(11)
+
+    const payment = new Payment()
+    payment.setAmount(amount)
+    payment.setDestination(destination)
+    payment.setDestinationTag(destinationTag)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentToJSON(payment)
+
+    // THEN the result is in the expected form.
+    const expected: PaymentJSON = {
+      Amount: Serializer.amountToJSON(amount)!,
+      Destination: Serializer.destinationToJSON(destination)!,
+      DestinationTag: Serializer.destinationTagToJSON(destinationTag),
+      TransactionType: 'Payment',
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a malformed Payment', function (): void {
+    // GIVEN a malformed Payment.
+    const payment = new Payment()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentToJSON(payment)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a payment with a malformed mandatory field', function (): void {
+    // GIVEN a Payment with a malformed amount field.
+    const amount = new Amount()
+
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const payment = new Payment()
+    payment.setAmount(amount)
+    payment.setDestination(destination)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentToJSON(payment)
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)

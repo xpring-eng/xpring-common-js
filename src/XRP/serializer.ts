@@ -88,7 +88,7 @@ export interface EscrowCancelJSON {
   TransactionType: 'EscrowCancel'
 }
 
-interface PaymentJSON {
+export interface PaymentJSON {
   Amount: AmountJSON
   Destination: string
   DestinationTag?: DestinationTagJSON
