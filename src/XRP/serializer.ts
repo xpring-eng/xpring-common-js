@@ -3,6 +3,7 @@
  */
 import Utils from '../Common/utils'
 
+import { AccountAddress } from './generated/org/xrpl/rpc/v1/account_pb'
 import {
   XRPDropsAmount,
   Currency,
@@ -141,6 +142,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type AccountAddressJSON = string
 type CheckIDJSON = string
 type SendMaxJSON = CurrencyAmountJSON
 type TransactionSignatureJSON = string
@@ -604,6 +606,16 @@ const serializer = {
     }
 
     return undefined
+  },
+
+  /**
+   * Convert an Account Address to a JSON representation.
+   *
+   * @param accountAddress - The AccountAddress to convert.
+   * @returns The AccountAddress as JSON.
+   */
+  accountAddressToJSON(accountAddress: AccountAddress): AccountAddressJSON {
+    return accountAddress.getAddress()
   },
 
   /**

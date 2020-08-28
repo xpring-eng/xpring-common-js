@@ -1042,6 +1042,19 @@ describe('serializer', function (): void {
     assert.isUndefined(Serializer.currencyToJSON(currency))
   })
 
+  it('Serializes an AccountAddress', function (): void {
+    // GIVEN an AccountAddress.
+    const address = 'r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ'
+    const accountAddress = new AccountAddress()
+    accountAddress.setAddress(address)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountAddressToJSON(accountAddress)
+
+    // THEN the serialized representation is the same as the input.
+    assert.equal(serialized, address)
+  })
+
   it('Serializes a Sequence', function (): void {
     // GIVEN a Sequence.
     const sequence = new Sequence()
