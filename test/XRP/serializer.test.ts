@@ -1519,6 +1519,7 @@ describe('serializer', function (): void {
     const owner = new Owner()
 
     const escrowCancel = new EscrowCancel()
+    escrowCancel.setOfferSequence()
     escrowCancel.setOwner(owner)
 
     // WHEN it is serialized.
