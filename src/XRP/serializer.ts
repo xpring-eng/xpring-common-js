@@ -41,8 +41,11 @@ import {
   Payment,
   Transaction,
   DepositPreauth,
+  OfferCreate,
+  OfferCancel,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
+import { Offer } from './generated/org/xrpl/rpc/v1/ledger_objects_pb'
 
 /**
  * Common fields on a transaction.
@@ -84,14 +87,19 @@ interface PaymentJSON {
   TransactionType: 'Payment'
 }
 
+interface OfferCreateJSON {
+  OfferSequence: OfferSequenceJSON
+}
+
 // Generic field representing an OR of all above fields.
-type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
+type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | OfferCreateJSON | PaymentJSON
 
 /**
  * Individual Transaction Types.
  */
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
+type OfferCreateTransactionJSON = BaseTransactionJSON & OfferCreateJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
 /**
@@ -100,6 +108,7 @@ type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 export type TransactionJSON =
   | AccountSetTransactionJSON
   | DepositPreauthTransactionJSON
+  | OfferCreateTransactionJSON
   | PaymentTransactionJSON
 
 /**
@@ -805,6 +814,19 @@ const serializer = {
    * @returns The Account as JSON.
    */
   accountToJSON(account: Account): AccountJSON | undefined {
+    // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
+    return account.getValue()?.getAddress()
+  },
+
+  /**
+   * Convert an OfferCancel to a JSON representation.
+   *
+   * @param offerCancel - The OfferCancel to convert.
+   * @returns The OfferCancel as JSON.
+   */
+  offerCancelToJSON(offerCancel: OfferCancel): OfferCancelJSON | undefined {
+    const x = offerCancel.getOfferSequence()
+
     // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
     return account.getValue()?.getAddress()
   },
