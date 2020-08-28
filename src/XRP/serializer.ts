@@ -29,6 +29,7 @@ import {
   MemoFormat,
   MemoType,
   Unauthorize,
+  Destination,
   SendMax,
   TransactionSignature,
   SigningPublicKey,
@@ -142,6 +143,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type DestinationJSON = AccountAddressJSON
 type AccountAddressJSON = string
 type CheckIDJSON = string
 type SendMaxJSON = CurrencyAmountJSON
@@ -808,6 +810,20 @@ const serializer = {
     }
   },
 
+  /**
+   * Convert a Destination to a JSON representation.
+   *
+   * @param destination - The Destination to convert.
+   * @returns The Destination as JSON.
+   */
+  destinationToJSON(destination: Destination): DestinationJSON | undefined {
+    const accountAddress = destination.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
+    return this.accountAddressToJSON(accountAddress)
+  },
+    
   /**
    * Convert a CheckID to a JSON representation.
    *
