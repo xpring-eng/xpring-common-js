@@ -555,8 +555,7 @@ describe('serializer', function (): void {
     const expectedJSON: TransactionJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
-      Destination: destinationClassicAddress,
-      DestinationTag: tag,
+      Destination: destinationXAddressWithTag,
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
@@ -585,7 +584,7 @@ describe('serializer', function (): void {
     const expectedJSON: TransactionJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
-      Destination: destinationClassicAddress,
+      Destination: destinationXAddressWithoutTag,
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
@@ -628,7 +627,7 @@ describe('serializer', function (): void {
     const expectedJSON: TransactionJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
-      Destination: destinationClassicAddress,
+      Destination: destinationXAddressWithoutTag,
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
@@ -1390,7 +1389,7 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized
     const serialized = Serializer.destinationToJSON(destination)
-    
+
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
@@ -1435,11 +1434,11 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized.
     const serialized = Serializer.checkCancelToJSON(checkCancel)
-    
+
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
-    
+
   it('Serializes a SendMax', function (): void {
     // GIVEN a SendMax.
     const xrpDropsAmount = makeXrpDropsAmount('10')

@@ -261,21 +261,33 @@ const serializer = {
    * @param payment - The Payment to convert.
    * @returns The Payment as JSON.
    */
-  // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
   paymentToJSON(payment: Payment): PaymentJSON | undefined {
+    // Process required fields.
     const amount = payment.getAmount()
     const destination = payment.getDestination()
     if (amount === undefined || destination === undefined) {
       return undefined
     }
 
-    const json = {
-      Amount: this.amountToJSON(amount),
-      Destination: this.destinationTagToJSON(destination),
-      TransactionType: 'Payment'
+    const amountJson = this.amountToJSON(amount)
+    const destinationJson = this.destinationToJSON(destination)
+    if (amountJson === undefined || destinationJson === undefined) {
+      return undefined
     }
 
+    const json: PaymentJSON = {
+      Amount: amountJson,
+      Destination: destinationJson,
+      TransactionType: 'Payment',
+    }
+
+    // Process optional fields.
     // TODO(keefertaylor): Add support for additional optional fields here.
+    const destinationTag = payment.getDestinationTag()
+    if (destinationTag !== undefined) {
+      json.DestinationTag = this.destinationTagToJSON(destinationTag)
+    }
+
     return json
   },
 
@@ -339,9 +351,9 @@ const serializer = {
    * @returns The Owner as JSON.
    */
   ownerToJSON(owner: Owner): OwnerJSON | undefined {
-    const accountAddress = owner.getValue();
+    const accountAddress = owner.getValue()
     if (accountAddress === undefined) {
-      return undefined;
+      return undefined
     }
 
     return this.accountAddressToJSON(accountAddress)
@@ -815,7 +827,7 @@ const serializer = {
     }
     return this.accountAddressToJSON(accountAddress)
   },
-    
+
   /**
    * Convert a CheckID to a JSON representation.
    *
@@ -842,8 +854,8 @@ const serializer = {
       CheckID: this.checkIDToJSON(checkId),
     }
   },
-    
-  /**    
+
+  /**
    * Convert a SendMax to a JSON respresentation.
    *
    * @param sendMax - The SendMax to convert.
