@@ -236,35 +236,19 @@ const serializer = {
    */
   // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
   paymentToJSON(payment: Payment): PaymentJSON | undefined {
-    const json: PaymentJSON = {
-      Amount: '',
-      Destination: '',
-      TransactionType: 'Payment',
-    }
-
-    // If an x-address was able to be decoded, add the components to the json.
-    const destination = payment.getDestination()?.getValue()?.getAddress()
-    if (!destination) {
-      return undefined
-    }
-
-    // TODO(keefertaylor): Use `destinationTagToJSON` here when X-Addresses are supported in ripple-binary-codec.
-    const decodedXAddress = XrpUtils.decodeXAddress(destination)
-    json.Destination = decodedXAddress?.address ?? destination
-    if (decodedXAddress?.tag !== undefined) {
-      json.DestinationTag = decodedXAddress.tag
-    }
-
     const amount = payment.getAmount()
-    if (amount === undefined) {
+    const destination = payment.getDestination()
+    if (amount === undefined || destination === undefined) {
       return undefined
     }
-    const amountJSON = this.amountToJSON(amount)
-    if (amountJSON === undefined) {
-      return undefined
-    }
-    json.Amount = amountJSON
 
+    const json = {
+      Amount: this.amountToJSON(amount),
+      Destination: this.destinationTagToJSON(destination),
+      TransactionType: 'Payment'
+    }
+
+    // TODO(keefertaylor): Add support for additional optional fields here.
     return json
   },
 
