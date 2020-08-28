@@ -3,6 +3,7 @@
  */
 import Utils from '../Common/utils'
 
+import { AccountAddress } from './generated/org/xrpl/rpc/v1/account_pb'
 import {
   XRPDropsAmount,
   Currency,
@@ -126,6 +127,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type AccountAddressJSON = string
 type CheckIDJSON = string
 type SendMaxJSON = CurrencyAmountJSON
 type TransactionSignatureJSON = string
@@ -540,6 +542,16 @@ const serializer = {
   },
 
   /**
+   * Convert an Account Address to a JSON representation.
+   *
+   * @param accountAddress - The AccountAddress to convert.
+   * @returns The AccountAddress as JSON.
+   */
+  accountAddressToJSON(accountAddress: AccountAddress): AccountAddressJSON {
+    return accountAddress.getAddress()
+  },
+
+  /**
    * Convert an Unauthorize to a JSON representation.
    *
    * @param unauthorize - The Unauthorize to convert.
@@ -737,8 +749,8 @@ const serializer = {
   checkIDToJSON(checkId: CheckID): CheckIDJSON {
     return Utils.toHex(checkId.getValue_asU8())
   },
-    
-  /**    
+
+  /**
    * Convert a SendMax to a JSON respresentation.
    *
    * @param sendMax - The SendMax to convert.
@@ -775,7 +787,7 @@ const serializer = {
   ): SigningPublicKeyJSON {
     return Utils.toHex(signingPublicKey.getValue_asU8())
   },
-    
+
   /**
    * Convert an Expiration to a JSON representation.
    *
