@@ -40,6 +40,7 @@ import {
   SendMax,
   TransactionSignature,
   Expiration,
+  OfferSequence,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1417,5 +1418,19 @@ describe('serializer', function (): void {
 
     // THEN the result is the expiration time.
     assert.equal(serialized, expirationTime)
+  })
+
+  it('Serializes an OfferSequence', function (): void {
+    // GIVEN an OfferSequence with an expiration time.
+    const offerSequencValue = 12
+
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequencValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.offerSequenceToJSON(offerSequence)
+
+    // THEN the result is the expiration time.
+    assert.equal(serialized, offerSequencValue)
   })
 })

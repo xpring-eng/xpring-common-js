@@ -34,6 +34,7 @@ import {
   SigningPublicKey,
   Expiration,
   Account,
+  OfferSequence,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -127,6 +128,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type OfferSequenceJSON = number
 type AccountAddressJSON = string
 type CheckIDJSON = string
 type SendMaxJSON = CurrencyAmountJSON
@@ -807,6 +809,16 @@ const serializer = {
   accountToJSON(account: Account): AccountJSON | undefined {
     // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
     return account.getValue()?.getAddress()
+  },
+
+  /**
+   * Convert an OfferSequence to a JSON representation.
+   *
+   * @param offerSequence - The OfferSequence to convert.
+   * @returns The OfferSequence as JSON.
+   */
+  offerSequenceToJSON(offerSequence: OfferSequence): OfferSequenceJSON {
+    return offerSequence.getValue()
   },
 }
 
