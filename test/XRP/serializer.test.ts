@@ -47,6 +47,7 @@ import {
   Transaction,
   DepositPreauth,
   AccountSet,
+  AccountDelete,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   AccountSetJSON,
@@ -1405,6 +1406,32 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a Destination', function (): void {
+    // GIVEN a Destination
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    // WHEN it is serialized
+    const serialized = Serializer.destinationToJSON(destination)
+
+    // THEN the result is the serialized representation of the input.
+    assert.equal(
+      serialized,
+      Serializer.accountAddressToJSON(testAccountAddress),
+    )
+  })
+
+  it('Fails to serialize a malformed destination', function (): void {
+    // GIVEN a Destination with no address
+    const destination = new Destination()
+
+    // WHEN it is serialized
+    const serialized = Serializer.destinationToJSON(destination)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
   it('Serializes an Expiration', function (): void {
     // GIVEN an Expiration with an expiration time.
     const expirationTime = 12
@@ -1417,5 +1444,71 @@ describe('serializer', function (): void {
 
     // THEN the result is the expiration time.
     assert.equal(serialized, expirationTime)
+  })
+
+  it('Serializes an AccountDelete with mandatory fields', function (): void {
+    // GIVEN an AccountDelete with only mandatory fields.
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const accountDelete = new AccountDelete()
+    accountDelete.setDestination(destination)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountDeleteToJSON(accountDelete)
+
+    // THEN the result is in the expected from
+    const expected = {
+      Destination: Serializer.destinationToJSON(destination)!,
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes an AccountDelete with all fields', function (): void {
+    // GIVEN an AccountDelete with only mandatory fields.
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const destinationTag = new DestinationTag()
+    destinationTag.setValue(12)
+
+    const accountDelete = new AccountDelete()
+    accountDelete.setDestination(destination)
+    accountDelete.setDestinationTag(destinationTag)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountDeleteToJSON(accountDelete)
+
+    // THEN the result is in the expected from
+    const expected = {
+      Destination: Serializer.destinationToJSON(destination)!,
+      DestinationTag: Serializer.destinationTagToJSON(destinationTag),
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize an AccountDelete with missing mandatory fields', function (): void {
+    // GIVEN an AccountDelete which is missing a destination.
+    const accountDelete = new AccountDelete()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountDeleteToJSON(accountDelete)
+
+    // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize an AccountDelete with malformed mandatory fields', function (): void {
+    // GIVEN an AccountDelete which constains a malformed destination.
+    const destination = new Destination()
+
+    const accountDelete = new AccountDelete()
+    accountDelete.setDestination(destination)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountDeleteToJSON(accountDelete)
+
+    // THEN the result is undefined
+    assert.isUndefined(serialized)
   })
 })

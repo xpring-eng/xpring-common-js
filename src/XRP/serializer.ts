@@ -34,6 +34,7 @@ import {
   SigningPublicKey,
   Expiration,
   Account,
+  Destination,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -41,6 +42,7 @@ import {
   Payment,
   Transaction,
   DepositPreauth,
+  AccountDelete,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -85,12 +87,16 @@ interface PaymentJSON {
 }
 
 interface AccountDeleteJSON {
-  Destination: DestinationJSON,
-  DestinationTag: DestinationTagJSON
+  Destination: DestinationJSON
+  DestinationTag?: DestinationTagJSON
 }
 
 // Generic field representing an OR of all above fields.
-type TransactionDataJSON = AccountDeleteJSON | AccountSetJSON | DepositPreauthJSON | PaymentJSON
+type TransactionDataJSON =
+  | AccountDeleteJSON
+  | AccountSetJSON
+  | DepositPreauthJSON
+  | PaymentJSON
 
 /**
  * Individual Transaction Types.
@@ -104,7 +110,7 @@ type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
  * All Transactions.
  */
 export type TransactionJSON =
-  AccountDeleteJSON
+  | AccountDeleteTransactionJSON
   | AccountSetTransactionJSON
   | DepositPreauthTransactionJSON
   | PaymentTransactionJSON
@@ -141,6 +147,7 @@ type TransactionSignatureJSON = string
 type SigningPublicKeyJSON = string
 type ExpirationJSON = number
 type AccountJSON = string
+type DestinationJSON = AccountAddressJSON
 type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
@@ -818,6 +825,52 @@ const serializer = {
 
     return this.accountAddressToJSON(accountAddress)
   },
+
+  /**
+   * Convert a Destination to a JSON representation.
+   *
+   * @param destination - The Destination to convert.
+   * @returns The Destination as JSON.
+   */
+  destinationToJSON(destination: Destination): DestinationJSON | undefined {
+    const accountAddress = destination.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
+    return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert an AccountDelete to a JSON representation.
+   *
+   * @param accountDelete - The AccountDelete to convert.
+   * @returns The AccountDelete as JSON.
+   */
+  accountDeleteToJSON(
+    accountDelete: AccountDelete,
+  ): AccountDeleteJSON | undefined {
+    // Process mandatory fields.
+    const destination = accountDelete.getDestination()
+    if (destination === undefined) {
+      return undefined
+    }
+    const destinationJSON = this.destinationToJSON(destination)
+    if (destinationJSON === undefined) {
+      return undefined
+    }
+
+    const json: AccountDeleteJSON = {
+      Destination: destinationJSON,
+    }
+
+    // Process optional fields.
+    const destinationTag = accountDelete.getDestinationTag()
+    if (destinationTag !== undefined) {
+      json.DestinationTag = this.destinationTagToJSON(destinationTag)
+    }
+
+    return json
+  },
 }
 
 export default serializer
@@ -866,6 +919,14 @@ function getAdditionalTransactionData(
   const transactionDataCase = transaction.getTransactionDataCase()
 
   switch (transactionDataCase) {
+    case Transaction.TransactionDataCase.ACCOUNT_DELETE: {
+      const accountDelete = transaction.getAccountDelete()
+      if (accountDelete === undefined) {
+        return undefined
+      }
+
+      return serializer.accountDeleteToJSON(accountDelete)
+    }
     case Transaction.TransactionDataCase.ACCOUNT_SET: {
       const accountSet = transaction.getAccountSet()
       if (accountSet === undefined) {
