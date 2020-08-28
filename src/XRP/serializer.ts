@@ -35,6 +35,7 @@ import {
   Expiration,
   Account,
   TakerGets,
+  TakerPays,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -157,6 +158,7 @@ type InvoiceIdJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type TakerGetsJSON = CurrencyAmountJSON
+type TakerPaysJSON = CurrencyAmountJSON
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -808,6 +810,21 @@ const serializer = {
    */
   takerGetsToJSON(takerGets: TakerGets): TakerGetsJSON | undefined {
     const currencyAmount = takerGets.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert a TakerPays to a JSON representation.
+   *
+   * @param takerPays - The TakerPays to convert.
+   * @returns The TakerPays as JSON.
+   */
+  takerPaysToJSON(takerPays: TakerPays): TakerPaysJSON | undefined {
+    const currencyAmount = takerPays.getValue()
     if (currencyAmount === undefined) {
       return undefined
     }

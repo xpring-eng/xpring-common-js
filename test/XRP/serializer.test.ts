@@ -41,6 +41,7 @@ import {
   TransactionSignature,
   Expiration,
   TakerGets,
+  TakerPays,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1453,6 +1454,44 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized.
     const serialized = Serializer.takerGetsToJSON(takerGets)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a TakerPays', function (): void {
+    // GIVEN an TakerPays with a CurrencyAmount.
+    const currency = new Currency()
+    currency.setCode('USD')
+
+    const issuedCurrencyAmount = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      '123',
+      currency,
+    )
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setIssuedCurrencyAmount(issuedCurrencyAmount)
+
+    const takerPays = new TakerPays()
+    takerPays.setValue(currencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.takerPaysToJSON(takerPays)
+
+    // THEN the result is the serialized CurrencyAmount.
+    assert.deepEqual(
+      serialized,
+      Serializer.currencyAmountToJSON(currencyAmount),
+    )
+  })
+
+  it('Fails to serialze a malformed TakerPays', function (): void {
+    // GIVEN an TakerPays without a CurrencyAmount.
+    const takerPays = new TakerPays()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.takerPaysToJSON(takerPays)
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
