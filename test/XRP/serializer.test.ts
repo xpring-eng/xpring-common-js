@@ -1038,6 +1038,19 @@ describe('serializer', function (): void {
     assert.isUndefined(Serializer.currencyToJSON(currency))
   })
 
+  it('Serializes an AccountAddress', function (): void {
+    // GIVEN an AccountAddress.
+    const address = 'r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ'
+    const accountAddress = new AccountAddress()
+    accountAddress.setAddress(address)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountAddressToJSON(accountAddress)
+
+    // THEN the serialized representation is the same as the input.
+    assert.equal(serialized, address)
+  })
+
   it('Serializes a Sequence', function (): void {
     // GIVEN a Sequence.
     const sequence = new Sequence()
@@ -1253,7 +1266,7 @@ describe('serializer', function (): void {
     // THEN the result is the hex representation of the invoiceId.
     assert.equal(serialized, Utils.toHex(transactionSignatureBytes))
   })
-    
+
   it('Serializes a SigningPublicKey', function (): void {
     // GIVEN a SigningPublicKey with some bytes
     const signingPublicKeyBytes = new Uint8Array([0, 1, 2, 3])
@@ -1403,7 +1416,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(checkIdValue))
   })
-    
+
   it('Serializes a SendMax', function (): void {
     // GIVEN a SendMax.
     const xrpDropsAmount = makeXrpDropsAmount('10')
