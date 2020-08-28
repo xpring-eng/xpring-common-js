@@ -345,7 +345,12 @@ const serializer = {
    * @returns The Owner as JSON.
    */
   ownerToJSON(owner: Owner): OwnerJSON | undefined {
-    return owner.getValue()?.getAddress()
+    const accountAddress = owner.getValue();
+    if (accountAddress === undefined) {
+      return undefined;
+    }
+
+    return this.accountAddressToJSON(accountAddress)
   },
 
   /**
