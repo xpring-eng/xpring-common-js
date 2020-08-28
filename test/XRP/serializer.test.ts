@@ -1385,7 +1385,7 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized
     const serialized = Serializer.destinationToJSON(destination)
-    
+
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
@@ -1396,13 +1396,28 @@ describe('serializer', function (): void {
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpDropsAmount)
-    
+
     const deliverMin = new DeliverMin()
     deliverMin.setValue(currencyAmount)
 
     // WHEN it is serialized
-    const serialized = Serializer.deliverMinToJSON(deliverMin)    
-    
+    const serialized = Serializer.deliverMinToJSON(deliverMin)
+
+    // THEN the result is the serialized representation of the input.
+    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
+  })
+
+  it('Fails to serialize a malformed DeliverMin', function (): void {
+    // GIVEN a DeliverMin with no value
+    const destination = new DeliverMin()
+
+    // WHEN it is serialized
+    const serialized = Serializer.deliverMinToJSON(destination)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
   it('Serializes a CheckID', function (): void {
     // GIVEN a CheckID.
     const checkIdValue = new Uint8Array([1, 2, 3, 4])
@@ -1433,13 +1448,6 @@ describe('serializer', function (): void {
     // THEN the result is the serialized representation of the input.
     assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
   })
-
-  it('Fails to serialize a malformed DeliverMin', function (): void {
-    // GIVEN a DeliverMin with no value
-    const destination = new DeliverMin()
-
-    // WHEN it is serialized
-    const serialized = Serializer.deliverMinToJSON(destination)
 
   it('Fails to serialize a malformed SendMax', function (): void {
     // GIVEN a DeliverMin with no value.

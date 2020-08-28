@@ -766,8 +766,12 @@ const serializer = {
    */
   deliverMinToJSON(deliverMin: DeliverMin): DeliverMinJSON | undefined {
     const currencyAmount = deliverMin.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+    return this.currencyAmountToJSON(currencyAmount)
   },
-    
+
   /**
    * Convert a CheckID to a JSON representation.
    *
