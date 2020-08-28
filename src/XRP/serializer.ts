@@ -84,12 +84,18 @@ interface PaymentJSON {
   TransactionType: 'Payment'
 }
 
+interface AccountDeleteJSON {
+  Destination: DestinationJSON,
+  DestinationTag: DestinationTagJSON
+}
+
 // Generic field representing an OR of all above fields.
-type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | PaymentJSON
+type TransactionDataJSON = AccountDeleteJSON | AccountSetJSON | DepositPreauthJSON | PaymentJSON
 
 /**
  * Individual Transaction Types.
  */
+type AccountDeleteTransactionJSON = BaseTransactionJSON & AccountDeleteJSON
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
@@ -98,6 +104,7 @@ type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
  * All Transactions.
  */
 export type TransactionJSON =
+  AccountDeleteJSON
   | AccountSetTransactionJSON
   | DepositPreauthTransactionJSON
   | PaymentTransactionJSON
