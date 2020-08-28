@@ -1385,7 +1385,7 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized
     const serialized = Serializer.destinationToJSON(destination)
-
+    
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })

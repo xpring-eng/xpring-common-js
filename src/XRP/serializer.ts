@@ -768,7 +768,7 @@ const serializer = {
     const currencyAmount = deliverMin.getValue()
   },
     
-  /**    
+  /**
    * Convert a CheckID to a JSON representation.
    *
    * @param checkId - The CheckID to convert.
