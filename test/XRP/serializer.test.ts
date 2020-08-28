@@ -41,6 +41,8 @@ import {
   SendMax,
   TransactionSignature,
   Expiration,
+  OfferSequence,
+  Owner,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -48,8 +50,10 @@ import {
   Transaction,
   DepositPreauth,
   AccountSet,
+  EscrowCancel,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
+  EscrowCancelJSON,
   AccountSetJSON,
   DepositPreauthJSON,
   TransactionJSON,
@@ -74,6 +78,7 @@ const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
 const dataForMemo = Utils.toBytes('I forgot to pick up Carl...')
 const typeForMemo = Utils.toBytes('meme')
 const formatForMemo = Utils.toBytes('jaypeg')
+const offerSequenceNumber = 1234
 
 const testAccountAddress = new AccountAddress()
 testAccountAddress.setAddress(destinationClassicAddress)
@@ -1472,5 +1477,110 @@ describe('serializer', function (): void {
 
     // THEN the result is the expiration time.
     assert.equal(serialized, expirationTime)
+  })
+
+  it('Serializes an OfferSequence', function (): void {
+    // GIVEN an OfferSequence with an offer sequence.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.offerSequenceToJSON(offerSequence)
+
+    // THEN the result is the offserSequence value.
+    assert.equal(serialized, offerSequenceNumber)
+  })
+
+  it('Serializes an Owner', function (): void {
+    // GIVEN an Owner wrapping an address.
+    const owner = new Owner()
+    owner.setValue(testAccountAddress)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountToJSON(owner)
+
+    // THEN the result is the address
+    assert.equal(serialized, testAccountAddress.getAddress())
+  })
+
+  it('Fails to serialize an Owner with no AccountAddress', function (): void {
+    // GIVEN an empty Owner.
+    const owner = new Owner()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.ownerToJSON(owner)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes an EscrowCancel with all fields set', function (): void {
+    // GIVEN an EscrowCancel with all fields set.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const owner = new Owner()
+    owner.setValue(testAccountAddress)
+
+    const escrowCancel = new EscrowCancel()
+    escrowCancel.setOfferSequence(offerSequence)
+    escrowCancel.setOwner(owner)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    const expectedJSON: EscrowCancelJSON = {
+      OfferSequence: offerSequenceNumber,
+      Owner: testAccountAddress.toString(),
+      TransactionType: 'EscrowCancel',
+    }
+
+    // THEN the result is as expected.
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('Fails to serialize an EscrowCancel missing an offerSequence', function (): void {
+    // GIVEN an EscrowCancel that's missing an offerSequence.
+    const owner = new Owner()
+    owner.setValue(testAccountAddress)
+
+    const escrowCancel = new EscrowCancel()
+    escrowCancel.setOwner(owner)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize an EscrowCancel missing an owner', function (): void {
+    // GIVEN an EscrowCancel that's missing an owner.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const escrowCancel = new EscrowCancel()
+    escrowCancel.setOfferSequence(offerSequence)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize an EscrowCancel with a malformed owner', function (): void {
+    // GIVEN an EscrowCancel with a malformed owner.
+    const owner = new Owner()
+
+    const escrowCancel = new EscrowCancel()
+    escrowCancel.setOfferSequence()
+    escrowCancel.setOwner(owner)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 })
