@@ -30,6 +30,7 @@ import {
   MemoType,
   Unauthorize,
   Destination,
+  DeliverMin,
   SendMax,
   TransactionSignature,
   SigningPublicKey,
@@ -151,6 +152,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type DeliverMinJSON = CurrencyAmountJSON
 type DestinationJSON = AccountAddressJSON
 type AccountAddressJSON = string
 type CheckIDJSON = string
@@ -831,7 +833,21 @@ const serializer = {
     }
     return this.accountAddressToJSON(accountAddress)
   },
-    
+
+  /**
+   * Convert a DeliverMin to a JSON respresentation.
+   *
+   * @param deliverMin - The DeliverMin to convert.
+   * @returns The DeliverMin as JSON.
+   */
+  deliverMinToJSON(deliverMin: DeliverMin): DeliverMinJSON | undefined {
+    const currencyAmount = deliverMin.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
   /**
    * Convert a CheckID to a JSON representation.
    *

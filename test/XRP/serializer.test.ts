@@ -36,6 +36,7 @@ import {
   LastLedgerSequence,
   DestinationTag,
   InvoiceID,
+  DeliverMin,
   CheckID,
   SendMax,
   TransactionSignature,
@@ -1384,13 +1385,41 @@ describe('serializer', function (): void {
     )
   })
 
-  it('Fails to serialize a malformed destination', function (): void {
+  it('Fails to serialize a malformed Destination', function (): void {
     // GIVEN a Destination with no address
     const destination = new Destination()
 
     // WHEN it is serialized
     const serialized = Serializer.destinationToJSON(destination)
-    
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a DeliverMin', function (): void {
+    // GIVEN a DeliverMin.
+    const xrpDropsAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const deliverMin = new DeliverMin()
+    deliverMin.setValue(currencyAmount)
+
+    // WHEN it is serialized
+    const serialized = Serializer.deliverMinToJSON(deliverMin)
+
+    // THEN the result is the serialized representation of the input.
+    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
+  })
+
+  it('Fails to serialize a malformed DeliverMin', function (): void {
+    // GIVEN a DeliverMin with no value
+    const destination = new DeliverMin()
+
+    // WHEN it is serialized
+    const serialized = Serializer.deliverMinToJSON(destination)
+
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
