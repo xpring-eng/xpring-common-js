@@ -98,6 +98,8 @@ export interface EscrowCreateJSON {
   Amount: AmountJSON
   CancelAfter?: CancelAfterJSON
   Condition?: ConditionJSON
+  Destination: DestinationJSON
+  DestinationTag?: DestinationTagJSON
   FinishAfter?: FinishAfterJSON
   TransactionType: 'EscrowCreate'
 }
@@ -414,19 +416,22 @@ const serializer = {
    * @returns The EscrowCreate as JSON.
    */
   escrowCreateToJSON(escrowCreate: EscrowCreate): EscrowCreateJSON | undefined {
-    const amount = escrowCreate.getAmount();
-    if (amount === undefined) {
+    const amount = escrowCreate.getAmount()
+    const destination = escrowCreate.getDestination()
+    if (amount === undefined || destination === undefined) {
       return undefined
     }
 
-    const amountJSON = this.amountToJSON(amount)
-    if (amountJSON === undefined) {
+    const amountJson = this.amountToJSON(amount)
+    const destinationJson = this.destinationToJSON(destination)
+    if (amountJson === undefined || destinationJson === undefined) {
       return undefined
     }
 
-    const json: EscrowCreateJSON = { 
-      Amount: amountJSON,
-      TransactionType: 'EscrowCreate' 
+    const json: EscrowCreateJSON = {
+      Amount: amountJson,
+      Destination: destinationJson,
+      TransactionType: 'EscrowCreate',
     }
 
     const cancelAfter = escrowCreate.getCancelAfter()
@@ -437,6 +442,11 @@ const serializer = {
     const condition = escrowCreate.getCondition()
     if (condition !== undefined) {
       json.Condition = this.conditionToJSON(condition)
+    }
+
+    const destinationTag = escrowCreate.getDestinationTag()
+    if (destinationTag !== undefined) {
+      json.DestinationTag = this.destinationTagToJSON(destinationTag)
     }
 
     const finishAfter = escrowCreate.getFinishAfter()

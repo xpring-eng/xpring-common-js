@@ -56,9 +56,11 @@ import {
   AccountSet,
   CheckCancel,
   EscrowCancel,
+  EscrowCreate,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   EscrowCancelJSON,
+  EscrowCreateJSON,
   AccountSetJSON,
   DepositPreauthJSON,
   TransactionJSON,
@@ -1788,5 +1790,33 @@ describe('serializer', function (): void {
 
     // THEN the result is as expected.
     assert.equal(serialized, finishAfterTime)
+  })
+
+  it('Serializes an EscrowCreate with required fields', function (): void {
+    // GIVEN an EscrowCreate with all mandatory fields set.
+    const xrpAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const escrowCreate = new EscrowCreate()
+    escrowCreate.setAmount(amount)
+    escrowCreate.setDestination(destination)
+
+    const serialized = Serializer.escrowCreateToJSON(escrowCreate)
+
+    const expected: EscrowCreateJSON = {
+      Amount: Serializer.amountToJSON(amount)!,
+      Destination: Serializer.destinationToJSON(destination)!,
+      TransactionType: 'EscrowCreate',
+    }
+
+    assert.deepEqual(serialized, expected)
   })
 })
