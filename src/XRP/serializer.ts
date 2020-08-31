@@ -40,6 +40,8 @@ import {
   OfferSequence,
   Owner,
   Condition,
+  CancelAfter,
+  FinishAfter
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -188,6 +190,8 @@ type TakerGetsJSON = CurrencyAmountJSON
 type OfferSequenceJSON = number
 type OwnerJSON = string
 type ConditionJSON = string
+type CancelAfterJSON = number
+type FinishAfterJSON = number
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -961,6 +965,26 @@ const serializer = {
   conditionToJSON(condition: Condition): ConditionJSON {
     return Utils.toHex(condition.getValue_asU8())
   },
+
+  /**
+   * Convert a CancelAfter to a JSON representation.
+   *
+   * @param condition - The CancelAfter to convert.
+   * @returns The CancelAfter as JSON.
+   */
+  cancelAfterToJSON(cancelAfter: CancelAfter): CancelAfterJSON {
+    return cancelAfter.getValue();
+  },
+
+  /**
+   * Convert a FinishAfter to a JSON representation.
+   *
+   * @param condition - The FinshAfter to convert.
+   * @returns The FinishAfter as JSON.
+   */
+  finishAfterToJSON(finishAfter: FinishAfter): FinishAfterJSON {
+    return finishAfter.getValue();
+  }
 }
 
 export default serializer
