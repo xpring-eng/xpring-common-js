@@ -1932,7 +1932,7 @@ describe('serializer', function (): void {
     fulfillment.setValue(fulfillmentBytes)
 
     // WHEN it is serialized.
-    const serialized = Serializer.conditionToJSON(fulfillment)
+    const serialized = Serializer.fulfillmentToJSON(fulfillment)
 
     // THEN the result is as expected.
     assert.equal(serialized, Utils.toHex(fulfillmentBytes))
