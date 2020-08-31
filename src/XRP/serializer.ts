@@ -54,6 +54,7 @@ import {
   OfferCancel,
   CheckCancel,
   EscrowCancel,
+  CheckCash,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -82,6 +83,12 @@ export interface AccountSetJSON {
   TransferRate?: TransferRateJSON
   TickSize?: TickSizeJSON
   TransactionType: 'AccountSet'
+}
+
+interface CheckCashJSON {
+  CheckID: CheckIDJSON
+  Amount?: CurrencyAmountJSON
+  DeliverMin?: DeliverMinJSON
 }
 
 export interface DepositPreauthJSON {
@@ -122,6 +129,7 @@ type TransactionDataJSON =
   | AccountDeleteJSON
   | AccountSetJSON
   | CheckCancelJSON
+  | CheckCashJSON
   | DepositPreauthJSON
   | EscrowCancelJSON
   | OfferCancelJSON
@@ -133,6 +141,7 @@ type TransactionDataJSON =
 type AccountDeleteTransactionJSON = BaseTransactionJSON & AccountDeleteJSON
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
 type CheckCancelTransactionJSON = BaseTransactionJSON & CheckCancelJSON
+type CheckCashTransactionJSON = BaseTransactionJSON & CheckCashJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type OfferCancelTransactionJSON = BaseTransactionJSON & OfferCancelJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
@@ -145,6 +154,7 @@ export type TransactionJSON =
   | AccountDeleteTransactionJSON
   | AccountSetTransactionJSON
   | CheckCancelTransactionJSON
+  | CheckCashTransactionJSON
   | DepositPreauthTransactionJSON
   | EscrowCancelTransactionJSON
   | OfferCancelTransactionJSON
@@ -1027,7 +1037,7 @@ const serializer = {
 
     return json
   },
-    
+
   /**
    * Convert an OfferCancel to a JSON representation.
    *
@@ -1073,6 +1083,48 @@ const serializer = {
    */
   finishAfterToJSON(finishAfter: FinishAfter): FinishAfterJSON {
     return finishAfter.getValue()
+  },
+
+  /**
+   * Convert a CheckCash to a JSON respresentation.
+   *
+   * @param checkCash - The CheckCash to convert.
+   * @returns The CheckCash as JSON.
+   */
+  checkCashToJSON(checkCash: CheckCash): CheckCashJSON | undefined {
+    // Process required fields.
+    const checkId = checkCash.getCheckId()
+    if (checkId === undefined) {
+      return undefined
+    }
+
+    const json: CheckCashJSON = {
+      CheckID: this.checkIDToJSON(checkId),
+    }
+
+    // One of the following fields must be set.
+    switch (checkCash.getAmountOneofCase()) {
+      case CheckCash.AmountOneofCase.AMOUNT: {
+        const amount = checkCash.getAmount()
+        if (amount === undefined) {
+          return undefined
+        }
+        json.Amount = this.amountToJSON(amount)
+        break
+      }
+      case CheckCash.AmountOneofCase.DELIVER_MIN: {
+        const deliverMin = checkCash.getDeliverMin()
+        if (deliverMin === undefined) {
+          return undefined
+        }
+        json.DeliverMin = this.deliverMinToJSON(deliverMin)
+        break
+      }
+      case CheckCash.AmountOneofCase.AMOUNT_ONEOF_NOT_SET:
+      default:
+        return undefined
+    }
+    return json
   },
 }
 
