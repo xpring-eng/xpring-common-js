@@ -40,11 +40,8 @@ import {
   OfferSequence,
   Owner,
   Condition,
-<<<<<<< HEAD
   CancelAfter,
   FinishAfter,
-=======
->>>>>>> 2dde9bfe8c68d8ae51f9064d69c859947e1c3e1a
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -193,11 +190,8 @@ type TakerGetsJSON = CurrencyAmountJSON
 type OfferSequenceJSON = number
 type OwnerJSON = string
 type ConditionJSON = string
-<<<<<<< HEAD
 type CancelAfterJSON = number
 type FinishAfterJSON = number
-=======
->>>>>>> 2dde9bfe8c68d8ae51f9064d69c859947e1c3e1a
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
