@@ -95,6 +95,7 @@ export interface EscrowCancelJSON {
 }
 
 export interface EscrowCreateJSON {
+  Amount: AmountJSON
   CancelAfter?: CancelAfterJSON
   Condition?: ConditionJSON
   FinishAfter?: FinishAfterJSON
@@ -118,6 +119,7 @@ type TransactionDataJSON =
   | CheckCancelJSON
   | DepositPreauthJSON
   | EscrowCancelJSON
+  | EscrowCreateJSON
   | PaymentJSON
 
 /**
@@ -127,6 +129,7 @@ type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
 type CheckCancelTransactionJSON = BaseTransactionJSON & CheckCancelJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
+type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
 /**
@@ -137,6 +140,7 @@ export type TransactionJSON =
   | CheckCancelTransactionJSON
   | DepositPreauthTransactionJSON
   | EscrowCancelTransactionJSON
+  | EscrowCreateTransactionJSON
   | PaymentTransactionJSON
 
 /**
