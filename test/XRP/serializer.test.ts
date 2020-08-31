@@ -56,6 +56,7 @@ import {
   AccountSet,
   CheckCancel,
   EscrowCancel,
+  OfferCancel,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   EscrowCancelJSON,
@@ -1658,6 +1659,24 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes an OfferCancel', function (): void {
+    // GIVEN a OfferCancel.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const offerCancel = new OfferCancel()
+    offerCancel.setOfferSequence(offerSequence)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.offerCancelToJSON(offerCancel)
+
+    // THEN the output is in the expected form.
+    const expected = {
+      OfferSequence: Serializer.offerSequenceToJSON(offerSequence),
+    }
+    assert.deepEqual(serialized, expected)
+  })      
+      
   it('Serializes a Condition', function (): void {
     // GIVEN a Condition with some bytes.
     const conditionBytes = new Uint8Array([0, 1, 2, 3])
@@ -1717,10 +1736,14 @@ describe('serializer', function (): void {
     const destinationTag = new DestinationTag()
     destinationTag.setValue(11)
 
+    const invoiceId = new InvoiceID()
+    invoiceId.setValue(new Uint8Array([1, 2, 3, 4]))
+
     const payment = new Payment()
     payment.setAmount(amount)
     payment.setDestination(destination)
     payment.setDestinationTag(destinationTag)
+    payment.setInvoiceId(invoiceId)
 
     // WHEN it is serialized.
     const serialized = Serializer.paymentToJSON(payment)
@@ -1730,9 +1753,21 @@ describe('serializer', function (): void {
       Amount: Serializer.amountToJSON(amount)!,
       Destination: Serializer.destinationToJSON(destination)!,
       DestinationTag: Serializer.destinationTagToJSON(destinationTag),
+      InvoiceID: Serializer.invoiceIdToJSON(invoiceId),
       TransactionType: 'Payment',
     }
     assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a malformed OfferCancel', function (): void {
+    // GIVEN a OfferCancel with no data.
+    const offerCancel = new OfferCancel()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.offerCancelToJSON(offerCancel)
+    
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 
   it('Fails to serialize a malformed Payment', function (): void {
