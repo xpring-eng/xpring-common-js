@@ -1589,16 +1589,15 @@ describe('serializer', function (): void {
   })
 
   it('Serializes a Condition', function (): void {
-    // GIVEN a Condition.
-    const conditionByteString =
-      'A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100'
+    // GIVEN a Condition with some bytes.
+    const conditionBytes = new Uint8Array([0, 1, 2, 3])
     const condition = new Condition()
-    condition.setValue(conditionByteString)
+    condition.setValue(conditionBytes)
 
     // WHEN it is serialized.
     const serialized = Serializer.conditionToJSON(condition)
 
     // THEN the result is as expected.
-    assert.equal(serialized, conditionByteString)
+    assert.equal(serialized, Utils.toHex(conditionBytes))
   })
 })
