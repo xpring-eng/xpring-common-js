@@ -58,10 +58,12 @@ import {
   CheckCancel,
   EscrowCancel,
   EscrowCreate,
+  EscrowFinish,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   EscrowCancelJSON,
   EscrowCreateJSON,
+  EscrowFinishJSON,
   AccountSetJSON,
   DepositPreauthJSON,
   TransactionJSON,
@@ -1936,5 +1938,30 @@ describe('serializer', function (): void {
 
     // THEN the result is as expected.
     assert.equal(serialized, Utils.toHex(fulfillmentBytes))
+  })
+
+  it('Serializes an EscrowFinish with required fields', function (): void {
+    // GIVEN an EscrowFinish with required fields.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const owner = new Owner()
+    owner.setValue(testAccountAddress)
+
+    const escrowFinish = new EscrowFinish()
+    escrowFinish.setOfferSequence(offerSequence)
+    escrowFinish.setOwner(owner)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowFinishToJSON(escrowFinish)
+
+    // THEN the result is as expected.
+    const expected: EscrowFinishJSON = {
+      OfferSequence: Serializer.offerSequenceToJSON(offerSequence),
+      Owner: Serializer.ownerToJSON(owner)!,
+      TransactionType: 'EscrowFinish',
+    }
+
+    assert.deepEqual(serialized, expected)
   })
 })

@@ -53,7 +53,7 @@ import {
   CheckCancel,
   EscrowCancel,
   EscrowCreate,
-  EscrowFinish
+  EscrowFinish,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -107,8 +107,8 @@ export interface EscrowCreateJSON {
 }
 
 export interface EscrowFinishJSON {
-  OfferSequence: OfferSequenceJSON,
-  Owner: OwnerJSON,
+  OfferSequence: OfferSequenceJSON
+  Owner: OwnerJSON
   TransactionType: 'EscrowFinish'
 }
 
@@ -476,8 +476,8 @@ const serializer = {
    * @returns The EscrowFinish as JSON.
    */
   escrowFinishToJSON(escrowFinish: EscrowFinish): EscrowFinishJSON | undefined {
-    const offerSequence = escrowFinish.getOfferSequence();
-    const owner = escrowFinish.getOwner();
+    const offerSequence = escrowFinish.getOfferSequence()
+    const owner = escrowFinish.getOwner()
     if (owner === undefined || offerSequence === undefined) {
       return undefined
     }
@@ -490,7 +490,7 @@ const serializer = {
     const json: EscrowFinishJSON = {
       OfferSequence: this.offerSequenceToJSON(offerSequence),
       Owner: ownerJSON,
-      TransactionType: 'EscrowFinish'
+      TransactionType: 'EscrowFinish',
     }
 
     return json
