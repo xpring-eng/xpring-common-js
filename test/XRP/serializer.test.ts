@@ -50,6 +50,7 @@ import {
   Transaction,
   DepositPreauth,
   AccountSet,
+  CheckCancel,
   EscrowCancel,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
@@ -1437,6 +1438,37 @@ describe('serializer', function (): void {
     assert.equal(serialized, Utils.toHex(checkIdValue))
   })
 
+  it('Serializes a CheckCancel', function (): void {
+    // GIVEN a CheckCancel.
+    const checkIdValue = new Uint8Array([1, 2, 3, 4])
+
+    const checkId = new CheckID()
+    checkId.setValue(checkIdValue)
+
+    const checkCancel = new CheckCancel()
+    checkCancel.setCheckId(checkId)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.checkCancelToJSON(checkCancel)
+
+    // THEN the output is in the expected form.
+    const expected = {
+      CheckID: Serializer.checkIDToJSON(checkId),
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a malformed CheckCancel', function (): void {
+    // GIVEN a CheckCancel with no data..
+    const checkCancel = new CheckCancel()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.checkCancelToJSON(checkCancel)
+    
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+    
   it('Serializes a SendMax', function (): void {
     // GIVEN a SendMax.
     const xrpDropsAmount = makeXrpDropsAmount('10')
