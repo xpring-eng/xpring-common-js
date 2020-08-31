@@ -92,9 +92,10 @@ export interface EscrowCancelJSON {
 
 export interface PaymentJSON {
   Amount: AmountJSON
-  Destination: string
+  DeliverMin?: DeliverMinJSON
+  Destination: DestinationJSON
   DestinationTag?: DestinationTagJSON
-  InvoiceID?: string
+  InvoiceID?: InvoiceIdJSON
   TransactionType: 'Payment'
 }
 
@@ -296,6 +297,11 @@ const serializer = {
     const invoiceId = payment.getInvoiceId()
     if (invoiceId !== undefined) {
       json.InvoiceID = this.invoiceIdToJSON(invoiceId)
+    }
+
+    const deliverMin = payment.getDeliverMin()
+    if (deliverMin !== undefined) {
+      json.DeliverMin = this.deliverMinToJSON(deliverMin)
     }
 
     return json

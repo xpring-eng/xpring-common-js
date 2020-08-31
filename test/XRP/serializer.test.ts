@@ -441,6 +441,21 @@ function makeIssuedCurrencyAmount(
   return issuedCurrency
 }
 
+/**
+ * Returns a CurrencyAmount representing drops of XRP.
+ *
+ * @param drops - The number of drops to represent.
+ * @returns A CurrencyAmount representing the input.
+ */
+function makeXrpCurrencyAmount(drops: string): CurrencyAmount {
+  const xrpDropsAmount = makeXrpDropsAmount(drops)
+
+  const currencyAmount = new CurrencyAmount()
+  currencyAmount.setXrpAmount(xrpDropsAmount)
+
+  return currencyAmount
+}
+
 describe('serializer', function (): void {
   it('serializes a payment in XRP from a classic address', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
@@ -1687,13 +1702,10 @@ describe('serializer', function (): void {
   it('Serializes a Payment with all fields set', function (): void {
     // GIVEN a Payment with all mandatory fields.
     // TODO(keefertaylor): Add additional fields here when they are implemented.
-    const xrpAmount = makeXrpDropsAmount('10')
-
-    const currencyAmount = new CurrencyAmount()
-    currencyAmount.setXrpAmount(xrpAmount)
+    const transactionAmount = makeXrpCurrencyAmount('10')
 
     const amount = new Amount()
-    amount.setValue(currencyAmount)
+    amount.setValue(transactionAmount)
 
     const destination = new Destination()
     destination.setValue(testAccountAddress)
@@ -1704,8 +1716,14 @@ describe('serializer', function (): void {
     const invoiceId = new InvoiceID()
     invoiceId.setValue(new Uint8Array([1, 2, 3, 4]))
 
+    const deliverMinAmount = makeXrpCurrencyAmount('12')
+
+    const deliverMin = new DeliverMin()
+    deliverMin.setValue(deliverMinAmount)
+
     const payment = new Payment()
     payment.setAmount(amount)
+    payment.setDeliverMin(deliverMin)
     payment.setDestination(destination)
     payment.setDestinationTag(destinationTag)
     payment.setInvoiceId(invoiceId)
@@ -1716,6 +1734,7 @@ describe('serializer', function (): void {
     // THEN the result is in the expected form.
     const expected: PaymentJSON = {
       Amount: Serializer.amountToJSON(amount)!,
+      DeliverMin: Serializer.deliverMinToJSON(deliverMin),
       Destination: Serializer.destinationToJSON(destination)!,
       DestinationTag: Serializer.destinationTagToJSON(destinationTag),
       InvoiceID: Serializer.invoiceIdToJSON(invoiceId),
