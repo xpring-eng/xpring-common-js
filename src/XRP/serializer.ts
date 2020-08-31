@@ -467,6 +467,10 @@ const serializer = {
     return json
   },
 
+  escrowFinishToJSON(_escrowFinish: EscrowFinish): EscrowFinishJSON | undefined {
+    return undefined
+  },
+
   /**
    * Convert a AccountSet to a JSON representation.
    *
