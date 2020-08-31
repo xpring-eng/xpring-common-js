@@ -37,6 +37,7 @@ import {
   Account,
   OfferSequence,
   Owner,
+  Condition,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -182,6 +183,7 @@ type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type OfferSequenceJSON = number
 type OwnerJSON = string
+type ConditionJSON = string
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -355,9 +357,9 @@ const serializer = {
    * @returns The Owner as JSON.
    */
   ownerToJSON(owner: Owner): OwnerJSON | undefined {
-    const accountAddress = owner.getValue();
+    const accountAddress = owner.getValue()
     if (accountAddress === undefined) {
-      return undefined;
+      return undefined
     }
 
     return this.accountAddressToJSON(accountAddress)
@@ -831,7 +833,7 @@ const serializer = {
     }
     return this.accountAddressToJSON(accountAddress)
   },
-    
+
   /**
    * Convert a CheckID to a JSON representation.
    *
@@ -858,8 +860,8 @@ const serializer = {
       CheckID: this.checkIDToJSON(checkId),
     }
   },
-    
-  /**    
+
+  /**
    * Convert a SendMax to a JSON respresentation.
    *
    * @param sendMax - The SendMax to convert.
@@ -916,6 +918,16 @@ const serializer = {
   accountToJSON(account: Account): AccountJSON | undefined {
     // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
     return account.getValue()?.getAddress()
+  },
+
+  /**
+   * Convert a Condition to a JSON representation.
+   *
+   * @param condition - The Condition to convert.
+   * @returns The Condition as JSON.
+   */
+  conditionToJSON(condition: Condition): ConditionJSON {
+    return condition.getValue_asB64()
   },
 }
 

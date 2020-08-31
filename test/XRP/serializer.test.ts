@@ -42,6 +42,7 @@ import {
   Expiration,
   OfferSequence,
   Owner,
+  Condition,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1390,7 +1391,7 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized
     const serialized = Serializer.destinationToJSON(destination)
-    
+
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
@@ -1435,11 +1436,11 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized.
     const serialized = Serializer.checkCancelToJSON(checkCancel)
-    
+
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
-    
+
   it('Serializes a SendMax', function (): void {
     // GIVEN a SendMax.
     const xrpDropsAmount = makeXrpDropsAmount('10')
@@ -1585,5 +1586,19 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes a Condition', function (): void {
+    // GIVEN a Condition.
+    const conditionByteString =
+      'A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100'
+    const condition = new Condition()
+    condition.setValue(conditionByteString)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.conditionToJSON(condition)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, conditionByteString)
   })
 })
