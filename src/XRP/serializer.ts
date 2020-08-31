@@ -90,7 +90,7 @@ export interface EscrowCancelJSON {
   TransactionType: 'EscrowCancel'
 }
 
-interface PaymentJSON {
+export interface PaymentJSON {
   Amount: AmountJSON
   Destination: string
   DestinationTag?: DestinationTagJSON
@@ -265,36 +265,32 @@ const serializer = {
    * @param payment - The Payment to convert.
    * @returns The Payment as JSON.
    */
-  // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
   paymentToJSON(payment: Payment): PaymentJSON | undefined {
+    // Process required fields.
+    const amount = payment.getAmount()
+    const destination = payment.getDestination()
+    if (amount === undefined || destination === undefined) {
+      return undefined
+    }
+
+    const amountJson = this.amountToJSON(amount)
+    const destinationJson = this.destinationToJSON(destination)
+    if (amountJson === undefined || destinationJson === undefined) {
+      return undefined
+    }
+
     const json: PaymentJSON = {
-      Amount: '',
-      Destination: '',
+      Amount: amountJson,
+      Destination: destinationJson,
       TransactionType: 'Payment',
     }
 
-    // If an x-address was able to be decoded, add the components to the json.
-    const destination = payment.getDestination()?.getValue()?.getAddress()
-    if (!destination) {
-      return undefined
+    // Process optional fields.
+    // TODO(keefertaylor): Add support for additional optional fields here.
+    const destinationTag = payment.getDestinationTag()
+    if (destinationTag !== undefined) {
+      json.DestinationTag = this.destinationTagToJSON(destinationTag)
     }
-
-    // TODO(keefertaylor): Use `destinationTagToJSON` here when X-Addresses are supported in ripple-binary-codec.
-    const decodedXAddress = XrpUtils.decodeXAddress(destination)
-    json.Destination = decodedXAddress?.address ?? destination
-    if (decodedXAddress?.tag !== undefined) {
-      json.DestinationTag = decodedXAddress.tag
-    }
-
-    const amount = payment.getAmount()
-    if (amount === undefined) {
-      return undefined
-    }
-    const amountJSON = this.amountToJSON(amount)
-    if (amountJSON === undefined) {
-      return undefined
-    }
-    json.Amount = amountJSON
 
     return json
   },
@@ -359,9 +355,9 @@ const serializer = {
    * @returns The Owner as JSON.
    */
   ownerToJSON(owner: Owner): OwnerJSON | undefined {
-    const accountAddress = owner.getValue();
+    const accountAddress = owner.getValue()
     if (accountAddress === undefined) {
-      return undefined;
+      return undefined
     }
 
     return this.accountAddressToJSON(accountAddress)
@@ -875,8 +871,8 @@ const serializer = {
       CheckID: this.checkIDToJSON(checkId),
     }
   },
-    
-  /**    
+
+  /**
    * Convert a SendMax to a JSON respresentation.
    *
    * @param sendMax - The SendMax to convert.
