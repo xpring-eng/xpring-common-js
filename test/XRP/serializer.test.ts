@@ -41,6 +41,7 @@ import {
   SendMax,
   TransactionSignature,
   Expiration,
+  TakerGets,
   OfferSequence,
   Owner,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
@@ -1509,6 +1510,44 @@ describe('serializer', function (): void {
 
     // THEN the result is the expiration time.
     assert.equal(serialized, expirationTime)
+  })
+
+  it('Serializes a TakerGets', function (): void {
+    // GIVEN an TakerGets with a CurrencyAmount.
+    const currency = new Currency()
+    currency.setCode('USD')
+
+    const issuedCurrencyAmount = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      '123',
+      currency,
+    )
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setIssuedCurrencyAmount(issuedCurrencyAmount)
+
+    const takerGets = new TakerGets()
+    takerGets.setValue(currencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.takerGetsToJSON(takerGets)
+
+    // THEN the result is the serialized CurrencyAmount.
+    assert.deepEqual(
+      serialized,
+      Serializer.currencyAmountToJSON(currencyAmount),
+    )
+  })
+
+  it('Fails to serialze a malformed TakerGets', function (): void {
+    // GIVEN an TakerGets without a CurrencyAmount.
+    const takerGets = new TakerGets()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.takerGetsToJSON(takerGets)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 
   it('Serializes an OfferSequence', function (): void {
