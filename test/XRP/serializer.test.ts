@@ -1793,7 +1793,7 @@ describe('serializer', function (): void {
   })
 
   it('Serializes an EscrowCreate with required fields', function (): void {
-    // GIVEN an EscrowCreate with all mandatory fields set.
+    // GIVEN an EscrowCreate with required fields set.
     const xrpAmount = makeXrpDropsAmount('10')
 
     const currencyAmount = new CurrencyAmount()
@@ -1822,6 +1822,57 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized, expected)
   })
 
+  it('Serializes an EscrowCreate with all fields', function (): void {
+    // GIVEN an EscrowCreate with all fields set.
+    const xrpAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const destinationTag = new DestinationTag()
+    destinationTag.setValue(11)
+
+    const cancelAfter = new CancelAfter()
+    cancelAfter.setValue(1)
+
+    const conditionBytes = new Uint8Array([0, 1, 2, 3])
+    const condition = new Condition()
+    condition.setValue(conditionBytes)
+
+    const finishAfter = new FinishAfter()
+    finishAfter.setValue(2)
+
+    const escrowCreate = new EscrowCreate()
+    escrowCreate.setAmount(amount)
+    escrowCreate.setDestination(destination)
+    escrowCreate.setDestinationTag(destinationTag)
+    escrowCreate.setCancelAfter(cancelAfter)
+    escrowCreate.setCondition(condition)
+    escrowCreate.setFinishAfter(finishAfter)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCreateToJSON(escrowCreate)
+
+    const expected: EscrowCreateJSON = {
+      Amount: Serializer.amountToJSON(amount)!,
+      Destination: Serializer.destinationToJSON(destination)!,
+      DestinationTag: Serializer.destinationTagToJSON(destinationTag),
+      CancelAfter: Serializer.cancelAfterToJSON(cancelAfter),
+      Condition: Serializer.conditionToJSON(condition),
+      FinishAfter: Serializer.finishAfterToJSON(finishAfter),
+      TransactionType: 'EscrowCreate',
+    }
+
+    // THEN the result is as expected.
+    assert.deepEqual(serialized, expected)
+  })
+
   it('Fails to serialize an EscrowCreate missing an amount', function (): void {
     // GIVEN an EscrowCreate that's missing an amount.
     const destination = new Destination()
@@ -1838,7 +1889,7 @@ describe('serializer', function (): void {
   })
 
   it('Fails to serialize an EscrowCreate missing a destination', function (): void {
-    // GIVEN an EscrowCreat that's missing an amount.
+    // GIVEN an EscrowCreat that's missing a destination.
     const xrpAmount = makeXrpDropsAmount('10')
 
     const currencyAmount = new CurrencyAmount()
@@ -1849,6 +1900,22 @@ describe('serializer', function (): void {
 
     const escrowCreate = new EscrowCreate()
     escrowCreate.setAmount(amount)
+
+    // WHEN the EscrowCreate is serialized.
+    const serialized = Serializer.escrowCreateToJSON(escrowCreate)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize an EscrowCreate with a malformed amount and destination', function (): void {
+    // GIVEN an EscrowCreate that has a malformed amount and destination.
+    const amount = new Amount()
+    const destination = new Destination()
+
+    const escrowCreate = new EscrowCreate()
+    escrowCreate.setAmount(amount)
+    escrowCreate.setDestination(destination)
 
     // WHEN the EscrowCreate is serialized.
     const serialized = Serializer.escrowCreateToJSON(escrowCreate)
