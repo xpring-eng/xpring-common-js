@@ -39,6 +39,7 @@ import {
   TakerGets,
   OfferSequence,
   Owner,
+  Condition,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -186,6 +187,7 @@ type CurrencyJSON = string
 type TakerGetsJSON = CurrencyAmountJSON
 type OfferSequenceJSON = number
 type OwnerJSON = string
+type ConditionJSON = string
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -948,6 +950,16 @@ const serializer = {
     }
 
     return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert a Condition to a JSON representation.
+   *
+   * @param condition - The Condition to convert.
+   * @returns The Condition as JSON.
+   */
+  conditionToJSON(condition: Condition): ConditionJSON {
+    return Utils.toHex(condition.getValue_asU8())
   },
 }
 
