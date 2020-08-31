@@ -96,6 +96,7 @@ export interface PaymentJSON {
   Destination: DestinationJSON
   DestinationTag?: DestinationTagJSON
   InvoiceID?: InvoiceIdJSON
+  SendMax?: SendMaxJSON
   TransactionType: 'Payment'
 }
 
@@ -302,6 +303,11 @@ const serializer = {
     const deliverMin = payment.getDeliverMin()
     if (deliverMin !== undefined) {
       json.DeliverMin = this.deliverMinToJSON(deliverMin)
+    }
+
+    const sendMax = payment.getSendMax()
+    if (sendMax !== undefined) {
+      json.SendMax = this.sendMaxToJSON(sendMax)
     }
 
     return json

@@ -1721,12 +1721,18 @@ describe('serializer', function (): void {
     const deliverMin = new DeliverMin()
     deliverMin.setValue(deliverMinAmount)
 
+    const sendMaxAmount = makeXrpCurrencyAmount('13')
+
+    const sendMax = new SendMax()
+    sendMax.setValue(sendMaxAmount)
+
     const payment = new Payment()
     payment.setAmount(amount)
     payment.setDeliverMin(deliverMin)
     payment.setDestination(destination)
     payment.setDestinationTag(destinationTag)
     payment.setInvoiceId(invoiceId)
+    payment.setSendMax(sendMax)
 
     // WHEN it is serialized.
     const serialized = Serializer.paymentToJSON(payment)
@@ -1738,6 +1744,7 @@ describe('serializer', function (): void {
       Destination: Serializer.destinationToJSON(destination)!,
       DestinationTag: Serializer.destinationTagToJSON(destinationTag),
       InvoiceID: Serializer.invoiceIdToJSON(invoiceId),
+      SendMax: Serializer.sendMaxToJSON(sendMax),
       TransactionType: 'Payment',
     }
     assert.deepEqual(serialized, expected)
