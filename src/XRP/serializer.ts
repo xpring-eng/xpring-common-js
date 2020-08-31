@@ -47,6 +47,7 @@ import {
   DepositPreauth,
   CheckCancel,
   EscrowCancel,
+  CheckCash,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -77,6 +78,12 @@ export interface AccountSetJSON {
   TransactionType: 'AccountSet'
 }
 
+interface CheckCashJSON {
+  CheckID: CheckIDJSON
+  Amount?: CurrencyAmountJSON
+  DeliverMin?: DeliverMinJSON
+}
+
 export interface DepositPreauthJSON {
   Authorize?: AuthorizeJSON
   Unauthorize?: UnauthorizeJSON
@@ -104,6 +111,7 @@ interface CheckCancelJSON {
 type TransactionDataJSON =
   | AccountSetJSON
   | CheckCancelJSON
+  | CheckCashJSON
   | DepositPreauthJSON
   | EscrowCancelJSON
   | PaymentJSON
@@ -113,6 +121,7 @@ type TransactionDataJSON =
  */
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
 type CheckCancelTransactionJSON = BaseTransactionJSON & CheckCancelJSON
+type CheckCashTransactionJSON = BaseTransactionJSON & CheckCashJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
@@ -123,6 +132,7 @@ type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 export type TransactionJSON =
   | AccountSetTransactionJSON
   | CheckCancelTransactionJSON
+  | CheckCashTransactionJSON
   | DepositPreauthTransactionJSON
   | EscrowCancelTransactionJSON
   | PaymentTransactionJSON
@@ -357,9 +367,9 @@ const serializer = {
    * @returns The Owner as JSON.
    */
   ownerToJSON(owner: Owner): OwnerJSON | undefined {
-    const accountAddress = owner.getValue();
+    const accountAddress = owner.getValue()
     if (accountAddress === undefined) {
-      return undefined;
+      return undefined
     }
 
     return this.accountAddressToJSON(accountAddress)
@@ -874,8 +884,8 @@ const serializer = {
       CheckID: this.checkIDToJSON(checkId),
     }
   },
-    
-  /**    
+
+  /**
    * Convert a SendMax to a JSON respresentation.
    *
    * @param sendMax - The SendMax to convert.
@@ -932,6 +942,48 @@ const serializer = {
   accountToJSON(account: Account): AccountJSON | undefined {
     // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
     return account.getValue()?.getAddress()
+  },
+
+  /**
+   * Convert a CheckCash to a JSON respresentation.
+   *
+   * @param checkCash - The CheckCash to convert.
+   * @returns The CheckCash as JSON.
+   */
+  checkCashToJSON(checkCash: CheckCash): CheckCashJSON | undefined {
+    // Process required fields.
+    const checkId = checkCash.getCheckId()
+    if (checkId === undefined) {
+      return undefined
+    }
+
+    const json: CheckCashJSON = {
+      CheckID: this.checkIDToJSON(checkId),
+    }
+
+    // One of the following fields must be set.
+    switch (checkCash.getAmountOneofCase()) {
+      case CheckCash.AmountOneofCase.AMOUNT: {
+        const amount = checkCash.getAmount()
+        if (amount === undefined) {
+          return undefined
+        }
+        json.Amount = this.amountToJSON(amount)
+        break
+      }
+      case CheckCash.AmountOneofCase.DELIVER_MIN: {
+        const deliverMin = checkCash.getDeliverMin()
+        if (deliverMin === undefined) {
+          return undefined
+        }
+        json.DeliverMin = this.deliverMinToJSON(deliverMin)
+        break
+      }
+      case CheckCash.AmountOneofCase.AMOUNT_ONEOF_NOT_SET:
+      default:
+        return undefined
+    }
+    return json
   },
 }
 
