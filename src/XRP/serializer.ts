@@ -30,13 +30,16 @@ import {
   MemoType,
   Unauthorize,
   Destination,
+  DeliverMin,
   SendMax,
   TransactionSignature,
   SigningPublicKey,
   Expiration,
   Account,
+  TakerGets,
   OfferSequence,
   Owner,
+  Condition,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -88,10 +91,11 @@ export interface EscrowCancelJSON {
   TransactionType: 'EscrowCancel'
 }
 
-interface PaymentJSON {
+export interface PaymentJSON {
   Amount: AmountJSON
   Destination: string
   DestinationTag?: DestinationTagJSON
+  InvoiceID?: string
   TransactionType: 'Payment'
 }
 
@@ -151,6 +155,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type DeliverMinJSON = CurrencyAmountJSON
 type DestinationJSON = AccountAddressJSON
 type AccountAddressJSON = string
 type CheckIDJSON = string
@@ -180,8 +185,10 @@ type AuthorizeJSON = string
 type InvoiceIdJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
+type TakerGetsJSON = CurrencyAmountJSON
 type OfferSequenceJSON = number
 type OwnerJSON = string
+type ConditionJSON = string
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -261,36 +268,37 @@ const serializer = {
    * @param payment - The Payment to convert.
    * @returns The Payment as JSON.
    */
-  // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
   paymentToJSON(payment: Payment): PaymentJSON | undefined {
+    // Process required fields.
+    const amount = payment.getAmount()
+    const destination = payment.getDestination()
+    if (amount === undefined || destination === undefined) {
+      return undefined
+    }
+
+    const amountJson = this.amountToJSON(amount)
+    const destinationJson = this.destinationToJSON(destination)
+    if (amountJson === undefined || destinationJson === undefined) {
+      return undefined
+    }
+
     const json: PaymentJSON = {
-      Amount: '',
-      Destination: '',
+      Amount: amountJson,
+      Destination: destinationJson,
       TransactionType: 'Payment',
     }
 
-    // If an x-address was able to be decoded, add the components to the json.
-    const destination = payment.getDestination()?.getValue()?.getAddress()
-    if (!destination) {
-      return undefined
+    // Process optional fields.
+    // TODO(keefertaylor): Add support for additional optional fields here.
+    const destinationTag = payment.getDestinationTag()
+    if (destinationTag !== undefined) {
+      json.DestinationTag = this.destinationTagToJSON(destinationTag)
     }
 
-    // TODO(keefertaylor): Use `destinationTagToJSON` here when X-Addresses are supported in ripple-binary-codec.
-    const decodedXAddress = XrpUtils.decodeXAddress(destination)
-    json.Destination = decodedXAddress?.address ?? destination
-    if (decodedXAddress?.tag !== undefined) {
-      json.DestinationTag = decodedXAddress.tag
+    const invoiceId = payment.getInvoiceId()
+    if (invoiceId !== undefined) {
+      json.InvoiceID = this.invoiceIdToJSON(invoiceId)
     }
-
-    const amount = payment.getAmount()
-    if (amount === undefined) {
-      return undefined
-    }
-    const amountJSON = this.amountToJSON(amount)
-    if (amountJSON === undefined) {
-      return undefined
-    }
-    json.Amount = amountJSON
 
     return json
   },
@@ -355,9 +363,9 @@ const serializer = {
    * @returns The Owner as JSON.
    */
   ownerToJSON(owner: Owner): OwnerJSON | undefined {
-    const accountAddress = owner.getValue();
+    const accountAddress = owner.getValue()
     if (accountAddress === undefined) {
-      return undefined;
+      return undefined
     }
 
     return this.accountAddressToJSON(accountAddress)
@@ -580,9 +588,8 @@ const serializer = {
   ): IssuedCurrencyAmountJSON | undefined {
     const currencyWrapper = issuedCurrencyAmount.getCurrency()
     const value = issuedCurrencyAmount.getValue()
-    // TODO(keefertaylor): Use accountAddressToJSON here.
-    const issuer = issuedCurrencyAmount.getIssuer()?.getAddress()
 
+    const issuer = issuedCurrencyAmount.getIssuer()
     if (currencyWrapper === undefined || value === '' || issuer === undefined) {
       return undefined
     }
@@ -595,7 +602,7 @@ const serializer = {
     return {
       currency,
       value,
-      issuer,
+      issuer: this.accountAddressToJSON(issuer),
     }
   },
 
@@ -637,11 +644,11 @@ const serializer = {
    */
   unauthorizeToJSON(unauthorize: Unauthorize): UnauthorizeJSON | undefined {
     const accountAddress = unauthorize.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
 
-    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
-    return accountAddress === undefined
-      ? undefined
-      : accountAddress.getAddress()
+    return this.accountAddressToJSON(accountAddress)
   },
 
   /**
@@ -756,11 +763,11 @@ const serializer = {
    */
   authorizeToJSON(authorize: Authorize): AuthorizeJSON | undefined {
     const accountAddress = authorize.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
 
-    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
-    return accountAddress === undefined
-      ? undefined
-      : accountAddress.getAddress()
+    return this.accountAddressToJSON(accountAddress)
   },
 
   /**
@@ -831,7 +838,21 @@ const serializer = {
     }
     return this.accountAddressToJSON(accountAddress)
   },
-    
+
+  /**
+   * Convert a DeliverMin to a JSON respresentation.
+   *
+   * @param deliverMin - The DeliverMin to convert.
+   * @returns The DeliverMin as JSON.
+   */
+  deliverMinToJSON(deliverMin: DeliverMin): DeliverMinJSON | undefined {
+    const currencyAmount = deliverMin.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
   /**
    * Convert a CheckID to a JSON representation.
    *
@@ -858,8 +879,8 @@ const serializer = {
       CheckID: this.checkIDToJSON(checkId),
     }
   },
-    
-  /**    
+
+  /**
    * Convert a SendMax to a JSON respresentation.
    *
    * @param sendMax - The SendMax to convert.
@@ -908,14 +929,43 @@ const serializer = {
   },
 
   /**
+   * Convert a TakerGets to a JSON representation.
+   *
+   * @param takerGets - The TakerGets to convert.
+   * @returns The TakerGets as JSON.
+   */
+  takerGetsToJSON(takerGets: TakerGets): TakerGetsJSON | undefined {
+    const currencyAmount = takerGets.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
    * Convert an Account to a JSON representation.
    *
    * @param account - The Account to convert.
    * @returns The Account as JSON.
    */
   accountToJSON(account: Account): AccountJSON | undefined {
-    // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
-    return account.getValue()?.getAddress()
+    const accountAddress = account.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
+
+    return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert a Condition to a JSON representation.
+   *
+   * @param condition - The Condition to convert.
+   * @returns The Condition as JSON.
+   */
+  conditionToJSON(condition: Condition): ConditionJSON {
+    return Utils.toHex(condition.getValue_asU8())
   },
 }
 
