@@ -30,11 +30,13 @@ import {
   MemoType,
   Unauthorize,
   Destination,
+  DeliverMin,
   SendMax,
   TransactionSignature,
   SigningPublicKey,
   Expiration,
   Account,
+  TakerGets,
   OfferSequence,
   Owner,
   Condition,
@@ -152,6 +154,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type DeliverMinJSON = CurrencyAmountJSON
 type DestinationJSON = AccountAddressJSON
 type AccountAddressJSON = string
 type CheckIDJSON = string
@@ -181,6 +184,7 @@ type AuthorizeJSON = string
 type InvoiceIdJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
+type TakerGetsJSON = CurrencyAmountJSON
 type OfferSequenceJSON = number
 type OwnerJSON = string
 type ConditionJSON = string
@@ -582,9 +586,8 @@ const serializer = {
   ): IssuedCurrencyAmountJSON | undefined {
     const currencyWrapper = issuedCurrencyAmount.getCurrency()
     const value = issuedCurrencyAmount.getValue()
-    // TODO(keefertaylor): Use accountAddressToJSON here.
-    const issuer = issuedCurrencyAmount.getIssuer()?.getAddress()
 
+    const issuer = issuedCurrencyAmount.getIssuer()
     if (currencyWrapper === undefined || value === '' || issuer === undefined) {
       return undefined
     }
@@ -597,7 +600,7 @@ const serializer = {
     return {
       currency,
       value,
-      issuer,
+      issuer: this.accountAddressToJSON(issuer),
     }
   },
 
@@ -639,11 +642,11 @@ const serializer = {
    */
   unauthorizeToJSON(unauthorize: Unauthorize): UnauthorizeJSON | undefined {
     const accountAddress = unauthorize.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
 
-    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
-    return accountAddress === undefined
-      ? undefined
-      : accountAddress.getAddress()
+    return this.accountAddressToJSON(accountAddress)
   },
 
   /**
@@ -758,11 +761,11 @@ const serializer = {
    */
   authorizeToJSON(authorize: Authorize): AuthorizeJSON | undefined {
     const accountAddress = authorize.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
 
-    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
-    return accountAddress === undefined
-      ? undefined
-      : accountAddress.getAddress()
+    return this.accountAddressToJSON(accountAddress)
   },
 
   /**
@@ -832,6 +835,20 @@ const serializer = {
       return undefined
     }
     return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert a DeliverMin to a JSON respresentation.
+   *
+   * @param deliverMin - The DeliverMin to convert.
+   * @returns The DeliverMin as JSON.
+   */
+  deliverMinToJSON(deliverMin: DeliverMin): DeliverMinJSON | undefined {
+    const currencyAmount = deliverMin.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+    return this.currencyAmountToJSON(currencyAmount)
   },
 
   /**
@@ -910,14 +927,33 @@ const serializer = {
   },
 
   /**
+   * Convert a TakerGets to a JSON representation.
+   *
+   * @param takerGets - The TakerGets to convert.
+   * @returns The TakerGets as JSON.
+   */
+  takerGetsToJSON(takerGets: TakerGets): TakerGetsJSON | undefined {
+    const currencyAmount = takerGets.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
    * Convert an Account to a JSON representation.
    *
    * @param account - The Account to convert.
    * @returns The Account as JSON.
    */
   accountToJSON(account: Account): AccountJSON | undefined {
-    // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
-    return account.getValue()?.getAddress()
+    const accountAddress = account.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
+
+    return this.accountAddressToJSON(accountAddress)
   },
 
   /**
