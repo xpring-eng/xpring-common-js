@@ -41,7 +41,7 @@ import {
   Owner,
   Condition,
   CancelAfter,
-  FinishAfter
+  FinishAfter,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -969,22 +969,22 @@ const serializer = {
   /**
    * Convert a CancelAfter to a JSON representation.
    *
-   * @param condition - The CancelAfter to convert.
+   * @param cancelAfter - The CancelAfter to convert.
    * @returns The CancelAfter as JSON.
    */
   cancelAfterToJSON(cancelAfter: CancelAfter): CancelAfterJSON {
-    return cancelAfter.getValue();
+    return cancelAfter.getValue()
   },
 
   /**
    * Convert a FinishAfter to a JSON representation.
    *
-   * @param condition - The FinshAfter to convert.
+   * @param finishAfter - The FinshAfter to convert.
    * @returns The FinishAfter as JSON.
    */
   finishAfterToJSON(finishAfter: FinishAfter): FinishAfterJSON {
-    return finishAfter.getValue();
-  }
+    return finishAfter.getValue()
+  },
 }
 
 export default serializer
