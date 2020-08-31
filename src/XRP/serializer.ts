@@ -51,6 +51,7 @@ import {
   DepositPreauth,
   CheckCancel,
   EscrowCancel,
+  EscrowCreate,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -91,6 +92,13 @@ export interface EscrowCancelJSON {
   OfferSequence: OfferSequenceJSON
   Owner: OwnerJSON
   TransactionType: 'EscrowCancel'
+}
+
+export interface EscrowCreateJSON {
+  CancelAfter?: CancelAfterJSON
+  Condition?: ConditionJSON
+  FinishAfter?: FinishAfterJSON
+  TransactionType: 'EscrowCreate'
 }
 
 export interface PaymentJSON {
@@ -393,6 +401,32 @@ const serializer = {
       Owner: ownerJSON,
       TransactionType: 'EscrowCancel',
     }
+  },
+
+  /**
+   * Convert an EscrowCreate to a JSON representation.
+   *
+   * @param escrowCreate - The EscrowCreate to convert.
+   * @returns The EscrowCreate as JSON.
+   */
+  escrowCreateToJSON(escrowCreate: EscrowCreate): EscrowCreateJSON | undefined {
+    const json: EscrowCreateJSON = { TransactionType: 'EscrowCreate' }
+    const cancelAfter = escrowCreate.getCancelAfter()
+    if (cancelAfter !== undefined) {
+      json.CancelAfter = this.cancelAfterToJSON(cancelAfter)
+    }
+
+    const condition = escrowCreate.getCondition()
+    if (condition !== undefined) {
+      json.Condition = this.conditionToJSON(condition)
+    }
+
+    const finishAfter = escrowCreate.getFinishAfter()
+    if (finishAfter !== undefined) {
+      json.FinishAfter = this.finishAfterToJSON(finishAfter)
+    }
+
+    return json
   },
 
   /**
