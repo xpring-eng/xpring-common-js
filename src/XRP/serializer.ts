@@ -50,6 +50,7 @@ import {
   Payment,
   Transaction,
   DepositPreauth,
+  AccountDelete,
   OfferCancel,
   CheckCancel,
   EscrowCancel,
@@ -107,12 +108,18 @@ export interface PaymentJSON {
   TransactionType: 'Payment'
 }
 
+interface AccountDeleteJSON {
+  Destination: DestinationJSON
+  DestinationTag?: DestinationTagJSON
+}
+
 interface CheckCancelJSON {
   CheckID: CheckIDJSON
 }
 
 // Generic field representing an OR of all above fields.
 type TransactionDataJSON =
+  | AccountDeleteJSON
   | AccountSetJSON
   | CheckCancelJSON
   | DepositPreauthJSON
@@ -123,6 +130,7 @@ type TransactionDataJSON =
 /**
  * Individual Transaction Types.
  */
+type AccountDeleteTransactionJSON = BaseTransactionJSON & AccountDeleteJSON
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
 type CheckCancelTransactionJSON = BaseTransactionJSON & CheckCancelJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
@@ -134,6 +142,7 @@ type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
  * All Transactions.
  */
 export type TransactionJSON =
+  | AccountDeleteTransactionJSON
   | AccountSetTransactionJSON
   | CheckCancelTransactionJSON
   | DepositPreauthTransactionJSON
@@ -167,7 +176,6 @@ interface IssuedCurrencyAmountJSON {
 }
 
 type DeliverMinJSON = CurrencyAmountJSON
-type DestinationJSON = AccountAddressJSON
 type AccountAddressJSON = string
 type CheckIDJSON = string
 type SendMaxJSON = CurrencyAmountJSON
@@ -175,6 +183,7 @@ type TransactionSignatureJSON = string
 type SigningPublicKeyJSON = string
 type ExpirationJSON = number
 type AccountJSON = string
+type DestinationJSON = AccountAddressJSON
 type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
@@ -988,6 +997,38 @@ const serializer = {
   },
 
   /**
+   * Convert an AccountDelete to a JSON representation.
+   *
+   * @param accountDelete - The AccountDelete to convert.
+   * @returns The AccountDelete as JSON.
+   */
+  accountDeleteToJSON(
+    accountDelete: AccountDelete,
+  ): AccountDeleteJSON | undefined {
+    // Process mandatory fields.
+    const destination = accountDelete.getDestination()
+    if (destination === undefined) {
+      return undefined
+    }
+    const destinationJSON = this.destinationToJSON(destination)
+    if (destinationJSON === undefined) {
+      return undefined
+    }
+
+    const json: AccountDeleteJSON = {
+      Destination: destinationJSON,
+    }
+
+    // Process optional fields.
+    const destinationTag = accountDelete.getDestinationTag()
+    if (destinationTag !== undefined) {
+      json.DestinationTag = this.destinationTagToJSON(destinationTag)
+    }
+
+    return json
+  },
+    
+  /**
    * Convert an OfferCancel to a JSON representation.
    *
    * @param offerCancel - The OfferCancel to convert.
@@ -1081,6 +1122,14 @@ function getAdditionalTransactionData(
   const transactionDataCase = transaction.getTransactionDataCase()
 
   switch (transactionDataCase) {
+    case Transaction.TransactionDataCase.ACCOUNT_DELETE: {
+      const accountDelete = transaction.getAccountDelete()
+      if (accountDelete === undefined) {
+        return undefined
+      }
+
+      return serializer.accountDeleteToJSON(accountDelete)
+    }
     case Transaction.TransactionDataCase.ACCOUNT_SET: {
       const accountSet = transaction.getAccountSet()
       if (accountSet === undefined) {
