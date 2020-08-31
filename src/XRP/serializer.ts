@@ -1052,12 +1052,13 @@ const serializer = {
 
   /**
    * Convert a Fulfillment to a JSON representation.
-   * 
+   *
    * @param fulfillment - The Fulfillment to convert.
+   * @returns The Fulfillment as JSON.
    */
   fulfillmentToJSON(fulfillment: Fulfillment): FulfillmentJSON {
     return Utils.toHex(fulfillment.getValue_asU8())
-  }
+  },
 }
 
 export default serializer
