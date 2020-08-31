@@ -833,7 +833,6 @@ const serializer = {
     }
     return this.accountAddressToJSON(accountAddress)
   },
-
   /**
    * Convert a CheckID to a JSON representation.
    *
