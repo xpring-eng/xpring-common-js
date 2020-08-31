@@ -29,11 +29,16 @@ import {
   MemoFormat,
   MemoType,
   Unauthorize,
+  Destination,
+  DeliverMin,
   SendMax,
   TransactionSignature,
   SigningPublicKey,
   Expiration,
   Account,
+  TakerGets,
+  OfferSequence,
+  Owner,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -43,6 +48,8 @@ import {
   DepositPreauth,
   OfferCreate,
   OfferCancel,
+  CheckCancel,
+  EscrowCancel,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 import { Offer } from './generated/org/xrpl/rpc/v1/ledger_objects_pb'
@@ -80,6 +87,12 @@ export interface DepositPreauthJSON {
   TransactionType: 'DepositPreauth'
 }
 
+export interface EscrowCancelJSON {
+  OfferSequence: OfferSequenceJSON
+  Owner: OwnerJSON
+  TransactionType: 'EscrowCancel'
+}
+
 interface PaymentJSON {
   Amount: AmountJSON
   Destination: string
@@ -91,15 +104,27 @@ interface OfferCreateJSON {
   OfferSequence: OfferSequenceJSON
 }
 
+interface CheckCancelJSON {
+  CheckID: CheckIDJSON
+}
+
 // Generic field representing an OR of all above fields.
-type TransactionDataJSON = AccountSetJSON | DepositPreauthJSON | OfferCreateJSON | PaymentJSON
+type TransactionDataJSON =
+  | AccountSetJSON
+  | CheckCancelJSON
+  | DepositPreauthJSON
+  | EscrowCancelJSON
+  | OfferCreateJSON
+  | PaymentJSON
 
 /**
  * Individual Transaction Types.
  */
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
+type CheckCancelTransactionJSON = BaseTransactionJSON & CheckCancelJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type OfferCreateTransactionJSON = BaseTransactionJSON & OfferCreateJSON
+type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
 /**
@@ -107,7 +132,9 @@ type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
  */
 export type TransactionJSON =
   | AccountSetTransactionJSON
+  | CheckCancelTransactionJSON
   | DepositPreauthTransactionJSON
+  | EscrowCancelTransactionJSON
   | OfferCreateTransactionJSON
   | PaymentTransactionJSON
 
@@ -136,6 +163,8 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type DeliverMinJSON = CurrencyAmountJSON
+type DestinationJSON = AccountAddressJSON
 type AccountAddressJSON = string
 type CheckIDJSON = string
 type SendMaxJSON = CurrencyAmountJSON
@@ -164,6 +193,9 @@ type AuthorizeJSON = string
 type InvoiceIdJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
+type TakerGetsJSON = CurrencyAmountJSON
+type OfferSequenceJSON = number
+type OwnerJSON = string
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -317,6 +349,57 @@ const serializer = {
       default: {
         return undefined
       }
+    }
+  },
+
+  /**
+   * Convert an OfferSequence to a JSON representation.
+   *
+   * @param offerSequence - The OfferSequence to convert.
+   * @returns The OfferSequence as JSON.
+   */
+  offerSequenceToJSON(offerSequence: OfferSequence): OfferSequenceJSON {
+    return offerSequence.getValue()
+  },
+
+  /**
+   * Convert an Owner to a JSON representation.
+   *
+   * @param owner - The Owner to convert.
+   * @returns The Owner as JSON.
+   */
+  ownerToJSON(owner: Owner): OwnerJSON | undefined {
+    const accountAddress = owner.getValue();
+    if (accountAddress === undefined) {
+      return undefined;
+    }
+
+    return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert an EscrowCancel to a JSON representation.
+   *
+   * @param escrowCancel - The EscrowCancel to convert.
+   * @returns The EscrowCancel as JSON.
+   */
+  escrowCancelToJSON(escrowCancel: EscrowCancel): EscrowCancelJSON | undefined {
+    const offerSequence = escrowCancel.getOfferSequence()
+    const owner = escrowCancel.getOwner()
+    if (offerSequence === undefined || owner === undefined) {
+      return undefined
+    }
+
+    const offerSequenceJSON = this.offerSequenceToJSON(offerSequence)
+    const ownerJSON = this.ownerToJSON(owner)
+    if (!ownerJSON) {
+      return undefined
+    }
+
+    return {
+      OfferSequence: offerSequenceJSON,
+      Owner: ownerJSON,
+      TransactionType: 'EscrowCancel',
     }
   },
 
@@ -511,9 +594,8 @@ const serializer = {
   ): IssuedCurrencyAmountJSON | undefined {
     const currencyWrapper = issuedCurrencyAmount.getCurrency()
     const value = issuedCurrencyAmount.getValue()
-    // TODO(keefertaylor): Use accountAddressToJSON here.
-    const issuer = issuedCurrencyAmount.getIssuer()?.getAddress()
 
+    const issuer = issuedCurrencyAmount.getIssuer()
     if (currencyWrapper === undefined || value === '' || issuer === undefined) {
       return undefined
     }
@@ -526,7 +608,7 @@ const serializer = {
     return {
       currency,
       value,
-      issuer,
+      issuer: this.accountAddressToJSON(issuer),
     }
   },
 
@@ -568,11 +650,11 @@ const serializer = {
    */
   unauthorizeToJSON(unauthorize: Unauthorize): UnauthorizeJSON | undefined {
     const accountAddress = unauthorize.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
 
-    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
-    return accountAddress === undefined
-      ? undefined
-      : accountAddress.getAddress()
+    return this.accountAddressToJSON(accountAddress)
   },
 
   /**
@@ -687,11 +769,11 @@ const serializer = {
    */
   authorizeToJSON(authorize: Authorize): AuthorizeJSON | undefined {
     const accountAddress = authorize.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
 
-    // TODO(keefertaylor): Use AccountAddress serialize function when https://github.com/xpring-eng/xpring-common-js/pull/419 lands.
-    return accountAddress === undefined
-      ? undefined
-      : accountAddress.getAddress()
+    return this.accountAddressToJSON(accountAddress)
   },
 
   /**
@@ -750,6 +832,34 @@ const serializer = {
   },
 
   /**
+   * Convert a Destination to a JSON representation.
+   *
+   * @param destination - The Destination to convert.
+   * @returns The Destination as JSON.
+   */
+  destinationToJSON(destination: Destination): DestinationJSON | undefined {
+    const accountAddress = destination.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
+    return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert a DeliverMin to a JSON respresentation.
+   *
+   * @param deliverMin - The DeliverMin to convert.
+   * @returns The DeliverMin as JSON.
+   */
+  deliverMinToJSON(deliverMin: DeliverMin): DeliverMinJSON | undefined {
+    const currencyAmount = deliverMin.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
    * Convert a CheckID to a JSON representation.
    *
    * @param checkId - The CheckID to convert.
@@ -760,6 +870,23 @@ const serializer = {
   },
 
   /**
+   * Convert a CheckCancel to a JSON representation.
+   *
+   * @param checkCancel - The CheckCancel to convert.
+   * @returns The CheckCancel as JSON.
+   */
+  checkCancelToJSON(checkCancel: CheckCancel): CheckCancelJSON | undefined {
+    const checkId = checkCancel.getCheckId()
+    if (checkId === undefined) {
+      return undefined
+    }
+
+    return {
+      CheckID: this.checkIDToJSON(checkId),
+    }
+  },
+    
+  /**    
    * Convert a SendMax to a JSON respresentation.
    *
    * @param sendMax - The SendMax to convert.
@@ -808,14 +935,33 @@ const serializer = {
   },
 
   /**
+   * Convert a TakerGets to a JSON representation.
+   *
+   * @param takerGets - The TakerGets to convert.
+   * @returns The TakerGets as JSON.
+   */
+  takerGetsToJSON(takerGets: TakerGets): TakerGetsJSON | undefined {
+    const currencyAmount = takerGets.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
    * Convert an Account to a JSON representation.
    *
    * @param account - The Account to convert.
    * @returns The Account as JSON.
    */
   accountToJSON(account: Account): AccountJSON | undefined {
-    // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
-    return account.getValue()?.getAddress()
+    const accountAddress = account.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
+
+    return this.accountAddressToJSON(accountAddress)
   },
 
   /**
