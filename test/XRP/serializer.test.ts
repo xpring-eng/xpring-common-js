@@ -1618,7 +1618,7 @@ describe('serializer', function (): void {
   })
 
   it('Serializes a CheckCash with an Amount', function (): void {
-    // GIVEN a CheckCash with an AMount
+    // GIVEN a CheckCash with an Amount
     const xrpDropsAmount = makeXrpDropsAmount('10')
 
     const currencyAmount = new CurrencyAmount()
