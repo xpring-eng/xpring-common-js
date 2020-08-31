@@ -107,6 +107,8 @@ export interface EscrowCreateJSON {
 }
 
 export interface EscrowFinishJSON {
+  Condition?: ConditionJSON
+  Fulfillment?: FulfillmentJSON
   OfferSequence: OfferSequenceJSON
   Owner: OwnerJSON
   TransactionType: 'EscrowFinish'
@@ -483,7 +485,7 @@ const serializer = {
     }
 
     const ownerJSON = this.ownerToJSON(owner)
-    if (!ownerJSON) {
+    if (ownerJSON === undefined) {
       return undefined
     }
 
@@ -491,6 +493,16 @@ const serializer = {
       OfferSequence: this.offerSequenceToJSON(offerSequence),
       Owner: ownerJSON,
       TransactionType: 'EscrowFinish',
+    }
+
+    const condition = escrowFinish.getCondition()
+    if (condition !== undefined) {
+      json.Condition = this.conditionToJSON(condition)
+    }
+
+    const fulfillment = escrowFinish.getFulfillment()
+    if (fulfillment !== undefined) {
+      json.Fulfillment = this.fulfillmentToJSON(fulfillment)
     }
 
     return json
