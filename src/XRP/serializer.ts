@@ -94,6 +94,7 @@ export interface PaymentJSON {
   Amount: AmountJSON
   Destination: string
   DestinationTag?: DestinationTagJSON
+  InvoiceID?: string
   TransactionType: 'Payment'
 }
 
@@ -290,6 +291,11 @@ const serializer = {
     const destinationTag = payment.getDestinationTag()
     if (destinationTag !== undefined) {
       json.DestinationTag = this.destinationTagToJSON(destinationTag)
+    }
+
+    const invoiceId = payment.getInvoiceId()
+    if (invoiceId !== undefined) {
+      json.InvoiceID = this.invoiceIdToJSON(invoiceId)
     }
 
     return json

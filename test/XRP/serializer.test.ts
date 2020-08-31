@@ -1701,10 +1701,14 @@ describe('serializer', function (): void {
     const destinationTag = new DestinationTag()
     destinationTag.setValue(11)
 
+    const invoiceId = new InvoiceID()
+    invoiceId.setValue(new Uint8Array([1, 2, 3, 4]))
+
     const payment = new Payment()
     payment.setAmount(amount)
     payment.setDestination(destination)
     payment.setDestinationTag(destinationTag)
+    payment.setInvoiceId(invoiceId)
 
     // WHEN it is serialized.
     const serialized = Serializer.paymentToJSON(payment)
@@ -1714,6 +1718,7 @@ describe('serializer', function (): void {
       Amount: Serializer.amountToJSON(amount)!,
       Destination: Serializer.destinationToJSON(destination)!,
       DestinationTag: Serializer.destinationTagToJSON(destinationTag),
+      InvoiceID: Serializer.invoiceIdToJSON(invoiceId),
       TransactionType: 'Payment',
     }
     assert.deepEqual(serialized, expected)
