@@ -467,7 +467,19 @@ const serializer = {
     return json
   },
 
-  escrowFinishToJSON(_escrowFinish: EscrowFinish): EscrowFinishJSON | undefined {
+  /**
+   * Convert an EscrowFinish to a JSON representation.
+   *
+   * @param escrowFinish - The EscrowFinish to convert.
+   * @returns The EscrowFinish as JSON.
+   */
+  escrowFinishToJSON(escrowFinish: EscrowFinish): EscrowFinishJSON | undefined {
+    const owner = escrowFinish.getOwner();
+    const offerSequence = escrowFinish.getOfferSequence();
+    if (owner === undefined || offerSequence === undefined) {
+      return undefined
+    }
+
     return undefined
   },
 
