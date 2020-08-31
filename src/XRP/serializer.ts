@@ -927,7 +927,7 @@ const serializer = {
    * @returns The Condition as JSON.
    */
   conditionToJSON(condition: Condition): ConditionJSON {
-    return condition.getValue_asB64()
+    return Utils.toHex(condition.getValue_asU8())
   },
 }
 
