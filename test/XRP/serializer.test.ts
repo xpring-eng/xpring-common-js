@@ -53,6 +53,7 @@ import {
   AccountSet,
   CheckCancel,
   EscrowCancel,
+  OfferCancel,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   EscrowCancelJSON,
@@ -1465,11 +1466,11 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized.
     const serialized = Serializer.checkCancelToJSON(checkCancel)
-    
+
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
-    
+
   it('Serializes a SendMax', function (): void {
     // GIVEN a SendMax.
     const xrpDropsAmount = makeXrpDropsAmount('10')
@@ -1650,6 +1651,35 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized.
     const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes an OfferCancel', function (): void {
+    // GIVEN a OfferCancel.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const offerCancel = new OfferCancel()
+    offerCancel.setOfferSequence(offerSequence)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.offerCancelToJSON(offerCancel)
+
+    // THEN the output is in the expected form.
+    const expected = {
+      OfferSequence: Serializer.offerSequenceToJSON(offerSequence),
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a malformed OfferCancel', function (): void {
+    // GIVEN a OfferCancel with no data.
+    const offerCancel = new OfferCancel()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.offerCancelToJSON(offerCancel)
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)

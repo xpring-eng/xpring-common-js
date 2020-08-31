@@ -46,13 +46,11 @@ import {
   Payment,
   Transaction,
   DepositPreauth,
-  OfferCreate,
   OfferCancel,
   CheckCancel,
   EscrowCancel,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
-import { Offer } from './generated/org/xrpl/rpc/v1/ledger_objects_pb'
 
 /**
  * Common fields on a transaction.
@@ -93,15 +91,15 @@ export interface EscrowCancelJSON {
   TransactionType: 'EscrowCancel'
 }
 
+interface OfferCancelJSON {
+  OfferSequence: OfferSequenceJSON
+}
+
 interface PaymentJSON {
   Amount: AmountJSON
   Destination: string
   DestinationTag?: DestinationTagJSON
   TransactionType: 'Payment'
-}
-
-interface OfferCreateJSON {
-  OfferSequence: OfferSequenceJSON
 }
 
 interface CheckCancelJSON {
@@ -114,7 +112,7 @@ type TransactionDataJSON =
   | CheckCancelJSON
   | DepositPreauthJSON
   | EscrowCancelJSON
-  | OfferCreateJSON
+  | OfferCancelJSON
   | PaymentJSON
 
 /**
@@ -123,7 +121,7 @@ type TransactionDataJSON =
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
 type CheckCancelTransactionJSON = BaseTransactionJSON & CheckCancelJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
-type OfferCreateTransactionJSON = BaseTransactionJSON & OfferCreateJSON
+type OfferCancelTransactionJSON = BaseTransactionJSON & OfferCancelJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
@@ -135,7 +133,7 @@ export type TransactionJSON =
   | CheckCancelTransactionJSON
   | DepositPreauthTransactionJSON
   | EscrowCancelTransactionJSON
-  | OfferCreateTransactionJSON
+  | OfferCancelTransactionJSON
   | PaymentTransactionJSON
 
 /**
@@ -369,9 +367,9 @@ const serializer = {
    * @returns The Owner as JSON.
    */
   ownerToJSON(owner: Owner): OwnerJSON | undefined {
-    const accountAddress = owner.getValue();
+    const accountAddress = owner.getValue()
     if (accountAddress === undefined) {
-      return undefined;
+      return undefined
     }
 
     return this.accountAddressToJSON(accountAddress)
@@ -885,8 +883,8 @@ const serializer = {
       CheckID: this.checkIDToJSON(checkId),
     }
   },
-    
-  /**    
+
+  /**
    * Convert a SendMax to a JSON respresentation.
    *
    * @param sendMax - The SendMax to convert.
@@ -971,10 +969,14 @@ const serializer = {
    * @returns The OfferCancel as JSON.
    */
   offerCancelToJSON(offerCancel: OfferCancel): OfferCancelJSON | undefined {
-    const x = offerCancel.getOfferSequence()
+    const offerSequence = offerCancel.getOfferSequence()
+    if (offerSequence === undefined) {
+      return undefined
+    }
 
-    // TODO(keefertaylor): Use accountAddressToJSON() here when supported.
-    return account.getValue()?.getAddress()
+    return {
+      OfferSequence: this.offerSequenceToJSON(offerSequence),
+    }
   },
 }
 
