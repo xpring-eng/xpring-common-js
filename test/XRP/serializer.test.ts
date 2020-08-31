@@ -45,6 +45,8 @@ import {
   OfferSequence,
   Owner,
   Condition,
+  CancelAfter,
+  FinishAfter,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1795,5 +1797,31 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes a CancelAfter', function (): void {
+    // GIVEN a CancelAfter.
+    const cancelAfterTime = 533257958
+    const cancelAfter = new CancelAfter()
+    cancelAfter.setValue(cancelAfterTime)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.cancelAfterToJSON(cancelAfter)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, cancelAfterTime)
+  })
+
+  it('Serializes a FinishAfter', function (): void {
+    // GIVEN a FinishAfter.
+    const finishAfterTime = 5331715585
+    const finishAfter = new FinishAfter()
+    finishAfter.setValue(finishAfterTime)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.finishAfterToJSON(finishAfter)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, finishAfterTime)
   })
 })
