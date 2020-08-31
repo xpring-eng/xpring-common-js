@@ -414,7 +414,21 @@ const serializer = {
    * @returns The EscrowCreate as JSON.
    */
   escrowCreateToJSON(escrowCreate: EscrowCreate): EscrowCreateJSON | undefined {
-    const json: EscrowCreateJSON = { TransactionType: 'EscrowCreate' }
+    const amount = escrowCreate.getAmount();
+    if (amount === undefined) {
+      return undefined
+    }
+
+    const amountJSON = this.amountToJSON(amount)
+    if (amountJSON === undefined) {
+      return undefined
+    }
+
+    const json: EscrowCreateJSON = { 
+      Amount: amountJSON,
+      TransactionType: 'EscrowCreate' 
+    }
+
     const cancelAfter = escrowCreate.getCancelAfter()
     if (cancelAfter !== undefined) {
       json.CancelAfter = this.cancelAfterToJSON(cancelAfter)
