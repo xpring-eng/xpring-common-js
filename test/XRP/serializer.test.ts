@@ -1529,7 +1529,7 @@ describe('serializer', function (): void {
     // WHEN it is serialized.
     const serialized = Serializer.accountDeleteToJSON(accountDelete)
 
-    // THEN the result is in the expected from
+    // THEN the result is in the expected form.
     const expected = {
       Destination: Serializer.destinationToJSON(destination)!,
     }
