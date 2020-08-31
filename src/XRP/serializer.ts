@@ -96,6 +96,7 @@ export interface PaymentJSON {
   Destination: DestinationJSON
   DestinationTag?: DestinationTagJSON
   InvoiceID?: InvoiceIdJSON
+  Paths: PathJSON[]
   SendMax?: SendMaxJSON
   TransactionType: 'Payment'
 }
@@ -308,6 +309,13 @@ const serializer = {
     const sendMax = payment.getSendMax()
     if (sendMax !== undefined) {
       json.SendMax = this.sendMaxToJSON(sendMax)
+    }
+
+    const pathList = payment.getPathsList()
+    if (pathList.length > 0) {
+      json.Paths = pathList.map((path) => {
+        return this.pathToJSON(path)
+      })
     }
 
     return json
