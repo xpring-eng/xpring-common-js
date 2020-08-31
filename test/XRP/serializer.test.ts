@@ -44,6 +44,7 @@ import {
   TakerGets,
   OfferSequence,
   Owner,
+  Condition,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1668,6 +1669,19 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes a Condition', function (): void {
+    // GIVEN a Condition with some bytes.
+    const conditionBytes = new Uint8Array([0, 1, 2, 3])
+    const condition = new Condition()
+    condition.setValue(conditionBytes)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.conditionToJSON(condition)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, Utils.toHex(conditionBytes))
   })
 
   it('Serializes a Payment with only mandatory fields set', function (): void {
