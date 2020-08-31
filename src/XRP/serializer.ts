@@ -53,6 +53,7 @@ import {
   CheckCancel,
   EscrowCancel,
   EscrowCreate,
+  EscrowFinish
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -105,6 +106,10 @@ export interface EscrowCreateJSON {
   TransactionType: 'EscrowCreate'
 }
 
+export interface EscrowFinishJSON {
+  TransactionType: 'EscrowFinish'
+}
+
 export interface PaymentJSON {
   Amount: AmountJSON
   Destination: string
@@ -123,6 +128,7 @@ type TransactionDataJSON =
   | DepositPreauthJSON
   | EscrowCancelJSON
   | EscrowCreateJSON
+  | EscrowFinishJSON
   | PaymentJSON
 
 /**
@@ -133,6 +139,7 @@ type CheckCancelTransactionJSON = BaseTransactionJSON & CheckCancelJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
+type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
 /**
@@ -144,6 +151,7 @@ export type TransactionJSON =
   | DepositPreauthTransactionJSON
   | EscrowCancelTransactionJSON
   | EscrowCreateTransactionJSON
+  | EscrowFinishTransactionJSON
   | PaymentTransactionJSON
 
 /**
