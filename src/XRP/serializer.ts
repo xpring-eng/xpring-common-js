@@ -47,6 +47,7 @@ import {
   Payment,
   Transaction,
   DepositPreauth,
+  OfferCancel,
   CheckCancel,
   EscrowCancel,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
@@ -91,6 +92,10 @@ export interface EscrowCancelJSON {
   TransactionType: 'EscrowCancel'
 }
 
+interface OfferCancelJSON {
+  OfferSequence: OfferSequenceJSON
+}
+
 export interface PaymentJSON {
   Amount: AmountJSON
   Destination: string
@@ -109,6 +114,7 @@ type TransactionDataJSON =
   | CheckCancelJSON
   | DepositPreauthJSON
   | EscrowCancelJSON
+  | OfferCancelJSON
   | PaymentJSON
 
 /**
@@ -117,6 +123,7 @@ type TransactionDataJSON =
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
 type CheckCancelTransactionJSON = BaseTransactionJSON & CheckCancelJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
+type OfferCancelTransactionJSON = BaseTransactionJSON & OfferCancelJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
@@ -128,6 +135,7 @@ export type TransactionJSON =
   | CheckCancelTransactionJSON
   | DepositPreauthTransactionJSON
   | EscrowCancelTransactionJSON
+  | OfferCancelTransactionJSON
   | PaymentTransactionJSON
 
 /**
@@ -956,6 +964,23 @@ const serializer = {
     }
 
     return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert an OfferCancel to a JSON representation.
+   *
+   * @param offerCancel - The OfferCancel to convert.
+   * @returns The OfferCancel as JSON.
+   */
+  offerCancelToJSON(offerCancel: OfferCancel): OfferCancelJSON | undefined {
+    const offerSequence = offerCancel.getOfferSequence()
+    if (offerSequence === undefined) {
+      return undefined
+    }
+
+    return {
+      OfferSequence: this.offerSequenceToJSON(offerSequence),
+    }
   },
 
   /**
