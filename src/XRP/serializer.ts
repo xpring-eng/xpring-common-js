@@ -36,6 +36,7 @@ import {
   SigningPublicKey,
   Expiration,
   Account,
+  TakerGets,
   OfferSequence,
   Owner,
 } from './generated/org/xrpl/rpc/v1/common_pb'
@@ -182,6 +183,7 @@ type AuthorizeJSON = string
 type InvoiceIdJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
+type TakerGetsJSON = CurrencyAmountJSON
 type OfferSequenceJSON = number
 type OwnerJSON = string
 
@@ -921,6 +923,21 @@ const serializer = {
    */
   expirationToJSON(expiration: Expiration): ExpirationJSON {
     return expiration.getValue()
+  },
+
+  /**
+   * Convert a TakerGets to a JSON representation.
+   *
+   * @param takerGets - The TakerGets to convert.
+   * @returns The TakerGets as JSON.
+   */
+  takerGetsToJSON(takerGets: TakerGets): TakerGetsJSON | undefined {
+    const currencyAmount = takerGets.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
   },
 
   /**
