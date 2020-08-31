@@ -1925,7 +1925,7 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
-  it('Serializes a Fulfilment', function (): void {
+  it('Serializes a Fulfillment', function (): void {
     // GIVEN a Fulfillment with some bytes.
     const fulfillmentBytes = new Uint8Array([0, 1, 2, 3])
     const fulfillment = new Fulfillment()
