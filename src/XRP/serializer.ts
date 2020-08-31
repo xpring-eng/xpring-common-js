@@ -37,6 +37,7 @@ import {
   Expiration,
   Account,
   TakerGets,
+  TakerPays,
   OfferSequence,
   Owner,
   Condition,
@@ -196,6 +197,7 @@ type InvoiceIdJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type TakerGetsJSON = CurrencyAmountJSON
+type TakerPaysJSON = CurrencyAmountJSON
 type OfferSequenceJSON = number
 type OwnerJSON = string
 type ConditionJSON = string
@@ -948,6 +950,21 @@ const serializer = {
    */
   takerGetsToJSON(takerGets: TakerGets): TakerGetsJSON | undefined {
     const currencyAmount = takerGets.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert a TakerPays to a JSON representation.
+   *
+   * @param takerPays - The TakerPays to convert.
+   * @returns The TakerPays as JSON.
+   */
+  takerPaysToJSON(takerPays: TakerPays): TakerPaysJSON | undefined {
+    const currencyAmount = takerPays.getValue()
     if (currencyAmount === undefined) {
       return undefined
     }
