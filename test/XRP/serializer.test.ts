@@ -16,7 +16,6 @@ import {
   IssuedCurrencyAmount,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
 import {
-  CancelAfter,
   Account,
   Amount,
   Destination,
@@ -46,6 +45,8 @@ import {
   OfferSequence,
   Owner,
   Condition,
+  CancelAfter,
+  FinishAfter,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1779,11 +1780,11 @@ describe('serializer', function (): void {
   it('Serializes a FinishAfter', function (): void {
     // GIVEN a FinishAfter.
     const finishAfterTime = 5331715585
-    const finishAfter = new CancelAfter()
+    const finishAfter = new FinishAfter()
     finishAfter.setValue(finishAfterTime)
 
     // WHEN it is serialized.
-    const serialized = Serializer.cancelAfterToJSON(finishAfter)
+    const serialized = Serializer.finishAfterToJSON(finishAfter)
 
     // THEN the result is as expected.
     assert.equal(serialized, finishAfterTime)
