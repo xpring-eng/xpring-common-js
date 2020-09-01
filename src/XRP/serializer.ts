@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  PaymentChannelSignature,
   PublicKey,
   Balance,
   Fulfillment,
@@ -267,6 +268,7 @@ type OwnerJSON = string
 type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
+type PaymentChannelSignatureJSON = string
 type PublicKeyJSON = string
 type FulfillmentJSON = string
 
@@ -1341,6 +1343,18 @@ const serializer = {
     return json
   },
 
+  /**
+   * Convert a PaymentChannelSignature to a JSON representation.
+   *
+   * @param paymentChannelSignature - The PaymentChannelSignature to convert.
+   * @returns The PaymentChannelSignature as JSON.
+   */
+  paymentChannelSignatureToJSON(
+    paymentChannelSignature: PaymentChannelSignature,
+  ): PaymentChannelSignatureJSON {
+    return Utils.toHex(paymentChannelSignature.getValue_asU8())
+  },
+    
   /**
    * Convert a PublicKey to a JSON representation.
    *

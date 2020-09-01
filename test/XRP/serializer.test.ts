@@ -48,6 +48,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  PaymentChannelSignature,
   PublicKey,
   Balance,
   Fulfillment,
@@ -2402,6 +2403,22 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a PaymentChannelSignature', function (): void {
+    // GIVEN a PaymentChannelSignature.
+    const paymentChannelSignatureValue = new Uint8Array([1, 2, 3, 4])
+
+    const paymentChannelSignature = new PaymentChannelSignature()
+    paymentChannelSignature.setValue(paymentChannelSignatureValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelSignatureToJSON(
+      paymentChannelSignature,
+    )
+
+    // THEN the output is the input encoded as hex.
+    assert.equal(serialized, Utils.toHex(paymentChannelSignatureValue))
+  })
+    
   it('Serializes a Fulfillment', function (): void {
     // GIVEN a Fulfillment with some bytes.
     const fulfillmentBytes = new Uint8Array([0, 1, 2, 3])
