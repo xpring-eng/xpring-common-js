@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  RegularKey,
   SettleDelay,
   PaymentChannelSignature,
   PublicKey,
@@ -269,6 +270,7 @@ type OwnerJSON = string
 type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
+type RegularKeyJSON = AccountAddressJSON
 type SettleDelayJSON = number
 type PaymentChannelSignatureJSON = string
 type PublicKeyJSON = string
@@ -1343,6 +1345,21 @@ const serializer = {
     }
 
     return json
+  },
+
+  /**
+   * Convert a RegularKey to a JSON representation.
+   *
+   * @param regularKey - The RegularKey to convert.
+   * @returns The RegularKey as JSON.
+   */
+  regularKeyToJSON(regularKey: RegularKey): RegularKeyJSON | undefined {
+    const accountAddress = regularKey.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
+
+    return this.accountAddressToJSON(accountAddress)
   },
 
   /**
