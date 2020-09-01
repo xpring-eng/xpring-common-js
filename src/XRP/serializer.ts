@@ -1301,7 +1301,7 @@ const serializer = {
    * @param setRegularKey - The SetRegularKey to convert.
    * @returns The SetRegularKey as JSON.
    */
-  setRegularKeyToJSON(setRegularKey: SetRegularKey): SetRegularKeyJSON {
+  setRegularKeyToJSON(setRegularKey: SetRegularKey): SetRegularKeyJSON | undefined {
     const json: SetRegularKeyJSON = {
       TransactionType: 'SetRegularKey',
     }
@@ -1309,9 +1309,10 @@ const serializer = {
     const regularKey = setRegularKey.getRegularKey()
     if (regularKey) {
       const regularKeyJson = this.regularKeyToJSON(regularKey)
-      if (regularKeyJson) {
-        json.RegularKey = regularKeyJson
+      if (!regularKeyJson) {
+        return undefined
       }
+      json.RegularKey = regularKeyJson
     }
 
     return json

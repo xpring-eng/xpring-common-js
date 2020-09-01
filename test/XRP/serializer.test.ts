@@ -2321,4 +2321,28 @@ describe('serializer', function (): void {
     // THEN the result is as expected.
     assert.equal(serialized, Utils.toHex(fulfillmentBytes))
   })
+
+  it('Serializes a SetRegularKey with regular key', function(): void {
+    // GIVEN a SetRegularKey with a regular key.
+
+    // WHEN it is serialized.
+
+    // THEN the result ias as expected.
+  })
+
+  it('Serializes a SetRegularKey with no regular key', function(): void {
+    // GIVEN a SetRegularKey with a regular key.
+
+    // WHEN it is serialized.
+
+    // THEN the result ias as expected.
+  })
+
+  it('Fails to serialize a SetRegularKey with malformed regular key', function(): void {
+    // GIVEN a SetRegularKey with a malformed regular key.
+
+    // WHEN it is serialized.
+
+    // THEN the result is undefined.
+  })
 })
