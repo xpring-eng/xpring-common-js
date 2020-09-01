@@ -49,6 +49,7 @@ import {
   CancelAfter,
   FinishAfter,
   Fulfillment,
+  LimitAmount,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -2383,6 +2384,34 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized.
     const serialized = Serializer.escrowFinishToJSON(escrowFinish)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a LimitAmount', function (): void {
+    // GIVEN a LimitAmount
+    const currencyAmount = makeXrpCurrencyAmount('10')
+
+    const limitAmount = new LimitAmount()
+    limitAmount.setValue(currencyAmount)
+
+    // WHEN the LimitAmount is serialized.
+    const serialized = Serializer.limitAmountToJSON(limitAmount)
+
+    // THEN the result is the serialized version of the inputs.
+    assert.deepEqual(
+      serialized,
+      Serializer.currencyAmountToJSON(currencyAmount),
+    )
+  })
+
+  it('Fails to serialize a malformed LimitAmount', function (): void {
+    // GIVEN a malformed LimitAmount
+    const limitAmount = new LimitAmount()
+
+    // WHEN the LimitAmount is serialized.
+    const serialized = Serializer.limitAmountToJSON(limitAmount)
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
