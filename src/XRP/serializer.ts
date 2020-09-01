@@ -216,7 +216,7 @@ type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 type PaymentChannelFundTransactionJSON = BaseTransactionJSON &
-  PaymentChannelFundTransactionJSON
+  PaymentChannelFundJSON
 
 /**
  * All Transactions.
@@ -1427,7 +1427,7 @@ const serializer = {
     return signerWeight.getValue()
   },
 
-  /** 
+  /**
    * Convert a Channel to a JSON representation.
    *
    * @param channel - The Channel to convert.

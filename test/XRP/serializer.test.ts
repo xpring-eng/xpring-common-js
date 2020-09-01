@@ -56,7 +56,6 @@ import {
   PublicKey,
   Balance,
   Fulfillment,
-  Channel,
   SignerWeight,
   QualityIn,
   QualityOut,
@@ -2634,7 +2633,7 @@ describe('serializer', function (): void {
     // THEN the result is as expected.
     assert.equal(serialized, signerWeightValue)
   })
-    
+
   it('Serializes an EscrowFinish with required fields', function (): void {
     // GIVEN an EscrowFinish with required fields.
     const offerSequence = new OfferSequence()
@@ -2754,7 +2753,7 @@ describe('serializer', function (): void {
 
     // THEN the result is in the expected form.
     const expected: PaymentChannelFundJSON = {
-      Amount: Serializer.amountToJSON(amount),
+      Amount: Serializer.amountToJSON(amount)!,
       Channel: Serializer.channelToJSON(channel),
       TransactionType: 'PaymentChannelFund',
     }
@@ -2782,7 +2781,7 @@ describe('serializer', function (): void {
 
     // THEN the result is in the expected form.
     const expected: PaymentChannelFundJSON = {
-      Amount: Serializer.amountToJSON(amount),
+      Amount: Serializer.amountToJSON(amount)!,
       Channel: Serializer.channelToJSON(channel),
       Expiration: Serializer.expirationToJSON(expiration),
       TransactionType: 'PaymentChannelFund',
@@ -2818,7 +2817,7 @@ describe('serializer', function (): void {
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
-    
+
   it('Serializes a LimitAmount', function (): void {
     // GIVEN a LimitAmount
     const currencyAmount = makeXrpCurrencyAmount('10')
