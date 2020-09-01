@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  PublicKey,
   Balance,
   Fulfillment,
 } from './generated/org/xrpl/rpc/v1/common_pb'
@@ -266,6 +267,7 @@ type OwnerJSON = string
 type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
+type PublicKeyJSON = string
 type FulfillmentJSON = string
 
 /**
@@ -1339,6 +1341,16 @@ const serializer = {
     return json
   },
 
+  /**
+   * Convert a PublicKey to a JSON representation.
+   *
+   * @param publicKey - The PublicKey to convert.
+   * @returns The PublicKey as JSON.
+   */
+  publicKeyToJSON(publicKey: PublicKey): PublicKeyJSON {
+    return Utils.toHex(publicKey.getValue_asU8())
+  },
+  
   /**
    * Convert a Balance to a JSON representation.
    *
