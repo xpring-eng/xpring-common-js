@@ -51,6 +51,10 @@ import {
   PublicKey,
   Balance,
   Fulfillment,
+  SignerWeight,
+  QualityIn,
+  QualityOut,
+  LimitAmount,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -302,6 +306,10 @@ type SettleDelayJSON = number
 type PaymentChannelSignatureJSON = string
 type PublicKeyJSON = string
 type FulfillmentJSON = string
+type SignerWeightJSON = number
+type QualityInJSON = number
+type QualityOutJSON = number
+type LimitAmountJSON = CurrencyAmountJSON
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -673,7 +681,7 @@ const serializer = {
   /**
    * Convert a list of Paths to a JSON representation.
    *
-   * @param pathList - A list of Path's to convert.
+   * @param pathList - A list of Paths to convert.
    * @returns The list as JSON.
    */
   pathListToJSON(pathList: Payment.Path[]): PathJSON[] {
@@ -1269,6 +1277,41 @@ const serializer = {
   },
 
   /**
+   * Convert a QualityIn to a JSON representation.
+   *
+   * @param qualityIn - The QualityIn to convert.
+   * @returns The QualityIn as JSON.
+   */
+  qualityInToJSON(qualityIn: QualityIn): QualityInJSON {
+    return qualityIn.getValue()
+  },
+
+  /**
+   * Convert a QualityOut to a JSON representation.
+   *
+   * @param qualityOut - The QualityOut to convert.
+   * @returns The QualityOut as JSON.
+   */
+  qualityOutToJSON(qualityOut: QualityOut): QualityOutJSON {
+    return qualityOut.getValue()
+  },
+
+  /**
+   * Convert a LimitAmount to a JSON representation.
+   *
+   * @param limitAmount - The LimitAmount to convert.
+   * @returns The LimitAmount as JSON.
+   */
+  limitAmountToJSON(limitAmount: LimitAmount): LimitAmountJSON | undefined {
+    const currencyAmount = limitAmount.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
    * Convert a FinishAfter to a JSON representation.
    *
    * @param finishAfter - The FinishAfter to convert.
@@ -1375,6 +1418,16 @@ const serializer = {
   },
 
   /**
+   * Convert a SignerWeight to a JSON representation.
+   *
+   * @param signerWeight - The SignerWeight to convert.
+   * @returns The SignerWeight as JSON.
+   */
+  signerWeightToJSON(signerWeight: SignerWeight): SignerWeightJSON | undefined {
+    return signerWeight.getValue()
+  },
+
+  /** 
    * Convert a Channel to a JSON representation.
    *
    * @param channel - The Channel to convert.
