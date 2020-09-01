@@ -53,9 +53,10 @@ import {
   AccountDelete,
   OfferCancel,
   CheckCancel,
-  EscrowCancel,
   CheckCash,
   CheckCreate,
+  EscrowCancel,
+  EscrowCreate,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -112,6 +113,16 @@ export interface EscrowCancelJSON {
   TransactionType: 'EscrowCancel'
 }
 
+export interface EscrowCreateJSON {
+  Amount: AmountJSON
+  CancelAfter?: CancelAfterJSON
+  Condition?: ConditionJSON
+  Destination: DestinationJSON
+  DestinationTag?: DestinationTagJSON
+  FinishAfter?: FinishAfterJSON
+  TransactionType: 'EscrowCreate'
+}
+
 interface OfferCancelJSON {
   OfferSequence: OfferSequenceJSON
 }
@@ -144,6 +155,7 @@ type TransactionDataJSON =
   | CheckCreateJSON
   | DepositPreauthJSON
   | EscrowCancelJSON
+  | EscrowCreateJSON
   | OfferCancelJSON
   | PaymentJSON
 
@@ -158,6 +170,7 @@ type CheckCreateTransactionJSON = BaseTransactionJSON & CheckCreateJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type OfferCancelTransactionJSON = BaseTransactionJSON & OfferCancelJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
+type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
 /**
@@ -171,6 +184,7 @@ export type TransactionJSON =
   | CheckCreateTransactionJSON
   | DepositPreauthTransactionJSON
   | EscrowCancelTransactionJSON
+  | EscrowCreateTransactionJSON
   | OfferCancelTransactionJSON
   | PaymentTransactionJSON
 
@@ -452,6 +466,54 @@ const serializer = {
       Owner: ownerJSON,
       TransactionType: 'EscrowCancel',
     }
+  },
+
+  /**
+   * Convert an EscrowCreate to a JSON representation.
+   *
+   * @param escrowCreate - The EscrowCreate to convert.
+   * @returns The EscrowCreate as JSON.
+   */
+  escrowCreateToJSON(escrowCreate: EscrowCreate): EscrowCreateJSON | undefined {
+    const amount = escrowCreate.getAmount()
+    const destination = escrowCreate.getDestination()
+    if (amount === undefined || destination === undefined) {
+      return undefined
+    }
+
+    const amountJson = this.amountToJSON(amount)
+    const destinationJson = this.destinationToJSON(destination)
+    if (amountJson === undefined || destinationJson === undefined) {
+      return undefined
+    }
+
+    const json: EscrowCreateJSON = {
+      Amount: amountJson,
+      Destination: destinationJson,
+      TransactionType: 'EscrowCreate',
+    }
+
+    const cancelAfter = escrowCreate.getCancelAfter()
+    if (cancelAfter !== undefined) {
+      json.CancelAfter = this.cancelAfterToJSON(cancelAfter)
+    }
+
+    const condition = escrowCreate.getCondition()
+    if (condition !== undefined) {
+      json.Condition = this.conditionToJSON(condition)
+    }
+
+    const destinationTag = escrowCreate.getDestinationTag()
+    if (destinationTag !== undefined) {
+      json.DestinationTag = this.destinationTagToJSON(destinationTag)
+    }
+
+    const finishAfter = escrowCreate.getFinishAfter()
+    if (finishAfter !== undefined) {
+      json.FinishAfter = this.finishAfterToJSON(finishAfter)
+    }
+
+    return json
   },
 
   /**
