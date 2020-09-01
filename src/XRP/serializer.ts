@@ -44,6 +44,7 @@ import {
   CancelAfter,
   FinishAfter,
   Fulfillment,
+  SignerWeight,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -252,6 +253,7 @@ type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
 type FulfillmentJSON = string
+type SignerWeightJSON = number
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -1267,6 +1269,16 @@ const serializer = {
     }
 
     return json
+  },
+
+  /**
+   * Convert a SignerWeight to a JSON representation.
+   *
+   * @param signerWeight - The SignerWeight to convert.
+   * @returns The SignerWeight as JSON.
+   */
+  signerWeightToJSON(signerWeight: SignerWeight): SignerWeightJSON | undefined {
+    return signerWeight.getValue()
   },
 }
 
