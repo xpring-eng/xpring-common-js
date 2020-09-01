@@ -43,12 +43,17 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  Channel,
+  SignerQuorum,
   RegularKey,
   SettleDelay,
   PaymentChannelSignature,
   PublicKey,
   Balance,
   Fulfillment,
+  QualityIn,
+  QualityOut,
+  LimitAmount,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -61,6 +66,7 @@ import {
   CheckCancel,
   CheckCash,
   CheckCreate,
+  OfferCreate,
   EscrowCancel,
   EscrowCreate,
   EscrowFinish,
@@ -167,6 +173,13 @@ export interface CheckCancelJSON {
   TransactionType: 'CheckCancel'
 }
 
+export interface OfferCreateJSON {
+  Expiration?: ExpirationJSON
+  OfferSequence?: OfferSequenceJSON
+  TakerGets: TakerGetsJSON
+  TakerPays: TakerPaysJSON
+}
+
 // Generic field representing an OR of all above fields.
 type TransactionDataJSON =
   | AccountDeleteJSON
@@ -179,6 +192,7 @@ type TransactionDataJSON =
   | EscrowCreateJSON
   | EscrowFinishJSON
   | OfferCancelJSON
+  | OfferCreateJSON
   | PaymentJSON
 
 /**
@@ -191,6 +205,7 @@ type CheckCashTransactionJSON = BaseTransactionJSON & CheckCashJSON
 type CheckCreateTransactionJSON = BaseTransactionJSON & CheckCreateJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type OfferCancelTransactionJSON = BaseTransactionJSON & OfferCancelJSON
+type OfferCreateTransactionJSON = BaseTransactionJSON & OfferCreateJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
@@ -210,6 +225,7 @@ export type TransactionJSON =
   | EscrowCreateTransactionJSON
   | EscrowFinishTransactionJSON
   | OfferCancelTransactionJSON
+  | OfferCreateTransactionJSON
   | PaymentTransactionJSON
 
 /**
@@ -237,6 +253,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type ChannelJSON = string
 type BalanceJSON = CurrencyAmountJSON
 type DeliverMinJSON = CurrencyAmountJSON
 type AccountAddressJSON = string
@@ -275,11 +292,15 @@ type OwnerJSON = string
 type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
+type SignerQuorumJSON = number
 type RegularKeyJSON = AccountAddressJSON
 type SettleDelayJSON = number
 type PaymentChannelSignatureJSON = string
 type PublicKeyJSON = string
 type FulfillmentJSON = string
+type QualityInJSON = number
+type QualityOutJSON = number
+type LimitAmountJSON = CurrencyAmountJSON
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -651,7 +672,7 @@ const serializer = {
   /**
    * Convert a list of Paths to a JSON representation.
    *
-   * @param pathList - A list of Path's to convert.
+   * @param pathList - A list of Paths to convert.
    * @returns The list as JSON.
    */
   pathListToJSON(pathList: Payment.Path[]): PathJSON[] {
@@ -1250,6 +1271,41 @@ const serializer = {
   },
 
   /**
+   * Convert a QualityIn to a JSON representation.
+   *
+   * @param qualityIn - The QualityIn to convert.
+   * @returns The QualityIn as JSON.
+   */
+  qualityInToJSON(qualityIn: QualityIn): QualityInJSON {
+    return qualityIn.getValue()
+  },
+
+  /**
+   * Convert a QualityOut to a JSON representation.
+   *
+   * @param qualityOut - The QualityOut to convert.
+   * @returns The QualityOut as JSON.
+   */
+  qualityOutToJSON(qualityOut: QualityOut): QualityOutJSON {
+    return qualityOut.getValue()
+  },
+
+  /**
+   * Convert a LimitAmount to a JSON representation.
+   *
+   * @param limitAmount - The LimitAmount to convert.
+   * @returns The LimitAmount as JSON.
+   */
+  limitAmountToJSON(limitAmount: LimitAmount): LimitAmountJSON | undefined {
+    const currencyAmount = limitAmount.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
    * Convert a FinishAfter to a JSON representation.
    *
    * @param finishAfter - The FinishAfter to convert.
@@ -1358,6 +1414,65 @@ const serializer = {
   },
 
   /**
+   * Convert a Channel to a JSON representation.
+   *
+   * @param channel - The Channel to convert.
+   * @returns The Channel as JSON.
+   */
+  channelToJSON(channel: Channel): ChannelJSON {
+    return Utils.toHex(channel.getValue_asU8())
+  },
+
+  /** 
+   * Convert a SignerQuorum to a JSON representation.
+   *
+   * @param signerQuorum - The SignerQuorum to convert.
+   * @returns The SignerQuorum as JSON.
+   */
+  signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
+    return signerQuorum.getValue()
+  },
+    
+  /**
+   * Convert an OfferCreate to a JSON representation.
+   *
+   * @param offerCreate - The OfferCreate to convert.
+   * @returns The OfferCreate as JSON.
+   */
+  offerCreateToJSON(offerCreate: OfferCreate): OfferCreateJSON | undefined {
+    // Process mandatory fields.
+    const takerGets = offerCreate.getTakerGets()
+    const takerPays = offerCreate.getTakerPays()
+    if (takerGets === undefined || takerPays === undefined) {
+      return undefined
+    }
+
+    const takerGetsJSON = this.takerGetsToJSON(takerGets)
+    const takerPaysJSON = this.takerPaysToJSON(takerPays)
+    if (takerGetsJSON === undefined || takerPaysJSON === undefined) {
+      return undefined
+    }
+
+    const json: OfferCreateJSON = {
+      TakerGets: takerGetsJSON,
+      TakerPays: takerPaysJSON,
+    }
+
+    // Process optional fields.
+    const offerSequence = offerCreate.getOfferSequence()
+    if (offerSequence !== undefined) {
+      json.OfferSequence = this.offerSequenceToJSON(offerSequence)
+    }
+
+    const expiration = offerCreate.getExpiration()
+    if (expiration !== undefined) {
+      json.Expiration = this.expirationToJSON(expiration)
+    }
+
+    return json
+  },
+    
+  /**    
    * Convert a RegularKey to a JSON representation.
    *
    * @param regularKey - The RegularKey to convert.
