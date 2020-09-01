@@ -61,6 +61,7 @@ import {
   CheckCancel,
   CheckCash,
   CheckCreate,
+  OfferCreate,
   EscrowCancel,
   EscrowCreate,
   EscrowFinish,
@@ -162,6 +163,13 @@ interface CheckCancelJSON {
   CheckID: CheckIDJSON
 }
 
+export interface OfferCreateJSON {
+  Expiration?: ExpirationJSON
+  OfferSequence?: OfferSequenceJSON
+  TakerGets: TakerGetsJSON
+  TakerPays: TakerPaysJSON
+}
+
 // Generic field representing an OR of all above fields.
 type TransactionDataJSON =
   | AccountDeleteJSON
@@ -174,6 +182,7 @@ type TransactionDataJSON =
   | EscrowCreateJSON
   | EscrowFinishJSON
   | OfferCancelJSON
+  | OfferCreateJSON
   | PaymentJSON
 
 /**
@@ -186,6 +195,7 @@ type CheckCashTransactionJSON = BaseTransactionJSON & CheckCashJSON
 type CheckCreateTransactionJSON = BaseTransactionJSON & CheckCreateJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type OfferCancelTransactionJSON = BaseTransactionJSON & OfferCancelJSON
+type OfferCreateTransactionJSON = BaseTransactionJSON & OfferCreateJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
@@ -205,6 +215,7 @@ export type TransactionJSON =
   | EscrowCreateTransactionJSON
   | EscrowFinishTransactionJSON
   | OfferCancelTransactionJSON
+  | OfferCreateTransactionJSON
   | PaymentTransactionJSON
 
 /**
@@ -1348,6 +1359,45 @@ const serializer = {
   },
 
   /**
+   * Convert an OfferCreate to a JSON representation.
+   *
+   * @param offerCreate - The OfferCreate to convert.
+   * @returns The OfferCreate as JSON.
+   */
+  offerCreateToJSON(offerCreate: OfferCreate): OfferCreateJSON | undefined {
+    // Process mandatory fields.
+    const takerGets = offerCreate.getTakerGets()
+    const takerPays = offerCreate.getTakerPays()
+    if (takerGets === undefined || takerPays === undefined) {
+      return undefined
+    }
+
+    const takerGetsJSON = this.takerGetsToJSON(takerGets)
+    const takerPaysJSON = this.takerPaysToJSON(takerPays)
+    if (takerGetsJSON === undefined || takerPaysJSON === undefined) {
+      return undefined
+    }
+
+    const json: OfferCreateJSON = {
+      TakerGets: takerGetsJSON,
+      TakerPays: takerPaysJSON,
+    }
+
+    // Process optional fields.
+    const offerSequence = offerCreate.getOfferSequence()
+    if (offerSequence !== undefined) {
+      json.OfferSequence = this.offerSequenceToJSON(offerSequence)
+    }
+
+    const expiration = offerCreate.getExpiration()
+    if (expiration !== undefined) {
+      json.Expiration = this.expirationToJSON(expiration)
+    }
+
+    return json
+  },
+    
+  /**    
    * Convert a RegularKey to a JSON representation.
    *
    * @param regularKey - The RegularKey to convert.
