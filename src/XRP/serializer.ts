@@ -219,7 +219,7 @@ type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 type PaymentChannelCreateTransactionJSON = BaseTransactionJSON &
-  PaymentChannelSignatureJSON
+  PaymentChannelCreateJSON
 
 /**
  * All Transactions.
