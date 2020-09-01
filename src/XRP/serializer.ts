@@ -51,6 +51,7 @@ import {
   PublicKey,
   Balance,
   Fulfillment,
+  SignerWeight,
   QualityIn,
   QualityOut,
   LimitAmount,
@@ -293,6 +294,7 @@ type SettleDelayJSON = number
 type PaymentChannelSignatureJSON = string
 type PublicKeyJSON = string
 type FulfillmentJSON = string
+type SignerWeightJSON = number
 type QualityInJSON = number
 type QualityOutJSON = number
 type LimitAmountJSON = CurrencyAmountJSON
@@ -1404,6 +1406,16 @@ const serializer = {
   },
 
   /**
+   * Convert a SignerWeight to a JSON representation.
+   *
+   * @param signerWeight - The SignerWeight to convert.
+   * @returns The SignerWeight as JSON.
+   */
+  signerWeightToJSON(signerWeight: SignerWeight): SignerWeightJSON | undefined {
+    return signerWeight.getValue()
+  },
+
+  /** 
    * Convert a Channel to a JSON representation.
    *
    * @param channel - The Channel to convert.
