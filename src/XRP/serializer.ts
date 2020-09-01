@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  SignerQuorum,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -250,6 +251,7 @@ type OwnerJSON = string
 type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
+type SignerQuorumJSON = number
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -1255,6 +1257,16 @@ const serializer = {
     }
 
     return json
+  },
+
+  /**
+   * Convert a SignerQuorum to a JSON representation.
+   *
+   * @param signerQuorum - The SignerQuorum to convert.
+   * @returns The SignerQuorum as JSON.
+   */
+  signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
+    return signerQuorum.getValue()
   },
 }
 

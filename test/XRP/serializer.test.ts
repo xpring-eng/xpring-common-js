@@ -48,6 +48,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  SignerQuorum,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -2277,5 +2278,19 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes a SignerQuorum', function (): void {
+    // GIVEN a SignerQuorum.
+    const signerQuorumValue = 2
+
+    const signerQuorum = new SignerQuorum()
+    signerQuorum.setValue(signerQuorumValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.signerQuorumToJSON(signerQuorum)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, signerQuorumValue)
   })
 })
