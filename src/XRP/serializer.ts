@@ -55,6 +55,7 @@ import {
   QualityIn,
   QualityOut,
   LimitAmount,
+  SignerEntry,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -227,6 +228,11 @@ export type TransactionJSON =
 /**
  * Types for serialized sub-objects.
  */
+interface SignerEntryJSON {
+  Account: AccountJSON
+  SignerWeight: SignerWeightJSON
+}
+
 interface MemoJSON {
   Memo?: MemoDetailsJSON
 }
@@ -1415,7 +1421,7 @@ const serializer = {
     return signerWeight.getValue()
   },
 
-  /** 
+  /**
    * Convert a Channel to a JSON representation.
    *
    * @param channel - The Channel to convert.
@@ -1425,7 +1431,7 @@ const serializer = {
     return Utils.toHex(channel.getValue_asU8())
   },
 
-  /** 
+  /**
    * Convert a SignerQuorum to a JSON representation.
    *
    * @param signerQuorum - The SignerQuorum to convert.
@@ -1434,7 +1440,7 @@ const serializer = {
   signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
     return signerQuorum.getValue()
   },
-    
+
   /**
    * Convert an OfferCreate to a JSON representation.
    *
@@ -1473,8 +1479,8 @@ const serializer = {
 
     return json
   },
-    
-  /**    
+
+  /**
    * Convert a RegularKey to a JSON representation.
    *
    * @param regularKey - The RegularKey to convert.
@@ -1498,7 +1504,7 @@ const serializer = {
   settleDelayToJSON(settleDelay: SettleDelay): SettleDelayJSON {
     return settleDelay.getValue()
   },
-    
+
   /**
    * Convert a PaymentChannelSignature to a JSON representation.
    *
@@ -1510,7 +1516,7 @@ const serializer = {
   ): PaymentChannelSignatureJSON {
     return Utils.toHex(paymentChannelSignature.getValue_asU8())
   },
-    
+
   /**
    * Convert a PublicKey to a JSON representation.
    *
@@ -1520,7 +1526,7 @@ const serializer = {
   publicKeyToJSON(publicKey: PublicKey): PublicKeyJSON {
     return Utils.toHex(publicKey.getValue_asU8())
   },
-  
+
   /**
    * Convert a Balance to a JSON representation.
    *
@@ -1534,6 +1540,31 @@ const serializer = {
     }
 
     return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert a SignerEntry to a JSON representation.
+   *
+   * @param signerEntry - The SignerEntry to convert.
+   * @returns The SignerEntry as JSON.
+   */
+  signerEntryToJSON(signerEntry: SignerEntry): SignerEntryJSON | undefined {
+    const account = signerEntry.getAccount()
+    const signerWeight = signerEntry.getSignerWeight()
+    if (account === undefined || signerWeight === undefined) {
+      return undefined
+    }
+
+    const accountJSON = this.accountToJSON(account)
+    const signerWeightJSON = this.signerWeightToJSON(signerWeight)
+    if (accountJSON === undefined || signerWeightJSON === undefined) {
+      return undefined
+    }
+
+    return {
+      Account: accountJSON,
+      SignerWeight: signerWeightJSON,
+    }
   },
 }
 

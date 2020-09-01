@@ -60,6 +60,7 @@ import {
   QualityIn,
   QualityOut,
   LimitAmount,
+  SignerEntry,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -2243,7 +2244,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(channelValue))
   })
-  
+
   it('Serializes an OfferCreate with only mandatory fields', function (): void {
     // GIVEN a OfferCreate with mandatory fields set.
     const takerPays = new TakerPays()
@@ -2325,7 +2326,7 @@ describe('serializer', function (): void {
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
-    
+
   it('Serializes a PublicKey', function (): void {
     // GIVEN a PublicKey.
     const publicKeyValue = new Uint8Array([1, 2, 3, 4])
@@ -2339,7 +2340,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(publicKeyValue))
   })
-    
+
   it('Serializes a Balance', function (): void {
     // GIVEN a Balance.
     const currencyAmount = makeXrpCurrencyAmount('10')
@@ -2364,7 +2365,7 @@ describe('serializer', function (): void {
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
-    
+
   it('Converts a PathList', function (): void {
     // GIVEN a Path list with two paths.
     const path1Element1 = makePathElement(
@@ -2588,7 +2589,7 @@ describe('serializer', function (): void {
     // THEN the result is as expected.
     assert.equal(serialized, settleDelayValue)
   })
-    
+
   it('Serializes a PaymentChannelSignature', function (): void {
     // GIVEN a PaymentChannelSignature.
     const paymentChannelSignatureValue = new Uint8Array([1, 2, 3, 4])
@@ -2604,7 +2605,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(paymentChannelSignatureValue))
   })
-    
+
   it('Serializes a Fulfillment', function (): void {
     // GIVEN a Fulfillment with some bytes.
     const fulfillmentBytes = new Uint8Array([0, 1, 2, 3])
@@ -2631,7 +2632,7 @@ describe('serializer', function (): void {
     // THEN the result is as expected.
     assert.equal(serialized, signerWeightValue)
   })
-    
+
   it('Serializes an EscrowFinish with required fields', function (): void {
     // GIVEN an EscrowFinish with required fields.
     const offerSequence = new OfferSequence()
@@ -2759,6 +2760,58 @@ describe('serializer', function (): void {
     const serialized = Serializer.limitAmountToJSON(limitAmount)
 
     // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a SignerEntry', function (): void {
+    // GIVEN a SignerEntry
+    const account = new Account()
+    account.setValue(testAccountAddress)
+
+    const signerWeight = new SignerWeight()
+    signerWeight.setValue(1)
+
+    const signerEntry = new SignerEntry()
+    signerEntry.setAccount(account)
+    signerEntry.setSignerWeight(signerWeight)
+
+    // WHEN the SignerEntry is serialized.
+    const serialized = Serializer.signerEntryToJSON(signerEntry)
+
+    // THEN the result is the expected form.
+    const expected = {
+      Account: Serializer.accountToJSON(account)!,
+      SignerWeight: Serializer.signerWeightToJSON(signerWeight)!,
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a SignerEntry with malformed components', function (): void {
+    // GIVEN a SignerEntry with a malformed account
+    const account = new Account()
+
+    const signerWeight = new SignerWeight()
+    signerWeight.setValue(1)
+
+    const signerEntry = new SignerEntry()
+    signerEntry.setAccount(account)
+    signerEntry.setSignerWeight(signerWeight)
+
+    // WHEN the SignerEntry is serialized.
+    const serialized = Serializer.signerEntryToJSON(signerEntry)
+
+    // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a malformed SignerEntry', function (): void {
+    // GIVEN a malformed SignerEntry
+    const signerEntry = new SignerEntry()
+
+    // WHEN the SignerEntry is serialized.
+    const serialized = Serializer.signerEntryToJSON(signerEntry)
+
+    // THEN the result is undefined
     assert.isUndefined(serialized)
   })
 })
