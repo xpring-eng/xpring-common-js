@@ -168,6 +168,7 @@ interface PaymentChannelClaimJSON {
   Amount?: AmountJSON
   Signature?: PaymentChannelSignatureJSON
   PublicKey?: PublicKeyJSON
+  TransactionType: 'PaymentChannelClaim'
 }
 
 // Generic field representing an OR of all above fields.
@@ -1385,6 +1386,7 @@ const serializer = {
 
     const json: PaymentChannelClaimJSON = {
       Channel: this.channelToJSON(channel),
+      TransactionType: 'PaymentChannelClaim',
     }
 
     // Process optional fields.

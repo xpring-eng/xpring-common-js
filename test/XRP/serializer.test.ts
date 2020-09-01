@@ -2553,6 +2553,7 @@ describe('serializer', function (): void {
     // THEN the result is in the expected form.
     const expected = {
       Channel: Serializer.channelToJSON(channel),
+      TransactionType: 'PaymentChannelClaim',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2593,6 +2594,7 @@ describe('serializer', function (): void {
       ),
       PublicKey: Serializer.publicKeyToJSON(publicKey),
       Amount: Serializer.amountToJSON(amount),
+      TransactionType: 'PaymentChannelClaim',
     }
     assert.deepEqual(serialized, expected)
   })
