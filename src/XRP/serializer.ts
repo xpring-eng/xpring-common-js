@@ -178,9 +178,9 @@ export interface OfferCreateJSON {
 }
 
 export interface TrustSetJSON {
-  LimitAmount: LimitAmountJSON,
-  QualityIn?: QualityInJSON,
-  QualityOut?: QualityOutJSON,
+  LimitAmount: LimitAmountJSON
+  QualityIn?: QualityInJSON
+  QualityOut?: QualityOutJSON
   TransactionType: 'TrustSet'
 }
 
@@ -1423,7 +1423,7 @@ const serializer = {
     return signerWeight.getValue()
   },
 
-  /** 
+  /**
    * Convert a Channel to a JSON representation.
    *
    * @param channel - The Channel to convert.
@@ -1433,7 +1433,7 @@ const serializer = {
     return Utils.toHex(channel.getValue_asU8())
   },
 
-  /** 
+  /**
    * Convert a SignerQuorum to a JSON representation.
    *
    * @param signerQuorum - The SignerQuorum to convert.
@@ -1442,7 +1442,7 @@ const serializer = {
   signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
     return signerQuorum.getValue()
   },
-    
+
   /**
    * Convert an OfferCreate to a JSON representation.
    *
@@ -1481,8 +1481,8 @@ const serializer = {
 
     return json
   },
-    
-  /**    
+
+  /**
    * Convert a RegularKey to a JSON representation.
    *
    * @param regularKey - The RegularKey to convert.
@@ -1506,7 +1506,7 @@ const serializer = {
   settleDelayToJSON(settleDelay: SettleDelay): SettleDelayJSON {
     return settleDelay.getValue()
   },
-    
+
   /**
    * Convert a PaymentChannelSignature to a JSON representation.
    *
@@ -1518,7 +1518,7 @@ const serializer = {
   ): PaymentChannelSignatureJSON {
     return Utils.toHex(paymentChannelSignature.getValue_asU8())
   },
-    
+
   /**
    * Convert a PublicKey to a JSON representation.
    *
@@ -1528,7 +1528,7 @@ const serializer = {
   publicKeyToJSON(publicKey: PublicKey): PublicKeyJSON {
     return Utils.toHex(publicKey.getValue_asU8())
   },
-  
+
   /**
    * Convert a Balance to a JSON representation.
    *
@@ -1546,7 +1546,7 @@ const serializer = {
 
   /**
    * Convert a TrustSet to a JSON representation.
-   * 
+   *
    * @param trustSet - The TrustSet to convert.
    * @returns The TrustSet as JSON.
    */
@@ -1577,7 +1577,7 @@ const serializer = {
     }
 
     return json
-  }
+  },
 }
 
 export default serializer

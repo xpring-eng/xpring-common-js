@@ -76,6 +76,7 @@ import {
   EscrowCreate,
   EscrowFinish,
   OfferCancel,
+  TrustSet,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   CheckCreateJSON,
@@ -87,6 +88,7 @@ import Serializer, {
   TransactionJSON,
   OfferCreateJSON,
   PaymentJSON,
+  TrustSetJSON,
 } from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
@@ -2243,7 +2245,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(channelValue))
   })
-  
+
   it('Serializes an OfferCreate with only mandatory fields', function (): void {
     // GIVEN a OfferCreate with mandatory fields set.
     const takerPays = new TakerPays()
@@ -2325,7 +2327,7 @@ describe('serializer', function (): void {
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
-    
+
   it('Serializes a PublicKey', function (): void {
     // GIVEN a PublicKey.
     const publicKeyValue = new Uint8Array([1, 2, 3, 4])
@@ -2339,7 +2341,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(publicKeyValue))
   })
-    
+
   it('Serializes a Balance', function (): void {
     // GIVEN a Balance.
     const currencyAmount = makeXrpCurrencyAmount('10')
@@ -2364,7 +2366,7 @@ describe('serializer', function (): void {
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
-    
+
   it('Converts a PathList', function (): void {
     // GIVEN a Path list with two paths.
     const path1Element1 = makePathElement(
@@ -2588,7 +2590,7 @@ describe('serializer', function (): void {
     // THEN the result is as expected.
     assert.equal(serialized, settleDelayValue)
   })
-    
+
   it('Serializes a PaymentChannelSignature', function (): void {
     // GIVEN a PaymentChannelSignature.
     const paymentChannelSignatureValue = new Uint8Array([1, 2, 3, 4])
@@ -2604,7 +2606,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(paymentChannelSignatureValue))
   })
-    
+
   it('Serializes a Fulfillment', function (): void {
     // GIVEN a Fulfillment with some bytes.
     const fulfillmentBytes = new Uint8Array([0, 1, 2, 3])
@@ -2631,7 +2633,7 @@ describe('serializer', function (): void {
     // THEN the result is as expected.
     assert.equal(serialized, signerWeightValue)
   })
-    
+
   it('Serializes an EscrowFinish with required fields', function (): void {
     // GIVEN an EscrowFinish with required fields.
     const offerSequence = new OfferSequence()
@@ -2757,6 +2759,87 @@ describe('serializer', function (): void {
 
     // WHEN the LimitAmount is serialized.
     const serialized = Serializer.limitAmountToJSON(limitAmount)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a TrustSet with required fields', function (): void {
+    // GIVEN a TrustSet with required fields.
+    const currencyAmount = makeXrpCurrencyAmount('10')
+
+    const limitAmount = new LimitAmount()
+    limitAmount.setValue(currencyAmount)
+
+    const trustSet = new TrustSet()
+    trustSet.setLimitAmount(limitAmount)
+
+    // WHEN the TrustSet is serialized.
+    const serialized = Serializer.trustSetToJSON(trustSet)
+
+    // THEN the result is as expected.
+    const expected: TrustSetJSON = {
+      LimitAmount: Serializer.limitAmountToJSON(limitAmount)!,
+      TransactionType: 'TrustSet',
+    }
+
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes a TrustSet with all fields', function (): void {
+    // GIVEN a TrustSet with all fields.
+    const currencyAmount = makeXrpCurrencyAmount('10')
+
+    const limitAmount = new LimitAmount()
+    limitAmount.setValue(currencyAmount)
+
+    const qualityInValue = 6
+    const qualityIn = new QualityIn()
+    qualityIn.setValue(qualityInValue)
+
+    const qualityOutValue = 7
+    const qualityOut = new QualityOut()
+    qualityOut.setValue(qualityOutValue)
+
+    const trustSet = new TrustSet()
+    trustSet.setLimitAmount(limitAmount)
+    trustSet.setQualityIn(qualityIn)
+    trustSet.setQualityOut(qualityOut)
+
+    // WHEN the TrustSet is serialized.
+    const serialized = Serializer.trustSetToJSON(trustSet)
+
+    // THEN the result is as expected.
+    const expected: TrustSetJSON = {
+      LimitAmount: Serializer.limitAmountToJSON(limitAmount)!,
+      QualityIn: Serializer.qualityInToJSON(qualityIn),
+      QualityOut: Serializer.qualityOutToJSON(qualityOut),
+      TransactionType: 'TrustSet',
+    }
+
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a TrustSet missing limitAmount', function (): void {
+    // GIVEN a TrustSet missing a limitAmount.
+    const trustSet = new TrustSet()
+
+    // WHEN the TrustSet is serialized.
+    const serialized = Serializer.trustSetToJSON(trustSet)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a TrustSet with malformed limitAmount', function (): void {
+    // GIVEN a TrustSet with a malformed limitAmount.
+    const limitAmount = new LimitAmount()
+
+    const trustSet = new TrustSet()
+    trustSet.setLimitAmount(limitAmount)
+
+    // WHEN the TrustSet is serialized.
+    const serialized = Serializer.trustSetToJSON(trustSet)
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
