@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  PaymentChannelSignature,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -250,6 +251,7 @@ type OwnerJSON = string
 type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
+type PaymentChannelSignatureJSON = string
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -1255,6 +1257,18 @@ const serializer = {
     }
 
     return json
+  },
+
+  /**
+   * Convert a PaymentChannelSignature to a JSON representation.
+   *
+   * @param paymentChannelSignature - The PaymentChannelSignature to convert.
+   * @returns The PaymentChannelSignature as JSON.
+   */
+  paymentChannelSignatureToJSON(
+    paymentChannelSignature: PaymentChannelSignature,
+  ): PaymentChannelSignatureJSON {
+    return Utils.toHex(paymentChannelSignature.getValue_asU8())
   },
 }
 

@@ -48,6 +48,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  PaymentChannelSignature,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -2277,5 +2278,21 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes a PaymentChannelSignature', function (): void {
+    // GIVEN a PaymentChannelSignature.
+    const paymentChannelSignatureValue = new Uint8Array([1, 2, 3, 4])
+
+    const paymentChannelSignature = new PaymentChannelSignature()
+    paymentChannelSignature.setValue(paymentChannelSignatureValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelSignatureToJSON(
+      paymentChannelSignature,
+    )
+
+    // THEN the output is the input encoded as hex.
+    assert.equal(serialized, Utils.toHex(paymentChannelSignatureValue))
   })
 })
