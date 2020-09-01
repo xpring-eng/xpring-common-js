@@ -48,6 +48,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  SettleDelay,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -2277,5 +2278,19 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes a SettleDelay', function (): void {
+    // GIVEN a SettleDelay.
+    const settleDelayValue = 4
+
+    const settleDelay = new SettleDelay()
+    settleDelay.setValue(settleDelayValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.settleDelayToJSON(settleDelay)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, settleDelayValue)
   })
 })

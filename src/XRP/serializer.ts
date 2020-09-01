@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  SettleDelay,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -250,6 +251,7 @@ type OwnerJSON = string
 type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
+type SettleDelayJSON = number
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -1255,6 +1257,16 @@ const serializer = {
     }
 
     return json
+  },
+
+  /**
+   * Convert a SettleDelay to a JSON representation.
+   *
+   * @param settleDelay - The SettleDelay to convert.
+   * @returns The SettleDelay as JSON.
+   */
+  settleDelayToJSON(settleDelay: SettleDelay): SettleDelayJSON {
+    return settleDelay.getValue()
   },
 }
 
