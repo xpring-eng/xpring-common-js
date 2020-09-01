@@ -57,6 +57,7 @@ import {
   EscrowCancel,
   CheckCash,
   CheckCreate,
+  PaymentChannelClaim,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -136,6 +137,14 @@ interface CheckCancelJSON {
   CheckID: CheckIDJSON
 }
 
+interface PaymentChannelClaimJSON {
+  Channel: ChannelJSON
+  Balance?: BalanceJSON
+  Amount?: AmountJSON
+  Signature?: SignatureJSON
+  PublicKey?: PublicKeyJSON
+}
+
 // Generic field representing an OR of all above fields.
 type TransactionDataJSON =
   | AccountDeleteJSON
@@ -147,6 +156,7 @@ type TransactionDataJSON =
   | EscrowCancelJSON
   | OfferCancelJSON
   | PaymentJSON
+  | PaymentChannelClaimJSON
 
 /**
  * Individual Transaction Types.
@@ -160,6 +170,7 @@ type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type OfferCancelTransactionJSON = BaseTransactionJSON & OfferCancelJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
+type PaymentChannelClaimJSON = BaseTransactionJSON & PaymentChannelClaimJSON
 
 /**
  * All Transactions.
@@ -174,6 +185,7 @@ export type TransactionJSON =
   | EscrowCancelTransactionJSON
   | OfferCancelTransactionJSON
   | PaymentTransactionJSON
+  | PaymentChannelClaimJSON
 
 /**
  * Types for serialized sub-objects.
@@ -1206,6 +1218,34 @@ const serializer = {
   channelToJSON(channel: Channel): ChannelJSON {
     return Utils.toHex(channel.getValue_asU8())
   },
+
+  /**
+   * Convert a PaymentChannelClaim to a JSON representation.
+   */
+  paymentChannelClaimToJSON(paymentChannelClaim: PaymentChannelClaim): PaymentChannelClaimJSON | undefined {
+    // Process mandatory fields.
+    const channel = paymentChannelClaim.getChannel()
+    if (channel === undefined) {
+      return undefined
+    }
+
+    const json: PaymentChannelClaimJSON = {
+      Channel: this.channelToJSON(channel)
+    }
+
+    // Process optional fields.
+    const balance = paymentChannelClaim.getBalance()
+
+    const amount = paymentChannelClaim.getAmount()
+    if (amount !== undefined) {
+      json.Amount = this.amountToJSON(amount)
+    }
+
+    const signature = paymentChannelClaim.getPaymentChannelSignature()
+    const publicKey = paymentChannelClaim.getPublicKey()
+
+    return json
+  }  
 }
 
 export default serializer
