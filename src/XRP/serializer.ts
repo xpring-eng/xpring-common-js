@@ -1,6 +1,7 @@
 /* eslint-disable  max-lines --
  * gRPC is verbose. Playing code golf with this file would decrease clarity for little readability gain.
  */
+import { Serializer } from '..'
 import Utils from '../Common/utils'
 
 import { AccountAddress } from './generated/org/xrpl/rpc/v1/account_pb'
@@ -67,6 +68,7 @@ import {
   EscrowCancel,
   EscrowCreate,
   EscrowFinish,
+  PaymentChannelCreate,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -172,6 +174,16 @@ export interface OfferCreateJSON {
   TakerPays: TakerPaysJSON
 }
 
+export interface PaymentChannelCreateJSON {
+  Amount: AmountJSON
+  Destination: DestinationJSON
+  SettleDelay: SettleDelayJSON
+  PublicKey: PublicKeyJSON
+  CancelAfter?: CancelAfterJSON
+  DestinationTag?: DestinationTagJSON
+  TransactionType: 'PaymentChannelCreate'
+}
+
 // Generic field representing an OR of all above fields.
 type TransactionDataJSON =
   | AccountDeleteJSON
@@ -186,6 +198,7 @@ type TransactionDataJSON =
   | OfferCancelJSON
   | OfferCreateJSON
   | PaymentJSON
+  | PaymentChannelCreateJSON
 
 /**
  * Individual Transaction Types.
@@ -202,6 +215,8 @@ type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
+type PaymentChannelCreateTransactionJSON = BaseTransactionJSON &
+  PaymentChannelSignatureJSON
 
 /**
  * All Transactions.
@@ -219,6 +234,7 @@ export type TransactionJSON =
   | OfferCancelTransactionJSON
   | OfferCreateTransactionJSON
   | PaymentTransactionJSON
+  | PaymentChannelCreateTransactionJSON
 
 /**
  * Types for serialized sub-objects.
@@ -1372,7 +1388,7 @@ const serializer = {
     return Utils.toHex(channel.getValue_asU8())
   },
 
-  /** 
+  /**
    * Convert a SignerQuorum to a JSON representation.
    *
    * @param signerQuorum - The SignerQuorum to convert.
@@ -1381,7 +1397,7 @@ const serializer = {
   signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
     return signerQuorum.getValue()
   },
-    
+
   /**
    * Convert an OfferCreate to a JSON representation.
    *
@@ -1420,8 +1436,8 @@ const serializer = {
 
     return json
   },
-    
-  /**    
+
+  /**
    * Convert a RegularKey to a JSON representation.
    *
    * @param regularKey - The RegularKey to convert.
@@ -1445,7 +1461,7 @@ const serializer = {
   settleDelayToJSON(settleDelay: SettleDelay): SettleDelayJSON {
     return settleDelay.getValue()
   },
-    
+
   /**
    * Convert a PaymentChannelSignature to a JSON representation.
    *
@@ -1457,7 +1473,7 @@ const serializer = {
   ): PaymentChannelSignatureJSON {
     return Utils.toHex(paymentChannelSignature.getValue_asU8())
   },
-    
+
   /**
    * Convert a PublicKey to a JSON representation.
    *
@@ -1467,7 +1483,7 @@ const serializer = {
   publicKeyToJSON(publicKey: PublicKey): PublicKeyJSON {
     return Utils.toHex(publicKey.getValue_asU8())
   },
-  
+
   /**
    * Convert a Balance to a JSON representation.
    *
@@ -1481,6 +1497,57 @@ const serializer = {
     }
 
     return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert a PaymentChannelCreate to a JSON representation.
+   *
+   * @param paymentChannelCreate - The PaymentChannelCreate to convert.
+   * @returns The PaymentChannelCreate as JSON.
+   */
+  paymentChannelCreateToJSON(
+    paymentChannelCreate: PaymentChannelCreate,
+  ): PaymentChannelCreateJSON | undefined {
+    // Process mandatory fields.
+    const amount = paymentChannelCreate.getAmount()
+    const destination = paymentChannelCreate.getDestination()
+    const settleDelay = paymentChannelCreate.getSettleDelay()
+    const publicKey = paymentChannelCreate.getPublicKey()
+    if (
+      amount === undefined ||
+      destination === undefined ||
+      settleDelay === undefined ||
+      publicKey === undefined
+    ) {
+      return undefined
+    }
+
+    const amountJSON = this.amountToJSON(amount)
+    const destinationJSON = this.destinationToJSON(destination)
+    if (amountJSON === undefined || destinationJSON === undefined) {
+      return undefined
+    }
+
+    const json: PaymentChannelCreateJSON = {
+      Amount: amountJSON,
+      Destination: destinationJSON,
+      SettleDelay: Serializer.settleDelayToJSON(settleDelay),
+      PublicKey: Serializer.publicKeyToJSON(publicKey),
+      TransactionType: 'PaymentChannelCreate',
+    }
+
+    // Process optional fields.
+    const destinationTag = paymentChannelCreate.getDestinationTag()
+    if (destinationTag !== undefined) {
+      json.DestinationTag = this.destinationTagToJSON(destinationTag)
+    }
+
+    const cancelAfter = paymentChannelCreate.getCancelAfter()
+    if (cancelAfter !== undefined) {
+      json.CancelAfter = this.cancelAfterToJSON(cancelAfter)
+    }
+
+    return json
   },
 }
 
