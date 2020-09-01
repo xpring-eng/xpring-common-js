@@ -1501,6 +1501,7 @@ describe('serializer', function (): void {
     // THEN the output is in the expected form.
     const expected = {
       CheckID: Serializer.checkIDToJSON(checkId),
+      TransactionType: 'CheckCancel'
     }
     assert.deepEqual(serialized, expected)
   })
@@ -1572,6 +1573,7 @@ describe('serializer', function (): void {
     // THEN the result is in the expected form.
     const expected = {
       Destination: Serializer.destinationToJSON(destination)!,
+      TransactionType: 'AccountDelete'
     }
     assert.deepEqual(serialized, expected)
   })
@@ -1595,6 +1597,7 @@ describe('serializer', function (): void {
     const expected = {
       Destination: Serializer.destinationToJSON(destination)!,
       DestinationTag: Serializer.destinationTagToJSON(destinationTag),
+      TransactionType: 'AccountDelete'
     }
     assert.deepEqual(serialized, expected)
   })
@@ -1819,6 +1822,7 @@ describe('serializer', function (): void {
     // THEN the output is in the expected form.
     const expected = {
       OfferSequence: Serializer.offerSequenceToJSON(offerSequence),
+      TransactionType: 'OfferCancel'
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2033,6 +2037,7 @@ describe('serializer', function (): void {
     const expected = {
       CheckID: Serializer.checkIDToJSON(checkId),
       Amount: Serializer.amountToJSON(amount),
+      TransactionType: 'CheckCash'
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2062,6 +2067,7 @@ describe('serializer', function (): void {
     const expected = {
       CheckID: Serializer.checkIDToJSON(checkId),
       DeliverMin: Serializer.deliverMinToJSON(deliverMin),
+      TransactionType: 'CheckCash'
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2116,6 +2122,7 @@ describe('serializer', function (): void {
     const expected: CheckCreateJSON = {
       Destination: Serializer.destinationToJSON(destination)!,
       SendMax: Serializer.sendMaxToJSON(sendMax)!,
+      TransactionType: 'CheckCreate'
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2158,6 +2165,7 @@ describe('serializer', function (): void {
       InvoiceID: Serializer.invoiceIdToJSON(invoiceId),
       DestinationTag: Serializer.destinationTagToJSON(destinationTag),
       Expiration: Serializer.expirationToJSON(expiration),
+      TransactionType: 'CheckCreate'
     }
     assert.deepEqual(serialized, expected)
   })
