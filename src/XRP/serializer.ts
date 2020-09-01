@@ -58,6 +58,7 @@ import {
   CheckCreate,
   EscrowCancel,
   EscrowCreate,
+  EscrowFinish,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -124,6 +125,14 @@ export interface EscrowCreateJSON {
   TransactionType: 'EscrowCreate'
 }
 
+export interface EscrowFinishJSON {
+  Condition?: ConditionJSON
+  Fulfillment?: FulfillmentJSON
+  OfferSequence: OfferSequenceJSON
+  Owner: OwnerJSON
+  TransactionType: 'EscrowFinish'
+}
+
 interface OfferCancelJSON {
   OfferSequence: OfferSequenceJSON
 }
@@ -157,6 +166,7 @@ type TransactionDataJSON =
   | DepositPreauthJSON
   | EscrowCancelJSON
   | EscrowCreateJSON
+  | EscrowFinishJSON
   | OfferCancelJSON
   | PaymentJSON
 
@@ -172,6 +182,7 @@ type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type OfferCancelTransactionJSON = BaseTransactionJSON & OfferCancelJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
+type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
 /**
@@ -186,6 +197,7 @@ export type TransactionJSON =
   | DepositPreauthTransactionJSON
   | EscrowCancelTransactionJSON
   | EscrowCreateTransactionJSON
+  | EscrowFinishTransactionJSON
   | OfferCancelTransactionJSON
   | PaymentTransactionJSON
 
@@ -513,6 +525,43 @@ const serializer = {
     const finishAfter = escrowCreate.getFinishAfter()
     if (finishAfter !== undefined) {
       json.FinishAfter = this.finishAfterToJSON(finishAfter)
+    }
+
+    return json
+  },
+
+  /**
+   * Convert an EscrowFinish to a JSON representation.
+   *
+   * @param escrowFinish - The EscrowFinish to convert.
+   * @returns The EscrowFinish as JSON.
+   */
+  escrowFinishToJSON(escrowFinish: EscrowFinish): EscrowFinishJSON | undefined {
+    const offerSequence = escrowFinish.getOfferSequence()
+    const owner = escrowFinish.getOwner()
+    if (owner === undefined || offerSequence === undefined) {
+      return undefined
+    }
+
+    const ownerJSON = this.ownerToJSON(owner)
+    if (ownerJSON === undefined) {
+      return undefined
+    }
+
+    const json: EscrowFinishJSON = {
+      OfferSequence: this.offerSequenceToJSON(offerSequence),
+      Owner: ownerJSON,
+      TransactionType: 'EscrowFinish',
+    }
+
+    const condition = escrowFinish.getCondition()
+    if (condition !== undefined) {
+      json.Condition = this.conditionToJSON(condition)
+    }
+
+    const fulfillment = escrowFinish.getFulfillment()
+    if (fulfillment !== undefined) {
+      json.Fulfillment = this.fulfillmentToJSON(fulfillment)
     }
 
     return json
