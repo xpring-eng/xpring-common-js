@@ -1,7 +1,6 @@
 /* eslint-disable  max-lines --
  * gRPC is verbose. Playing code golf with this file would decrease clarity for little readability gain.
  */
-import { Serializer } from '..'
 import Utils from '../Common/utils'
 
 import { AccountAddress } from './generated/org/xrpl/rpc/v1/account_pb'
@@ -1431,7 +1430,7 @@ const serializer = {
     return signerWeight.getValue()
   },
 
-  /** 
+  /**
    * Convert a Channel to a JSON representation.
    *
    * @param channel - The Channel to convert.
@@ -1584,8 +1583,8 @@ const serializer = {
     const json: PaymentChannelCreateJSON = {
       Amount: amountJSON,
       Destination: destinationJSON,
-      SettleDelay: Serializer.settleDelayToJSON(settleDelay),
-      PublicKey: Serializer.publicKeyToJSON(publicKey),
+      SettleDelay: this.settleDelayToJSON(settleDelay),
+      PublicKey: this.publicKeyToJSON(publicKey),
       TransactionType: 'PaymentChannelCreate',
     }
 
