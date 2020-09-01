@@ -2358,17 +2358,4 @@ describe('serializer', function (): void {
 
     assert.deepEqual(serialized, expected)
   })
-
-  it('Fails to serialize a SetRegularKey with malformed regular key', function (): void {
-    // GIVEN a SetRegularKey with a malformed regular key.
-    const regularKey = new RegularKey()
-    const setRegularKey = new SetRegularKey()
-    setRegularKey.setRegularKey(regularKey)
-
-    // WHEN it is serialized.
-    const serialized = Serializer.setRegularKeyToJSON(setRegularKey)
-
-    // THEN the result is undefined.
-    assert.isUndefined(serialized)
-  })
 })

@@ -1311,10 +1311,9 @@ const serializer = {
     const regularKey = setRegularKey.getRegularKey()
     if (regularKey) {
       const regularKeyJson = this.regularKeyToJSON(regularKey)
-      if (!regularKeyJson) {
-        return undefined
+      if (regularKeyJson) {
+        json.RegularKey = regularKeyJson
       }
-      json.RegularKey = regularKeyJson
     }
 
     return json
