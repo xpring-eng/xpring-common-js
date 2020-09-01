@@ -98,6 +98,7 @@ interface CheckCashJSON {
   CheckID: CheckIDJSON
   Amount?: CurrencyAmountJSON
   DeliverMin?: DeliverMinJSON
+  TransactionType: 'CheckCash'
 }
 
 export interface CheckCreateJSON {
@@ -106,6 +107,7 @@ export interface CheckCreateJSON {
   DestinationTag?: DestinationTagJSON
   Expiration?: ExpirationJSON
   InvoiceID?: InvoiceIdJSON
+  TransactionType: 'CheckCreate'
 }
 
 export interface DepositPreauthJSON {
@@ -140,6 +142,7 @@ export interface EscrowFinishJSON {
 
 interface OfferCancelJSON {
   OfferSequence: OfferSequenceJSON
+  TransactionType: 'OfferCancel'
 }
 
 export interface PaymentJSON {
@@ -156,10 +159,12 @@ export interface PaymentJSON {
 interface AccountDeleteJSON {
   Destination: DestinationJSON
   DestinationTag?: DestinationTagJSON
+  TransactionType: 'AccountDelete'
 }
 
 interface CheckCancelJSON {
   CheckID: CheckIDJSON
+  TransactionType: 'CheckCancel'
 }
 
 // Generic field representing an OR of all above fields.
