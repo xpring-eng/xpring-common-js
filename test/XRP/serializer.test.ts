@@ -2378,7 +2378,7 @@ describe('serializer', function (): void {
     const owner = new Owner()
 
     const escrowFinish = new EscrowFinish()
-    escrowFinish.setOfferSequence()
+    escrowFinish.setOfferSequence(offerSequence)
     escrowFinish.setOwner(owner)
 
     // WHEN it is serialized.
