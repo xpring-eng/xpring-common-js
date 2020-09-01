@@ -48,6 +48,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  RegularKey,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -2276,6 +2277,32 @@ describe('serializer', function (): void {
     const serialized = Serializer.escrowCreateToJSON(escrowCreate)
 
     // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a RegularKey', function (): void {
+    // GIVEN a RegularKey.
+    const regularKey = new RegularKey()
+    regularKey.setValue(testAccountAddress)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.regularKeyToJSON(regularKey)
+
+    // THEN the output is the serialized version of the input.
+    assert.equal(
+      serialized,
+      Serializer.accountAddressToJSON(testAccountAddress),
+    )
+  })
+
+  it('Fails to serialize a malformed RegularKey', function (): void {
+    // GIVEN a malformed RegularKey.
+    const regularKey = new RegularKey()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.regularKeyToJSON(regularKey)
+
+    // THEN the output is the serialized version of the input.
     assert.isUndefined(serialized)
   })
 })

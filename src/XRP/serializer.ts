@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  RegularKey,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -250,6 +251,7 @@ type OwnerJSON = string
 type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
+type RegularKeyJSON = AccountAddressJSON
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -1255,6 +1257,21 @@ const serializer = {
     }
 
     return json
+  },
+
+  /**
+   * Convert a RegularKey to a JSON representation.
+   *
+   * @param regularKey - The RegularKey to convert.
+   * @returns The RegularKey as JSON.
+   */
+  regularKeyToJSON(regularKey: RegularKey): RegularKeyJSON | undefined {
+    const accountAddress = regularKey.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
+
+    return this.accountAddressToJSON(accountAddress)
   },
 }
 
