@@ -97,8 +97,7 @@ const typeForMemo = Utils.toBytes('meme')
 const formatForMemo = Utils.toBytes('jaypeg')
 const offerSequenceNumber = 1234
 
-const testAccountAddress = new AccountAddress()
-testAccountAddress.setAddress(destinationClassicAddress)
+const testAccountAddress = makeAccountAddress(destinationClassicAddress)
 
 // TODO(keefertaylor): Helper functions are becoming unweildy. Refactor to an external helper file.
 
@@ -468,6 +467,19 @@ function makeXrpCurrencyAmount(drops: string): CurrencyAmount {
   currencyAmount.setXrpAmount(xrpDropsAmount)
 
   return currencyAmount
+}
+
+/**
+ * Returns a new account address.
+ *
+ * @param address - The address to wrap.
+ * @returns The requested object.
+ */
+function makeAccountAddress(address: string): AccountAddress {
+  const accountAddress = new AccountAddress()
+  accountAddress.setAddress(address)
+
+  return accountAddress
 }
 
 describe('serializer', function (): void {
@@ -1849,8 +1861,7 @@ describe('serializer', function (): void {
   })
 
   it('Serializes a Payment with all fields set', function (): void {
-    // GIVEN a Payment with all mandatory fields.
-    // TODO(keefertaylor): Add additional fields here when they are implemented.
+    // GIVEN a Payment with all fields.
     const transactionAmount = makeXrpCurrencyAmount('10')
 
     const amount = new Amount()
@@ -1875,6 +1886,32 @@ describe('serializer', function (): void {
     const sendMax = new SendMax()
     sendMax.setValue(sendMaxAmount)
 
+    const path1Element1 = makePathElement(
+      makeAccountAddress('r1'),
+      new Uint8Array([1, 2, 3]),
+      makeAccountAddress('r2'),
+    )
+    const path1Element2 = makePathElement(
+      makeAccountAddress('r3'),
+      new Uint8Array([4, 5, 6]),
+      makeAccountAddress('r4'),
+    )
+
+    const path1 = new Payment.Path()
+    path1.addElements(path1Element1)
+    path1.addElements(path1Element2)
+
+    const path2Element1 = makePathElement(
+      makeAccountAddress('r5'),
+      new Uint8Array([7, 8, 9]),
+      makeAccountAddress('r6'),
+    )
+
+    const path2 = new Payment.Path()
+    path2.addElements(path2Element1)
+
+    const pathList = [path1, path2]
+
     const payment = new Payment()
     payment.setAmount(amount)
     payment.setDeliverMin(deliverMin)
@@ -1882,6 +1919,7 @@ describe('serializer', function (): void {
     payment.setDestinationTag(destinationTag)
     payment.setInvoiceId(invoiceId)
     payment.setSendMax(sendMax)
+    payment.setPathsList(pathList)
 
     // WHEN it is serialized.
     const serialized = Serializer.paymentToJSON(payment)
@@ -1893,6 +1931,7 @@ describe('serializer', function (): void {
       Destination: Serializer.destinationToJSON(destination)!,
       DestinationTag: Serializer.destinationTagToJSON(destinationTag),
       InvoiceID: Serializer.invoiceIdToJSON(invoiceId),
+      Paths: Serializer.pathListToJSON(pathList),
       SendMax: Serializer.sendMaxToJSON(sendMax),
       TransactionType: 'Payment',
     }
@@ -2150,6 +2189,44 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined
     assert.isUndefined(serialized)
+  })
+
+  it('Converts a PathList', function (): void {
+    // GIVEN a Path list with two paths.
+    const path1Element1 = makePathElement(
+      makeAccountAddress('r1'),
+      new Uint8Array([1, 2, 3]),
+      makeAccountAddress('r2'),
+    )
+    const path1Element2 = makePathElement(
+      makeAccountAddress('r3'),
+      new Uint8Array([4, 5, 6]),
+      makeAccountAddress('r4'),
+    )
+
+    const path1 = new Payment.Path()
+    path1.addElements(path1Element1)
+    path1.addElements(path1Element2)
+
+    const path2Element1 = makePathElement(
+      makeAccountAddress('r5'),
+      new Uint8Array([7, 8, 9]),
+      makeAccountAddress('r6'),
+    )
+
+    const path2 = new Payment.Path()
+    path2.addElements(path2Element1)
+
+    const pathList = [path1, path2]
+
+    // WHEN it is serialized
+    const serialized = Serializer.pathListToJSON(pathList)
+
+    // THEN the result is a list of the serialized paths.
+    const expectedPath1 = Serializer.pathToJSON(path1)
+    const expectedPath2 = Serializer.pathToJSON(path2)
+    const expected = [expectedPath1, expectedPath2]
+    assert.deepEqual(serialized, expected)
   })
 
   it('Serializes an EscrowCreate with required fields', function (): void {

@@ -143,6 +143,7 @@ export interface PaymentJSON {
   Destination: DestinationJSON
   DestinationTag?: DestinationTagJSON
   InvoiceID?: InvoiceIdJSON
+  Paths?: PathJSON[]
   SendMax?: SendMaxJSON
   TransactionType: 'Payment'
 }
@@ -385,6 +386,13 @@ const serializer = {
       json.SendMax = this.sendMaxToJSON(sendMax)
     }
 
+    const pathList = payment.getPathsList()
+    if (pathList.length > 0) {
+      json.Paths = pathList.map((path) => {
+        return this.pathToJSON(path)
+      })
+    }
+
     return json
   },
 
@@ -623,6 +631,17 @@ const serializer = {
    */
   xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
     return `${xrpDropsAmount.getDrops()}`
+  },
+
+  /**
+   * Convert a list of Paths to a JSON representation.
+   *
+   * @param pathList - A list of Path's to convert.
+   * @returns The list as JSON.
+   */
+  pathListToJSON(pathList: Payment.Path[]): PathJSON[] {
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- Manually assigning `this`.
+    return pathList.map(this.pathToJSON, this)
   },
 
   /**
