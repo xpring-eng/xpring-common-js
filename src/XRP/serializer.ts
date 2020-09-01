@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  SignerQuorum,
   RegularKey,
   SettleDelay,
   PaymentChannelSignature,
@@ -282,6 +283,7 @@ type OwnerJSON = string
 type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
+type SignerQuorumJSON = number
 type RegularKeyJSON = AccountAddressJSON
 type SettleDelayJSON = number
 type PaymentChannelSignatureJSON = string
@@ -1375,6 +1377,16 @@ const serializer = {
     return json
   },
 
+  /**
+   * Convert a SignerQuorum to a JSON representation.
+   *
+   * @param signerQuorum - The SignerQuorum to convert.
+   * @returns The SignerQuorum as JSON.
+   */
+  signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
+    return signerQuorum.getValue()
+  },
+    
   /**
    * Convert an OfferCreate to a JSON representation.
    *
