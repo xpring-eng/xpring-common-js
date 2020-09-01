@@ -79,6 +79,7 @@ import Serializer, {
   DepositPreauthJSON,
   TransactionJSON,
   PaymentJSON,
+  PaymentChannelClaimJSON,
 } from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
@@ -2551,7 +2552,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.paymentChannelClaimToJSON(paymentChannelClaim)
 
     // THEN the result is in the expected form.
-    const expected = {
+    const expected: PaymentChannelClaimJSON = {
       Channel: Serializer.channelToJSON(channel),
       TransactionType: 'PaymentChannelClaim',
     }
@@ -2586,7 +2587,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.paymentChannelClaimToJSON(paymentChannelClaim)
 
     // THEN the result is in the expected form.
-    const expected = {
+    const expected: PaymentChannelClaimJSON = {
       Channel: Serializer.channelToJSON(channel),
       Balance: Serializer.balanceToJSON(balance),
       Signature: Serializer.paymentChannelSignatureToJSON(

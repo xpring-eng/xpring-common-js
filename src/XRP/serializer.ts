@@ -162,7 +162,7 @@ interface CheckCancelJSON {
   CheckID: CheckIDJSON
 }
 
-interface PaymentChannelClaimJSON {
+export interface PaymentChannelClaimJSON {
   Channel: ChannelJSON
   Balance?: BalanceJSON
   Amount?: AmountJSON
