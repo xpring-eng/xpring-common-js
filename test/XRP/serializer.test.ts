@@ -61,6 +61,7 @@ import {
   CheckCash,
   OfferCancel,
   CheckCreate,
+  OfferCreate,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   CheckCreateJSON,
@@ -68,6 +69,7 @@ import Serializer, {
   AccountSetJSON,
   DepositPreauthJSON,
   TransactionJSON,
+  OfferCreateJSON,
   PaymentJSON,
 } from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
@@ -2145,6 +2147,99 @@ describe('serializer', function (): void {
     const serialized = Serializer.checkCreateToJSON(checkCreate)
 
     // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes an OfferCreate with only mandatory fields', function (): void {
+    // GIVEN a OfferCreate with mandatory fields set.
+    const takerPays = new TakerPays()
+    takerPays.setValue(makeXrpCurrencyAmount('1'))
+
+    const takerGets = new TakerGets()
+    takerGets.setValue(makeXrpCurrencyAmount('2'))
+
+    const offerCreate = new OfferCreate()
+    offerCreate.setTakerGets(takerGets)
+    offerCreate.setTakerPays(takerPays)
+
+    // WHEN it is serialized
+    const serialized = Serializer.offerCreateToJSON(offerCreate)
+
+    // THEN the result is in the expected form.
+    const expected: OfferCreateJSON = {
+      TakerGets: Serializer.takerGetsToJSON(takerGets)!,
+      TakerPays: Serializer.takerPaysToJSON(takerPays)!,
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes an OfferCreate with all fields', function (): void {
+    // GIVEN a OfferCreate with all fields set.
+    const takerPays = new TakerPays()
+    takerPays.setValue(makeXrpCurrencyAmount('1'))
+
+    const takerGets = new TakerGets()
+    takerGets.setValue(makeXrpCurrencyAmount('2'))
+
+    const expiration = new Expiration()
+    expiration.setValue(3)
+
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(4)
+
+    const offerCreate = new OfferCreate()
+    offerCreate.setTakerGets(takerGets)
+    offerCreate.setTakerPays(takerPays)
+    offerCreate.setExpiration(expiration)
+    offerCreate.setOfferSequence(offerSequence)
+
+    // WHEN it is serialized
+    const serialized = Serializer.offerCreateToJSON(offerCreate)
+
+    // THEN the result is in the expected form.
+    const expected: OfferCreateJSON = {
+      TakerGets: Serializer.takerGetsToJSON(takerGets)!,
+      TakerPays: Serializer.takerPaysToJSON(takerPays)!,
+      Expiration: Serializer.expirationToJSON(expiration),
+      OfferSequence: Serializer.offerSequenceToJSON(offerSequence),
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize an OfferCreate with malformed mandatory fields.', function (): void {
+    // GIVEN a OfferCreate with a malformed TakerPays
+    const takerPays = new TakerPays()
+
+    const takerGets = new TakerGets()
+    takerGets.setValue(makeXrpCurrencyAmount('2'))
+
+    const expiration = new Expiration()
+    expiration.setValue(3)
+
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(4)
+
+    const offerCreate = new OfferCreate()
+    offerCreate.setTakerGets(takerGets)
+    offerCreate.setTakerPays(takerPays)
+    offerCreate.setExpiration(expiration)
+    offerCreate.setOfferSequence(offerSequence)
+
+    // WHEN it is serialized
+    const serialized = Serializer.offerCreateToJSON(offerCreate)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a malformed OfferCreate', function (): void {
+    // GIVEN a malformed OfferCreate.
+    const offerCreate = new OfferCreate()
+
+    // WHEN it is serialized
+    const serialized = Serializer.offerCreateToJSON(offerCreate)
+
+    // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
 })

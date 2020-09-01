@@ -56,6 +56,7 @@ import {
   EscrowCancel,
   CheckCash,
   CheckCreate,
+  OfferCreate,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -135,6 +136,13 @@ interface CheckCancelJSON {
   CheckID: CheckIDJSON
 }
 
+export interface OfferCreateJSON {
+  Expiration?: ExpirationJSON
+  OfferSequence?: OfferSequenceJSON
+  TakerGets: TakerGetsJSON
+  TakerPays: TakerPaysJSON
+}
+
 // Generic field representing an OR of all above fields.
 type TransactionDataJSON =
   | AccountDeleteJSON
@@ -145,6 +153,7 @@ type TransactionDataJSON =
   | DepositPreauthJSON
   | EscrowCancelJSON
   | OfferCancelJSON
+  | OfferCreateJSON
   | PaymentJSON
 
 /**
@@ -157,6 +166,7 @@ type CheckCashTransactionJSON = BaseTransactionJSON & CheckCashJSON
 type CheckCreateTransactionJSON = BaseTransactionJSON & CheckCreateJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type OfferCancelTransactionJSON = BaseTransactionJSON & OfferCancelJSON
+type OfferCreateTransactionJSON = BaseTransactionJSON & OfferCreateJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
@@ -172,6 +182,7 @@ export type TransactionJSON =
   | DepositPreauthTransactionJSON
   | EscrowCancelTransactionJSON
   | OfferCancelTransactionJSON
+  | OfferCreateTransactionJSON
   | PaymentTransactionJSON
 
 /**
@@ -1190,6 +1201,45 @@ const serializer = {
     const invoiceId = checkCreate.getInvoiceId()
     if (invoiceId !== undefined) {
       json.InvoiceID = this.invoiceIdToJSON(invoiceId)
+    }
+
+    return json
+  },
+
+  /**
+   * Convert an OfferCreate to a JSON representation.
+   *
+   * @param offerCreate - The OfferCreate to convert.
+   * @returns The OfferCreate as JSON.
+   */
+  offerCreateToJSON(offerCreate: OfferCreate): OfferCreateJSON | undefined {
+    // Process mandatory fields.
+    const takerGets = offerCreate.getTakerGets()
+    const takerPays = offerCreate.getTakerPays()
+    if (takerGets === undefined || takerPays === undefined) {
+      return undefined
+    }
+
+    const takerGetsJSON = this.takerGetsToJSON(takerGets)
+    const takerPaysJSON = this.takerPaysToJSON(takerPays)
+    if (takerGetsJSON === undefined || takerPaysJSON === undefined) {
+      return undefined
+    }
+
+    const json: OfferCreateJSON = {
+      TakerGets: takerGetsJSON,
+      TakerPays: takerPaysJSON,
+    }
+
+    // Process optional fields.
+    const offerSequence = offerCreate.getOfferSequence()
+    if (offerSequence !== undefined) {
+      json.OfferSequence = this.offerSequenceToJSON(offerSequence)
+    }
+
+    const expiration = offerCreate.getExpiration()
+    if (expiration !== undefined) {
+      json.Expiration = this.expirationToJSON(expiration)
     }
 
     return json
