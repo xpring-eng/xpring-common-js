@@ -49,6 +49,7 @@ import {
   CancelAfter,
   FinishAfter,
   RegularKey,
+  Fulfillment,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -2156,8 +2157,10 @@ describe('serializer', function (): void {
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpAmount)
+
     const amount = new Amount()
     amount.setValue(currencyAmount)
+
     const destination = new Destination()
     destination.setValue(testAccountAddress)
 
@@ -2304,5 +2307,18 @@ describe('serializer', function (): void {
 
     // THEN the output is the serialized version of the input.
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes a Fulfillment', function (): void {
+    // GIVEN a Fulfillment with some bytes.
+    const fulfillmentBytes = new Uint8Array([0, 1, 2, 3])
+    const fulfillment = new Fulfillment()
+    fulfillment.setValue(fulfillmentBytes)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.fulfillmentToJSON(fulfillment)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, Utils.toHex(fulfillmentBytes))
   })
 })
