@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  SettleDelay,
   PaymentChannelSignature,
   PublicKey,
   Balance,
@@ -268,6 +269,7 @@ type OwnerJSON = string
 type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
+type SettleDelayJSON = number
 type PaymentChannelSignatureJSON = string
 type PublicKeyJSON = string
 type FulfillmentJSON = string
@@ -1343,6 +1345,16 @@ const serializer = {
     return json
   },
 
+  /**
+   * Convert a SettleDelay to a JSON representation.
+   *
+   * @param settleDelay - The SettleDelay to convert.
+   * @returns The SettleDelay as JSON.
+   */
+  settleDelayToJSON(settleDelay: SettleDelay): SettleDelayJSON {
+    return settleDelay.getValue()
+  },
+    
   /**
    * Convert a PaymentChannelSignature to a JSON representation.
    *

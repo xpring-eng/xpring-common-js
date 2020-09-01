@@ -48,6 +48,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  SettleDelay,
   PaymentChannelSignature,
   PublicKey,
   Balance,
@@ -2403,6 +2404,20 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a SettleDelay', function (): void {
+    // GIVEN a SettleDelay.
+    const settleDelayValue = 4
+
+    const settleDelay = new SettleDelay()
+    settleDelay.setValue(settleDelayValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.settleDelayToJSON(settleDelay)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, settleDelayValue)
+  })
+    
   it('Serializes a PaymentChannelSignature', function (): void {
     // GIVEN a PaymentChannelSignature.
     const paymentChannelSignatureValue = new Uint8Array([1, 2, 3, 4])
