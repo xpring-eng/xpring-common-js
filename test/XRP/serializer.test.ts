@@ -48,6 +48,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  Fulfillment,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -57,14 +58,18 @@ import {
   AccountSet,
   AccountDelete,
   CheckCancel,
-  EscrowCancel,
   CheckCash,
-  OfferCancel,
   CheckCreate,
+  EscrowCancel,
+  EscrowCreate,
+  EscrowFinish,
+  OfferCancel,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   CheckCreateJSON,
   EscrowCancelJSON,
+  EscrowCreateJSON,
+  EscrowFinishJSON,
   AccountSetJSON,
   DepositPreauthJSON,
   TransactionJSON,
@@ -2005,7 +2010,6 @@ describe('serializer', function (): void {
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpDropsAmount)
-
     const amount = new Amount()
     amount.setValue(currencyAmount)
 
@@ -2223,5 +2227,241 @@ describe('serializer', function (): void {
     const expectedPath2 = Serializer.pathToJSON(path2)
     const expected = [expectedPath1, expectedPath2]
     assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes an EscrowCreate with required fields', function (): void {
+    // GIVEN an EscrowCreate with required fields set.
+    const xrpAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const escrowCreate = new EscrowCreate()
+    escrowCreate.setAmount(amount)
+    escrowCreate.setDestination(destination)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCreateToJSON(escrowCreate)
+
+    const expected: EscrowCreateJSON = {
+      Amount: Serializer.amountToJSON(amount)!,
+      Destination: Serializer.destinationToJSON(destination)!,
+      TransactionType: 'EscrowCreate',
+    }
+
+    // THEN the result is as expected.
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes an EscrowCreate with all fields', function (): void {
+    // GIVEN an EscrowCreate with all fields set.
+    const xrpAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const destinationTag = new DestinationTag()
+    destinationTag.setValue(11)
+
+    const cancelAfter = new CancelAfter()
+    cancelAfter.setValue(1)
+
+    const conditionBytes = new Uint8Array([0, 1, 2, 3])
+    const condition = new Condition()
+    condition.setValue(conditionBytes)
+
+    const finishAfter = new FinishAfter()
+    finishAfter.setValue(2)
+
+    const escrowCreate = new EscrowCreate()
+    escrowCreate.setAmount(amount)
+    escrowCreate.setDestination(destination)
+    escrowCreate.setDestinationTag(destinationTag)
+    escrowCreate.setCancelAfter(cancelAfter)
+    escrowCreate.setCondition(condition)
+    escrowCreate.setFinishAfter(finishAfter)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCreateToJSON(escrowCreate)
+
+    const expected: EscrowCreateJSON = {
+      Amount: Serializer.amountToJSON(amount)!,
+      Destination: Serializer.destinationToJSON(destination)!,
+      DestinationTag: Serializer.destinationTagToJSON(destinationTag),
+      CancelAfter: Serializer.cancelAfterToJSON(cancelAfter),
+      Condition: Serializer.conditionToJSON(condition),
+      FinishAfter: Serializer.finishAfterToJSON(finishAfter),
+      TransactionType: 'EscrowCreate',
+    }
+
+    // THEN the result is as expected.
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize an EscrowCreate missing an amount', function (): void {
+    // GIVEN an EscrowCreate that's missing an amount.
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const escrowCreate = new EscrowCreate()
+    escrowCreate.setDestination(destination)
+
+    // WHEN the EscrowCreate is serialized.
+    const serialized = Serializer.escrowCreateToJSON(escrowCreate)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize an EscrowCreate missing a destination', function (): void {
+    // GIVEN an EscrowCreat that's missing a destination.
+    const xrpAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    const escrowCreate = new EscrowCreate()
+    escrowCreate.setAmount(amount)
+
+    // WHEN the EscrowCreate is serialized.
+    const serialized = Serializer.escrowCreateToJSON(escrowCreate)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize an EscrowCreate with a malformed amount and destination', function (): void {
+    // GIVEN an EscrowCreate that has a malformed amount and destination.
+    const amount = new Amount()
+    const destination = new Destination()
+
+    const escrowCreate = new EscrowCreate()
+    escrowCreate.setAmount(amount)
+    escrowCreate.setDestination(destination)
+
+    // WHEN the EscrowCreate is serialized.
+    const serialized = Serializer.escrowCreateToJSON(escrowCreate)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a Fulfillment', function (): void {
+    // GIVEN a Fulfillment with some bytes.
+    const fulfillmentBytes = new Uint8Array([0, 1, 2, 3])
+    const fulfillment = new Fulfillment()
+    fulfillment.setValue(fulfillmentBytes)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.fulfillmentToJSON(fulfillment)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, Utils.toHex(fulfillmentBytes))
+  })
+
+  it('Serializes an EscrowFinish with required fields', function (): void {
+    // GIVEN an EscrowFinish with required fields.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const owner = new Owner()
+    owner.setValue(testAccountAddress)
+
+    const escrowFinish = new EscrowFinish()
+    escrowFinish.setOfferSequence(offerSequence)
+    escrowFinish.setOwner(owner)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowFinishToJSON(escrowFinish)
+
+    // THEN the result is as expected.
+    const expected: EscrowFinishJSON = {
+      OfferSequence: Serializer.offerSequenceToJSON(offerSequence),
+      Owner: Serializer.ownerToJSON(owner)!,
+      TransactionType: 'EscrowFinish',
+    }
+
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes an EscrowFinish with all fields', function (): void {
+    // GIVEN an EscrowFinish with all fields.
+    const conditionBytes = new Uint8Array([0, 1, 2, 3])
+    const condition = new Condition()
+    condition.setValue(conditionBytes)
+
+    const fulfillmentBytes = new Uint8Array([0, 1, 2, 3])
+    const fulfillment = new Fulfillment()
+    fulfillment.setValue(fulfillmentBytes)
+
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const owner = new Owner()
+    owner.setValue(testAccountAddress)
+
+    const escrowFinish = new EscrowFinish()
+    escrowFinish.setCondition(condition)
+    escrowFinish.setFulfillment(fulfillment)
+    escrowFinish.setOfferSequence(offerSequence)
+    escrowFinish.setOwner(owner)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowFinishToJSON(escrowFinish)
+
+    // THEN the result is as expected.
+    const expected: EscrowFinishJSON = {
+      Condition: Serializer.conditionToJSON(condition),
+      Fulfillment: Serializer.fulfillmentToJSON(fulfillment),
+      OfferSequence: Serializer.offerSequenceToJSON(offerSequence),
+      Owner: Serializer.ownerToJSON(owner)!,
+      TransactionType: 'EscrowFinish',
+    }
+
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize an EscrowFinish missing required fields', function (): void {
+    // GIVEN an EscrowFinish that's missing required fields.
+    const escrowFinish = new EscrowFinish()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowFinishToJSON(escrowFinish)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize an EscrowFinish with a malformed owner', function (): void {
+    // GIVEN an EscrowCancel with a malformed owner.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const owner = new Owner()
+
+    const escrowFinish = new EscrowFinish()
+    escrowFinish.setOfferSequence(offerSequence)
+    escrowFinish.setOwner(owner)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowFinishToJSON(escrowFinish)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 })
