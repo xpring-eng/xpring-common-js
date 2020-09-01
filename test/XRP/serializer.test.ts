@@ -48,6 +48,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  Balance,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -2145,6 +2146,31 @@ describe('serializer', function (): void {
     const serialized = Serializer.checkCreateToJSON(checkCreate)
 
     // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a Balance', function (): void {
+    // GIVEN a Balance.
+    const currencyAmount = makeXrpCurrencyAmount('10')
+
+    const balance = new Balance()
+    balance.setValue(currencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.balanceToJSON(balance)
+
+    // THEN the output is the serialized versions of the input.
+    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
+  })
+
+  it('Fails to serialize a malformed Balance', function (): void {
+    // GIVEN a malformed Balance.
+    const balance = new Balance()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.balanceToJSON(balance)
+
+    // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
 })

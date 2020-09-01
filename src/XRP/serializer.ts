@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  Balance,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -199,6 +200,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type BalanceJSON = CurrencyAmountJSON
 type DeliverMinJSON = CurrencyAmountJSON
 type AccountAddressJSON = string
 type CheckIDJSON = string
@@ -1193,6 +1195,21 @@ const serializer = {
     }
 
     return json
+  },
+
+  /**
+   * Convert a Balance to a JSON representation.
+   *
+   * @param balance - The Balance to convert.
+   * @returns The Balance as JSON.
+   */
+  balanceToJSON(balance: Balance): BalanceJSON | undefined {
+    const currencyAmount = balance.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
   },
 }
 
