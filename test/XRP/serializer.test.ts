@@ -38,8 +38,16 @@ import {
   LastLedgerSequence,
   DestinationTag,
   InvoiceID,
-  Expiration,
   SendMax,
+  TransactionSignature,
+  Expiration,
+  TakerGets,
+  TakerPays,
+  OfferSequence,
+  Owner,
+  Condition,
+  CancelAfter,
+  FinishAfter,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -47,14 +55,20 @@ import {
   Transaction,
   DepositPreauth,
   AccountSet,
+  AccountDelete,
+  CheckCancel,
+  EscrowCancel,
   CheckCash,
+  OfferCancel,
   CheckCreate,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
+  CheckCreateJSON,
+  EscrowCancelJSON,
   AccountSetJSON,
   DepositPreauthJSON,
   TransactionJSON,
-  CheckCreateJSON,
+  PaymentJSON,
 } from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
@@ -76,6 +90,7 @@ const accountXAddress = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
 const dataForMemo = Utils.toBytes('I forgot to pick up Carl...')
 const typeForMemo = Utils.toBytes('meme')
 const formatForMemo = Utils.toBytes('jaypeg')
+const offerSequenceNumber = 1234
 
 const testAccountAddress = new AccountAddress()
 testAccountAddress.setAddress(destinationClassicAddress)
@@ -435,6 +450,21 @@ function makeIssuedCurrencyAmount(
   return issuedCurrency
 }
 
+/**
+ * Returns a CurrencyAmount representing drops of XRP.
+ *
+ * @param drops - The number of drops to represent.
+ * @returns A CurrencyAmount representing the input.
+ */
+function makeXrpCurrencyAmount(drops: string): CurrencyAmount {
+  const xrpDropsAmount = makeXrpDropsAmount(drops)
+
+  const currencyAmount = new CurrencyAmount()
+  currencyAmount.setXrpAmount(xrpDropsAmount)
+
+  return currencyAmount
+}
+
 describe('serializer', function (): void {
   it('serializes a payment in XRP from a classic address', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
@@ -552,8 +582,7 @@ describe('serializer', function (): void {
     const expectedJSON: TransactionJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
-      Destination: destinationClassicAddress,
-      DestinationTag: tag,
+      Destination: destinationXAddressWithTag,
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
@@ -582,7 +611,7 @@ describe('serializer', function (): void {
     const expectedJSON: TransactionJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
-      Destination: destinationClassicAddress,
+      Destination: destinationXAddressWithoutTag,
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
@@ -625,7 +654,7 @@ describe('serializer', function (): void {
     const expectedJSON: TransactionJSON = {
       Account: accountClassicAddress,
       Amount: value.toString(),
-      Destination: destinationClassicAddress,
+      Destination: destinationXAddressWithoutTag,
       Fee: fee.toString(),
       LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
@@ -1040,6 +1069,19 @@ describe('serializer', function (): void {
     assert.isUndefined(Serializer.currencyToJSON(currency))
   })
 
+  it('Serializes an AccountAddress', function (): void {
+    // GIVEN an AccountAddress.
+    const address = 'r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ'
+    const accountAddress = new AccountAddress()
+    accountAddress.setAddress(address)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountAddressToJSON(accountAddress)
+
+    // THEN the serialized representation is the same as the input.
+    assert.equal(serialized, address)
+  })
+
   it('Serializes a Sequence', function (): void {
     // GIVEN a Sequence.
     const sequence = new Sequence()
@@ -1240,6 +1282,59 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a TransactionSignature', function (): void {
+    // GIVEN a TransactionSignature with some bytes
+    const transactionSignatureBytes = new Uint8Array([0, 1, 2, 3])
+
+    const transactionSignature = new TransactionSignature()
+    transactionSignature.setValue(transactionSignatureBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.transactionSignatureToJSON(
+      transactionSignature,
+    )
+
+    // THEN the result is the hex representation of the invoiceId.
+    assert.equal(serialized, Utils.toHex(transactionSignatureBytes))
+  })
+
+  it('Serializes a SigningPublicKey', function (): void {
+    // GIVEN a SigningPublicKey with some bytes
+    const signingPublicKeyBytes = new Uint8Array([0, 1, 2, 3])
+
+    const signingPublicKey = new SigningPublicKey()
+    signingPublicKey.setValue(signingPublicKeyBytes)
+
+    // WHEN it is serialized
+    const serialized = Serializer.signingPublicKeyToJSON(signingPublicKey)
+
+    // THEN the result is the hex representation of the bytes.
+    assert.equal(serialized, Utils.toHex(signingPublicKeyBytes))
+  })
+
+  it('Serializes an Account', function (): void {
+    // GIVEN an Account wrapping an address
+    const account = new Account()
+    account.setValue(testAccountAddress)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountToJSON(account)
+
+    // THEN the result is the address
+    assert.equal(serialized, testAccountAddress.getAddress())
+  })
+
+  it('Fails to serialize an  Account with no AccountAddress', function (): void {
+    // GIVEN an empty Account.
+    const account = new Account()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountToJSON(account)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
   it('Serializes an Amount with a CurrencyAmount', function (): void {
     // GIVEN an Amount wrapping a CurrencyAmount.
     const dropsValue = '123'
@@ -1300,20 +1395,6 @@ describe('serializer', function (): void {
     assert.equal(serialized, Utils.toHex(memoFormatBytes))
   })
 
-  it('Serializes a CheckID', function (): void {
-    // GIVEN a CheckID.
-    const checkIdValue = new Uint8Array([1, 2, 3, 4])
-
-    const checkId = new CheckID()
-    checkId.setValue(checkIdValue)
-
-    // WHEN it is serialized.
-    const serialized = Serializer.checkIDToJSON(checkId)
-
-    // THEN the output is the input encoded as hex.
-    assert.equal(serialized, Utils.toHex(checkIdValue))
-  })
-
   it('Serializes a Destination', function (): void {
     // GIVEN a Destination
     const destination = new Destination()
@@ -1357,23 +1438,6 @@ describe('serializer', function (): void {
     assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
   })
 
-  it('Serializes a SendMax', function (): void {
-    // GIVEN a SendMax.
-    const xrpDropsAmount = makeXrpDropsAmount('10')
-
-    const currencyAmount = new CurrencyAmount()
-    currencyAmount.setXrpAmount(xrpDropsAmount)
-
-    const deliverMin = new DeliverMin()
-    deliverMin.setValue(currencyAmount)
-
-    // WHEN it is serialized
-    const serialized = Serializer.deliverMinToJSON(deliverMin)
-
-    // THEN the result is the serialized representation of the input.
-    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
-  })
-
   it('Fails to serialize a malformed DeliverMin', function (): void {
     // GIVEN a DeliverMin with no value
     const destination = new DeliverMin()
@@ -1385,8 +1449,70 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a CheckID', function (): void {
+    // GIVEN a CheckID.
+    const checkIdValue = new Uint8Array([1, 2, 3, 4])
+
+    const checkId = new CheckID()
+    checkId.setValue(checkIdValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.checkIDToJSON(checkId)
+
+    // THEN the output is the input encoded as hex.
+    assert.equal(serialized, Utils.toHex(checkIdValue))
+  })
+
+  it('Serializes a CheckCancel', function (): void {
+    // GIVEN a CheckCancel.
+    const checkIdValue = new Uint8Array([1, 2, 3, 4])
+
+    const checkId = new CheckID()
+    checkId.setValue(checkIdValue)
+
+    const checkCancel = new CheckCancel()
+    checkCancel.setCheckId(checkId)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.checkCancelToJSON(checkCancel)
+
+    // THEN the output is in the expected form.
+    const expected = {
+      CheckID: Serializer.checkIDToJSON(checkId),
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a malformed CheckCancel', function (): void {
+    // GIVEN a CheckCancel with no data..
+    const checkCancel = new CheckCancel()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.checkCancelToJSON(checkCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a SendMax', function (): void {
+    // GIVEN a SendMax.
+    const xrpDropsAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const sendMax = new SendMax()
+    sendMax.setValue(currencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.sendMaxToJSON(sendMax)
+
+    // THEN the result is the serialized representation of the input.
+    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
+  })
+
   it('Fails to serialize a malformed SendMax', function (): void {
-    // GIVEN a DeliverMin with no value
+    // GIVEN a DeliverMin with no value.
     const destination = new SendMax()
 
     // WHEN it is serialized
@@ -1396,8 +1522,439 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes an Expiration', function (): void {
+    // GIVEN an Expiration with an expiration time.
+    const expirationTime = 12
+
+    const expiration = new Expiration()
+    expiration.setValue(expirationTime)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.expirationToJSON(expiration)
+
+    // THEN the result is the expiration time.
+    assert.equal(serialized, expirationTime)
+  })
+
+  it('Serializes an AccountDelete with mandatory fields', function (): void {
+    // GIVEN an AccountDelete with only mandatory fields.
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const accountDelete = new AccountDelete()
+    accountDelete.setDestination(destination)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountDeleteToJSON(accountDelete)
+
+    // THEN the result is in the expected form.
+    const expected = {
+      Destination: Serializer.destinationToJSON(destination)!,
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes an AccountDelete with all fields', function (): void {
+    // GIVEN an AccountDelete with only mandatory fields.
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const destinationTag = new DestinationTag()
+    destinationTag.setValue(12)
+
+    const accountDelete = new AccountDelete()
+    accountDelete.setDestination(destination)
+    accountDelete.setDestinationTag(destinationTag)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountDeleteToJSON(accountDelete)
+
+    // THEN the result is in the expected from
+    const expected = {
+      Destination: Serializer.destinationToJSON(destination)!,
+      DestinationTag: Serializer.destinationTagToJSON(destinationTag),
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize an AccountDelete with missing mandatory fields', function (): void {
+    // GIVEN an AccountDelete which is missing a destination.
+    const accountDelete = new AccountDelete()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountDeleteToJSON(accountDelete)
+
+    // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize an AccountDelete with malformed mandatory fields', function (): void {
+    // GIVEN an AccountDelete which constains a malformed destination.
+    const destination = new Destination()
+
+    const accountDelete = new AccountDelete()
+    accountDelete.setDestination(destination)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountDeleteToJSON(accountDelete)
+
+    // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a TakerGets', function (): void {
+    // GIVEN an TakerGets with a CurrencyAmount.
+    const currency = new Currency()
+    currency.setCode('USD')
+
+    const issuedCurrencyAmount = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      '123',
+      currency,
+    )
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setIssuedCurrencyAmount(issuedCurrencyAmount)
+
+    const takerGets = new TakerGets()
+    takerGets.setValue(currencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.takerGetsToJSON(takerGets)
+
+    // THEN the result is the serialized CurrencyAmount.
+    assert.deepEqual(
+      serialized,
+      Serializer.currencyAmountToJSON(currencyAmount),
+    )
+  })
+
+  it('Fails to serialze a malformed TakerGets', function (): void {
+    // GIVEN an TakerGets without a CurrencyAmount.
+    const takerGets = new TakerGets()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.takerGetsToJSON(takerGets)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a TakerPays', function (): void {
+    // GIVEN an TakerPays with a CurrencyAmount.
+    const currency = new Currency()
+    currency.setCode('USD')
+
+    const issuedCurrencyAmount = makeIssuedCurrencyAmount(
+      testAccountAddress,
+      '123',
+      currency,
+    )
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setIssuedCurrencyAmount(issuedCurrencyAmount)
+
+    const takerPays = new TakerPays()
+    takerPays.setValue(currencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.takerPaysToJSON(takerPays)
+
+    // THEN the result is the serialized CurrencyAmount.
+    assert.deepEqual(
+      serialized,
+      Serializer.currencyAmountToJSON(currencyAmount),
+    )
+  })
+
+  it('Fails to serialze a malformed TakerPays', function (): void {
+    // GIVEN an TakerPays without a CurrencyAmount.
+    const takerPays = new TakerPays()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.takerPaysToJSON(takerPays)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes an OfferSequence', function (): void {
+    // GIVEN an OfferSequence with an offer sequence.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.offerSequenceToJSON(offerSequence)
+
+    // THEN the result is the offserSequence value.
+    assert.equal(serialized, offerSequenceNumber)
+  })
+
+  it('Serializes an Owner', function (): void {
+    // GIVEN an Owner wrapping an address.
+    const owner = new Owner()
+    owner.setValue(testAccountAddress)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.accountToJSON(owner)
+
+    // THEN the result is the address
+    assert.equal(serialized, testAccountAddress.getAddress())
+  })
+
+  it('Fails to serialize an Owner with no AccountAddress', function (): void {
+    // GIVEN an empty Owner.
+    const owner = new Owner()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.ownerToJSON(owner)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes an EscrowCancel with all fields set', function (): void {
+    // GIVEN an EscrowCancel with all fields set.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const owner = new Owner()
+    owner.setValue(testAccountAddress)
+
+    const escrowCancel = new EscrowCancel()
+    escrowCancel.setOfferSequence(offerSequence)
+    escrowCancel.setOwner(owner)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    const expectedJSON: EscrowCancelJSON = {
+      OfferSequence: offerSequenceNumber,
+      Owner: testAccountAddress.toString(),
+      TransactionType: 'EscrowCancel',
+    }
+
+    // THEN the result is as expected.
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('Fails to serialize an EscrowCancel missing an offerSequence', function (): void {
+    // GIVEN an EscrowCancel that's missing an offerSequence.
+    const owner = new Owner()
+    owner.setValue(testAccountAddress)
+
+    const escrowCancel = new EscrowCancel()
+    escrowCancel.setOwner(owner)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize an EscrowCancel missing an owner', function (): void {
+    // GIVEN an EscrowCancel that's missing an owner.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const escrowCancel = new EscrowCancel()
+    escrowCancel.setOfferSequence(offerSequence)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize an EscrowCancel with a malformed owner', function (): void {
+    // GIVEN an EscrowCancel with a malformed owner.
+    const owner = new Owner()
+
+    const escrowCancel = new EscrowCancel()
+    escrowCancel.setOfferSequence()
+    escrowCancel.setOwner(owner)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.escrowCancelToJSON(escrowCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes an OfferCancel', function (): void {
+    // GIVEN a OfferCancel.
+    const offerSequence = new OfferSequence()
+    offerSequence.setValue(offerSequenceNumber)
+
+    const offerCancel = new OfferCancel()
+    offerCancel.setOfferSequence(offerSequence)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.offerCancelToJSON(offerCancel)
+
+    // THEN the output is in the expected form.
+    const expected = {
+      OfferSequence: Serializer.offerSequenceToJSON(offerSequence),
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes a Condition', function (): void {
+    // GIVEN a Condition with some bytes.
+    const conditionBytes = new Uint8Array([0, 1, 2, 3])
+    const condition = new Condition()
+    condition.setValue(conditionBytes)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.conditionToJSON(condition)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, Utils.toHex(conditionBytes))
+  })
+
+  it('Serializes a Payment with only mandatory fields set', function (): void {
+    // GIVEN a Payment with only mandatory fields.
+    const xrpAmount = makeXrpDropsAmount('10')
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpAmount)
+
+    const amount = new Amount()
+    amount.setValue(currencyAmount)
+
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const payment = new Payment()
+    payment.setAmount(amount)
+    payment.setDestination(destination)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentToJSON(payment)
+
+    // THEN the result is in the expected form.
+    const expected: PaymentJSON = {
+      Amount: Serializer.amountToJSON(amount)!,
+      Destination: Serializer.destinationToJSON(destination)!,
+      TransactionType: 'Payment',
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes a Payment with all fields set', function (): void {
+    // GIVEN a Payment with all mandatory fields.
+    // TODO(keefertaylor): Add additional fields here when they are implemented.
+    const transactionAmount = makeXrpCurrencyAmount('10')
+
+    const amount = new Amount()
+    amount.setValue(transactionAmount)
+
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const destinationTag = new DestinationTag()
+    destinationTag.setValue(11)
+
+    const invoiceId = new InvoiceID()
+    invoiceId.setValue(new Uint8Array([1, 2, 3, 4]))
+
+    const deliverMinAmount = makeXrpCurrencyAmount('12')
+
+    const deliverMin = new DeliverMin()
+    deliverMin.setValue(deliverMinAmount)
+
+    const payment = new Payment()
+    payment.setAmount(amount)
+    payment.setDeliverMin(deliverMin)
+    payment.setDestination(destination)
+    payment.setDestinationTag(destinationTag)
+    payment.setInvoiceId(invoiceId)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentToJSON(payment)
+
+    // THEN the result is in the expected form.
+    const expected: PaymentJSON = {
+      Amount: Serializer.amountToJSON(amount)!,
+      DeliverMin: Serializer.deliverMinToJSON(deliverMin),
+      Destination: Serializer.destinationToJSON(destination)!,
+      DestinationTag: Serializer.destinationTagToJSON(destinationTag),
+      InvoiceID: Serializer.invoiceIdToJSON(invoiceId),
+      TransactionType: 'Payment',
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a malformed OfferCancel', function (): void {
+    // GIVEN a OfferCancel with no data.
+    const offerCancel = new OfferCancel()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.offerCancelToJSON(offerCancel)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a malformed Payment', function (): void {
+    // GIVEN a malformed Payment.
+    const payment = new Payment()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentToJSON(payment)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a payment with a malformed mandatory field', function (): void {
+    // GIVEN a Payment with a malformed amount field.
+    const amount = new Amount()
+
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const payment = new Payment()
+    payment.setAmount(amount)
+    payment.setDestination(destination)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentToJSON(payment)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a CancelAfter', function (): void {
+    // GIVEN a CancelAfter.
+    const cancelAfterTime = 533257958
+    const cancelAfter = new CancelAfter()
+    cancelAfter.setValue(cancelAfterTime)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.cancelAfterToJSON(cancelAfter)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, cancelAfterTime)
+  })
+
+  it('Serializes a FinishAfter', function (): void {
+    // GIVEN a FinishAfter.
+    const finishAfterTime = 5331715585
+    const finishAfter = new FinishAfter()
+    finishAfter.setValue(finishAfterTime)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.finishAfterToJSON(finishAfter)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, finishAfterTime)
+  })
+
   it('Serializes a CheckCash with an Amount', function (): void {
-    // GIVEN a CheckCash with an AMount
+    // GIVEN a CheckCash with an Amount
     const xrpDropsAmount = makeXrpDropsAmount('10')
 
     const currencyAmount = new CurrencyAmount()
@@ -1479,20 +2036,6 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
-  })
-
-  it('Serializes an Expiration', function (): void {
-    // GIVEN an Expiration with an expiration time
-    const expirationTime = 12
-
-    const expiration = new Expiration()
-    expiration.setValue(expirationTime)
-
-    // WHEN it is serialized
-    const serialized = Serializer.expirationToJSON(expiration)
-
-    // THEN the result is the expiration time.
-    assert.equal(serialized, expirationTime)
   })
 
   it('Serializes a CheckCreate with only mandatory fields', function (): void {
