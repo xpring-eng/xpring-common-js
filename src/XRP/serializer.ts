@@ -44,6 +44,11 @@ import {
   CancelAfter,
   FinishAfter,
   SignerQuorum,
+  RegularKey,
+  SettleDelay,
+  PaymentChannelSignature,
+  PublicKey,
+  Balance,
   Fulfillment,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
@@ -57,6 +62,7 @@ import {
   CheckCancel,
   CheckCash,
   CheckCreate,
+  OfferCreate,
   EscrowCancel,
   EscrowCreate,
   EscrowFinish,
@@ -144,6 +150,7 @@ export interface PaymentJSON {
   Destination: DestinationJSON
   DestinationTag?: DestinationTagJSON
   InvoiceID?: InvoiceIdJSON
+  Paths?: PathJSON[]
   SendMax?: SendMaxJSON
   TransactionType: 'Payment'
 }
@@ -155,6 +162,13 @@ interface AccountDeleteJSON {
 
 interface CheckCancelJSON {
   CheckID: CheckIDJSON
+}
+
+export interface OfferCreateJSON {
+  Expiration?: ExpirationJSON
+  OfferSequence?: OfferSequenceJSON
+  TakerGets: TakerGetsJSON
+  TakerPays: TakerPaysJSON
 }
 
 // Generic field representing an OR of all above fields.
@@ -169,6 +183,7 @@ type TransactionDataJSON =
   | EscrowCreateJSON
   | EscrowFinishJSON
   | OfferCancelJSON
+  | OfferCreateJSON
   | PaymentJSON
 
 /**
@@ -181,6 +196,7 @@ type CheckCashTransactionJSON = BaseTransactionJSON & CheckCashJSON
 type CheckCreateTransactionJSON = BaseTransactionJSON & CheckCreateJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type OfferCancelTransactionJSON = BaseTransactionJSON & OfferCancelJSON
+type OfferCreateTransactionJSON = BaseTransactionJSON & OfferCreateJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
@@ -200,6 +216,7 @@ export type TransactionJSON =
   | EscrowCreateTransactionJSON
   | EscrowFinishTransactionJSON
   | OfferCancelTransactionJSON
+  | OfferCreateTransactionJSON
   | PaymentTransactionJSON
 
 /**
@@ -227,6 +244,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type BalanceJSON = CurrencyAmountJSON
 type DeliverMinJSON = CurrencyAmountJSON
 type AccountAddressJSON = string
 type CheckIDJSON = string
@@ -265,6 +283,10 @@ type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
 type SignerQuorumJSON = number
+type RegularKeyJSON = AccountAddressJSON
+type SettleDelayJSON = number
+type PaymentChannelSignatureJSON = string
+type PublicKeyJSON = string
 type FulfillmentJSON = string
 
 /**
@@ -385,6 +407,13 @@ const serializer = {
     const sendMax = payment.getSendMax()
     if (sendMax !== undefined) {
       json.SendMax = this.sendMaxToJSON(sendMax)
+    }
+
+    const pathList = payment.getPathsList()
+    if (pathList.length > 0) {
+      json.Paths = pathList.map((path) => {
+        return this.pathToJSON(path)
+      })
     }
 
     return json
@@ -625,6 +654,17 @@ const serializer = {
    */
   xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
     return `${xrpDropsAmount.getDrops()}`
+  },
+
+  /**
+   * Convert a list of Paths to a JSON representation.
+   *
+   * @param pathList - A list of Path's to convert.
+   * @returns The list as JSON.
+   */
+  pathListToJSON(pathList: Payment.Path[]): PathJSON[] {
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- Manually assigning `this`.
+    return pathList.map(this.pathToJSON, this)
   },
 
   /**
@@ -1328,6 +1368,107 @@ const serializer = {
    */
   signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
     return signerQuorum.getValue()
+  },
+    
+  /**
+   * Convert an OfferCreate to a JSON representation.
+   *
+   * @param offerCreate - The OfferCreate to convert.
+   * @returns The OfferCreate as JSON.
+   */
+  offerCreateToJSON(offerCreate: OfferCreate): OfferCreateJSON | undefined {
+    // Process mandatory fields.
+    const takerGets = offerCreate.getTakerGets()
+    const takerPays = offerCreate.getTakerPays()
+    if (takerGets === undefined || takerPays === undefined) {
+      return undefined
+    }
+
+    const takerGetsJSON = this.takerGetsToJSON(takerGets)
+    const takerPaysJSON = this.takerPaysToJSON(takerPays)
+    if (takerGetsJSON === undefined || takerPaysJSON === undefined) {
+      return undefined
+    }
+
+    const json: OfferCreateJSON = {
+      TakerGets: takerGetsJSON,
+      TakerPays: takerPaysJSON,
+    }
+
+    // Process optional fields.
+    const offerSequence = offerCreate.getOfferSequence()
+    if (offerSequence !== undefined) {
+      json.OfferSequence = this.offerSequenceToJSON(offerSequence)
+    }
+
+    const expiration = offerCreate.getExpiration()
+    if (expiration !== undefined) {
+      json.Expiration = this.expirationToJSON(expiration)
+    }
+
+    return json
+  },
+    
+  /**    
+   * Convert a RegularKey to a JSON representation.
+   *
+   * @param regularKey - The RegularKey to convert.
+   * @returns The RegularKey as JSON.
+   */
+  regularKeyToJSON(regularKey: RegularKey): RegularKeyJSON | undefined {
+    const accountAddress = regularKey.getValue()
+    if (accountAddress === undefined) {
+      return undefined
+    }
+
+    return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert a SettleDelay to a JSON representation.
+   *
+   * @param settleDelay - The SettleDelay to convert.
+   * @returns The SettleDelay as JSON.
+   */
+  settleDelayToJSON(settleDelay: SettleDelay): SettleDelayJSON {
+    return settleDelay.getValue()
+  },
+    
+  /**
+   * Convert a PaymentChannelSignature to a JSON representation.
+   *
+   * @param paymentChannelSignature - The PaymentChannelSignature to convert.
+   * @returns The PaymentChannelSignature as JSON.
+   */
+  paymentChannelSignatureToJSON(
+    paymentChannelSignature: PaymentChannelSignature,
+  ): PaymentChannelSignatureJSON {
+    return Utils.toHex(paymentChannelSignature.getValue_asU8())
+  },
+    
+  /**
+   * Convert a PublicKey to a JSON representation.
+   *
+   * @param publicKey - The PublicKey to convert.
+   * @returns The PublicKey as JSON.
+   */
+  publicKeyToJSON(publicKey: PublicKey): PublicKeyJSON {
+    return Utils.toHex(publicKey.getValue_asU8())
+  },
+  
+  /**
+   * Convert a Balance to a JSON representation.
+   *
+   * @param balance - The Balance to convert.
+   * @returns The Balance as JSON.
+   */
+  balanceToJSON(balance: Balance): BalanceJSON | undefined {
+    const currencyAmount = balance.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
   },
 }
 
