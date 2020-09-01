@@ -48,6 +48,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  Channel,
   SignerQuorum,
   RegularKey,
   SettleDelay,
@@ -2199,6 +2200,20 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a Channel', function (): void {
+    // GIVEN a Channel.
+    const channelValue = new Uint8Array([1, 2, 3, 4])
+
+    const channel = new Channel()
+    channel.setValue(channelValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.channelToJSON(channel)
+
+    // THEN the output is the input encoded as hex.
+    assert.equal(serialized, Utils.toHex(channelValue))
+  })
+  
   it('Serializes an OfferCreate with only mandatory fields', function (): void {
     // GIVEN a OfferCreate with mandatory fields set.
     const takerPays = new TakerPays()

@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  Channel,
   SignerQuorum,
   RegularKey,
   SettleDelay,
@@ -244,6 +245,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type ChannelJSON = string
 type BalanceJSON = CurrencyAmountJSON
 type DeliverMinJSON = CurrencyAmountJSON
 type AccountAddressJSON = string
@@ -1361,6 +1363,16 @@ const serializer = {
   },
 
   /**
+   * Convert a Channel to a JSON representation.
+   *
+   * @param channel - The Channel to convert.
+   * @returns The Channel as JSON.
+   */
+  channelToJSON(channel: Channel): ChannelJSON {
+    return Utils.toHex(channel.getValue_asU8())
+  },
+
+  /** 
    * Convert a SignerQuorum to a JSON representation.
    *
    * @param signerQuorum - The SignerQuorum to convert.
