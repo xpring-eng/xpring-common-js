@@ -49,6 +49,8 @@ import {
   CancelAfter,
   FinishAfter,
   Fulfillment,
+  QualityIn,
+  QualityOut,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -1950,6 +1952,32 @@ describe('serializer', function (): void {
 
     // THEN the result is as expected.
     assert.equal(serialized, cancelAfterTime)
+  })
+
+  it('Serializes a QualityIn', function (): void {
+    // GIVEN a QualityIn.
+    const qualityInValue = 6
+    const qualityIn = new QualityIn()
+    qualityIn.setValue(qualityInValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.qualityInToJSON(qualityIn)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, qualityInValue)
+  })
+
+  it('Serializes a QualityOut', function (): void {
+    // GIVEN a QualityOut.
+    const qualityOutValue = 7
+    const qualityOut = new QualityOut()
+    qualityOut.setValue(qualityOutValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.qualityOutToJSON(qualityOut)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, qualityOutValue)
   })
 
   it('Serializes a FinishAfter', function (): void {
