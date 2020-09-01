@@ -170,7 +170,7 @@ export interface PaymentChannelFundJSON {
   Channel: ChannelJSON
   Amount: AmountJSON
   Expiration?: ExpirationJSON
-  TransactionType: "PaymentChannelFund"
+  TransactionType: 'PaymentChannelFund'
 }
 
 export interface OfferCreateJSON {
@@ -211,7 +211,8 @@ type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
-type PaymentChannelFundTransactionJSON = BaseTransactionJSON & PaymentChannelFundTransactionJSON
+type PaymentChannelFundTransactionJSON = BaseTransactionJSON &
+  PaymentChannelFundTransactionJSON
 
 /**
  * All Transactions.
@@ -1383,7 +1384,7 @@ const serializer = {
     return Utils.toHex(channel.getValue_asU8())
   },
 
-  /** 
+  /**
    * Convert a SignerQuorum to a JSON representation.
    *
    * @param signerQuorum - The SignerQuorum to convert.
@@ -1392,7 +1393,7 @@ const serializer = {
   signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
     return signerQuorum.getValue()
   },
-    
+
   /**
    * Convert an OfferCreate to a JSON representation.
    *
@@ -1431,8 +1432,8 @@ const serializer = {
 
     return json
   },
-    
-  /**    
+
+  /**
    * Convert a RegularKey to a JSON representation.
    *
    * @param regularKey - The RegularKey to convert.
@@ -1456,7 +1457,7 @@ const serializer = {
   settleDelayToJSON(settleDelay: SettleDelay): SettleDelayJSON {
     return settleDelay.getValue()
   },
-    
+
   /**
    * Convert a PaymentChannelSignature to a JSON representation.
    *
@@ -1468,7 +1469,7 @@ const serializer = {
   ): PaymentChannelSignatureJSON {
     return Utils.toHex(paymentChannelSignature.getValue_asU8())
   },
-    
+
   /**
    * Convert a PublicKey to a JSON representation.
    *
@@ -1478,7 +1479,7 @@ const serializer = {
   publicKeyToJSON(publicKey: PublicKey): PublicKeyJSON {
     return Utils.toHex(publicKey.getValue_asU8())
   },
-  
+
   /**
    * Convert a Balance to a JSON representation.
    *
@@ -1496,11 +1497,13 @@ const serializer = {
 
   /**
    * Convert a PaymentChannelFund to a JSON representation.
-   * 
+   *
    * @param paymentChannelFund - The PaymentChannelFund to convert.
    * @returns The PaymentChannelFund as JSON.
    */
-  paymentChannelFundToJSON(paymentChannelFund: PaymentChannelFund): PaymentChannelFundJSON | undefined {
+  paymentChannelFundToJSON(
+    paymentChannelFund: PaymentChannelFund,
+  ): PaymentChannelFundJSON | undefined {
     // Process mandatory fields.
     const channel = paymentChannelFund.getChannel()
     const amount = paymentChannelFund.getAmount()
@@ -1508,20 +1511,25 @@ const serializer = {
       return undefined
     }
 
-    const json: PaymentChannelFundJSON = {
-      Channel: this.channelToJSON(channel),
-      Amount: this.amountToJSON(amount),
-      TransactionType: "PaymentChannelFund",
+    const amountJSON = this.amountToJSON(amount)
+    if (amountJSON === undefined) {
+      return undefined
     }
 
-    // Process optional fields. 
+    const json: PaymentChannelFundJSON = {
+      Channel: this.channelToJSON(channel),
+      Amount: amountJSON,
+      TransactionType: 'PaymentChannelFund',
+    }
+
+    // Process optional fields.
     const expiration = paymentChannelFund.getExpiration()
     if (expiration !== undefined) {
       json.Expiration = this.expirationToJSON(expiration)
     }
 
     return json
-  }
+  },
 }
 
 export default serializer

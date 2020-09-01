@@ -2216,7 +2216,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(channelValue))
   })
-  
+
   it('Serializes an OfferCreate with only mandatory fields', function (): void {
     // GIVEN a OfferCreate with mandatory fields set.
     const takerPays = new TakerPays()
@@ -2298,7 +2298,7 @@ describe('serializer', function (): void {
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
-    
+
   it('Serializes a PublicKey', function (): void {
     // GIVEN a PublicKey.
     const publicKeyValue = new Uint8Array([1, 2, 3, 4])
@@ -2312,7 +2312,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(publicKeyValue))
   })
-    
+
   it('Serializes a Balance', function (): void {
     // GIVEN a Balance.
     const currencyAmount = makeXrpCurrencyAmount('10')
@@ -2337,7 +2337,7 @@ describe('serializer', function (): void {
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
-    
+
   it('Converts a PathList', function (): void {
     // GIVEN a Path list with two paths.
     const path1Element1 = makePathElement(
@@ -2561,7 +2561,7 @@ describe('serializer', function (): void {
     // THEN the result is as expected.
     assert.equal(serialized, settleDelayValue)
   })
-    
+
   it('Serializes a PaymentChannelSignature', function (): void {
     // GIVEN a PaymentChannelSignature.
     const paymentChannelSignatureValue = new Uint8Array([1, 2, 3, 4])
@@ -2577,7 +2577,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(paymentChannelSignatureValue))
   })
-    
+
   it('Serializes a Fulfillment', function (): void {
     // GIVEN a Fulfillment with some bytes.
     const fulfillmentBytes = new Uint8Array([0, 1, 2, 3])
@@ -2696,7 +2696,7 @@ describe('serializer', function (): void {
   it('Serializes a PaymentChannelFund with mandatory fields set.', function (): void {
     // GIVEN a PaymentChannelFund with mandatory fields set.
     const amount = new Amount()
-    amount.setValue(makeXrpCurrencyAmount("10"))
+    amount.setValue(makeXrpCurrencyAmount('10'))
 
     const channel = new Channel()
     channel.setValue(new Uint8Array([1, 2, 3, 4]))
@@ -2712,8 +2712,66 @@ describe('serializer', function (): void {
     const expected: PaymentChannelFundJSON = {
       Amount: Serializer.amountToJSON(amount),
       Channel: Serializer.channelToJSON(channel),
-      TransactionType: "PaymentChannelFund"
+      TransactionType: 'PaymentChannelFund',
     }
     assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes a PaymentChannelFund with all fields set.', function (): void {
+    // GIVEN a PaymentChannelFund with all fields set.
+    const amount = new Amount()
+    amount.setValue(makeXrpCurrencyAmount('10'))
+
+    const channel = new Channel()
+    channel.setValue(new Uint8Array([1, 2, 3, 4]))
+
+    const expiration = new Expiration()
+    expiration.setValue(5)
+
+    const paymentChannelFund = new PaymentChannelFund()
+    paymentChannelFund.setAmount(amount)
+    paymentChannelFund.setChannel(channel)
+    paymentChannelFund.setExpiration(expiration)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelFundToJSON(paymentChannelFund)
+
+    // THEN the result is in the expected form.
+    const expected: PaymentChannelFundJSON = {
+      Amount: Serializer.amountToJSON(amount),
+      Channel: Serializer.channelToJSON(channel),
+      Expiration: Serializer.expirationToJSON(expiration),
+      TransactionType: 'PaymentChannelFund',
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a PaymentChannelFund with a malformed amount field.', function (): void {
+    // GIVEN a PaymentChannelFund with a malformed amount field
+    const amount = new Amount()
+
+    const channel = new Channel()
+    channel.setValue(new Uint8Array([1, 2, 3, 4]))
+
+    const paymentChannelFund = new PaymentChannelFund()
+    paymentChannelFund.setAmount(amount)
+    paymentChannelFund.setChannel(channel)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelFundToJSON(paymentChannelFund)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a malformed PaymentChannelFund', function (): void {
+    // GIVEN a malformed PaymentChannelFund/
+    const paymentChannelFund = new PaymentChannelFund()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelFundToJSON(paymentChannelFund)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 })
