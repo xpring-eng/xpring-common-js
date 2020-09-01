@@ -56,6 +56,7 @@ import {
   PublicKey,
   Balance,
   Fulfillment,
+  SignerWeight,
   QualityIn,
   QualityOut,
   LimitAmount,
@@ -2629,6 +2630,20 @@ describe('serializer', function (): void {
     assert.equal(serialized, Utils.toHex(fulfillmentBytes))
   })
 
+  it('Serializes a SignerWeight', function (): void {
+    // GIVEN a SignerWeight.
+    const signerWeightValue = 3
+
+    const signerWeight = new SignerWeight()
+    signerWeight.setValue(signerWeightValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.signerWeightToJSON(signerWeight)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, signerWeightValue)
+  })
+    
   it('Serializes an EscrowFinish with required fields', function (): void {
     // GIVEN an EscrowFinish with required fields.
     const offerSequence = new OfferSequence()
