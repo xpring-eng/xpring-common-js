@@ -44,6 +44,10 @@ import {
   CancelAfter,
   FinishAfter,
   Channel,
+  PaymentChannelSignature,
+  PublicKey,
+  Balance,
+  Fulfillment,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -54,10 +58,12 @@ import {
   AccountDelete,
   OfferCancel,
   CheckCancel,
-  EscrowCancel,
   CheckCash,
   CheckCreate,
   PaymentChannelClaim,
+  EscrowCancel,
+  EscrowCreate,
+  EscrowFinish,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -114,6 +120,24 @@ export interface EscrowCancelJSON {
   TransactionType: 'EscrowCancel'
 }
 
+export interface EscrowCreateJSON {
+  Amount: AmountJSON
+  CancelAfter?: CancelAfterJSON
+  Condition?: ConditionJSON
+  Destination: DestinationJSON
+  DestinationTag?: DestinationTagJSON
+  FinishAfter?: FinishAfterJSON
+  TransactionType: 'EscrowCreate'
+}
+
+export interface EscrowFinishJSON {
+  Condition?: ConditionJSON
+  Fulfillment?: FulfillmentJSON
+  OfferSequence: OfferSequenceJSON
+  Owner: OwnerJSON
+  TransactionType: 'EscrowFinish'
+}
+
 interface OfferCancelJSON {
   OfferSequence: OfferSequenceJSON
 }
@@ -124,6 +148,7 @@ export interface PaymentJSON {
   Destination: DestinationJSON
   DestinationTag?: DestinationTagJSON
   InvoiceID?: InvoiceIdJSON
+  Paths?: PathJSON[]
   SendMax?: SendMaxJSON
   TransactionType: 'Payment'
 }
@@ -141,7 +166,7 @@ interface PaymentChannelClaimJSON {
   Channel: ChannelJSON
   Balance?: BalanceJSON
   Amount?: AmountJSON
-  Signature?: SignatureJSON
+  Signature?: PaymentChannelSignatureJSON
   PublicKey?: PublicKeyJSON
 }
 
@@ -154,6 +179,8 @@ type TransactionDataJSON =
   | CheckCreateJSON
   | DepositPreauthJSON
   | EscrowCancelJSON
+  | EscrowCreateJSON
+  | EscrowFinishJSON
   | OfferCancelJSON
   | PaymentJSON
   | PaymentChannelClaimJSON
@@ -169,8 +196,11 @@ type CheckCreateTransactionJSON = BaseTransactionJSON & CheckCreateJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
 type OfferCancelTransactionJSON = BaseTransactionJSON & OfferCancelJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
+type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
+type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
-type PaymentChannelClaimJSON = BaseTransactionJSON & PaymentChannelClaimJSON
+type PaymentChannelClaimTransactionJSON = BaseTransactionJSON &
+  PaymentChannelClaimJSON
 
 /**
  * All Transactions.
@@ -183,9 +213,11 @@ export type TransactionJSON =
   | CheckCreateTransactionJSON
   | DepositPreauthTransactionJSON
   | EscrowCancelTransactionJSON
+  | EscrowCreateTransactionJSON
+  | EscrowFinishTransactionJSON
   | OfferCancelTransactionJSON
   | PaymentTransactionJSON
-  | PaymentChannelClaimJSON
+  | PaymentChannelClaimTransactionJSON
 
 /**
  * Types for serialized sub-objects.
@@ -213,6 +245,7 @@ interface IssuedCurrencyAmountJSON {
 }
 
 type ChannelJSON = string
+type BalanceJSON = CurrencyAmountJSON
 type DeliverMinJSON = CurrencyAmountJSON
 type AccountAddressJSON = string
 type CheckIDJSON = string
@@ -250,6 +283,9 @@ type OwnerJSON = string
 type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
+type PaymentChannelSignatureJSON = string
+type PublicKeyJSON = string
+type FulfillmentJSON = string
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -371,6 +407,13 @@ const serializer = {
       json.SendMax = this.sendMaxToJSON(sendMax)
     }
 
+    const pathList = payment.getPathsList()
+    if (pathList.length > 0) {
+      json.Paths = pathList.map((path) => {
+        return this.pathToJSON(path)
+      })
+    }
+
     return json
   },
 
@@ -469,6 +512,91 @@ const serializer = {
   },
 
   /**
+   * Convert an EscrowCreate to a JSON representation.
+   *
+   * @param escrowCreate - The EscrowCreate to convert.
+   * @returns The EscrowCreate as JSON.
+   */
+  escrowCreateToJSON(escrowCreate: EscrowCreate): EscrowCreateJSON | undefined {
+    const amount = escrowCreate.getAmount()
+    const destination = escrowCreate.getDestination()
+    if (amount === undefined || destination === undefined) {
+      return undefined
+    }
+
+    const amountJson = this.amountToJSON(amount)
+    const destinationJson = this.destinationToJSON(destination)
+    if (amountJson === undefined || destinationJson === undefined) {
+      return undefined
+    }
+
+    const json: EscrowCreateJSON = {
+      Amount: amountJson,
+      Destination: destinationJson,
+      TransactionType: 'EscrowCreate',
+    }
+
+    const cancelAfter = escrowCreate.getCancelAfter()
+    if (cancelAfter !== undefined) {
+      json.CancelAfter = this.cancelAfterToJSON(cancelAfter)
+    }
+
+    const condition = escrowCreate.getCondition()
+    if (condition !== undefined) {
+      json.Condition = this.conditionToJSON(condition)
+    }
+
+    const destinationTag = escrowCreate.getDestinationTag()
+    if (destinationTag !== undefined) {
+      json.DestinationTag = this.destinationTagToJSON(destinationTag)
+    }
+
+    const finishAfter = escrowCreate.getFinishAfter()
+    if (finishAfter !== undefined) {
+      json.FinishAfter = this.finishAfterToJSON(finishAfter)
+    }
+
+    return json
+  },
+
+  /**
+   * Convert an EscrowFinish to a JSON representation.
+   *
+   * @param escrowFinish - The EscrowFinish to convert.
+   * @returns The EscrowFinish as JSON.
+   */
+  escrowFinishToJSON(escrowFinish: EscrowFinish): EscrowFinishJSON | undefined {
+    const offerSequence = escrowFinish.getOfferSequence()
+    const owner = escrowFinish.getOwner()
+    if (owner === undefined || offerSequence === undefined) {
+      return undefined
+    }
+
+    const ownerJSON = this.ownerToJSON(owner)
+    if (ownerJSON === undefined) {
+      return undefined
+    }
+
+    const json: EscrowFinishJSON = {
+      OfferSequence: this.offerSequenceToJSON(offerSequence),
+      Owner: ownerJSON,
+      TransactionType: 'EscrowFinish',
+    }
+
+    const condition = escrowFinish.getCondition()
+    if (condition !== undefined) {
+      json.Condition = this.conditionToJSON(condition)
+    }
+
+    const fulfillment = escrowFinish.getFulfillment()
+    if (fulfillment !== undefined) {
+      json.Fulfillment = this.fulfillmentToJSON(fulfillment)
+    }
+
+    return json
+  },
+
+  /**
    * Convert a AccountSet to a JSON representation.
    *
    * @param accountSet - The AccountSet to convert.
@@ -524,6 +652,17 @@ const serializer = {
    */
   xrpAmountToJSON(xrpDropsAmount: XRPDropsAmount): string {
     return `${xrpDropsAmount.getDrops()}`
+  },
+
+  /**
+   * Convert a list of Paths to a JSON representation.
+   *
+   * @param pathList - A list of Path's to convert.
+   * @returns The list as JSON.
+   */
+  pathListToJSON(pathList: Payment.Path[]): PathJSON[] {
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- Manually assigning `this`.
+    return pathList.map(this.pathToJSON, this)
   },
 
   /**
@@ -1116,11 +1255,21 @@ const serializer = {
   /**
    * Convert a FinishAfter to a JSON representation.
    *
-   * @param finishAfter - The FinshAfter to convert.
+   * @param finishAfter - The FinishAfter to convert.
    * @returns The FinishAfter as JSON.
    */
   finishAfterToJSON(finishAfter: FinishAfter): FinishAfterJSON {
     return finishAfter.getValue()
+  },
+
+  /**
+   * Convert a Fulfillment to a JSON representation.
+   *
+   * @param fulfillment - The Fulfillment to convert.
+   * @returns The Fulfillment as JSON.
+   */
+  fulfillmentToJSON(fulfillment: Fulfillment): FulfillmentJSON {
+    return Utils.toHex(fulfillment.getValue_asU8())
   },
 
   /**
@@ -1221,8 +1370,13 @@ const serializer = {
 
   /**
    * Convert a PaymentChannelClaim to a JSON representation.
+   *
+   * @param paymentChannelClaim - The PaymentChannelClaim to convert.
+   * @returns The PaymentChannelClaim as JSON.
    */
-  paymentChannelClaimToJSON(paymentChannelClaim: PaymentChannelClaim): PaymentChannelClaimJSON | undefined {
+  paymentChannelClaimToJSON(
+    paymentChannelClaim: PaymentChannelClaim,
+  ): PaymentChannelClaimJSON | undefined {
     // Process mandatory fields.
     const channel = paymentChannelClaim.getChannel()
     if (channel === undefined) {
@@ -1230,11 +1384,14 @@ const serializer = {
     }
 
     const json: PaymentChannelClaimJSON = {
-      Channel: this.channelToJSON(channel)
+      Channel: this.channelToJSON(channel),
     }
 
     // Process optional fields.
     const balance = paymentChannelClaim.getBalance()
+    if (balance !== undefined) {
+      json.Balance = this.balanceToJSON(balance)
+    }
 
     const amount = paymentChannelClaim.getAmount()
     if (amount !== undefined) {
@@ -1242,10 +1399,54 @@ const serializer = {
     }
 
     const signature = paymentChannelClaim.getPaymentChannelSignature()
+    if (signature !== undefined) {
+      json.Signature = this.paymentChannelSignatureToJSON(signature)
+    }
+
     const publicKey = paymentChannelClaim.getPublicKey()
+    if (publicKey !== undefined) {
+      json.PublicKey = this.publicKeyToJSON(publicKey)
+    }
 
     return json
-  }  
+  },
+
+  /**
+   * Convert a PaymentChannelSignature to a JSON representation.
+   *
+   * @param paymentChannelSignature - The PaymentChannelSignature to convert.
+   * @returns The PaymentChannelSignature as JSON.
+   */
+  paymentChannelSignatureToJSON(
+    paymentChannelSignature: PaymentChannelSignature,
+  ): PaymentChannelSignatureJSON {
+    return Utils.toHex(paymentChannelSignature.getValue_asU8())
+  },
+
+  /**
+   * Convert a PublicKey to a JSON representation.
+   *
+   * @param publicKey - The PublicKey to convert.
+   * @returns The PublicKey as JSON.
+   */
+  publicKeyToJSON(publicKey: PublicKey): PublicKeyJSON {
+    return Utils.toHex(publicKey.getValue_asU8())
+  },
+
+  /**
+   * Convert a Balance to a JSON representation.
+   *
+   * @param balance - The Balance to convert.
+   * @returns The Balance as JSON.
+   */
+  balanceToJSON(balance: Balance): BalanceJSON | undefined {
+    const currencyAmount = balance.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
+  },
 }
 
 export default serializer
