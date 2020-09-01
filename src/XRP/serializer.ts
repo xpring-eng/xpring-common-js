@@ -37,8 +37,12 @@ import {
   Expiration,
   Account,
   TakerGets,
+  TakerPays,
   OfferSequence,
   Owner,
+  Condition,
+  CancelAfter,
+  FinishAfter,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -46,8 +50,11 @@ import {
   Payment,
   Transaction,
   DepositPreauth,
+  AccountDelete,
+  OfferCancel,
   CheckCancel,
   EscrowCancel,
+  CheckCash,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -78,6 +85,12 @@ export interface AccountSetJSON {
   TransactionType: 'AccountSet'
 }
 
+interface CheckCashJSON {
+  CheckID: CheckIDJSON
+  Amount?: CurrencyAmountJSON
+  DeliverMin?: DeliverMinJSON
+}
+
 export interface DepositPreauthJSON {
   Authorize?: AuthorizeJSON
   Unauthorize?: UnauthorizeJSON
@@ -90,6 +103,10 @@ export interface EscrowCancelJSON {
   TransactionType: 'EscrowCancel'
 }
 
+interface OfferCancelJSON {
+  OfferSequence: OfferSequenceJSON
+}
+
 export interface PaymentJSON {
   Amount: AmountJSON
   DeliverMin?: DeliverMinJSON
@@ -100,24 +117,35 @@ export interface PaymentJSON {
   TransactionType: 'Payment'
 }
 
+interface AccountDeleteJSON {
+  Destination: DestinationJSON
+  DestinationTag?: DestinationTagJSON
+}
+
 interface CheckCancelJSON {
   CheckID: CheckIDJSON
 }
 
 // Generic field representing an OR of all above fields.
 type TransactionDataJSON =
+  | AccountDeleteJSON
   | AccountSetJSON
   | CheckCancelJSON
+  | CheckCashJSON
   | DepositPreauthJSON
   | EscrowCancelJSON
+  | OfferCancelJSON
   | PaymentJSON
 
 /**
  * Individual Transaction Types.
  */
+type AccountDeleteTransactionJSON = BaseTransactionJSON & AccountDeleteJSON
 type AccountSetTransactionJSON = BaseTransactionJSON & AccountSetJSON
 type CheckCancelTransactionJSON = BaseTransactionJSON & CheckCancelJSON
+type CheckCashTransactionJSON = BaseTransactionJSON & CheckCashJSON
 type DepositPreauthTransactionJSON = BaseTransactionJSON & DepositPreauthJSON
+type OfferCancelTransactionJSON = BaseTransactionJSON & OfferCancelJSON
 type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 
@@ -125,10 +153,13 @@ type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
  * All Transactions.
  */
 export type TransactionJSON =
+  | AccountDeleteTransactionJSON
   | AccountSetTransactionJSON
   | CheckCancelTransactionJSON
+  | CheckCashTransactionJSON
   | DepositPreauthTransactionJSON
   | EscrowCancelTransactionJSON
+  | OfferCancelTransactionJSON
   | PaymentTransactionJSON
 
 /**
@@ -157,7 +188,6 @@ interface IssuedCurrencyAmountJSON {
 }
 
 type DeliverMinJSON = CurrencyAmountJSON
-type DestinationJSON = AccountAddressJSON
 type AccountAddressJSON = string
 type CheckIDJSON = string
 type SendMaxJSON = CurrencyAmountJSON
@@ -165,6 +195,7 @@ type TransactionSignatureJSON = string
 type SigningPublicKeyJSON = string
 type ExpirationJSON = number
 type AccountJSON = string
+type DestinationJSON = AccountAddressJSON
 type AmountJSON = CurrencyAmountJSON
 type MemoDataJSON = string
 type MemoTypeJSON = string
@@ -187,8 +218,12 @@ type InvoiceIdJSON = string
 type PathJSON = PathElementJSON[]
 type CurrencyJSON = string
 type TakerGetsJSON = CurrencyAmountJSON
+type TakerPaysJSON = CurrencyAmountJSON
 type OfferSequenceJSON = number
 type OwnerJSON = string
+type ConditionJSON = string
+type CancelAfterJSON = number
+type FinishAfterJSON = number
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -954,6 +989,21 @@ const serializer = {
   },
 
   /**
+   * Convert a TakerPays to a JSON representation.
+   *
+   * @param takerPays - The TakerPays to convert.
+   * @returns The TakerPays as JSON.
+   */
+  takerPaysToJSON(takerPays: TakerPays): TakerPaysJSON | undefined {
+    const currencyAmount = takerPays.getValue()
+    if (currencyAmount === undefined) {
+      return undefined
+    }
+
+    return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
    * Convert an Account to a JSON representation.
    *
    * @param account - The Account to convert.
@@ -966,6 +1016,127 @@ const serializer = {
     }
 
     return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert an AccountDelete to a JSON representation.
+   *
+   * @param accountDelete - The AccountDelete to convert.
+   * @returns The AccountDelete as JSON.
+   */
+  accountDeleteToJSON(
+    accountDelete: AccountDelete,
+  ): AccountDeleteJSON | undefined {
+    // Process mandatory fields.
+    const destination = accountDelete.getDestination()
+    if (destination === undefined) {
+      return undefined
+    }
+    const destinationJSON = this.destinationToJSON(destination)
+    if (destinationJSON === undefined) {
+      return undefined
+    }
+
+    const json: AccountDeleteJSON = {
+      Destination: destinationJSON,
+    }
+
+    // Process optional fields.
+    const destinationTag = accountDelete.getDestinationTag()
+    if (destinationTag !== undefined) {
+      json.DestinationTag = this.destinationTagToJSON(destinationTag)
+    }
+
+    return json
+  },
+
+  /**
+   * Convert an OfferCancel to a JSON representation.
+   *
+   * @param offerCancel - The OfferCancel to convert.
+   * @returns The OfferCancel as JSON.
+   */
+  offerCancelToJSON(offerCancel: OfferCancel): OfferCancelJSON | undefined {
+    const offerSequence = offerCancel.getOfferSequence()
+    if (offerSequence === undefined) {
+      return undefined
+    }
+
+    return {
+      OfferSequence: this.offerSequenceToJSON(offerSequence),
+    }
+  },
+
+  /**
+   * Convert a Condition to a JSON representation.
+   *
+   * @param condition - The Condition to convert.
+   * @returns The Condition as JSON.
+   */
+  conditionToJSON(condition: Condition): ConditionJSON {
+    return Utils.toHex(condition.getValue_asU8())
+  },
+
+  /**
+   * Convert a CancelAfter to a JSON representation.
+   *
+   * @param cancelAfter - The CancelAfter to convert.
+   * @returns The CancelAfter as JSON.
+   */
+  cancelAfterToJSON(cancelAfter: CancelAfter): CancelAfterJSON {
+    return cancelAfter.getValue()
+  },
+
+  /**
+   * Convert a FinishAfter to a JSON representation.
+   *
+   * @param finishAfter - The FinshAfter to convert.
+   * @returns The FinishAfter as JSON.
+   */
+  finishAfterToJSON(finishAfter: FinishAfter): FinishAfterJSON {
+    return finishAfter.getValue()
+  },
+
+  /**
+   * Convert a CheckCash to a JSON respresentation.
+   *
+   * @param checkCash - The CheckCash to convert.
+   * @returns The CheckCash as JSON.
+   */
+  checkCashToJSON(checkCash: CheckCash): CheckCashJSON | undefined {
+    // Process required fields.
+    const checkId = checkCash.getCheckId()
+    if (checkId === undefined) {
+      return undefined
+    }
+
+    const json: CheckCashJSON = {
+      CheckID: this.checkIDToJSON(checkId),
+    }
+
+    // One of the following fields must be set.
+    switch (checkCash.getAmountOneofCase()) {
+      case CheckCash.AmountOneofCase.AMOUNT: {
+        const amount = checkCash.getAmount()
+        if (amount === undefined) {
+          return undefined
+        }
+        json.Amount = this.amountToJSON(amount)
+        break
+      }
+      case CheckCash.AmountOneofCase.DELIVER_MIN: {
+        const deliverMin = checkCash.getDeliverMin()
+        if (deliverMin === undefined) {
+          return undefined
+        }
+        json.DeliverMin = this.deliverMinToJSON(deliverMin)
+        break
+      }
+      case CheckCash.AmountOneofCase.AMOUNT_ONEOF_NOT_SET:
+      default:
+        return undefined
+    }
+    return json
   },
 }
 
@@ -1015,6 +1186,14 @@ function getAdditionalTransactionData(
   const transactionDataCase = transaction.getTransactionDataCase()
 
   switch (transactionDataCase) {
+    case Transaction.TransactionDataCase.ACCOUNT_DELETE: {
+      const accountDelete = transaction.getAccountDelete()
+      if (accountDelete === undefined) {
+        return undefined
+      }
+
+      return serializer.accountDeleteToJSON(accountDelete)
+    }
     case Transaction.TransactionDataCase.ACCOUNT_SET: {
       const accountSet = transaction.getAccountSet()
       if (accountSet === undefined) {
