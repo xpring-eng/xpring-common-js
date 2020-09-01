@@ -663,7 +663,7 @@ const serializer = {
   /**
    * Convert a list of Paths to a JSON representation.
    *
-   * @param pathList - A list of Path's to convert.
+   * @param pathList - A list of Paths to convert.
    * @returns The list as JSON.
    */
   pathListToJSON(pathList: Payment.Path[]): PathJSON[] {
