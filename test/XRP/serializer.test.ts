@@ -48,6 +48,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  PublicKey,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -82,7 +83,7 @@ const destinationXAddressWithTag =
 const tag = 12345
 const sequenceValue = 1
 const lastLedgerSequenceValue = 20
-const publicKey =
+const publicKeyHex =
   '031D68BC1A142E6766B2BDFB006CCFE135EF2E0E2E94ABB5CF5C9AB6104776FBAE'
 const fee = '10'
 const accountClassicAddress = 'r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ'
@@ -475,7 +476,7 @@ describe('serializer', function (): void {
       lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
-      publicKey,
+      publicKeyHex,
     )
 
     // WHEN the transaction is serialized to JSON.
@@ -490,7 +491,7 @@ describe('serializer', function (): void {
       LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
       TransactionType: 'Payment',
-      SigningPubKey: publicKey,
+      SigningPubKey: publicKeyHex,
     }
     assert.deepEqual(serialized, expectedJSON)
   })
@@ -504,7 +505,7 @@ describe('serializer', function (): void {
       lastLedgerSequenceValue,
       sequenceValue,
       accountXAddress,
-      publicKey,
+      publicKeyHex,
     )
 
     // WHEN the transaction is serialized to JSON.
@@ -519,7 +520,7 @@ describe('serializer', function (): void {
       LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
       TransactionType: 'Payment',
-      SigningPubKey: publicKey,
+      SigningPubKey: publicKeyHex,
     }
     assert.deepEqual(serialized, expectedJSON)
   })
@@ -534,7 +535,7 @@ describe('serializer', function (): void {
       lastLedgerSequenceValue,
       sequenceValue,
       account,
-      publicKey,
+      publicKeyHex,
     )
 
     // WHEN the transaction is serialized to JSON.
@@ -553,7 +554,7 @@ describe('serializer', function (): void {
       lastLedgerSequenceValue,
       sequenceValue,
       undefined,
-      publicKey,
+      publicKeyHex,
     )
 
     // WHEN the transaction is serialized to JSON.
@@ -572,7 +573,7 @@ describe('serializer', function (): void {
       lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
-      publicKey,
+      publicKeyHex,
     )
 
     // WHEN the transaction is serialized to JSON.
@@ -587,7 +588,7 @@ describe('serializer', function (): void {
       LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
       TransactionType: 'Payment',
-      SigningPubKey: publicKey,
+      SigningPubKey: publicKeyHex,
     }
     assert.deepEqual(serialized, expectedJSON)
   })
@@ -601,7 +602,7 @@ describe('serializer', function (): void {
       lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
-      publicKey,
+      publicKeyHex,
     )
 
     // WHEN the transaction is serialized to JSON.
@@ -616,7 +617,7 @@ describe('serializer', function (): void {
       LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
       TransactionType: 'Payment',
-      SigningPubKey: publicKey,
+      SigningPubKey: publicKeyHex,
     }
     assert.deepEqual(serialized, expectedJSON)
   })
@@ -631,7 +632,7 @@ describe('serializer', function (): void {
       lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
-      publicKey,
+      publicKeyHex,
     )
 
     const memo = new Memo()
@@ -659,7 +660,7 @@ describe('serializer', function (): void {
       LastLedgerSequence: lastLedgerSequenceValue,
       Sequence: sequenceValue,
       TransactionType: 'Payment',
-      SigningPubKey: publicKey,
+      SigningPubKey: publicKeyHex,
       Memos: [
         {
           Memo: {
@@ -783,7 +784,7 @@ describe('serializer', function (): void {
       lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
-      publicKey,
+      publicKeyHex,
     )
 
     // WHEN the transaction is serialized THEN the result exists.
@@ -800,7 +801,7 @@ describe('serializer', function (): void {
       lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
-      publicKey,
+      publicKeyHex,
     )
 
     // WHEN the transaction is serialized THEN the result is undefined.
@@ -883,7 +884,7 @@ describe('serializer', function (): void {
       lastLedgerSequenceValue,
       sequenceValue,
       accountClassicAddress,
-      publicKey,
+      publicKeyHex,
     )
 
     // WHEN the transaction is serialized THEN the result exists.
@@ -2146,5 +2147,19 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes a PublicKey', function (): void {
+    // GIVEN a PublicKey.
+    const publicKeyValue = new Uint8Array([1, 2, 3, 4])
+
+    const publicKey = new PublicKey()
+    publicKey.setValue(publicKeyValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.publicKeyToJSON(publicKey)
+
+    // THEN the output is the input encoded as hex.
+    assert.equal(serialized, Utils.toHex(publicKeyValue))
   })
 })
