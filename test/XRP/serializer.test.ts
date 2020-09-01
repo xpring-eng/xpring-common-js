@@ -48,6 +48,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  Channel,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -2146,5 +2147,19 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes a Channel', function (): void {
+    // GIVEN a Channel.
+    const channelValue = new Uint8Array([1, 2, 3, 4])
+
+    const channel = new Channel()
+    channel.setValue(channelValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.channelToJSON(channel)
+
+    // THEN the output is the input encoded as hex.
+    assert.equal(serialized, Utils.toHex(channelValue))
   })
 })

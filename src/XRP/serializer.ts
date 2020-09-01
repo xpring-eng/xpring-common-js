@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  Channel,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -199,6 +200,7 @@ interface IssuedCurrencyAmountJSON {
   issuer: string
 }
 
+type ChannelJSON = string
 type DeliverMinJSON = CurrencyAmountJSON
 type AccountAddressJSON = string
 type CheckIDJSON = string
@@ -1193,6 +1195,16 @@ const serializer = {
     }
 
     return json
+  },
+
+  /**
+   * Convert a Channel to a JSON representation.
+   *
+   * @param channel - The Channel to convert.
+   * @returns The Channel as JSON.
+   */
+  channelToJSON(channel: Channel): ChannelJSON {
+    return Utils.toHex(channel.getValue_asU8())
   },
 }
 
