@@ -51,6 +51,8 @@ import {
   PublicKey,
   Balance,
   Fulfillment,
+  QualityIn,
+  QualityOut,
   LimitAmount,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
@@ -291,6 +293,8 @@ type SettleDelayJSON = number
 type PaymentChannelSignatureJSON = string
 type PublicKeyJSON = string
 type FulfillmentJSON = string
+type QualityInJSON = number
+type QualityOutJSON = number
 type LimitAmountJSON = CurrencyAmountJSON
 
 /**
@@ -1256,6 +1260,26 @@ const serializer = {
    */
   cancelAfterToJSON(cancelAfter: CancelAfter): CancelAfterJSON {
     return cancelAfter.getValue()
+  },
+
+  /**
+   * Convert a QualityIn to a JSON representation.
+   *
+   * @param qualityIn - The QualityIn to convert.
+   * @returns The QualityIn as JSON.
+   */
+  qualityInToJSON(qualityIn: QualityIn): QualityInJSON {
+    return qualityIn.getValue()
+  },
+
+  /**
+   * Convert a QualityOut to a JSON representation.
+   *
+   * @param qualityOut - The QualityOut to convert.
+   * @returns The QualityOut as JSON.
+   */
+  qualityOutToJSON(qualityOut: QualityOut): QualityOutJSON {
+    return qualityOut.getValue()
   },
 
   /**
