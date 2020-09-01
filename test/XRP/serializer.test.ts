@@ -1856,7 +1856,7 @@ describe('serializer', function (): void {
   })
 
   it('Serializes a Payment with all fields set', function (): void {
-    // GIVEN a Payment with all mandatory fields.
+    // GIVEN a Payment with all fields.
     const transactionAmount = makeXrpCurrencyAmount('10')
 
     const amount = new Amount()
