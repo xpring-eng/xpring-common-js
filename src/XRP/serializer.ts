@@ -521,16 +521,14 @@ const serializer = {
   },
 
   /**
-   * Convert a Path list to a JSON representation.
+   * Convert a list of Paths to a JSON representation.
    *
-   * @param path - The Path to convert.
-   * @returns The Path as JSON.
+   * @param pathList - A list of Path's to convert.
+   * @returns The list as JSON.
    */
-  pathToJSON(path: Payment.Path): PathJSON {
-    const elements = path.getElementsList()
-    return elements.map((element) => {
-      return this.pathElementToJSON(element)
-    })
+  pathListToJSON(pathList: Payment.Path[]): PathJSON[] {
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- Manually assigning `this`.
+    return pathList.map(this.pathToJSON, this)
   },
 
   /**
