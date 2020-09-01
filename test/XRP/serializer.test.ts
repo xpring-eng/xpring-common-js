@@ -48,6 +48,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  Balance,
   Fulfillment,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
@@ -2191,6 +2192,31 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a Balance', function (): void {
+    // GIVEN a Balance.
+    const currencyAmount = makeXrpCurrencyAmount('10')
+
+    const balance = new Balance()
+    balance.setValue(currencyAmount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.balanceToJSON(balance)
+
+    // THEN the output is the serialized versions of the input.
+    assert.equal(serialized, Serializer.currencyAmountToJSON(currencyAmount))
+  })
+
+  it('Fails to serialize a malformed Balance', function (): void {
+    // GIVEN a malformed Balance.
+    const balance = new Balance()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.balanceToJSON(balance)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+    
   it('Converts a PathList', function (): void {
     // GIVEN a Path list with two paths.
     const path1Element1 = makePathElement(
