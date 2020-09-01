@@ -1081,6 +1081,7 @@ const serializer = {
 
     return {
       CheckID: this.checkIDToJSON(checkId),
+      TransactionType: 'CheckCancel'
     }
   },
 
@@ -1198,6 +1199,7 @@ const serializer = {
 
     const json: AccountDeleteJSON = {
       Destination: destinationJSON,
+      TransactionType: 'AccountDelete'
     }
 
     // Process optional fields.
@@ -1223,6 +1225,7 @@ const serializer = {
 
     return {
       OfferSequence: this.offerSequenceToJSON(offerSequence),
+      TransactionType: 'OfferCancel'
     }
   },
 
@@ -1281,6 +1284,7 @@ const serializer = {
 
     const json: CheckCashJSON = {
       CheckID: this.checkIDToJSON(checkId),
+      TransactionType: 'CheckCash'
     }
 
     // One of the following fields must be set.
@@ -1331,6 +1335,7 @@ const serializer = {
     const json: CheckCreateJSON = {
       Destination: destinationJSON,
       SendMax: sendMaxJSON,
+      TransactionType: 'CheckCreate'
     }
 
     // Process optional fields.
