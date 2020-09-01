@@ -65,6 +65,7 @@ import {
   EscrowCancel,
   EscrowCreate,
   EscrowFinish,
+  PaymentChannelFund,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -163,6 +164,13 @@ interface CheckCancelJSON {
   CheckID: CheckIDJSON
 }
 
+export interface PaymentChannelFundJSON {
+  Channel: ChannelJSON
+  Amount: AmountJSON
+  Expiration?: ExpirationJSON
+  TransactionType: "PaymentChannelFund"
+}
+
 export interface OfferCreateJSON {
   Expiration?: ExpirationJSON
   OfferSequence?: OfferSequenceJSON
@@ -184,6 +192,7 @@ type TransactionDataJSON =
   | OfferCancelJSON
   | OfferCreateJSON
   | PaymentJSON
+  | PaymentChannelFundJSON
 
 /**
  * Individual Transaction Types.
@@ -200,6 +209,7 @@ type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
+type PaymentChannelFundTransactionJSON = BaseTransactionJSON & PaymentChannelFundTransactionJSON
 
 /**
  * All Transactions.
@@ -217,6 +227,7 @@ export type TransactionJSON =
   | OfferCancelTransactionJSON
   | OfferCreateTransactionJSON
   | PaymentTransactionJSON
+  | PaymentChannelFundTransactionJSON
 
 /**
  * Types for serialized sub-objects.
@@ -1458,6 +1469,35 @@ const serializer = {
 
     return this.currencyAmountToJSON(currencyAmount)
   },
+
+  /**
+   * Convert a PaymentChannelFund to a JSON representation.
+   * 
+   * @param paymentChannelFund - The PaymentChannelFund to convert.
+   * @returns The PaymentChannelFund as JSON.
+   */
+  paymentChannelFundToJSON(paymentChannelFund: PaymentChannelFund): PaymentChannelFundJSON | undefined {
+    // Process mandatory fields.
+    const channel = paymentChannelFund.getChannel()
+    const amount = paymentChannelFund.getAmount()
+    if (channel === undefined || amount === undefined) {
+      return undefined
+    }
+
+    const json: PaymentChannelFundJSON = {
+      Channel: this.channelToJSON(channel),
+      Amount: this.amountToJSON(amount),
+      TransactionType: "PaymentChannelFund",
+    }
+
+    // Process optional fields. 
+    const expiration = paymentChannelFund.getExpiration()
+    if (expiration !== undefined) {
+      json.Expiration = this.expirationToJSON(expiration)
+    }
+
+    return json
+  }
 }
 
 export default serializer

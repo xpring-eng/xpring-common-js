@@ -54,6 +54,7 @@ import {
   PublicKey,
   Balance,
   Fulfillment,
+  Channel,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -70,6 +71,7 @@ import {
   EscrowCreate,
   EscrowFinish,
   OfferCancel,
+  PaymentChannelFund,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   CheckCreateJSON,
@@ -81,6 +83,7 @@ import Serializer, {
   TransactionJSON,
   OfferCreateJSON,
   PaymentJSON,
+  PaymentChannelFundJSON,
 } from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
@@ -2658,5 +2661,29 @@ describe('serializer', function (): void {
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
+  })
+
+  it('Serializes a PaymentChannelFund with mandatory fields set.', function (): void {
+    // GIVEN a PaymentChannelFund with mandatory fields set.
+    const amount = new Amount()
+    amount.setValue(makeXrpCurrencyAmount("10"))
+
+    const channel = new Channel()
+    channel.setValue(new Uint8Array([1, 2, 3, 4]))
+
+    const paymentChannelFund = new PaymentChannelFund()
+    paymentChannelFund.setAmount(amount)
+    paymentChannelFund.setChannel(channel)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelFundToJSON(paymentChannelFund)
+
+    // THEN the result is in the expected form.
+    const expected: PaymentChannelFundJSON = {
+      Amount: Serializer.amountToJSON(amount),
+      Channel: Serializer.channelToJSON(channel),
+      TransactionType: "PaymentChannelFund"
+    }
+    assert.deepEqual(serialized, expected)
   })
 })
