@@ -57,6 +57,9 @@ import {
   Balance,
   Fulfillment,
   SignerWeight,
+  QualityIn,
+  QualityOut,
+  LimitAmount,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -2001,6 +2004,32 @@ describe('serializer', function (): void {
     assert.equal(serialized, cancelAfterTime)
   })
 
+  it('Serializes a QualityIn', function (): void {
+    // GIVEN a QualityIn.
+    const qualityInValue = 6
+    const qualityIn = new QualityIn()
+    qualityIn.setValue(qualityInValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.qualityInToJSON(qualityIn)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, qualityInValue)
+  })
+
+  it('Serializes a QualityOut', function (): void {
+    // GIVEN a QualityOut.
+    const qualityOutValue = 7
+    const qualityOut = new QualityOut()
+    qualityOut.setValue(qualityOutValue)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.qualityOutToJSON(qualityOut)
+
+    // THEN the result is as expected.
+    assert.equal(serialized, qualityOutValue)
+  })
+
   it('Serializes a FinishAfter', function (): void {
     // GIVEN a FinishAfter.
     const finishAfterTime = 5331715585
@@ -2700,6 +2729,34 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized.
     const serialized = Serializer.escrowFinishToJSON(escrowFinish)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a LimitAmount', function (): void {
+    // GIVEN a LimitAmount
+    const currencyAmount = makeXrpCurrencyAmount('10')
+
+    const limitAmount = new LimitAmount()
+    limitAmount.setValue(currencyAmount)
+
+    // WHEN the LimitAmount is serialized.
+    const serialized = Serializer.limitAmountToJSON(limitAmount)
+
+    // THEN the result is the serialized version of the inputs.
+    assert.deepEqual(
+      serialized,
+      Serializer.currencyAmountToJSON(currencyAmount),
+    )
+  })
+
+  it('Fails to serialize a malformed LimitAmount', function (): void {
+    // GIVEN a malformed LimitAmount
+    const limitAmount = new LimitAmount()
+
+    // WHEN the LimitAmount is serialized.
+    const serialized = Serializer.limitAmountToJSON(limitAmount)
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)
