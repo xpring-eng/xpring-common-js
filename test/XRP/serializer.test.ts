@@ -79,6 +79,10 @@ import Serializer, {
   DepositPreauthJSON,
   TransactionJSON,
   PaymentJSON,
+  AccountDeleteJSON,
+  CheckCancelJSON,
+  CheckCashJSON,
+  OfferCancelJSON,
 } from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
@@ -1499,9 +1503,9 @@ describe('serializer', function (): void {
     const serialized = Serializer.checkCancelToJSON(checkCancel)
 
     // THEN the output is in the expected form.
-    const expected = {
+    const expected: CheckCancelJSON = {
       CheckID: Serializer.checkIDToJSON(checkId),
-      TransactionType: 'CheckCancel'
+      TransactionType: 'CheckCancel',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -1571,9 +1575,9 @@ describe('serializer', function (): void {
     const serialized = Serializer.accountDeleteToJSON(accountDelete)
 
     // THEN the result is in the expected form.
-    const expected = {
+    const expected: AccountDeleteJSON = {
       Destination: Serializer.destinationToJSON(destination)!,
-      TransactionType: 'AccountDelete'
+      TransactionType: 'AccountDelete',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -1594,10 +1598,10 @@ describe('serializer', function (): void {
     const serialized = Serializer.accountDeleteToJSON(accountDelete)
 
     // THEN the result is in the expected from
-    const expected = {
+    const expected: AccountDeleteJSON = {
       Destination: Serializer.destinationToJSON(destination)!,
       DestinationTag: Serializer.destinationTagToJSON(destinationTag),
-      TransactionType: 'AccountDelete'
+      TransactionType: 'AccountDelete',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -1820,9 +1824,9 @@ describe('serializer', function (): void {
     const serialized = Serializer.offerCancelToJSON(offerCancel)
 
     // THEN the output is in the expected form.
-    const expected = {
+    const expected: OfferCancelJSON = {
       OfferSequence: Serializer.offerSequenceToJSON(offerSequence),
-      TransactionType: 'OfferCancel'
+      TransactionType: 'OfferCancel',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2034,10 +2038,10 @@ describe('serializer', function (): void {
     const serialized = Serializer.checkCashToJSON(checkCash)
 
     // THEN the result is in the expected form.
-    const expected = {
+    const expected: CheckCashJSON = {
       CheckID: Serializer.checkIDToJSON(checkId),
       Amount: Serializer.amountToJSON(amount),
-      TransactionType: 'CheckCash'
+      TransactionType: 'CheckCash',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2064,10 +2068,10 @@ describe('serializer', function (): void {
     const serialized = Serializer.checkCashToJSON(checkCash)
 
     // THEN the result is in the expected form.
-    const expected = {
+    const expected: CheckCashJSON = {
       CheckID: Serializer.checkIDToJSON(checkId),
       DeliverMin: Serializer.deliverMinToJSON(deliverMin),
-      TransactionType: 'CheckCash'
+      TransactionType: 'CheckCash',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2122,7 +2126,7 @@ describe('serializer', function (): void {
     const expected: CheckCreateJSON = {
       Destination: Serializer.destinationToJSON(destination)!,
       SendMax: Serializer.sendMaxToJSON(sendMax)!,
-      TransactionType: 'CheckCreate'
+      TransactionType: 'CheckCreate',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2165,7 +2169,7 @@ describe('serializer', function (): void {
       InvoiceID: Serializer.invoiceIdToJSON(invoiceId),
       DestinationTag: Serializer.destinationTagToJSON(destinationTag),
       Expiration: Serializer.expirationToJSON(expiration),
-      TransactionType: 'CheckCreate'
+      TransactionType: 'CheckCreate',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2217,7 +2221,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(publicKeyValue))
   })
-    
+
   it('Serializes a Balance', function (): void {
     // GIVEN a Balance.
     const currencyAmount = makeXrpCurrencyAmount('10')
@@ -2242,7 +2246,7 @@ describe('serializer', function (): void {
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
-    
+
   it('Converts a PathList', function (): void {
     // GIVEN a Path list with two paths.
     const path1Element1 = makePathElement(
@@ -2452,7 +2456,7 @@ describe('serializer', function (): void {
     // THEN the result is as expected.
     assert.equal(serialized, settleDelayValue)
   })
-    
+
   it('Serializes a PaymentChannelSignature', function (): void {
     // GIVEN a PaymentChannelSignature.
     const paymentChannelSignatureValue = new Uint8Array([1, 2, 3, 4])
@@ -2468,7 +2472,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(paymentChannelSignatureValue))
   })
-    
+
   it('Serializes a Fulfillment', function (): void {
     // GIVEN a Fulfillment with some bytes.
     const fulfillmentBytes = new Uint8Array([0, 1, 2, 3])
