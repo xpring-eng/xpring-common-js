@@ -149,7 +149,7 @@ interface CheckCancelJSON {
   CheckID: CheckIDJSON
 }
 
-interface SetRegularKeyJSON {
+export interface SetRegularKeyJSON {
   RegularKey?: RegularKeyJSON
   TransactionType: 'SetRegularKey'
 }
@@ -1297,11 +1297,13 @@ const serializer = {
 
   /**
    * Convert a SetRegularKey to a JSON representation.
-   * 
+   *
    * @param setRegularKey - The SetRegularKey to convert.
    * @returns The SetRegularKey as JSON.
    */
-  setRegularKeyToJSON(setRegularKey: SetRegularKey): SetRegularKeyJSON | undefined {
+  setRegularKeyToJSON(
+    setRegularKey: SetRegularKey,
+  ): SetRegularKeyJSON | undefined {
     const json: SetRegularKeyJSON = {
       TransactionType: 'SetRegularKey',
     }
@@ -1316,7 +1318,7 @@ const serializer = {
     }
 
     return json
-  }
+  },
 }
 
 export default serializer
