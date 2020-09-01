@@ -2305,7 +2305,7 @@ describe('serializer', function (): void {
     // WHEN it is serialized.
     const serialized = Serializer.regularKeyToJSON(regularKey)
 
-    // THEN the output is the serialized version of the input.
+    // THEN the output is undefined.
     assert.isUndefined(serialized)
   })
 
