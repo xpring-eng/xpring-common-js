@@ -43,6 +43,7 @@ import {
   Condition,
   CancelAfter,
   FinishAfter,
+  Fulfillment,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -250,6 +251,7 @@ type OwnerJSON = string
 type ConditionJSON = string
 type CancelAfterJSON = number
 type FinishAfterJSON = number
+type FulfillmentJSON = string
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -1164,11 +1166,21 @@ const serializer = {
   /**
    * Convert a FinishAfter to a JSON representation.
    *
-   * @param finishAfter - The FinshAfter to convert.
+   * @param finishAfter - The FinishAfter to convert.
    * @returns The FinishAfter as JSON.
    */
   finishAfterToJSON(finishAfter: FinishAfter): FinishAfterJSON {
     return finishAfter.getValue()
+  },
+
+  /**
+   * Convert a Fulfillment to a JSON representation.
+   *
+   * @param fulfillment - The Fulfillment to convert.
+   * @returns The Fulfillment as JSON.
+   */
+  fulfillmentToJSON(fulfillment: Fulfillment): FulfillmentJSON {
+    return Utils.toHex(fulfillment.getValue_asU8())
   },
 
   /**
