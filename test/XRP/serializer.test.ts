@@ -18,6 +18,8 @@ import {
 import {
   Account,
   Amount,
+  CheckID,
+  DeliverMin,
   Destination,
   Domain,
   MemoData,
@@ -36,8 +38,6 @@ import {
   LastLedgerSequence,
   DestinationTag,
   InvoiceID,
-  DeliverMin,
-  CheckID,
   SendMax,
   TransactionSignature,
   Expiration,
@@ -60,8 +60,10 @@ import {
   EscrowCancel,
   CheckCash,
   OfferCancel,
+  CheckCreate,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
+  CheckCreateJSON,
   EscrowCancelJSON,
   AccountSetJSON,
   DepositPreauthJSON,
@@ -2040,6 +2042,109 @@ describe('serializer', function (): void {
     const serialized = Serializer.checkCashToJSON(checkCash)
 
     // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a CheckCreate with only mandatory fields', function (): void {
+    // GIVEN a CheckCreate with mandatory fields set.
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const xrpDropsAmount = makeXrpDropsAmount('10')
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const sendMax = new SendMax()
+    sendMax.setValue(currencyAmount)
+
+    const checkCreate = new CheckCreate()
+    checkCreate.setDestination(destination)
+    checkCreate.setSendMax(sendMax)
+
+    // WHEN it is serialized
+    const serialized = Serializer.checkCreateToJSON(checkCreate)
+
+    // THEN the result is in the expected form.
+    const expected: CheckCreateJSON = {
+      Destination: Serializer.destinationToJSON(destination)!,
+      SendMax: Serializer.sendMaxToJSON(sendMax)!,
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes a CheckCreate with all fields', function (): void {
+    // GIVEN a CheckCreate with all fields fields set.
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const xrpDropsAmount = makeXrpDropsAmount('10')
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const sendMax = new SendMax()
+    sendMax.setValue(currencyAmount)
+
+    const invoiceId = new InvoiceID()
+    invoiceId.setValue(new Uint8Array([1, 2, 3, 4]))
+
+    const destinationTag = new DestinationTag()
+    destinationTag.setValue(5)
+
+    const expiration = new Expiration()
+    expiration.setValue(6)
+
+    const checkCreate = new CheckCreate()
+    checkCreate.setDestination(destination)
+    checkCreate.setSendMax(sendMax)
+    checkCreate.setInvoiceId(invoiceId)
+    checkCreate.setDestinationTag(destinationTag)
+    checkCreate.setExpiration(expiration)
+
+    // WHEN it is serialized
+    const serialized = Serializer.checkCreateToJSON(checkCreate)
+
+    // THEN the result is in the expected form.
+    const expected: CheckCreateJSON = {
+      Destination: Serializer.destinationToJSON(destination)!,
+      SendMax: Serializer.sendMaxToJSON(sendMax)!,
+      InvoiceID: Serializer.invoiceIdToJSON(invoiceId),
+      DestinationTag: Serializer.destinationTagToJSON(destinationTag),
+      Expiration: Serializer.expirationToJSON(expiration),
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to Serialize a CheckCreate without a Destination', function (): void {
+    // GIVEN a CheckCreate without a destination.
+    const xrpDropsAmount = makeXrpDropsAmount('10')
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setXrpAmount(xrpDropsAmount)
+
+    const sendMax = new SendMax()
+    sendMax.setValue(currencyAmount)
+
+    const checkCreate = new CheckCreate()
+    checkCreate.setSendMax(sendMax)
+
+    // WHEN it is serialized
+    const serialized = Serializer.checkCreateToJSON(checkCreate)
+
+    // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to Serialize a CheckCreate without a SendMax', function (): void {
+    // GIVEN a CheckCreate with mandatory fields set.
+    const destination = new Destination()
+    destination.setValue(testAccountAddress)
+
+    const checkCreate = new CheckCreate()
+    checkCreate.setDestination(destination)
+
+    // WHEN it is serialized
+    const serialized = Serializer.checkCreateToJSON(checkCreate)
+
+    // THEN the result is undefined
     assert.isUndefined(serialized)
   })
 })
