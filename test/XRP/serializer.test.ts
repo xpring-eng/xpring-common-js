@@ -77,6 +77,7 @@ import {
   EscrowFinish,
   OfferCancel,
   PaymentChannelClaim,
+  SetRegularKey,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   CheckCreateJSON,
@@ -89,6 +90,11 @@ import Serializer, {
   OfferCreateJSON,
   PaymentJSON,
   PaymentChannelClaimJSON,
+  AccountDeleteJSON,
+  CheckCancelJSON,
+  CheckCashJSON,
+  OfferCancelJSON,
+  SetRegularKeyJSON,
 } from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
@@ -1509,8 +1515,9 @@ describe('serializer', function (): void {
     const serialized = Serializer.checkCancelToJSON(checkCancel)
 
     // THEN the output is in the expected form.
-    const expected = {
+    const expected: CheckCancelJSON = {
       CheckID: Serializer.checkIDToJSON(checkId),
+      TransactionType: 'CheckCancel',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -1580,8 +1587,9 @@ describe('serializer', function (): void {
     const serialized = Serializer.accountDeleteToJSON(accountDelete)
 
     // THEN the result is in the expected form.
-    const expected = {
+    const expected: AccountDeleteJSON = {
       Destination: Serializer.destinationToJSON(destination)!,
+      TransactionType: 'AccountDelete',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -1602,9 +1610,10 @@ describe('serializer', function (): void {
     const serialized = Serializer.accountDeleteToJSON(accountDelete)
 
     // THEN the result is in the expected from
-    const expected = {
+    const expected: AccountDeleteJSON = {
       Destination: Serializer.destinationToJSON(destination)!,
       DestinationTag: Serializer.destinationTagToJSON(destinationTag),
+      TransactionType: 'AccountDelete',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -1827,8 +1836,9 @@ describe('serializer', function (): void {
     const serialized = Serializer.offerCancelToJSON(offerCancel)
 
     // THEN the output is in the expected form.
-    const expected = {
+    const expected: OfferCancelJSON = {
       OfferSequence: Serializer.offerSequenceToJSON(offerSequence),
+      TransactionType: 'OfferCancel',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2066,9 +2076,10 @@ describe('serializer', function (): void {
     const serialized = Serializer.checkCashToJSON(checkCash)
 
     // THEN the result is in the expected form.
-    const expected = {
+    const expected: CheckCashJSON = {
       CheckID: Serializer.checkIDToJSON(checkId),
       Amount: Serializer.amountToJSON(amount),
+      TransactionType: 'CheckCash',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2095,9 +2106,10 @@ describe('serializer', function (): void {
     const serialized = Serializer.checkCashToJSON(checkCash)
 
     // THEN the result is in the expected form.
-    const expected = {
+    const expected: CheckCashJSON = {
       CheckID: Serializer.checkIDToJSON(checkId),
       DeliverMin: Serializer.deliverMinToJSON(deliverMin),
+      TransactionType: 'CheckCash',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2152,6 +2164,7 @@ describe('serializer', function (): void {
     const expected: CheckCreateJSON = {
       Destination: Serializer.destinationToJSON(destination)!,
       SendMax: Serializer.sendMaxToJSON(sendMax)!,
+      TransactionType: 'CheckCreate',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2194,6 +2207,7 @@ describe('serializer', function (): void {
       InvoiceID: Serializer.invoiceIdToJSON(invoiceId),
       DestinationTag: Serializer.destinationTagToJSON(destinationTag),
       Expiration: Serializer.expirationToJSON(expiration),
+      TransactionType: 'CheckCreate',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -2632,6 +2646,41 @@ describe('serializer', function (): void {
 
     // THEN the result is as expected.
     assert.equal(serialized, signerWeightValue)
+  })
+
+  it('Serializes a SetRegularKey with regular key', function (): void {
+    // GIVEN a SetRegularKey with a regular key.
+    const regularKey = new RegularKey()
+    regularKey.setValue(testAccountAddress)
+
+    const setRegularKey = new SetRegularKey()
+    setRegularKey.setRegularKey(regularKey)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.setRegularKeyToJSON(setRegularKey)
+
+    // THEN the output is as expected.
+    const expected: SetRegularKeyJSON = {
+      RegularKey: Serializer.regularKeyToJSON(regularKey),
+      TransactionType: 'SetRegularKey',
+    }
+
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes a SetRegularKey with no regular key', function (): void {
+    // GIVEN a SetRegularKey without a regular key.
+    const setRegularKey = new SetRegularKey()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.setRegularKeyToJSON(setRegularKey)
+
+    // THEN the output is as expected.
+    const expected: SetRegularKeyJSON = {
+      TransactionType: 'SetRegularKey',
+    }
+
+    assert.deepEqual(serialized, expected)
   })
     
   it('Serializes an EscrowFinish with required fields', function (): void {
