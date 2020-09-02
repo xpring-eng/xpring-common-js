@@ -102,10 +102,11 @@ export interface AccountSetJSON {
   TransactionType: 'AccountSet'
 }
 
-interface CheckCashJSON {
+export interface CheckCashJSON {
   CheckID: CheckIDJSON
   Amount?: CurrencyAmountJSON
   DeliverMin?: DeliverMinJSON
+  TransactionType: 'CheckCash'
 }
 
 export interface CheckCreateJSON {
@@ -114,6 +115,7 @@ export interface CheckCreateJSON {
   DestinationTag?: DestinationTagJSON
   Expiration?: ExpirationJSON
   InvoiceID?: InvoiceIdJSON
+  TransactionType: 'CheckCreate'
 }
 
 export interface DepositPreauthJSON {
@@ -146,8 +148,9 @@ export interface EscrowFinishJSON {
   TransactionType: 'EscrowFinish'
 }
 
-interface OfferCancelJSON {
+export interface OfferCancelJSON {
   OfferSequence: OfferSequenceJSON
+  TransactionType: 'OfferCancel'
 }
 
 export interface PaymentJSON {
@@ -161,13 +164,15 @@ export interface PaymentJSON {
   TransactionType: 'Payment'
 }
 
-interface AccountDeleteJSON {
+export interface AccountDeleteJSON {
   Destination: DestinationJSON
   DestinationTag?: DestinationTagJSON
+  TransactionType: 'AccountDelete'
 }
 
-interface CheckCancelJSON {
+export interface CheckCancelJSON {
   CheckID: CheckIDJSON
+  TransactionType: 'CheckCancel'
 }
 
 export interface OfferCreateJSON {
@@ -1108,6 +1113,7 @@ const serializer = {
 
     return {
       CheckID: this.checkIDToJSON(checkId),
+      TransactionType: 'CheckCancel',
     }
   },
 
@@ -1225,6 +1231,7 @@ const serializer = {
 
     const json: AccountDeleteJSON = {
       Destination: destinationJSON,
+      TransactionType: 'AccountDelete',
     }
 
     // Process optional fields.
@@ -1250,6 +1257,7 @@ const serializer = {
 
     return {
       OfferSequence: this.offerSequenceToJSON(offerSequence),
+      TransactionType: 'OfferCancel',
     }
   },
 
@@ -1343,6 +1351,7 @@ const serializer = {
 
     const json: CheckCashJSON = {
       CheckID: this.checkIDToJSON(checkId),
+      TransactionType: 'CheckCash',
     }
 
     // One of the following fields must be set.
@@ -1393,6 +1402,7 @@ const serializer = {
     const json: CheckCreateJSON = {
       Destination: destinationJSON,
       SendMax: sendMaxJSON,
+      TransactionType: 'CheckCreate',
     }
 
     // Process optional fields.
@@ -1531,7 +1541,7 @@ const serializer = {
   settleDelayToJSON(settleDelay: SettleDelay): SettleDelayJSON {
     return settleDelay.getValue()
   },
-    
+
   /**
    * Convert a PaymentChannelSignature to a JSON representation.
    *
@@ -1543,7 +1553,7 @@ const serializer = {
   ): PaymentChannelSignatureJSON {
     return Utils.toHex(paymentChannelSignature.getValue_asU8())
   },
-    
+
   /**
    * Convert a PublicKey to a JSON representation.
    *
@@ -1553,7 +1563,7 @@ const serializer = {
   publicKeyToJSON(publicKey: PublicKey): PublicKeyJSON {
     return Utils.toHex(publicKey.getValue_asU8())
   },
-  
+
   /**
    * Convert a Balance to a JSON representation.
    *
