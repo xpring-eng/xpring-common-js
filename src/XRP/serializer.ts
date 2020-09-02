@@ -79,12 +79,12 @@ import XrpUtils from './xrp-utils'
  * Common fields on a transaction.
  */
 interface BaseTransactionJSON {
-  Account: string
+  Account: AccountJSON
   Fee: XRPDropsAmountJSON
   LastLedgerSequence: LastLedgerSequenceJSON
-  Sequence: number
-  SigningPubKey: string
-  TxnSignature?: string
+  Sequence: SequenceJSON
+  SigningPubKey: SigningPublicKeyJSON
+  TxnSignature?: TransactionSignatureJSON
   Memos?: MemoJSON[]
 }
 
@@ -324,57 +324,53 @@ const serializer = {
     transaction: Transaction,
     signature?: string,
   ): TransactionJSON | undefined {
-    const object: BaseTransactionJSON = {
-      Account: '',
-      Fee: '',
-      Sequence: 0,
-      LastLedgerSequence: 0,
-      SigningPubKey: '',
-    }
-
-    const normalizedAccount = getNormalizedAccount(transaction)
-    if (!normalizedAccount) {
-      return undefined
-    }
-    object.Account = normalizedAccount
-
-    // Convert XRP denominated fee field.
-    const txFee = transaction.getFee()
-    if (txFee === undefined) {
-      return undefined
-    }
-    object.Fee = this.xrpAmountToJSON(txFee)
-
-    // Set sequence numbers
+    // Process mandatory Fields.
+    const account = transaction.getAccount()
+    const fee = transaction.getFee()
     const sequence = transaction.getSequence()
-    object.Sequence = sequence !== undefined ? this.sequenceToJSON(sequence) : 0
+    const signingPublicKey = transaction.getSigningPublicKey()
+    if (account === undefined || fee === undefined || sequence === undefined || signingPublicKey === undefined) {
+      return undefined
+    }
 
+    const accountJSON = this.accountToJSON(account)
+    if (accountJSON === undefined) {
+      return undefined
+    }
+
+    const json: BaseTransactionJSON = {
+      Account: accountJSON,
+      Fee: this.xrpAmountToJSON(fee),
+      Sequence: this.sequenceToJSON(sequence)
+      SigningPubKey: this.signingPublicKeyToJSON(signingPublicKey)
+    }
+
+    // Process optional fields.
+    // TODO(keefertaylor): Support optional fields here.
     const lastLedgerSequence = transaction.getLastLedgerSequence()
-    object.LastLedgerSequence =
-      lastLedgerSequence !== undefined
-        ? this.lastLedgerSequenceToJSON(lastLedgerSequence)
-        : 0
-
-    const signingPubKeyBytes = transaction
-      .getSigningPublicKey()
-      ?.getValue_asU8()
-    if (signingPubKeyBytes) {
-      object.SigningPubKey = Utils.toHex(signingPubKeyBytes)
+    if (lastLedgerSequence !== undefined) {
+      json.LastLedgerSequence = this.lastLedgerSequenceToJSON(lastLedgerSequence)
     }
 
-    if (signature) {
-      object.TxnSignature = signature
+    const transactionSignature = transaction.getTransactionSignature()
+    if (transactionSignature !== undefined) {
+      json.TxnSignature = this.transactionSignatureToJSON(transactionSignature)
     }
 
-    Object.assign(object, this.memosToJSON(transaction.getMemosList()))
+    const memosList = transaction.getMemosList()
+    if (memosList.length > 0) {
+      // TODO(keefertaylor): Standardize this method.
+      Object.assign(json, this.memosToJSON(transaction.getMemosList()))
+    }
 
+    // Process transaction specific data.
     const additionalTransactionData = getAdditionalTransactionData(transaction)
     if (additionalTransactionData === undefined) {
       return undefined
     }
 
     const transactionJSON: TransactionJSON = {
-      ...object,
+      ...json,
       ...additionalTransactionData,
     }
     return transactionJSON
@@ -735,7 +731,8 @@ const serializer = {
    *
    * @returns An array of the Memos in JSON format, or undefined.
    */
-  memosToJSON(memos: Memo[]): { Memos: MemoJSON[] } | undefined {
+  // TODO(keefertaylor): Re-work this method to be standardized with the other list methods.
+  memoListToJSON(memos: Memo[]): { Memos: MemoJSON[] } | undefined {
     if (!memos.length) {
       return undefined
     }
