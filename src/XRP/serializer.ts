@@ -55,6 +55,7 @@ import {
   QualityIn,
   QualityOut,
   LimitAmount,
+  SignerEntry,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -72,6 +73,7 @@ import {
   EscrowCreate,
   EscrowFinish,
   PaymentChannelClaim,
+  PaymentChannelCreate,
   PaymentChannelFund,
   SetRegularKey,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
@@ -186,6 +188,16 @@ export interface PaymentChannelClaimJSON {
   TransactionType: 'PaymentChannelClaim'
 }
 
+export interface PaymentChannelCreateJSON {
+  Amount: AmountJSON
+  Destination: DestinationJSON
+  SettleDelay: SettleDelayJSON
+  PublicKey: PublicKeyJSON
+  CancelAfter?: CancelAfterJSON
+  DestinationTag?: DestinationTagJSON
+  TransactionType: 'PaymentChannelCreate'
+}
+
 export interface PaymentChannelFundJSON {
   Channel: ChannelJSON
   Amount: AmountJSON
@@ -220,6 +232,7 @@ type TransactionDataJSON =
   | OfferCreateJSON
   | PaymentJSON
   | PaymentChannelClaimJSON
+  | PaymentChannelCreateJSON
   | PaymentChannelFundJSON
   | SetRegularKeyJSON
 
@@ -240,6 +253,8 @@ type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 type PaymentChannelClaimTransactionJSON = BaseTransactionJSON &
   PaymentChannelClaimJSON
+type PaymentChannelCreateTransactionJSON = BaseTransactionJSON &
+  PaymentChannelCreateJSON
 type PaymentChannelFundTransactionJSON = BaseTransactionJSON &
   PaymentChannelFundJSON
 type SetRegularKeyTransactionJSON = BaseTransactionJSON & SetRegularKeyJSON
@@ -260,6 +275,7 @@ export type TransactionJSON =
   | OfferCancelTransactionJSON
   | OfferCreateTransactionJSON
   | PaymentTransactionJSON
+  | PaymentChannelCreateTransactionJSON
   | PaymentChannelClaimTransactionJSON
   | PaymentChannelFundTransactionJSON
   | SetRegularKeyTransactionJSON
@@ -267,6 +283,11 @@ export type TransactionJSON =
 /**
  * Types for serialized sub-objects.
  */
+interface SignerEntryJSON {
+  Account: AccountJSON
+  SignerWeight: SignerWeightJSON
+}
+
 interface MemoJSON {
   Memo?: MemoDetailsJSON
 }
@@ -1648,6 +1669,83 @@ const serializer = {
     }
 
     return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert a SignerEntry to a JSON representation.
+   *
+   * @param signerEntry - The SignerEntry to convert.
+   * @returns The SignerEntry as JSON.
+   */
+  signerEntryToJSON(signerEntry: SignerEntry): SignerEntryJSON | undefined {
+    const account = signerEntry.getAccount()
+    const signerWeight = signerEntry.getSignerWeight()
+    if (account === undefined || signerWeight === undefined) {
+      return undefined
+    }
+
+    const accountJSON = this.accountToJSON(account)
+    const signerWeightJSON = this.signerWeightToJSON(signerWeight)
+    if (accountJSON === undefined || signerWeightJSON === undefined) {
+      return undefined
+    }
+
+    return {
+      Account: accountJSON,
+      SignerWeight: signerWeightJSON,
+    }
+  },
+
+  /**
+   * Convert a PaymentChannelCreate to a JSON representation.
+   *
+   * @param paymentChannelCreate - The PaymentChannelCreate to convert.
+   * @returns The PaymentChannelCreate as JSON.
+   */
+  paymentChannelCreateToJSON(
+    paymentChannelCreate: PaymentChannelCreate,
+  ): PaymentChannelCreateJSON | undefined {
+    // Process mandatory fields.
+    const amount = paymentChannelCreate.getAmount()
+    const destination = paymentChannelCreate.getDestination()
+    const settleDelay = paymentChannelCreate.getSettleDelay()
+    const publicKey = paymentChannelCreate.getPublicKey()
+    if (
+      amount === undefined ||
+      destination === undefined ||
+      settleDelay === undefined ||
+      publicKey === undefined
+    ) {
+      return undefined
+    }
+
+    const amountJSON = this.amountToJSON(amount)
+
+    const destinationJSON = this.destinationToJSON(destination)
+    if (amountJSON === undefined || destinationJSON === undefined) {
+      return undefined
+    }
+
+    const json: PaymentChannelCreateJSON = {
+      Amount: amountJSON,
+      Destination: destinationJSON,
+      SettleDelay: this.settleDelayToJSON(settleDelay),
+      PublicKey: this.publicKeyToJSON(publicKey),
+      TransactionType: 'PaymentChannelCreate',
+    }
+
+    // Process optional fields.
+    const destinationTag = paymentChannelCreate.getDestinationTag()
+    if (destinationTag !== undefined) {
+      json.DestinationTag = this.destinationTagToJSON(destinationTag)
+    }
+
+    const cancelAfter = paymentChannelCreate.getCancelAfter()
+    if (cancelAfter !== undefined) {
+      json.CancelAfter = this.cancelAfterToJSON(cancelAfter)
+    }
+
+    return json
   },
 
   /**
