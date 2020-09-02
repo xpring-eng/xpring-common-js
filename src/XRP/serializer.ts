@@ -71,6 +71,7 @@ import {
   EscrowCancel,
   EscrowCreate,
   EscrowFinish,
+  SetRegularKey,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -176,6 +177,11 @@ export interface OfferCreateJSON {
   TakerPays: TakerPaysJSON
 }
 
+export interface SetRegularKeyJSON {
+  RegularKey?: RegularKeyJSON
+  TransactionType: 'SetRegularKey'
+}
+
 // Generic field representing an OR of all above fields.
 type TransactionDataJSON =
   | AccountDeleteJSON
@@ -190,6 +196,7 @@ type TransactionDataJSON =
   | OfferCancelJSON
   | OfferCreateJSON
   | PaymentJSON
+  | SetRegularKeyJSON
 
 /**
  * Individual Transaction Types.
@@ -206,6 +213,7 @@ type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
+type SetRegularKeyTransactionJSON = BaseTransactionJSON & SetRegularKeyJSON
 
 /**
  * All Transactions.
@@ -223,6 +231,7 @@ export type TransactionJSON =
   | OfferCancelTransactionJSON
   | OfferCreateTransactionJSON
   | PaymentTransactionJSON
+  | SetRegularKeyTransactionJSON
 
 /**
  * Types for serialized sub-objects.
@@ -1487,6 +1496,30 @@ const serializer = {
     }
 
     return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert a SetRegularKey to a JSON representation.
+   *
+   * @param setRegularKey - The SetRegularKey to convert.
+   * @returns The SetRegularKey as JSON.
+   */
+  setRegularKeyToJSON(
+    setRegularKey: SetRegularKey,
+  ): SetRegularKeyJSON | undefined {
+    const json: SetRegularKeyJSON = {
+      TransactionType: 'SetRegularKey',
+    }
+
+    const regularKey = setRegularKey.getRegularKey()
+    if (regularKey) {
+      const regularKeyJson = this.regularKeyToJSON(regularKey)
+      if (regularKeyJson) {
+        json.RegularKey = regularKeyJson
+      }
+    }
+
+    return json
   },
 
   /**

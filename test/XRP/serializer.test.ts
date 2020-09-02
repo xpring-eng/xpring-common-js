@@ -76,6 +76,7 @@ import {
   EscrowCreate,
   EscrowFinish,
   OfferCancel,
+  SetRegularKey,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   CheckCreateJSON,
@@ -87,6 +88,7 @@ import Serializer, {
   TransactionJSON,
   OfferCreateJSON,
   PaymentJSON,
+  SetRegularKeyJSON,
 } from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
@@ -2630,6 +2632,41 @@ describe('serializer', function (): void {
 
     // THEN the result is as expected.
     assert.equal(serialized, signerWeightValue)
+  })
+
+  it('Serializes a SetRegularKey with regular key', function (): void {
+    // GIVEN a SetRegularKey with a regular key.
+    const regularKey = new RegularKey()
+    regularKey.setValue(testAccountAddress)
+
+    const setRegularKey = new SetRegularKey()
+    setRegularKey.setRegularKey(regularKey)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.setRegularKeyToJSON(setRegularKey)
+
+    // THEN the output is as expected.
+    const expected: SetRegularKeyJSON = {
+      RegularKey: Serializer.regularKeyToJSON(regularKey),
+      TransactionType: 'SetRegularKey',
+    }
+
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes a SetRegularKey with no regular key', function (): void {
+    // GIVEN a SetRegularKey without a regular key.
+    const setRegularKey = new SetRegularKey()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.setRegularKeyToJSON(setRegularKey)
+
+    // THEN the output is as expected.
+    const expected: SetRegularKeyJSON = {
+      TransactionType: 'SetRegularKey',
+    }
+
+    assert.deepEqual(serialized, expected)
   })
     
   it('Serializes an EscrowFinish with required fields', function (): void {
