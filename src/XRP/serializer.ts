@@ -67,11 +67,12 @@ import {
   CheckCancel,
   CheckCash,
   CheckCreate,
-  PaymentChannelClaim,
   OfferCreate,
   EscrowCancel,
   EscrowCreate,
   EscrowFinish,
+  PaymentChannelClaim,
+  PaymentChannelFund,
   SetRegularKey,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
@@ -185,6 +186,13 @@ export interface PaymentChannelClaimJSON {
   TransactionType: 'PaymentChannelClaim'
 }
 
+export interface PaymentChannelFundJSON {
+  Channel: ChannelJSON
+  Amount: AmountJSON
+  Expiration?: ExpirationJSON
+  TransactionType: 'PaymentChannelFund'
+}
+
 export interface OfferCreateJSON {
   Expiration?: ExpirationJSON
   OfferSequence?: OfferSequenceJSON
@@ -212,6 +220,7 @@ type TransactionDataJSON =
   | OfferCreateJSON
   | PaymentJSON
   | PaymentChannelClaimJSON
+  | PaymentChannelFundJSON
   | SetRegularKeyJSON
 
 /**
@@ -231,6 +240,8 @@ type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
 type PaymentChannelClaimTransactionJSON = BaseTransactionJSON &
   PaymentChannelClaimJSON
+type PaymentChannelFundTransactionJSON = BaseTransactionJSON &
+  PaymentChannelFundJSON
 type SetRegularKeyTransactionJSON = BaseTransactionJSON & SetRegularKeyJSON
 
 /**
@@ -250,6 +261,7 @@ export type TransactionJSON =
   | OfferCreateTransactionJSON
   | PaymentTransactionJSON
   | PaymentChannelClaimTransactionJSON
+  | PaymentChannelFundTransactionJSON
   | SetRegularKeyTransactionJSON
 
 /**
@@ -1448,7 +1460,7 @@ const serializer = {
     return signerWeight.getValue()
   },
 
-  /** 
+  /**
    * Convert a Channel to a JSON representation.
    *
    * @param channel - The Channel to convert.
@@ -1636,6 +1648,42 @@ const serializer = {
     }
 
     return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert a PaymentChannelFund to a JSON representation.
+   *
+   * @param paymentChannelFund - The PaymentChannelFund to convert.
+   * @returns The PaymentChannelFund as JSON.
+   */
+  paymentChannelFundToJSON(
+    paymentChannelFund: PaymentChannelFund,
+  ): PaymentChannelFundJSON | undefined {
+    // Process mandatory fields.
+    const channel = paymentChannelFund.getChannel()
+    const amount = paymentChannelFund.getAmount()
+    if (channel === undefined || amount === undefined) {
+      return undefined
+    }
+
+    const amountJSON = this.amountToJSON(amount)
+    if (amountJSON === undefined) {
+      return undefined
+    }
+
+    const json: PaymentChannelFundJSON = {
+      Channel: this.channelToJSON(channel),
+      Amount: amountJSON,
+      TransactionType: 'PaymentChannelFund',
+    }
+
+    // Process optional fields.
+    const expiration = paymentChannelFund.getExpiration()
+    if (expiration !== undefined) {
+      json.Expiration = this.expirationToJSON(expiration)
+    }
+
+    return json
   },
 }
 
