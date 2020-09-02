@@ -71,7 +71,9 @@ import {
   EscrowCancel,
   EscrowCreate,
   EscrowFinish,
+  PaymentChannelClaim,
   PaymentChannelFund,
+  SetRegularKey,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -102,10 +104,11 @@ export interface AccountSetJSON {
   TransactionType: 'AccountSet'
 }
 
-interface CheckCashJSON {
+export interface CheckCashJSON {
   CheckID: CheckIDJSON
   Amount?: CurrencyAmountJSON
   DeliverMin?: DeliverMinJSON
+  TransactionType: 'CheckCash'
 }
 
 export interface CheckCreateJSON {
@@ -114,6 +117,7 @@ export interface CheckCreateJSON {
   DestinationTag?: DestinationTagJSON
   Expiration?: ExpirationJSON
   InvoiceID?: InvoiceIdJSON
+  TransactionType: 'CheckCreate'
 }
 
 export interface DepositPreauthJSON {
@@ -146,8 +150,9 @@ export interface EscrowFinishJSON {
   TransactionType: 'EscrowFinish'
 }
 
-interface OfferCancelJSON {
+export interface OfferCancelJSON {
   OfferSequence: OfferSequenceJSON
+  TransactionType: 'OfferCancel'
 }
 
 export interface PaymentJSON {
@@ -161,13 +166,24 @@ export interface PaymentJSON {
   TransactionType: 'Payment'
 }
 
-interface AccountDeleteJSON {
+export interface AccountDeleteJSON {
   Destination: DestinationJSON
   DestinationTag?: DestinationTagJSON
+  TransactionType: 'AccountDelete'
 }
 
-interface CheckCancelJSON {
+export interface CheckCancelJSON {
   CheckID: CheckIDJSON
+  TransactionType: 'CheckCancel'
+}
+
+export interface PaymentChannelClaimJSON {
+  Amount?: AmountJSON
+  Balance?: BalanceJSON
+  Channel: ChannelJSON
+  PublicKey?: PublicKeyJSON
+  Signature?: PaymentChannelSignatureJSON
+  TransactionType: 'PaymentChannelClaim'
 }
 
 export interface PaymentChannelFundJSON {
@@ -184,6 +200,11 @@ export interface OfferCreateJSON {
   TakerPays: TakerPaysJSON
 }
 
+export interface SetRegularKeyJSON {
+  RegularKey?: RegularKeyJSON
+  TransactionType: 'SetRegularKey'
+}
+
 // Generic field representing an OR of all above fields.
 type TransactionDataJSON =
   | AccountDeleteJSON
@@ -198,7 +219,9 @@ type TransactionDataJSON =
   | OfferCancelJSON
   | OfferCreateJSON
   | PaymentJSON
+  | PaymentChannelClaimJSON
   | PaymentChannelFundJSON
+  | SetRegularKeyJSON
 
 /**
  * Individual Transaction Types.
@@ -215,8 +238,11 @@ type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
+type PaymentChannelClaimTransactionJSON = BaseTransactionJSON &
+  PaymentChannelClaimJSON
 type PaymentChannelFundTransactionJSON = BaseTransactionJSON &
   PaymentChannelFundJSON
+type SetRegularKeyTransactionJSON = BaseTransactionJSON & SetRegularKeyJSON
 
 /**
  * All Transactions.
@@ -234,7 +260,9 @@ export type TransactionJSON =
   | OfferCancelTransactionJSON
   | OfferCreateTransactionJSON
   | PaymentTransactionJSON
+  | PaymentChannelClaimTransactionJSON
   | PaymentChannelFundTransactionJSON
+  | SetRegularKeyTransactionJSON
 
 /**
  * Types for serialized sub-objects.
@@ -1111,6 +1139,7 @@ const serializer = {
 
     return {
       CheckID: this.checkIDToJSON(checkId),
+      TransactionType: 'CheckCancel',
     }
   },
 
@@ -1228,6 +1257,7 @@ const serializer = {
 
     const json: AccountDeleteJSON = {
       Destination: destinationJSON,
+      TransactionType: 'AccountDelete',
     }
 
     // Process optional fields.
@@ -1253,6 +1283,7 @@ const serializer = {
 
     return {
       OfferSequence: this.offerSequenceToJSON(offerSequence),
+      TransactionType: 'OfferCancel',
     }
   },
 
@@ -1346,6 +1377,7 @@ const serializer = {
 
     const json: CheckCashJSON = {
       CheckID: this.checkIDToJSON(checkId),
+      TransactionType: 'CheckCash',
     }
 
     // One of the following fields must be set.
@@ -1396,6 +1428,7 @@ const serializer = {
     const json: CheckCreateJSON = {
       Destination: destinationJSON,
       SendMax: sendMaxJSON,
+      TransactionType: 'CheckCreate',
     }
 
     // Process optional fields.
@@ -1438,6 +1471,51 @@ const serializer = {
   },
 
   /**
+   * Convert a PaymentChannelClaim to a JSON representation.
+   *
+   * @param paymentChannelClaim - The PaymentChannelClaim to convert.
+   * @returns The PaymentChannelClaim as JSON.
+   */
+  paymentChannelClaimToJSON(
+    paymentChannelClaim: PaymentChannelClaim,
+  ): PaymentChannelClaimJSON | undefined {
+    // Process mandatory fields.
+    const channel = paymentChannelClaim.getChannel()
+    if (channel === undefined) {
+      return undefined
+    }
+
+    const json: PaymentChannelClaimJSON = {
+      Channel: this.channelToJSON(channel),
+      TransactionType: 'PaymentChannelClaim',
+    }
+
+    // Process optional fields.
+    const balance = paymentChannelClaim.getBalance()
+    if (balance !== undefined) {
+      json.Balance = this.balanceToJSON(balance)
+    }
+
+    const amount = paymentChannelClaim.getAmount()
+    if (amount !== undefined) {
+      json.Amount = this.amountToJSON(amount)
+    }
+
+    const signature = paymentChannelClaim.getPaymentChannelSignature()
+    if (signature !== undefined) {
+      json.Signature = this.paymentChannelSignatureToJSON(signature)
+    }
+
+    const publicKey = paymentChannelClaim.getPublicKey()
+    if (publicKey !== undefined) {
+      json.PublicKey = this.publicKeyToJSON(publicKey)
+    }
+
+    return json
+  },
+
+  /**
+  /** 
    * Convert a SignerQuorum to a JSON representation.
    *
    * @param signerQuorum - The SignerQuorum to convert.
@@ -1499,6 +1577,30 @@ const serializer = {
     }
 
     return this.accountAddressToJSON(accountAddress)
+  },
+
+  /**
+   * Convert a SetRegularKey to a JSON representation.
+   *
+   * @param setRegularKey - The SetRegularKey to convert.
+   * @returns The SetRegularKey as JSON.
+   */
+  setRegularKeyToJSON(
+    setRegularKey: SetRegularKey,
+  ): SetRegularKeyJSON | undefined {
+    const json: SetRegularKeyJSON = {
+      TransactionType: 'SetRegularKey',
+    }
+
+    const regularKey = setRegularKey.getRegularKey()
+    if (regularKey) {
+      const regularKeyJson = this.regularKeyToJSON(regularKey)
+      if (regularKeyJson) {
+        json.RegularKey = regularKeyJson
+      }
+    }
+
+    return json
   },
 
   /**
