@@ -60,6 +60,7 @@ import {
   QualityIn,
   QualityOut,
   LimitAmount,
+  SignerEntry,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -2970,6 +2971,29 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a SignerEntry', function (): void {
+    // GIVEN a SignerEntry
+    const account = new Account()
+    account.setValue(testAccountAddress)
+
+    const signerWeight = new SignerWeight()
+    signerWeight.setValue(1)
+
+    const signerEntry = new SignerEntry()
+    signerEntry.setAccount(account)
+    signerEntry.setSignerWeight(signerWeight)
+
+    // WHEN the SignerEntry is serialized.
+    const serialized = Serializer.signerEntryToJSON(signerEntry)
+
+    // THEN the result is the expected form.
+    const expected = {
+      Account: Serializer.accountToJSON(account)!,
+      SignerWeight: Serializer.signerWeightToJSON(signerWeight)!,
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
   it('Serializes a PaymentChannelCreate with mandatory fields', function (): void {
     // GIVEN a PaymentChannelCreate with only mandatory fields set.
     const amount = new Amount()
@@ -3052,6 +3076,24 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized, expected)
   })
 
+  it('Fails to serialize a SignerEntry with malformed components', function (): void {
+    // GIVEN a SignerEntry with a malformed account
+    const account = new Account()
+
+    const signerWeight = new SignerWeight()
+    signerWeight.setValue(1)
+
+    const signerEntry = new SignerEntry()
+    signerEntry.setAccount(account)
+    signerEntry.setSignerWeight(signerWeight)
+
+    // WHEN the SignerEntry is serialized.
+    const serialized = Serializer.signerEntryToJSON(signerEntry)
+
+    // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
   it('Fails to serialize a PaymentChannelCreate with a malformed amount', function (): void {
     // GIVEN a PaymentChannelCreate with a malformed amount field.
     const amount = new Amount()
@@ -3075,6 +3117,17 @@ describe('serializer', function (): void {
     const serialized = Serializer.paymentChannelCreateToJSON(
       paymentChannelCreate,
     )
+
+    // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a malformed SignerEntry', function (): void {
+    // GIVEN a malformed SignerEntry
+    const signerEntry = new SignerEntry()
+
+    // WHEN the SignerEntry is serialized.
+    const serialized = Serializer.signerEntryToJSON(signerEntry)
 
     // THEN the result is undefined
     assert.isUndefined(serialized)

@@ -55,6 +55,7 @@ import {
   QualityIn,
   QualityOut,
   LimitAmount,
+  SignerEntry,
 } from './generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -282,6 +283,11 @@ export type TransactionJSON =
 /**
  * Types for serialized sub-objects.
  */
+interface SignerEntryJSON {
+  Account: AccountJSON
+  SignerWeight: SignerWeightJSON
+}
+
 interface MemoJSON {
   Memo?: MemoDetailsJSON
 }
@@ -1663,6 +1669,31 @@ const serializer = {
     }
 
     return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert a SignerEntry to a JSON representation.
+   *
+   * @param signerEntry - The SignerEntry to convert.
+   * @returns The SignerEntry as JSON.
+   */
+  signerEntryToJSON(signerEntry: SignerEntry): SignerEntryJSON | undefined {
+    const account = signerEntry.getAccount()
+    const signerWeight = signerEntry.getSignerWeight()
+    if (account === undefined || signerWeight === undefined) {
+      return undefined
+    }
+
+    const accountJSON = this.accountToJSON(account)
+    const signerWeightJSON = this.signerWeightToJSON(signerWeight)
+    if (accountJSON === undefined || signerWeightJSON === undefined) {
+      return undefined
+    }
+
+    return {
+      Account: accountJSON,
+      SignerWeight: signerWeightJSON,
+    }
   },
 
   /**
