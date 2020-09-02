@@ -77,6 +77,7 @@ import {
   EscrowFinish,
   OfferCancel,
   PaymentChannelClaim,
+  PaymentChannelFund,
   SetRegularKey,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
@@ -90,6 +91,7 @@ import Serializer, {
   OfferCreateJSON,
   PaymentJSON,
   PaymentChannelClaimJSON,
+  PaymentChannelFundJSON,
   AccountDeleteJSON,
   CheckCancelJSON,
   CheckCashJSON,
@@ -2785,6 +2787,30 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a PaymentChannelFund with mandatory fields set.', function (): void {
+    // GIVEN a PaymentChannelFund with mandatory fields set.
+    const amount = new Amount()
+    amount.setValue(makeXrpCurrencyAmount('10'))
+
+    const channel = new Channel()
+    channel.setValue(new Uint8Array([1, 2, 3, 4]))
+
+    const paymentChannelFund = new PaymentChannelFund()
+    paymentChannelFund.setAmount(amount)
+    paymentChannelFund.setChannel(channel)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelFundToJSON(paymentChannelFund)
+
+    // THEN the result is in the expected form.
+    const expected: PaymentChannelFundJSON = {
+      Amount: Serializer.amountToJSON(amount)!,
+      Channel: Serializer.channelToJSON(channel),
+      TransactionType: 'PaymentChannelFund',
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
   it('Serializes a PaymentChannelClaim with only mandatory fields', function (): void {
     // GIVEN a PaymentChannelClaim with only the mandatory fields set.
     const channel = new Channel()
@@ -2802,6 +2828,64 @@ describe('serializer', function (): void {
       TransactionType: 'PaymentChannelClaim',
     }
     assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes a PaymentChannelFund with all fields set.', function (): void {
+    // GIVEN a PaymentChannelFund with all fields set.
+    const amount = new Amount()
+    amount.setValue(makeXrpCurrencyAmount('10'))
+
+    const channel = new Channel()
+    channel.setValue(new Uint8Array([1, 2, 3, 4]))
+
+    const expiration = new Expiration()
+    expiration.setValue(5)
+
+    const paymentChannelFund = new PaymentChannelFund()
+    paymentChannelFund.setAmount(amount)
+    paymentChannelFund.setChannel(channel)
+    paymentChannelFund.setExpiration(expiration)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelFundToJSON(paymentChannelFund)
+
+    // THEN the result is in the expected form.
+    const expected: PaymentChannelFundJSON = {
+      Amount: Serializer.amountToJSON(amount)!,
+      Channel: Serializer.channelToJSON(channel),
+      Expiration: Serializer.expirationToJSON(expiration),
+      TransactionType: 'PaymentChannelFund',
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a PaymentChannelFund with a malformed amount field.', function (): void {
+    // GIVEN a PaymentChannelFund with a malformed amount field
+    const amount = new Amount()
+
+    const channel = new Channel()
+    channel.setValue(new Uint8Array([1, 2, 3, 4]))
+
+    const paymentChannelFund = new PaymentChannelFund()
+    paymentChannelFund.setAmount(amount)
+    paymentChannelFund.setChannel(channel)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelFundToJSON(paymentChannelFund)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a malformed PaymentChannelFund', function (): void {
+    // GIVEN a malformed PaymentChannelFund/
+    const paymentChannelFund = new PaymentChannelFund()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelFundToJSON(paymentChannelFund)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 
   it('Serializes a PaymentChannelClaim with all fields', function (): void {
