@@ -76,6 +76,7 @@ import {
   EscrowCreate,
   EscrowFinish,
   OfferCancel,
+  PaymentChannelClaim,
   SetRegularKey,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
@@ -88,6 +89,7 @@ import Serializer, {
   TransactionJSON,
   OfferCreateJSON,
   PaymentJSON,
+  PaymentChannelClaimJSON,
   AccountDeleteJSON,
   CheckCancelJSON,
   CheckCashJSON,
@@ -2257,7 +2259,7 @@ describe('serializer', function (): void {
     // THEN the output is the input encoded as hex.
     assert.equal(serialized, Utils.toHex(channelValue))
   })
-  
+
   it('Serializes an OfferCreate with only mandatory fields', function (): void {
     // GIVEN a OfferCreate with mandatory fields set.
     const takerPays = new TakerPays()
@@ -2339,7 +2341,7 @@ describe('serializer', function (): void {
     // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
-    
+
   it('Serializes a PublicKey', function (): void {
     // GIVEN a PublicKey.
     const publicKeyValue = new Uint8Array([1, 2, 3, 4])
@@ -2778,6 +2780,77 @@ describe('serializer', function (): void {
 
     // WHEN it is serialized.
     const serialized = Serializer.escrowFinishToJSON(escrowFinish)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a PaymentChannelClaim with only mandatory fields', function (): void {
+    // GIVEN a PaymentChannelClaim with only the mandatory fields set.
+    const channel = new Channel()
+    channel.setValue(new Uint8Array([1, 2, 3, 4]))
+
+    const paymentChannelClaim = new PaymentChannelClaim()
+    paymentChannelClaim.setChannel(channel)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelClaimToJSON(paymentChannelClaim)
+
+    // THEN the result is in the expected form.
+    const expected: PaymentChannelClaimJSON = {
+      Channel: Serializer.channelToJSON(channel),
+      TransactionType: 'PaymentChannelClaim',
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes a PaymentChannelClaim with all fields', function (): void {
+    // GIVEN a PaymentChannelClaim with all fields set.
+    const channel = new Channel()
+    channel.setValue(new Uint8Array([1, 2, 3, 4]))
+
+    const balance = new Balance()
+    balance.setValue(makeXrpCurrencyAmount('5'))
+
+    const paymentChannelSignature = new PaymentChannelSignature()
+    paymentChannelSignature.setValue(new Uint8Array([5, 6, 7, 8]))
+
+    const publicKey = new PublicKey()
+    publicKey.setValue(new Uint8Array([9, 10, 11, 12]))
+
+    const amount = new Amount()
+    amount.setValue(makeXrpCurrencyAmount('6'))
+
+    const paymentChannelClaim = new PaymentChannelClaim()
+    paymentChannelClaim.setChannel(channel)
+    paymentChannelClaim.setBalance(balance)
+    paymentChannelClaim.setPaymentChannelSignature(paymentChannelSignature)
+    paymentChannelClaim.setPublicKey(publicKey)
+    paymentChannelClaim.setAmount(amount)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelClaimToJSON(paymentChannelClaim)
+
+    // THEN the result is in the expected form.
+    const expected: PaymentChannelClaimJSON = {
+      Channel: Serializer.channelToJSON(channel),
+      Balance: Serializer.balanceToJSON(balance),
+      Signature: Serializer.paymentChannelSignatureToJSON(
+        paymentChannelSignature,
+      ),
+      PublicKey: Serializer.publicKeyToJSON(publicKey),
+      Amount: Serializer.amountToJSON(amount),
+      TransactionType: 'PaymentChannelClaim',
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a malfromed PaymentChannelClaim', function (): void {
+    // GIVEN a malformed PaymentChannelClaim
+    const paymentChannelClaim = new PaymentChannelClaim()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.paymentChannelClaimToJSON(paymentChannelClaim)
 
     // THEN the result is undefined.
     assert.isUndefined(serialized)

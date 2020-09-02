@@ -67,6 +67,7 @@ import {
   CheckCancel,
   CheckCash,
   CheckCreate,
+  PaymentChannelClaim,
   OfferCreate,
   EscrowCancel,
   EscrowCreate,
@@ -175,6 +176,15 @@ export interface CheckCancelJSON {
   TransactionType: 'CheckCancel'
 }
 
+export interface PaymentChannelClaimJSON {
+  Amount?: AmountJSON
+  Balance?: BalanceJSON
+  Channel: ChannelJSON
+  PublicKey?: PublicKeyJSON
+  Signature?: PaymentChannelSignatureJSON
+  TransactionType: 'PaymentChannelClaim'
+}
+
 export interface OfferCreateJSON {
   Expiration?: ExpirationJSON
   OfferSequence?: OfferSequenceJSON
@@ -201,6 +211,7 @@ type TransactionDataJSON =
   | OfferCancelJSON
   | OfferCreateJSON
   | PaymentJSON
+  | PaymentChannelClaimJSON
   | SetRegularKeyJSON
 
 /**
@@ -218,6 +229,8 @@ type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
+type PaymentChannelClaimTransactionJSON = BaseTransactionJSON &
+  PaymentChannelClaimJSON
 type SetRegularKeyTransactionJSON = BaseTransactionJSON & SetRegularKeyJSON
 
 /**
@@ -236,6 +249,7 @@ export type TransactionJSON =
   | OfferCancelTransactionJSON
   | OfferCreateTransactionJSON
   | PaymentTransactionJSON
+  | PaymentChannelClaimTransactionJSON
   | SetRegularKeyTransactionJSON
 
 /**
@@ -1444,6 +1458,51 @@ const serializer = {
     return Utils.toHex(channel.getValue_asU8())
   },
 
+  /**
+   * Convert a PaymentChannelClaim to a JSON representation.
+   *
+   * @param paymentChannelClaim - The PaymentChannelClaim to convert.
+   * @returns The PaymentChannelClaim as JSON.
+   */
+  paymentChannelClaimToJSON(
+    paymentChannelClaim: PaymentChannelClaim,
+  ): PaymentChannelClaimJSON | undefined {
+    // Process mandatory fields.
+    const channel = paymentChannelClaim.getChannel()
+    if (channel === undefined) {
+      return undefined
+    }
+
+    const json: PaymentChannelClaimJSON = {
+      Channel: this.channelToJSON(channel),
+      TransactionType: 'PaymentChannelClaim',
+    }
+
+    // Process optional fields.
+    const balance = paymentChannelClaim.getBalance()
+    if (balance !== undefined) {
+      json.Balance = this.balanceToJSON(balance)
+    }
+
+    const amount = paymentChannelClaim.getAmount()
+    if (amount !== undefined) {
+      json.Amount = this.amountToJSON(amount)
+    }
+
+    const signature = paymentChannelClaim.getPaymentChannelSignature()
+    if (signature !== undefined) {
+      json.Signature = this.paymentChannelSignatureToJSON(signature)
+    }
+
+    const publicKey = paymentChannelClaim.getPublicKey()
+    if (publicKey !== undefined) {
+      json.PublicKey = this.publicKeyToJSON(publicKey)
+    }
+
+    return json
+  },
+
+  /**
   /** 
    * Convert a SignerQuorum to a JSON representation.
    *
@@ -1453,7 +1512,7 @@ const serializer = {
   signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
     return signerQuorum.getValue()
   },
-    
+
   /**
    * Convert an OfferCreate to a JSON representation.
    *
@@ -1492,8 +1551,8 @@ const serializer = {
 
     return json
   },
-    
-  /**    
+
+  /**
    * Convert a RegularKey to a JSON representation.
    *
    * @param regularKey - The RegularKey to convert.
