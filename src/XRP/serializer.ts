@@ -72,6 +72,7 @@ import {
   EscrowCancel,
   EscrowCreate,
   EscrowFinish,
+  SignerListSet,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -177,6 +178,12 @@ export interface OfferCreateJSON {
   TakerPays: TakerPaysJSON
 }
 
+export interface SignerListSetJSON {
+  SignerQuorum: SignerQuorumJSON
+  SignerEntries: SignerEntryJSON[]
+  TransactionType: 'SignerListSet'
+}
+
 // Generic field representing an OR of all above fields.
 type TransactionDataJSON =
   | AccountDeleteJSON
@@ -191,6 +198,7 @@ type TransactionDataJSON =
   | OfferCancelJSON
   | OfferCreateJSON
   | PaymentJSON
+  | SignerListSetJSON
 
 /**
  * Individual Transaction Types.
@@ -207,6 +215,7 @@ type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
+type SignerListSetTransactionJSON = BaseTransactionJSON & SignerListSetJSON
 
 /**
  * All Transactions.
@@ -224,6 +233,7 @@ export type TransactionJSON =
   | OfferCancelTransactionJSON
   | OfferCreateTransactionJSON
   | PaymentTransactionJSON
+  | SignerListSetTransactionJSON
 
 /**
  * Types for serialized sub-objects.
@@ -1437,7 +1447,7 @@ const serializer = {
    * @param signerQuorum - The SignerQuorum to convert.
    * @returns The SignerQuorum as JSON.
    */
-  signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
+  signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON {
     return signerQuorum.getValue()
   },
 
@@ -1589,6 +1599,34 @@ const serializer = {
     }
 
     return signerEntryListJSON
+  },
+
+  /**
+   * Convert a SignerListSEt to a JSON representation.
+   *
+   * @param signerListSet - The SignerListSEt to convert.
+   * @returns The SignerListSEt as JSON.
+   */
+  signerListSetToJSON(
+    signerListSet: SignerListSet,
+  ): SignerListSetJSON | undefined {
+    const signerQuorum = signerListSet.getSignerQuorum()
+    const signerEntryList = signerListSet.getSignerEntriesList()
+    if (signerQuorum === undefined) {
+      return undefined
+    }
+
+    const signerQuorumJSON = this.signerQuorumToJSON(signerQuorum)
+    const signerEntriesJSON = this.signerEntryListToJSON(signerEntryList)
+    if (signerEntriesJSON === undefined) {
+      return undefined
+    }
+
+    return {
+      SignerQuorum: signerQuorumJSON,
+      SignerEntries: signerEntriesJSON,
+      TransactionType: 'SignerListSet',
+    }
   },
 }
 
