@@ -1928,6 +1928,13 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
  *
  * @throws An error if given a transaction that we do not know how to handle.
  */
+| PaymentJSON
+| SignerListSetJSON
+| PaymentChannelClaimJSON
+| PaymentChannelCreateJSON
+| PaymentChannelFundJSON
+| SetRegularKeyJSON
+// TODO(keefertaylor): There is no reason this should be separate from the serializer functionality. Move into `serializer` object.
 // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
 function getAdditionalTransactionData(
   transaction: Transaction,
@@ -1940,7 +1947,6 @@ function getAdditionalTransactionData(
       if (accountDelete === undefined) {
         return undefined
       }
-
       return serializer.accountDeleteToJSON(accountDelete)
     }
     case Transaction.TransactionDataCase.ACCOUNT_SET: {
@@ -1950,24 +1956,119 @@ function getAdditionalTransactionData(
       }
       return serializer.accountSetToJSON(accountSet)
     }
+    case Transaction.TransactionDataCase.CHECK_CANCEL: {
+        const checkCancel = transaction.getCheckCancel()
+        if (checkCancel === undefined) {
+        return undefined
+      }
+      return serializer.checkCancelToJSON(checkCancel)
+    }
+    case Transaction.TransactionDataCase.CHECK_CASH: {
+      const checkCash = transaction.getCheckCash()
+      if (checkCash === undefined) {
+        return undefined
+      }
+      return serializer.checkCashToJSON(checkCash)      
+    }
+    case Transaction.TransactionDataCase.CHECK_CREATE: {
+      const checkCreate = transaction.getCheckCreate()
+      if (checkCreate === undefined) {
+        return undefined
+      }
+      return serializer.checkCreateToJSON(checkCreate)
+    }
     case Transaction.TransactionDataCase.DEPOSIT_PREAUTH: {
       const depositPreauth = transaction.getDepositPreauth()
       if (depositPreauth === undefined) {
         return undefined
       }
-
       return serializer.depositPreauthToJSON(depositPreauth)
+    }
+    case Transaction.TransactionDataCase.ESCROW_CANCEL: {
+      const escrowCancel = transaction.getEscrowCancel()
+      if (escrowCancel === undefined) {
+        return undefined
+      }
+      return serializer.escrowCancelToJSON(escrowCancel)
+    }
+    case Transaction.TransactionDataCase.ESCROW_CREATE: {
+      const escrowCreate = transaction.getEscrowCreate()
+      if (escrowCreate === undefined) {
+        return undefined
+      }
+      return serializer.escrowCreateToJSON(escrowCreate)
+    }
+    case Transaction.TransactionDataCase.ESCROW_FINISH: {
+      const escrowFinish = transaction.getEscrowFinish()
+      if (escrowFinish === undefined) {
+        return undefined
+      }
+      return serializer.escrowFinishToJSON(escrowFinish)
+    }
+    case Transaction.TransactionDataCase.OFFER_CANCEL: {
+      const offerCancel = transaction.getOfferCancel()
+      if (offerCancel === undefined) {
+        return undefined
+      }
+      return serializer.offerCancelToJSON(offerCancel)
+    }
+    case Transaction.TransactionDataCase.OFFER_CREATE: {
+      const offerCreate = transaction.getOfferCreate()
+      if (offerCreate === undefined) {
+        return undefined
+      }
+      return serializer.offerCreateToJSON(offerCreate)
     }
     case Transaction.TransactionDataCase.PAYMENT: {
       const payment = transaction.getPayment()
       if (payment === undefined) {
         return undefined
       }
-
       return serializer.paymentToJSON(payment)
     }
-
+    case Transaction.TransactionDataCase.PAYMENT_CHANNEL_CLAIM: {
+      const paymentChannelClaim = transaction.getPaymentChannelClaim()
+      if (paymentChannelClaim === undefined) {
+        return undefined
+      }
+      return serializer.paymentChannelClaimToJSON(paymentChannelClaim)
+    }
+    case Transaction.TransactionDataCase.PAYMENT_CHANNEL_CREATE: {
+      const paymentChannelCreate = transaction.getPaymentChannelCreate()
+      if (paymentChannelCreate === undefined) {
+        return undefined
+      }
+      return serializer.paymentChannelCreateToJSON(paymentChannelCreate)
+    }
+    case Transaction.TransactionDataCase.PAYMENT_CHANNEL_FUND: {
+      const paymentChannelFund = transaction.getPaymentChannelFund()
+      if (paymentChannelFund === undefined) {
+        return undefined
+      }
+      return serializer.paymentChannelFundToJSON(paymentChannelFund)
+    }
+    case Transaction.TransactionDataCase.SET_REGULAR_KEY: {
+      const setRegularKey = transaction.getSetRegularKey()
+      if (setRegularKey === undefined) {
+        return undefined
+      }
+      return serializer.setRegularKeyToJSON(setRegularKey)
+    }
+    case Transaction.TransactionDataCase.SIGNER_LIST_SET: {
+      const signerListSet = transaction.getSignerListSet()
+      if (signerListSet === undefined) {
+        return undefined
+      }
+      return serializer.signerListSetToJSON(signerListSet)
+    }
+    case Transaction.TransactionDataCase.TRUST_SET: {
+      const trustSet = transaction.getTrustSet()
+      if (trustSet === undefined) {
+        return undefined
+      }
+      return serializer.trustSetToJSON(trustSet)
+    }
     default:
-      throw new Error('Unexpected transactionDataCase')
+      throw new Error('Unexpected TransactionDataCase')
   }
 }
