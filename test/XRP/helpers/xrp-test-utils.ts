@@ -29,13 +29,7 @@ import {
   AccountSet,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 
-
 const xrpTestUtils = {
-
-  /* eslint-disable no-shadow, max-params --
-  * The values we are shadowing are only used as inputs for this function,
-  * and it's fine to have a ton of parameters because this function is only used for testing purposes.
-  */
   /**
    * Create a new `Transaction` object with the given inputs.
    *
@@ -315,7 +309,6 @@ const xrpTestUtils = {
 
     return transaction
   },
-  /* eslint-enable no-shadow, max-params */
 
   /**
    * Make a PathElement.
@@ -331,7 +324,7 @@ const xrpTestUtils = {
     account: AccountAddress | undefined,
     currencyCode: Uint8Array | undefined,
     issuer: AccountAddress | undefined,
-  ) {
+  ): Payment.PathElement {
     const pathElement = new Payment.PathElement()
 
     if (account !== undefined) {
@@ -357,7 +350,7 @@ const xrpTestUtils = {
    * @param drops - A numeric string representing the number of drops.
    * @returns A new XRPDropsAmount.
    */
-  makeXrpDropsAmount(drops: string) {
+  makeXrpDropsAmount(drops: string): XRPDropsAmount {
     const xrpDropsAmount = new XRPDropsAmount()
     xrpDropsAmount.setDrops(drops)
 
@@ -376,7 +369,7 @@ const xrpTestUtils = {
     accountAddress: AccountAddress,
     issuedCurrencyValue: string,
     currency: Currency,
-  ) {
+  ): IssuedCurrencyAmount {
     const issuedCurrency = new IssuedCurrencyAmount()
     issuedCurrency.setIssuer(accountAddress)
     issuedCurrency.setValue(issuedCurrencyValue)
