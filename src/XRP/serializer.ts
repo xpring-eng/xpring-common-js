@@ -1730,7 +1730,7 @@ const serializer = {
   },
 
   /**
-   * Convert a SignerListSEt to a JSON representation.
+   * Convert a SignerListSet to a JSON representation.
    *
    * @param signerListSet - The SignerListSEt to convert.
    * @returns The SignerListSEt as JSON.
