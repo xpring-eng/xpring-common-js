@@ -1928,12 +1928,6 @@ function getNormalizedAccount(transaction: Transaction): string | undefined {
  *
  * @throws An error if given a transaction that we do not know how to handle.
  */
-| PaymentJSON
-| SignerListSetJSON
-| PaymentChannelClaimJSON
-| PaymentChannelCreateJSON
-| PaymentChannelFundJSON
-| SetRegularKeyJSON
 // TODO(keefertaylor): There is no reason this should be separate from the serializer functionality. Move into `serializer` object.
 // eslint-disable-next-line max-statements -- No clear way to make this more succinct because gRPC is verbose
 function getAdditionalTransactionData(
