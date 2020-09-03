@@ -76,6 +76,7 @@ import {
   PaymentChannelCreate,
   PaymentChannelFund,
   SetRegularKey,
+  TrustSet,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -215,6 +216,13 @@ export interface OfferCreateJSON {
 export interface SetRegularKeyJSON {
   RegularKey?: RegularKeyJSON
   TransactionType: 'SetRegularKey'
+}
+
+export interface TrustSetJSON {
+  LimitAmount: LimitAmountJSON
+  QualityIn?: QualityInJSON
+  QualityOut?: QualityOutJSON
+  TransactionType: 'TrustSet'
 }
 
 // Generic field representing an OR of all above fields.
@@ -1668,6 +1676,41 @@ const serializer = {
     }
 
     return this.currencyAmountToJSON(currencyAmount)
+  },
+
+  /**
+   * Convert a TrustSet to a JSON representation.
+   *
+   * @param trustSet - The TrustSet to convert.
+   * @returns The TrustSet as JSON.
+   */
+  trustSetToJSON(trustSet: TrustSet): TrustSetJSON | undefined {
+    const limitAmount = trustSet.getLimitAmount()
+    if (limitAmount === undefined) {
+      return undefined
+    }
+
+    const limitAmountJson = this.limitAmountToJSON(limitAmount)
+    if (limitAmountJson === undefined) {
+      return undefined
+    }
+
+    const json: TrustSetJSON = {
+      LimitAmount: limitAmountJson,
+      TransactionType: 'TrustSet',
+    }
+
+    const qualityIn = trustSet.getQualityIn()
+    if (qualityIn !== undefined) {
+      json.QualityIn = this.qualityInToJSON(qualityIn)
+    }
+
+    const qualityOut = trustSet.getQualityOut()
+    if (qualityOut !== undefined) {
+      json.QualityOut = this.qualityOutToJSON(qualityOut)
+    }
+
+    return json
   },
 
   /**
