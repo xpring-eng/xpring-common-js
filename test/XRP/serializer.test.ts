@@ -2718,7 +2718,7 @@ describe('serializer', function (): void {
   it('Serializes a list of signer entries', function (): void {
     // GIVEN a list of signer entries.
     const account1 = new Account()
-    account1.setValue(makeAccountAddress('r1'))
+    account1.setValue(xrpTestUtils.makeAccountAddress('r1'))
 
     const signerWeight1 = new SignerWeight()
     signerWeight1.setValue(1)
@@ -2728,7 +2728,7 @@ describe('serializer', function (): void {
     signerEntry1.setSignerWeight(signerWeight1)
 
     const account2 = new Account()
-    account2.setValue(makeAccountAddress('r2'))
+    account2.setValue(xrpTestUtils.makeAccountAddress('r2'))
 
     const signerWeight2 = new SignerWeight()
     signerWeight2.setValue(2)
@@ -2753,7 +2753,7 @@ describe('serializer', function (): void {
   it('Fails to serialize a list of signer entries where an entry is malformed', function (): void {
     // GIVEN a list of signer entries with a malformed second entry..
     const account1 = new Account()
-    account1.setValue(makeAccountAddress('r1'))
+    account1.setValue(xrpTestUtils.makeAccountAddress('r1'))
 
     const signerWeight1 = new SignerWeight()
     signerWeight1.setValue(1)
