@@ -77,6 +77,7 @@ import {
   EscrowCreate,
   EscrowFinish,
   OfferCancel,
+  SignerListSet,
   PaymentChannelClaim,
   PaymentChannelCreate,
   PaymentChannelFund,
@@ -93,6 +94,7 @@ import Serializer, {
   TransactionJSON,
   OfferCreateJSON,
   PaymentJSON,
+  SignerListSetJSON,
   PaymentChannelClaimJSON,
   PaymentChannelCreateJSON,
   PaymentChannelFundJSON,
@@ -3283,6 +3285,80 @@ describe('serializer', function (): void {
     )
 
     // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a SignerListSet', function (): void {
+    // GIVEN a SignerListSet
+    const signerQuorum = new SignerQuorum()
+    signerQuorum.setValue(1)
+
+    const account1 = new Account()
+    account1.setValue(makeAccountAddress('r1'))
+
+    const signerWeight1 = new SignerWeight()
+    signerWeight1.setValue(1)
+
+    const signerEntry1 = new SignerEntry()
+    signerEntry1.setAccount(account1)
+    signerEntry1.setSignerWeight(signerWeight1)
+
+    const account2 = new Account()
+    account2.setValue(makeAccountAddress('r2'))
+
+    const signerWeight2 = new SignerWeight()
+    signerWeight2.setValue(2)
+
+    const signerEntry2 = new SignerEntry()
+    signerEntry2.setAccount(account2)
+    signerEntry2.setSignerWeight(signerWeight2)
+
+    const signerEntriesList = [signerEntry1, signerEntry2]
+
+    const signerListSet = new SignerListSet()
+    signerListSet.setSignerQuorum(signerQuorum)
+    signerListSet.setSignerEntriesList(signerEntriesList)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.signerListSetToJSON(signerListSet)
+
+    // THEN the result is the expected form.
+    const expected: SignerListSetJSON = {
+      SignerEntries: Serializer.signerEntryListToJSON(signerEntriesList)!,
+      SignerQuorum: Serializer.signerQuorumToJSON(signerQuorum)!,
+      TransactionType: 'SignerListSet',
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a SignerListSet with malformed components', function (): void {
+    // GIVEN a SignerListSet with a malformed SignerEntriesList.
+    const signerQuorum = new SignerQuorum()
+    signerQuorum.setValue(1)
+
+    const signerEntry = new SignerEntry()
+
+    const signerEntriesList = [signerEntry]
+
+    const signerListSet = new SignerListSet()
+    signerListSet.setSignerQuorum(signerQuorum)
+    signerListSet.setSignerEntriesList(signerEntriesList)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.signerListSetToJSON(signerListSet)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a malformed SignerListSet', function (): void {
+    // GIVEN a malformd SignerListSet.
+    const signerListSet = new SignerListSet()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.signerListSetToJSON(signerListSet)
+
+    // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
 })

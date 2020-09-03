@@ -72,6 +72,7 @@ import {
   EscrowCancel,
   EscrowCreate,
   EscrowFinish,
+  SignerListSet,
   PaymentChannelClaim,
   PaymentChannelCreate,
   PaymentChannelFund,
@@ -213,6 +214,12 @@ export interface OfferCreateJSON {
   TakerPays: TakerPaysJSON
 }
 
+export interface SignerListSetJSON {
+  SignerQuorum: SignerQuorumJSON
+  SignerEntries: SignerEntryJSON[]
+  TransactionType: 'SignerListSet'
+}
+
 export interface SetRegularKeyJSON {
   RegularKey?: RegularKeyJSON
   TransactionType: 'SetRegularKey'
@@ -239,6 +246,7 @@ type TransactionDataJSON =
   | OfferCancelJSON
   | OfferCreateJSON
   | PaymentJSON
+  | SignerListSetJSON
   | PaymentChannelClaimJSON
   | PaymentChannelCreateJSON
   | PaymentChannelFundJSON
@@ -259,6 +267,7 @@ type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
+type SignerListSetTransactionJSON = BaseTransactionJSON & SignerListSetJSON
 type PaymentChannelClaimTransactionJSON = BaseTransactionJSON &
   PaymentChannelClaimJSON
 type PaymentChannelCreateTransactionJSON = BaseTransactionJSON &
@@ -283,6 +292,7 @@ export type TransactionJSON =
   | OfferCancelTransactionJSON
   | OfferCreateTransactionJSON
   | PaymentTransactionJSON
+  | SignerListSetTransactionJSON
   | PaymentChannelCreateTransactionJSON
   | PaymentChannelClaimTransactionJSON
   | PaymentChannelFundTransactionJSON
@@ -1549,7 +1559,7 @@ const serializer = {
    * @param signerQuorum - The SignerQuorum to convert.
    * @returns The SignerQuorum as JSON.
    */
-  signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
+  signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON {
     return signerQuorum.getValue()
   },
 
@@ -1760,6 +1770,34 @@ const serializer = {
     }
 
     return signerEntryListJSON
+  },
+
+  /**
+   * Convert a SignerListSet to a JSON representation.
+   *
+   * @param signerListSet - The SignerListSet to convert.
+   * @returns The SignerListSet as JSON.
+   */
+  signerListSetToJSON(
+    signerListSet: SignerListSet,
+  ): SignerListSetJSON | undefined {
+    const signerQuorum = signerListSet.getSignerQuorum()
+    const signerEntryList = signerListSet.getSignerEntriesList()
+    if (signerQuorum === undefined) {
+      return undefined
+    }
+
+    const signerQuorumJSON = this.signerQuorumToJSON(signerQuorum)
+    const signerEntriesJSON = this.signerEntryListToJSON(signerEntryList)
+    if (signerEntriesJSON === undefined) {
+      return undefined
+    }
+
+    return {
+      SignerQuorum: signerQuorumJSON,
+      SignerEntries: signerEntriesJSON,
+      TransactionType: 'SignerListSet',
+    }
   },
 
   /**
