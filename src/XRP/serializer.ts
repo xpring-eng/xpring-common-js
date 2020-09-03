@@ -72,6 +72,7 @@ import {
   EscrowCancel,
   EscrowCreate,
   EscrowFinish,
+  SignerListSet,
   PaymentChannelClaim,
   PaymentChannelCreate,
   PaymentChannelFund,
@@ -213,6 +214,12 @@ export interface OfferCreateJSON {
   TakerPays: TakerPaysJSON
 }
 
+export interface SignerListSetJSON {
+  SignerQuorum: SignerQuorumJSON
+  SignerEntries: SignerEntryJSON[]
+  TransactionType: 'SignerListSet'
+}
+
 export interface SetRegularKeyJSON {
   RegularKey?: RegularKeyJSON
   TransactionType: 'SetRegularKey'
@@ -239,6 +246,7 @@ type TransactionDataJSON =
   | OfferCancelJSON
   | OfferCreateJSON
   | PaymentJSON
+  | SignerListSetJSON
   | PaymentChannelClaimJSON
   | PaymentChannelCreateJSON
   | PaymentChannelFundJSON
@@ -259,6 +267,7 @@ type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
+type SignerListSetTransactionJSON = BaseTransactionJSON & SignerListSetJSON
 type PaymentChannelClaimTransactionJSON = BaseTransactionJSON &
   PaymentChannelClaimJSON
 type PaymentChannelCreateTransactionJSON = BaseTransactionJSON &
@@ -283,6 +292,7 @@ export type TransactionJSON =
   | OfferCancelTransactionJSON
   | OfferCreateTransactionJSON
   | PaymentTransactionJSON
+  | SignerListSetTransactionJSON
   | PaymentChannelCreateTransactionJSON
   | PaymentChannelClaimTransactionJSON
   | PaymentChannelFundTransactionJSON
@@ -1544,13 +1554,12 @@ const serializer = {
   },
 
   /**
-  /** 
    * Convert a SignerQuorum to a JSON representation.
    *
    * @param signerQuorum - The SignerQuorum to convert.
    * @returns The SignerQuorum as JSON.
    */
-  signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
+  signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON {
     return signerQuorum.getValue()
   },
 
@@ -1739,6 +1748,58 @@ const serializer = {
     }
   },
 
+  /**
+   * Convert a list of SignerEntry to a JSON representation.
+   *
+   * If any entry in the list fails conversion, this method will return undefined.
+   *
+   * @param signerEntryList - The list of `SignerEntry`s to convert.
+   * @returns A list of the same `SignerEntry`s as JSON objects.
+   */
+  signerEntryListToJSON(
+    signerEntryList: SignerEntry[],
+  ): SignerEntryJSON[] | undefined {
+    const signerEntryListJSON: SignerEntryJSON[] = []
+    for (const signerEntry of signerEntryList) {
+      const signerEntryJSON = this.signerEntryToJSON(signerEntry)
+      if (signerEntryJSON === undefined) {
+        return undefined
+      }
+
+      signerEntryListJSON.push(signerEntryJSON)
+    }
+
+    return signerEntryListJSON
+  },
+
+  /**
+   * Convert a SignerListSEt to a JSON representation.
+   *
+   * @param signerListSet - The SignerListSEt to convert.
+   * @returns The SignerListSEt as JSON.
+   */
+  signerListSetToJSON(
+    signerListSet: SignerListSet,
+  ): SignerListSetJSON | undefined {
+    const signerQuorum = signerListSet.getSignerQuorum()
+    const signerEntryList = signerListSet.getSignerEntriesList()
+    if (signerQuorum === undefined) {
+      return undefined
+    }
+
+    const signerQuorumJSON = this.signerQuorumToJSON(signerQuorum)
+    const signerEntriesJSON = this.signerEntryListToJSON(signerEntryList)
+    if (signerEntriesJSON === undefined) {
+      return undefined
+    }
+
+    return {
+      SignerQuorum: signerQuorumJSON,
+      SignerEntries: signerEntriesJSON,
+      TransactionType: 'SignerListSet',
+    }
+  },
+    
   /**
    * Convert a PaymentChannelCreate to a JSON representation.
    *

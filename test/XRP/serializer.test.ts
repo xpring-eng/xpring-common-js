@@ -77,6 +77,7 @@ import {
   EscrowCreate,
   EscrowFinish,
   OfferCancel,
+  SignerListSet,
   PaymentChannelClaim,
   PaymentChannelCreate,
   PaymentChannelFund,
@@ -93,6 +94,7 @@ import Serializer, {
   TransactionJSON,
   OfferCreateJSON,
   PaymentJSON,
+  SignerListSetJSON,
   PaymentChannelClaimJSON,
   PaymentChannelCreateJSON,
   PaymentChannelFundJSON,
@@ -3075,6 +3077,166 @@ describe('serializer', function (): void {
       SignerWeight: Serializer.signerWeightToJSON(signerWeight)!,
     }
     assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a SignerEntry with malformed components', function (): void {
+    // GIVEN a SignerEntry with a malformed account
+    const account = new Account()
+
+    const signerWeight = new SignerWeight()
+    signerWeight.setValue(1)
+
+    const signerEntry = new SignerEntry()
+    signerEntry.setAccount(account)
+    signerEntry.setSignerWeight(signerWeight)
+
+    // WHEN the SignerEntry is serialized.
+    const serialized = Serializer.signerEntryToJSON(signerEntry)
+
+    // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a malformed SignerEntry', function (): void {
+    // GIVEN a malformed SignerEntry
+    const signerEntry = new SignerEntry()
+
+    // WHEN the SignerEntry is serialized.
+    const serialized = Serializer.signerEntryToJSON(signerEntry)
+
+    // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a list of signer entries', function (): void {
+    // GIVEN a list of signer entries.
+    const account1 = new Account()
+    account1.setValue(makeAccountAddress('r1'))
+
+    const signerWeight1 = new SignerWeight()
+    signerWeight1.setValue(1)
+
+    const signerEntry1 = new SignerEntry()
+    signerEntry1.setAccount(account1)
+    signerEntry1.setSignerWeight(signerWeight1)
+
+    const account2 = new Account()
+    account2.setValue(makeAccountAddress('r2'))
+
+    const signerWeight2 = new SignerWeight()
+    signerWeight2.setValue(2)
+
+    const signerEntry2 = new SignerEntry()
+    signerEntry2.setAccount(account2)
+    signerEntry2.setSignerWeight(signerWeight2)
+
+    const signerEntryList = [signerEntry1, signerEntry2]
+
+    // WHEN the list is serialized.
+    const serialized = Serializer.signerEntryListToJSON(signerEntryList)
+
+    // THEN the result is the serialized versions of the list elements.
+    const expected = [
+      Serializer.signerEntryToJSON(signerEntry1)!,
+      Serializer.signerEntryToJSON(signerEntry2)!,
+    ]
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a list of signer entries where an entry is malformed', function (): void {
+    // GIVEN a list of signer entries with a malformed second entry.
+    const account1 = new Account()
+    account1.setValue(makeAccountAddress('r1'))
+
+    const signerWeight1 = new SignerWeight()
+    signerWeight1.setValue(1)
+
+    const signerEntry1 = new SignerEntry()
+    signerEntry1.setAccount(account1)
+    signerEntry1.setSignerWeight(signerWeight1)
+
+    const signerEntry2 = new SignerEntry()
+    const signerEntryList = [signerEntry1, signerEntry2]
+
+    // WHEN the list is serialized.
+    const serialized = Serializer.signerEntryListToJSON(signerEntryList)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a SignerListSet', function (): void {
+    // GIVEN a SignerListSet
+    const signerQuorum = new SignerQuorum()
+    signerQuorum.setValue(1)
+
+    const account1 = new Account()
+    account1.setValue(makeAccountAddress('r1'))
+
+    const signerWeight1 = new SignerWeight()
+    signerWeight1.setValue(1)
+
+    const signerEntry1 = new SignerEntry()
+    signerEntry1.setAccount(account1)
+    signerEntry1.setSignerWeight(signerWeight1)
+
+    const account2 = new Account()
+    account2.setValue(makeAccountAddress('r2'))
+
+    const signerWeight2 = new SignerWeight()
+    signerWeight2.setValue(2)
+
+    const signerEntry2 = new SignerEntry()
+    signerEntry2.setAccount(account2)
+    signerEntry2.setSignerWeight(signerWeight2)
+
+    const signerEntriesList = [signerEntry1, signerEntry2]
+
+    const signerListSet = new SignerListSet()
+    signerListSet.setSignerQuorum(signerQuorum)
+    signerListSet.setSignerEntriesList(signerEntriesList)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.signerListSetToJSON(signerListSet)
+
+    // THEN the result is the expected form.
+    const expected: SignerListSetJSON = {
+      SignerEntries: Serializer.signerEntryListToJSON(signerEntriesList)!,
+      SignerQuorum: Serializer.signerQuorumToJSON(signerQuorum)!,
+      TransactionType: 'SignerListSet',
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a SignerListSet with malformed components', function (): void {
+    // GIVEN a SignerListSet with a malformed SignerEntriesList.
+    const signerQuorum = new SignerQuorum()
+    signerQuorum.setValue(1)
+
+    const signerEntry = new SignerEntry()
+
+    const signerEntriesList = [signerEntry]
+
+    const signerListSet = new SignerListSet()
+    signerListSet.setSignerQuorum(signerQuorum)
+    signerListSet.setSignerEntriesList(signerEntriesList)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.signerListSetToJSON(signerListSet)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a malformed SignerListSet', function (): void {
+    // GIVEN a malformd SignerListSet.
+    const signerListSet = new SignerListSet()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.signerListSetToJSON(signerListSet)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
   })
 
   it('Serializes a PaymentChannelCreate with mandatory fields', function (): void {
