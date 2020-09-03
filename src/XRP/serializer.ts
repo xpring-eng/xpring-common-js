@@ -1773,10 +1773,10 @@ const serializer = {
   },
 
   /**
-   * Convert a SignerListSEt to a JSON representation.
+   * Convert a SignerListSet to a JSON representation.
    *
-   * @param signerListSet - The SignerListSEt to convert.
-   * @returns The SignerListSEt as JSON.
+   * @param signerListSet - The SignerListSet to convert.
+   * @returns The SignerListSet as JSON.
    */
   signerListSetToJSON(
     signerListSet: SignerListSet,
@@ -1799,7 +1799,7 @@ const serializer = {
       TransactionType: 'SignerListSet',
     }
   },
-    
+
   /**
    * Convert a PaymentChannelCreate to a JSON representation.
    *
@@ -1951,8 +1951,8 @@ function getAdditionalTransactionData(
       return serializer.accountSetToJSON(accountSet)
     }
     case Transaction.TransactionDataCase.CHECK_CANCEL: {
-        const checkCancel = transaction.getCheckCancel()
-        if (checkCancel === undefined) {
+      const checkCancel = transaction.getCheckCancel()
+      if (checkCancel === undefined) {
         return undefined
       }
       return serializer.checkCancelToJSON(checkCancel)
@@ -1962,7 +1962,7 @@ function getAdditionalTransactionData(
       if (checkCash === undefined) {
         return undefined
       }
-      return serializer.checkCashToJSON(checkCash)      
+      return serializer.checkCashToJSON(checkCash)
     }
     case Transaction.TransactionDataCase.CHECK_CREATE: {
       const checkCreate = transaction.getCheckCreate()
