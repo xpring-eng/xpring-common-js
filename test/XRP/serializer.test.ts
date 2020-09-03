@@ -2996,24 +2996,6 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized, expected)
   })
 
-  it('Fails to serialize a SignerEntry with malformed components', function (): void {
-    // GIVEN a SignerEntry with a malformed account
-    const account = new Account()
-
-    const signerWeight = new SignerWeight()
-    signerWeight.setValue(1)
-
-    const signerEntry = new SignerEntry()
-    signerEntry.setAccount(account)
-    signerEntry.setSignerWeight(signerWeight)
-
-    // WHEN the SignerEntry is serialized.
-    const serialized = Serializer.signerEntryToJSON(signerEntry)
-
-    // THEN the result is undefined
-    assert.isUndefined(serialized)
-  })
-
   it('Fails to serialize a malformed SignerEntry', function (): void {
     // GIVEN a malformed SignerEntry
     const signerEntry = new SignerEntry()
