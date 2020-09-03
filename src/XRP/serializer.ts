@@ -1756,7 +1756,7 @@ const serializer = {
       TransactionType: 'SignerListSet',
     }
   },
-    
+
   /**
    * Convert a PaymentChannelCreate to a JSON representation.
    *
