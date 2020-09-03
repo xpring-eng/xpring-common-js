@@ -251,6 +251,7 @@ type TransactionDataJSON =
   | PaymentChannelCreateJSON
   | PaymentChannelFundJSON
   | SetRegularKeyJSON
+  | TrustSetJSON
 
 /**
  * Individual Transaction Types.
@@ -275,6 +276,7 @@ type PaymentChannelCreateTransactionJSON = BaseTransactionJSON &
 type PaymentChannelFundTransactionJSON = BaseTransactionJSON &
   PaymentChannelFundJSON
 type SetRegularKeyTransactionJSON = BaseTransactionJSON & SetRegularKeyJSON
+type TrustSetTransactionJSON = BaseTransactionJSON & TrustSetJSON
 
 /**
  * All Transactions.
@@ -297,6 +299,7 @@ export type TransactionJSON =
   | PaymentChannelClaimTransactionJSON
   | PaymentChannelFundTransactionJSON
   | SetRegularKeyTransactionJSON
+  | TrustSetTransactionJSON
 
 /**
  * Types for serialized sub-objects.
