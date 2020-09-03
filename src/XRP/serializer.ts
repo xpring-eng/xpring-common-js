@@ -1718,7 +1718,7 @@ const serializer = {
 
     return signerEntryListJSON
   },
-    
+
   /**
    * Convert a PaymentChannelCreate to a JSON representation.
    *

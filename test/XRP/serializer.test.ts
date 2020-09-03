@@ -2687,7 +2687,7 @@ describe('serializer', function (): void {
 
     assert.deepEqual(serialized, expected)
   })
-    
+
   it('Serializes an EscrowFinish with required fields', function (): void {
     // GIVEN an EscrowFinish with required fields.
     const offerSequence = new OfferSequence()
@@ -3086,17 +3086,6 @@ describe('serializer', function (): void {
     const signerEntry = new SignerEntry()
     signerEntry.setAccount(account)
     signerEntry.setSignerWeight(signerWeight)
-
-    // WHEN the SignerEntry is serialized.
-    const serialized = Serializer.signerEntryToJSON(signerEntry)
-
-    // THEN the result is undefined
-    assert.isUndefined(serialized)
-  })
-
-  it('Fails to serialize a malformed SignerEntry', function (): void {
-    // GIVEN a malformed SignerEntry
-    const signerEntry = new SignerEntry()
 
     // WHEN the SignerEntry is serialized.
     const serialized = Serializer.signerEntryToJSON(signerEntry)
