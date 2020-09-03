@@ -1544,7 +1544,6 @@ const serializer = {
   },
 
   /**
-  /** 
    * Convert a SignerQuorum to a JSON representation.
    *
    * @param signerQuorum - The SignerQuorum to convert.
@@ -1737,6 +1736,30 @@ const serializer = {
       Account: accountJSON,
       SignerWeight: signerWeightJSON,
     }
+  },
+
+  /**
+   * Convert a list of SignerEntry to a JSON representation.
+   *
+   * If any entry in the list fails conversion, this method will return undefined.
+   *
+   * @param signerEntryList - The list of `SignerEntry`s to convert.
+   * @returns A list of the same `SignerEntry`s as JSON objects.
+   */
+  signerEntryListToJSON(
+    signerEntryList: SignerEntry[],
+  ): SignerEntryJSON[] | undefined {
+    const signerEntryListJSON: SignerEntryJSON[] = []
+    for (const signerEntry of signerEntryList) {
+      const signerEntryJSON = this.signerEntryToJSON(signerEntry)
+      if (signerEntryJSON === undefined) {
+        return undefined
+      }
+
+      signerEntryListJSON.push(signerEntryJSON)
+    }
+
+    return signerEntryListJSON
   },
 
   /**
