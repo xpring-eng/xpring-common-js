@@ -2715,6 +2715,63 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a list of signer entries', function (): void {
+    // GIVEN a list of signer entries.
+    const account1 = new Account()
+    account1.setValue(makeAccountAddress('r1'))
+
+    const signerWeight1 = new SignerWeight()
+    signerWeight1.setValue(1)
+
+    const signerEntry1 = new SignerEntry()
+    signerEntry1.setAccount(account1)
+    signerEntry1.setSignerWeight(signerWeight1)
+
+    const account2 = new Account()
+    account2.setValue(makeAccountAddress('r2'))
+
+    const signerWeight2 = new SignerWeight()
+    signerWeight2.setValue(2)
+
+    const signerEntry2 = new SignerEntry()
+    signerEntry2.setAccount(account2)
+    signerEntry2.setSignerWeight(signerWeight2)
+
+    const signerEntryList = [signerEntry1, signerEntry2]
+
+    // WHEN the list is serialized.
+    const serialized = Serializer.signerEntryListToJSON(signerEntryList)
+
+    // THEN the result is the serialized versions of the list elements.
+    const expected = [
+      Serializer.signerEntryToJSON(signerEntry1)!,
+      Serializer.signerEntryToJSON(signerEntry2)!,
+    ]
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a list of signer entries where an entry is malformed', function (): void {
+    // GIVEN a list of signer entries with a malformed second entry..
+    const account1 = new Account()
+    account1.setValue(makeAccountAddress('r1'))
+
+    const signerWeight1 = new SignerWeight()
+    signerWeight1.setValue(1)
+
+    const signerEntry1 = new SignerEntry()
+    signerEntry1.setAccount(account1)
+    signerEntry1.setSignerWeight(signerWeight1)
+
+    const signerEntry2 = new SignerEntry()
+    const signerEntryList = [signerEntry1, signerEntry2]
+
+    // WHEN the list is serialized.
+    const serialized = Serializer.signerEntryListToJSON(signerEntryList)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
   it('Fails to serialize a PaymentChannelCreate with a malformed amount', function (): void {
     // GIVEN a PaymentChannelCreate with a malformed amount field.
     const amount = new Amount()
