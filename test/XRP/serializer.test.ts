@@ -77,10 +77,12 @@ import {
   EscrowCreate,
   EscrowFinish,
   OfferCancel,
+  SignerListSet,
   PaymentChannelClaim,
   PaymentChannelCreate,
   PaymentChannelFund,
   SetRegularKey,
+  TrustSet,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import Serializer, {
   CheckCreateJSON,
@@ -92,6 +94,7 @@ import Serializer, {
   TransactionJSON,
   OfferCreateJSON,
   PaymentJSON,
+  SignerListSetJSON,
   PaymentChannelClaimJSON,
   PaymentChannelCreateJSON,
   PaymentChannelFundJSON,
@@ -100,6 +103,7 @@ import Serializer, {
   CheckCashJSON,
   OfferCancelJSON,
   SetRegularKeyJSON,
+  TrustSetJSON,
 } from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
@@ -2592,6 +2596,87 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('Serializes a TrustSet with required fields', function (): void {
+    // GIVEN a TrustSet with required fields.
+    const currencyAmount = makeXrpCurrencyAmount('10')
+
+    const limitAmount = new LimitAmount()
+    limitAmount.setValue(currencyAmount)
+
+    const trustSet = new TrustSet()
+    trustSet.setLimitAmount(limitAmount)
+
+    // WHEN the TrustSet is serialized.
+    const serialized = Serializer.trustSetToJSON(trustSet)
+
+    // THEN the result is as expected.
+    const expected: TrustSetJSON = {
+      LimitAmount: Serializer.limitAmountToJSON(limitAmount)!,
+      TransactionType: 'TrustSet',
+    }
+
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Serializes a TrustSet with all fields', function (): void {
+    // GIVEN a TrustSet with all fields.
+    const currencyAmount = makeXrpCurrencyAmount('10')
+
+    const limitAmount = new LimitAmount()
+    limitAmount.setValue(currencyAmount)
+
+    const qualityInValue = 6
+    const qualityIn = new QualityIn()
+    qualityIn.setValue(qualityInValue)
+
+    const qualityOutValue = 7
+    const qualityOut = new QualityOut()
+    qualityOut.setValue(qualityOutValue)
+
+    const trustSet = new TrustSet()
+    trustSet.setLimitAmount(limitAmount)
+    trustSet.setQualityIn(qualityIn)
+    trustSet.setQualityOut(qualityOut)
+
+    // WHEN the TrustSet is serialized.
+    const serialized = Serializer.trustSetToJSON(trustSet)
+
+    // THEN the result is as expected.
+    const expected: TrustSetJSON = {
+      LimitAmount: Serializer.limitAmountToJSON(limitAmount)!,
+      QualityIn: Serializer.qualityInToJSON(qualityIn),
+      QualityOut: Serializer.qualityOutToJSON(qualityOut),
+      TransactionType: 'TrustSet',
+    }
+
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a TrustSet missing limitAmount', function (): void {
+    // GIVEN a TrustSet missing a limitAmount.
+    const trustSet = new TrustSet()
+
+    // WHEN the TrustSet is serialized.
+    const serialized = Serializer.trustSetToJSON(trustSet)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a TrustSet with malformed limitAmount', function (): void {
+    // GIVEN a TrustSet with a malformed limitAmount.
+    const limitAmount = new LimitAmount()
+
+    const trustSet = new TrustSet()
+    trustSet.setLimitAmount(limitAmount)
+
+    // WHEN the TrustSet is serialized.
+    const serialized = Serializer.trustSetToJSON(trustSet)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
   it('Serializes a SignerEntry', function (): void {
     // GIVEN a SignerEntry
     const account = new Account()
@@ -2821,6 +2906,80 @@ describe('serializer', function (): void {
     )
 
     // THEN the result is undefined
+    assert.isUndefined(serialized)
+  })
+
+  it('Serializes a SignerListSet', function (): void {
+    // GIVEN a SignerListSet
+    const signerQuorum = new SignerQuorum()
+    signerQuorum.setValue(1)
+
+    const account1 = new Account()
+    account1.setValue(makeAccountAddress('r1'))
+
+    const signerWeight1 = new SignerWeight()
+    signerWeight1.setValue(1)
+
+    const signerEntry1 = new SignerEntry()
+    signerEntry1.setAccount(account1)
+    signerEntry1.setSignerWeight(signerWeight1)
+
+    const account2 = new Account()
+    account2.setValue(makeAccountAddress('r2'))
+
+    const signerWeight2 = new SignerWeight()
+    signerWeight2.setValue(2)
+
+    const signerEntry2 = new SignerEntry()
+    signerEntry2.setAccount(account2)
+    signerEntry2.setSignerWeight(signerWeight2)
+
+    const signerEntriesList = [signerEntry1, signerEntry2]
+
+    const signerListSet = new SignerListSet()
+    signerListSet.setSignerQuorum(signerQuorum)
+    signerListSet.setSignerEntriesList(signerEntriesList)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.signerListSetToJSON(signerListSet)
+
+    // THEN the result is the expected form.
+    const expected: SignerListSetJSON = {
+      SignerEntries: Serializer.signerEntryListToJSON(signerEntriesList)!,
+      SignerQuorum: Serializer.signerQuorumToJSON(signerQuorum)!,
+      TransactionType: 'SignerListSet',
+    }
+    assert.deepEqual(serialized, expected)
+  })
+
+  it('Fails to serialize a SignerListSet with malformed components', function (): void {
+    // GIVEN a SignerListSet with a malformed SignerEntriesList.
+    const signerQuorum = new SignerQuorum()
+    signerQuorum.setValue(1)
+
+    const signerEntry = new SignerEntry()
+
+    const signerEntriesList = [signerEntry]
+
+    const signerListSet = new SignerListSet()
+    signerListSet.setSignerQuorum(signerQuorum)
+    signerListSet.setSignerEntriesList(signerEntriesList)
+
+    // WHEN it is serialized.
+    const serialized = Serializer.signerListSetToJSON(signerListSet)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
+  it('Fails to serialize a malformed SignerListSet', function (): void {
+    // GIVEN a malformd SignerListSet.
+    const signerListSet = new SignerListSet()
+
+    // WHEN it is serialized.
+    const serialized = Serializer.signerListSetToJSON(signerListSet)
+
+    // THEN the result is undefined.
     assert.isUndefined(serialized)
   })
 })

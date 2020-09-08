@@ -72,10 +72,12 @@ import {
   EscrowCancel,
   EscrowCreate,
   EscrowFinish,
+  SignerListSet,
   PaymentChannelClaim,
   PaymentChannelCreate,
   PaymentChannelFund,
   SetRegularKey,
+  TrustSet,
 } from './generated/org/xrpl/rpc/v1/transaction_pb'
 import XrpUtils from './xrp-utils'
 
@@ -212,9 +214,22 @@ export interface OfferCreateJSON {
   TakerPays: TakerPaysJSON
 }
 
+export interface SignerListSetJSON {
+  SignerQuorum: SignerQuorumJSON
+  SignerEntries: SignerEntryJSON[]
+  TransactionType: 'SignerListSet'
+}
+
 export interface SetRegularKeyJSON {
   RegularKey?: RegularKeyJSON
   TransactionType: 'SetRegularKey'
+}
+
+export interface TrustSetJSON {
+  LimitAmount: LimitAmountJSON
+  QualityIn?: QualityInJSON
+  QualityOut?: QualityOutJSON
+  TransactionType: 'TrustSet'
 }
 
 // Generic field representing an OR of all above fields.
@@ -231,6 +246,7 @@ type TransactionDataJSON =
   | OfferCancelJSON
   | OfferCreateJSON
   | PaymentJSON
+  | SignerListSetJSON
   | PaymentChannelClaimJSON
   | PaymentChannelCreateJSON
   | PaymentChannelFundJSON
@@ -251,6 +267,7 @@ type EscrowCancelTransactionJSON = BaseTransactionJSON & EscrowCancelJSON
 type EscrowCreateTransactionJSON = BaseTransactionJSON & EscrowCreateJSON
 type EscrowFinishTransactionJSON = BaseTransactionJSON & EscrowFinishJSON
 type PaymentTransactionJSON = BaseTransactionJSON & PaymentJSON
+type SignerListSetTransactionJSON = BaseTransactionJSON & SignerListSetJSON
 type PaymentChannelClaimTransactionJSON = BaseTransactionJSON &
   PaymentChannelClaimJSON
 type PaymentChannelCreateTransactionJSON = BaseTransactionJSON &
@@ -275,6 +292,7 @@ export type TransactionJSON =
   | OfferCancelTransactionJSON
   | OfferCreateTransactionJSON
   | PaymentTransactionJSON
+  | SignerListSetTransactionJSON
   | PaymentChannelCreateTransactionJSON
   | PaymentChannelClaimTransactionJSON
   | PaymentChannelFundTransactionJSON
@@ -1541,7 +1559,7 @@ const serializer = {
    * @param signerQuorum - The SignerQuorum to convert.
    * @returns The SignerQuorum as JSON.
    */
-  signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON | undefined {
+  signerQuorumToJSON(signerQuorum: SignerQuorum): SignerQuorumJSON {
     return signerQuorum.getValue()
   },
 
@@ -1671,6 +1689,41 @@ const serializer = {
   },
 
   /**
+   * Convert a TrustSet to a JSON representation.
+   *
+   * @param trustSet - The TrustSet to convert.
+   * @returns The TrustSet as JSON.
+   */
+  trustSetToJSON(trustSet: TrustSet): TrustSetJSON | undefined {
+    const limitAmount = trustSet.getLimitAmount()
+    if (limitAmount === undefined) {
+      return undefined
+    }
+
+    const limitAmountJson = this.limitAmountToJSON(limitAmount)
+    if (limitAmountJson === undefined) {
+      return undefined
+    }
+
+    const json: TrustSetJSON = {
+      LimitAmount: limitAmountJson,
+      TransactionType: 'TrustSet',
+    }
+
+    const qualityIn = trustSet.getQualityIn()
+    if (qualityIn !== undefined) {
+      json.QualityIn = this.qualityInToJSON(qualityIn)
+    }
+
+    const qualityOut = trustSet.getQualityOut()
+    if (qualityOut !== undefined) {
+      json.QualityOut = this.qualityOutToJSON(qualityOut)
+    }
+
+    return json
+  },
+
+  /**
    * Convert a SignerEntry to a JSON representation.
    *
    * @param signerEntry - The SignerEntry to convert.
@@ -1717,6 +1770,34 @@ const serializer = {
     }
 
     return signerEntryListJSON
+  },
+
+  /**
+   * Convert a SignerListSet to a JSON representation.
+   *
+   * @param signerListSet - The SignerListSet to convert.
+   * @returns The SignerListSet as JSON.
+   */
+  signerListSetToJSON(
+    signerListSet: SignerListSet,
+  ): SignerListSetJSON | undefined {
+    const signerQuorum = signerListSet.getSignerQuorum()
+    const signerEntryList = signerListSet.getSignerEntriesList()
+    if (signerQuorum === undefined) {
+      return undefined
+    }
+
+    const signerQuorumJSON = this.signerQuorumToJSON(signerQuorum)
+    const signerEntriesJSON = this.signerEntryListToJSON(signerEntryList)
+    if (signerEntriesJSON === undefined) {
+      return undefined
+    }
+
+    return {
+      SignerQuorum: signerQuorumJSON,
+      SignerEntries: signerEntriesJSON,
+      TransactionType: 'SignerListSet',
+    }
   },
 
   /**
