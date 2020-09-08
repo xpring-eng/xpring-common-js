@@ -2598,7 +2598,7 @@ describe('serializer', function (): void {
 
   it('Serializes a TrustSet with required fields', function (): void {
     // GIVEN a TrustSet with required fields.
-    const currencyAmount = makeXrpCurrencyAmount('10')
+    const currencyAmount = xrpTestUtils.makeXrpCurrencyAmount('10')
 
     const limitAmount = new LimitAmount()
     limitAmount.setValue(currencyAmount)
@@ -2620,7 +2620,7 @@ describe('serializer', function (): void {
 
   it('Serializes a TrustSet with all fields', function (): void {
     // GIVEN a TrustSet with all fields.
-    const currencyAmount = makeXrpCurrencyAmount('10')
+    const currencyAmount = xrpTestUtils.makeXrpCurrencyAmount('10')
 
     const limitAmount = new LimitAmount()
     limitAmount.setValue(currencyAmount)
@@ -2915,7 +2915,7 @@ describe('serializer', function (): void {
     signerQuorum.setValue(1)
 
     const account1 = new Account()
-    account1.setValue(makeAccountAddress('r1'))
+    account1.setValue(xrpTestUtils.makeAccountAddress('r1'))
 
     const signerWeight1 = new SignerWeight()
     signerWeight1.setValue(1)
@@ -2925,7 +2925,7 @@ describe('serializer', function (): void {
     signerEntry1.setSignerWeight(signerWeight1)
 
     const account2 = new Account()
-    account2.setValue(makeAccountAddress('r2'))
+    account2.setValue(xrpTestUtils.makeAccountAddress('r2'))
 
     const signerWeight2 = new SignerWeight()
     signerWeight2.setValue(2)
