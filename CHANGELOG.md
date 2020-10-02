@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### [6.2.3] - 2020-10-02
+
+This minor release contains updated version of dependencies for security and stability.
+
 ### [6.2.2] - 2020-09-11
 
 This minor release contains the newest version of the ripple-binary-codec (v1.0.1).
