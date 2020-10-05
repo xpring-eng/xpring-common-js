@@ -16,6 +16,9 @@ import {
   testInvalidTransactionPaymentNoAmount,
   testInvalidTransactionPaymentNoDestination,
   testInvalidTransactionPaymentBadDestination,
+  testInvalidTransactionPaymentNoAccount,
+  testInvalidTransactionPaymentNoFee,
+  testInvalidTransactionPaymentNoPayment,
 } from './fakes/fake-xrp-protobufs'
 
 describe('Signer', function (): void {
@@ -138,6 +141,44 @@ describe('Signer', function (): void {
         testInvalidTransactionPaymentBadDestination,
         wallet,
       )
+    }, Error)
+  })
+
+  it('Sign Payment transaction with no account', function (): void {
+    // GIVEN a Payment transaction without a account field and a wallet.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testInvalidTransactionPaymentNoAccount,
+      wallet,
+    )
+
+    // THEN the signing artifacts are undefined.
+    assert.isUndefined(signedTransaction)
+  })
+
+  it('Sign Payment transaction with no fee', function (): void {
+    // GIVEN a Payment transaction without a transaction fee field and a wallet.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testInvalidTransactionPaymentNoFee,
+      wallet,
+    )
+
+    // THEN the signing artifacts are undefined.
+    assert.isUndefined(signedTransaction)
+  })
+
+  it('Sign Payment transaction with no payment', function (): void {
+    // GIVEN a Payment transaction without a payment field and a wallet.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // WHEN the transaction is signed with the wallet THEN an error is thrown.
+    assert.throws(() => {
+      Signer.signTransaction(testInvalidTransactionPaymentNoPayment, wallet)
     }, Error)
   })
 

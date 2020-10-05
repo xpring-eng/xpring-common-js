@@ -219,6 +219,21 @@ const testInvalidTransactionPaymentBadDestination = buildStandardTransactionFrom
   testInvalidPaymentBadDestination,
 )
 
+const testInvalidTransactionPaymentNoAccount = new Transaction()
+testInvalidTransactionPaymentNoAccount.setFee(transactionFeeProto)
+testInvalidTransactionPaymentNoAccount.setSequence(sequenceProto)
+testInvalidTransactionPaymentNoAccount.setPayment(paymentMandatoryFields)
+
+const testInvalidTransactionPaymentNoFee = new Transaction()
+testInvalidTransactionPaymentNoFee.setAccount(accountProto)
+testInvalidTransactionPaymentNoFee.setSequence(sequenceProto)
+testInvalidTransactionPaymentNoFee.setPayment(paymentMandatoryFields)
+
+const testInvalidTransactionPaymentNoPayment = new Transaction()
+testInvalidTransactionPaymentNoPayment.setAccount(accountProto)
+testInvalidTransactionPaymentNoPayment.setFee(transactionFeeProto)
+testInvalidTransactionPaymentNoPayment.setSequence(sequenceProto)
+
 export {
   fakeSignature,
   testTransactionPaymentMandatoryFields,
@@ -227,4 +242,7 @@ export {
   testInvalidTransactionPaymentNoAmount,
   testInvalidTransactionPaymentNoDestination,
   testInvalidTransactionPaymentBadDestination,
+  testInvalidTransactionPaymentNoAccount,
+  testInvalidTransactionPaymentNoFee,
+  testInvalidTransactionPaymentNoPayment,
 }
