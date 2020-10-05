@@ -15,10 +15,14 @@ import {
   InvoiceID,
   DeliverMin,
   SendMax,
+  MemoData,
+  LastLedgerSequence,
+  SourceTag,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Payment,
   Transaction,
+  Memo,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import xrpTestUtils from '../helpers/xrp-test-utils'
 
@@ -26,9 +30,16 @@ import xrpTestUtils from '../helpers/xrp-test-utils'
 const fakeSignature = 'DEADBEEF'
 const value = '1000'
 const currencyName = 'BTC'
+const currencyCode1 = new Uint8Array([1, 2, 3, 4, 5])
+const currencyCode2 = new Uint8Array([4, 5, 6, 7, 8])
 const issuedCurrencyValue = '100'
 const destinationAddress = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
 const issuerAddress = 'rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY'
+const address1 = 'rQ3fNyLjbvcDaPNS4EAJY8aT9zR3uGk17c'
+const address2 = 'r4L6ZLHkTytPqDR81H1ysCr6qGv9oJJAKi'
+const address3 = 'rBM3QGATGQHRCBU8KtAvNvSHZrbJhMhWxA'
+const address4 = 'r4L6ZLHkTytPqDR81H1ysCr6qGv9oJJAKi'
+const address5 = 'rQ3fNyLjbvcDaPNS4EAJY8aT9zR3uGk17c'
 const invalidAddress = 'badAddress'
 const fee = '10'
 const sequenceNumber = 1
@@ -38,6 +49,9 @@ const invoiceIdValue = 'ungWv48Bz+pBQUDeXa4iI7ADYaOWF3qctBD/YfIAFa0='
 const deliverMinValue = '10'
 const sendMaxValue = '13'
 const destinationTagValue = 4
+const testMemoData = new Uint8Array([2, 4, 6])
+const sourceTagValue = 5
+const lastLedgerSequenceValue = 78652515
 
 // Objects for Transactions
 
@@ -115,18 +129,31 @@ deliverMin.setValue(xrpTestUtils.makeXrpCurrencyAmount(deliverMinValue))
 const sendMax = new SendMax()
 sendMax.setValue(xrpTestUtils.makeXrpCurrencyAmount(sendMaxValue))
 
+// LastLedgerSequence
+const lastLedgerSequence = new LastLedgerSequence()
+lastLedgerSequence.setValue(lastLedgerSequenceValue)
+
+// Memo
+const memoData = new MemoData()
+memoData.setValue(testMemoData)
+
+const memo = new Memo()
+memo.setMemoData(memoData)
+
+// SourceTag
+const sourceTag = new SourceTag()
+sourceTag.setValue(sourceTagValue)
+
 // PathElements and Paths
 const path1Element1 = xrpTestUtils.makePathElement(
-  xrpTestUtils.makeAccountAddress('rQ3fNyLjbvcDaPNS4EAJY8aT9zR3uGk17c'),
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
-  new Uint8Array([1, 2, 3, 4, 5]),
-  xrpTestUtils.makeAccountAddress('r4L6ZLHkTytPqDR81H1ysCr6qGv9oJJAKi'),
+  xrpTestUtils.makeAccountAddress(address1),
+  currencyCode1,
+  xrpTestUtils.makeAccountAddress(address2),
 )
 const path1Element2 = xrpTestUtils.makePathElement(
-  xrpTestUtils.makeAccountAddress('rBM3QGATGQHRCBU8KtAvNvSHZrbJhMhWxA'),
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
-  new Uint8Array([4, 5, 6, 7, 8]),
-  xrpTestUtils.makeAccountAddress('r4L6ZLHkTytPqDR81H1ysCr6qGv9oJJAKi'),
+  xrpTestUtils.makeAccountAddress(address3),
+  currencyCode2,
+  xrpTestUtils.makeAccountAddress(address4),
 )
 
 const path1 = new Payment.Path()
@@ -134,10 +161,9 @@ path1.addElements(path1Element1)
 path1.addElements(path1Element2)
 
 const path2Element1 = xrpTestUtils.makePathElement(
-  xrpTestUtils.makeAccountAddress('rQ3fNyLjbvcDaPNS4EAJY8aT9zR3uGk17c'),
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
-  new Uint8Array([7, 8, 9, 10, 11]),
-  xrpTestUtils.makeAccountAddress('rBM3QGATGQHRCBU8KtAvNvSHZrbJhMhWxA'),
+  xrpTestUtils.makeAccountAddress(address5),
+  currencyCode1,
+  xrpTestUtils.makeAccountAddress(address3),
 )
 
 const path2 = new Payment.Path()
@@ -190,6 +216,9 @@ const testTransactionPaymentMandatoryFieldsIssuedCurrency = buildStandardTransac
 const testTransactionPaymentAllFields = buildStandardTransactionFromPayment(
   paymentAllFields,
 )
+testTransactionPaymentAllFields.addMemos(memo)
+testTransactionPaymentAllFields.setLastLedgerSequence(lastLedgerSequence)
+testTransactionPaymentAllFields.setSourceTag(sourceTag)
 
 // INVALID OBJECTS =============================================
 
