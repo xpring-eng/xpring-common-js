@@ -10,8 +10,8 @@ import XrpUtils from '../../src/XRP/xrp-utils'
 import FakeWallet from './fakes/fake-wallet'
 import {
   fakeSignature,
-  testPaymentTransactionMandatoryFields,
-  testPaymentTransactionMandatoryFieldsIssuedCurrency,
+  testTransactionPaymentMandatoryFields,
+  testTransactionPaymentMandatoryFieldsIssuedCurrency,
   testTransactionPaymentAllFields,
   testInvalidTransactionPaymentNoAmount,
   testInvalidTransactionPaymentNoDestination,
@@ -24,7 +24,7 @@ describe('Signer', function (): void {
     const wallet = new FakeWallet(fakeSignature)
     // Encode transaction with the expected signature.
     const expectedSignedTransactionJSON = Serializer.transactionToJSON(
-      testPaymentTransactionMandatoryFields,
+      testTransactionPaymentMandatoryFields,
       fakeSignature,
     )
     const expectedSignedTransactionHex = rippleCodec.encode(
@@ -36,7 +36,7 @@ describe('Signer', function (): void {
 
     // WHEN the transaction is signed with the wallet.
     const signedTransaction = Signer.signTransaction(
-      testPaymentTransactionMandatoryFields,
+      testTransactionPaymentMandatoryFields,
       wallet,
     )
 
@@ -51,7 +51,7 @@ describe('Signer', function (): void {
     const wallet = new FakeWallet(fakeSignature)
     // Encode transaction with the expected signature.
     const expectedSignedTransactionJSON = Serializer.transactionToJSON(
-      testPaymentTransactionMandatoryFieldsIssuedCurrency,
+      testTransactionPaymentMandatoryFieldsIssuedCurrency,
       fakeSignature,
     )
     const expectedSignedTransactionHex = rippleCodec.encode(
@@ -63,7 +63,7 @@ describe('Signer', function (): void {
 
     // WHEN the transaction is signed with the wallet.
     const signedTransaction = Signer.signTransaction(
-      testPaymentTransactionMandatoryFieldsIssuedCurrency,
+      testTransactionPaymentMandatoryFieldsIssuedCurrency,
       wallet,
     )
 

@@ -172,10 +172,10 @@ function buildStandardTransactionFromPayment(payment: Payment): Transaction {
 }
 
 // Payment Transactions
-const testPaymentTransactionMandatoryFields = buildStandardTransactionFromPayment(
+const testTransactionPaymentMandatoryFields = buildStandardTransactionFromPayment(
   paymentMandatoryFields,
 )
-const testPaymentTransactionMandatoryFieldsIssuedCurrency = buildStandardTransactionFromPayment(
+const testTransactionPaymentMandatoryFieldsIssuedCurrency = buildStandardTransactionFromPayment(
   paymentMandatoryFieldsIssuedCurrency,
 )
 const testTransactionPaymentAllFields = buildStandardTransactionFromPayment(
@@ -212,8 +212,8 @@ const testInvalidTransactionPaymentBadDestination = buildStandardTransactionFrom
 
 export {
   fakeSignature,
-  testPaymentTransactionMandatoryFields,
-  testPaymentTransactionMandatoryFieldsIssuedCurrency,
+  testTransactionPaymentMandatoryFields,
+  testTransactionPaymentMandatoryFieldsIssuedCurrency,
   testTransactionPaymentAllFields,
   testInvalidTransactionPaymentNoAmount,
   testInvalidTransactionPaymentNoDestination,
