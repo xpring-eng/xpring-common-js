@@ -26,7 +26,6 @@ import xrpTestUtils from '../helpers/xrp-test-utils'
 const fakeSignature = 'DEADBEEF'
 const value = '1000'
 const currencyName = 'BTC'
-// const currencyCode = 'USD'
 const issuedCurrencyValue = '100'
 const destinationAddress = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
 const issuerAddress = 'rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY'
@@ -41,10 +40,8 @@ const sendMaxValue = '13'
 const destinationTagValue = 4
 
 // Objects for Transactions
-const testCurrencyProto = new Currency()
-// testCurrencyProto.setCode(currencyCode)
-testCurrencyProto.setName(currencyName)
 
+// AccountAddress
 const destinationAccountAddress = new AccountAddress()
 destinationAccountAddress.setAddress(destinationAddress)
 
@@ -54,6 +51,28 @@ issuerAccountAddress.setAddress(issuerAddress)
 const invalidAccountAddress = new AccountAddress()
 invalidAccountAddress.setAddress(invalidAddress)
 
+const senderAccountAddress = new AccountAddress()
+senderAccountAddress.setAddress(account)
+
+// Account
+const accountProto = new Account()
+accountProto.setValue(senderAccountAddress)
+
+// Destination
+const destination = new Destination()
+destination.setValue(destinationAccountAddress)
+
+const invalidDestination = new Destination()
+invalidDestination.setValue(invalidAccountAddress)
+
+// DestinationTag
+const destinationTag = new DestinationTag()
+destinationTag.setValue(destinationTagValue)
+
+// Currency/XRP/IssuedCurrency
+const testCurrencyProto = new Currency()
+testCurrencyProto.setName(currencyName)
+
 const paymentAmount = new XRPDropsAmount()
 paymentAmount.setDrops(value)
 
@@ -62,50 +81,41 @@ issuedCurrencyAmount.setCurrency(testCurrencyProto)
 issuedCurrencyAmount.setIssuer(issuerAccountAddress)
 issuedCurrencyAmount.setValue(issuedCurrencyValue)
 
+// CurrencyAmount
 const currencyAmountXrp = new CurrencyAmount()
 currencyAmountXrp.setXrpAmount(paymentAmount)
 
 const currencyAmountIssuedCurrency = new CurrencyAmount()
 currencyAmountIssuedCurrency.setIssuedCurrencyAmount(issuedCurrencyAmount)
 
-const destination = new Destination()
-destination.setValue(destinationAccountAddress)
-
-const invalidDestination = new Destination()
-invalidDestination.setValue(invalidAccountAddress)
-
+// Amount
 const amountXrp = new Amount()
 amountXrp.setValue(currencyAmountXrp)
 
 const amountIssuedCurrency = new Amount()
 amountIssuedCurrency.setValue(currencyAmountIssuedCurrency)
 
+// Transaction Fee
 const transactionFeeProto = new XRPDropsAmount()
 transactionFeeProto.setDrops(fee)
 
-const senderAccountAddress = new AccountAddress()
-senderAccountAddress.setAddress(account)
-
-const accountProto = new Account()
-accountProto.setValue(senderAccountAddress)
-
+// Sequence
 const sequenceProto = new Sequence()
 sequenceProto.setValue(sequenceNumber)
 
-const destinationTag = new DestinationTag()
-destinationTag.setValue(destinationTagValue)
-
+// InvoiceID
 const invoiceId = new InvoiceID()
 invoiceId.setValue(invoiceIdValue)
 
+// DeliverMin
 const deliverMin = new DeliverMin()
 deliverMin.setValue(xrpTestUtils.makeXrpCurrencyAmount(deliverMinValue))
 
+// SendMax
 const sendMax = new SendMax()
 sendMax.setValue(xrpTestUtils.makeXrpCurrencyAmount(sendMaxValue))
 
 // PathElements and Paths
-
 const path1Element1 = xrpTestUtils.makePathElement(
   xrpTestUtils.makeAccountAddress('rQ3fNyLjbvcDaPNS4EAJY8aT9zR3uGk17c'),
   // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
@@ -136,7 +146,6 @@ path2.addElements(path2Element1)
 const pathList = [path1, path2]
 
 // Payments
-
 const paymentMandatoryFields = new Payment()
 paymentMandatoryFields.setDestination(destination)
 paymentMandatoryFields.setAmount(amountXrp)
