@@ -1,7 +1,10 @@
+/* eslint-disable max-len -- long variable names and function names */
 import { AccountAddress } from '../../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
 import {
   CurrencyAmount,
   XRPDropsAmount,
+  IssuedCurrencyAmount,
+  Currency,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
 import {
   Destination,
@@ -22,7 +25,12 @@ import xrpTestUtils from '../helpers/xrp-test-utils'
 // Constants
 const fakeSignature = 'DEADBEEF'
 const value = '1000'
+const currencyName = 'BTC'
+// const currencyCode = 'USD'
+const issuedCurrencyValue = '100'
 const destinationAddress = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
+const issuerAddress = 'rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY'
+const invalidAddress = 'badAddress'
 const fee = '10'
 const sequenceNumber = 1
 const account = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
@@ -30,37 +38,59 @@ const account = 'X7vjQVCddnQ7GCESYnYR3EdpzbcoAMbPw7s2xv8YQs94tv4'
 const invoiceIdValue = 'ungWv48Bz+pBQUDeXa4iI7ADYaOWF3qctBD/YfIAFa0='
 const deliverMinValue = '10'
 const sendMaxValue = '13'
+const destinationTagValue = 4
 
 // Objects for Transactions
-
-const paymentAmount = new XRPDropsAmount()
-paymentAmount.setDrops(value)
-
-const currencyAmount = new CurrencyAmount()
-currencyAmount.setXrpAmount(paymentAmount)
+const testCurrencyProto = new Currency()
+// testCurrencyProto.setCode(currencyCode)
+testCurrencyProto.setName(currencyName)
 
 const destinationAccountAddress = new AccountAddress()
 destinationAccountAddress.setAddress(destinationAddress)
 
+const issuerAccountAddress = new AccountAddress()
+issuerAccountAddress.setAddress(issuerAddress)
+
+const invalidAccountAddress = new AccountAddress()
+invalidAccountAddress.setAddress(invalidAddress)
+
+const paymentAmount = new XRPDropsAmount()
+paymentAmount.setDrops(value)
+
+const issuedCurrencyAmount = new IssuedCurrencyAmount()
+issuedCurrencyAmount.setCurrency(testCurrencyProto)
+issuedCurrencyAmount.setIssuer(issuerAccountAddress)
+issuedCurrencyAmount.setValue(issuedCurrencyValue)
+
+const currencyAmountXrp = new CurrencyAmount()
+currencyAmountXrp.setXrpAmount(paymentAmount)
+
+const currencyAmountIssuedCurrency = new CurrencyAmount()
+currencyAmountIssuedCurrency.setIssuedCurrencyAmount(issuedCurrencyAmount)
+
 const destination = new Destination()
 destination.setValue(destinationAccountAddress)
 
-const amount = new Amount()
-amount.setValue(currencyAmount)
+const invalidDestination = new Destination()
+invalidDestination.setValue(invalidAccountAddress)
 
-const transactionFee = new XRPDropsAmount()
-transactionFee.setDrops(fee)
+const amountXrp = new Amount()
+amountXrp.setValue(currencyAmountXrp)
+
+const amountIssuedCurrency = new Amount()
+amountIssuedCurrency.setValue(currencyAmountIssuedCurrency)
+
+const transactionFeeProto = new XRPDropsAmount()
+transactionFeeProto.setDrops(fee)
 
 const senderAccountAddress = new AccountAddress()
 senderAccountAddress.setAddress(account)
 
-const sender = new Account()
-sender.setValue(senderAccountAddress)
+const accountProto = new Account()
+accountProto.setValue(senderAccountAddress)
 
-const sequence = new Sequence()
-sequence.setValue(sequenceNumber)
-
-const destinationTagValue = 4
+const sequenceProto = new Sequence()
+sequenceProto.setValue(sequenceNumber)
 
 const destinationTag = new DestinationTag()
 destinationTag.setValue(destinationTagValue)
@@ -109,33 +139,83 @@ const pathList = [path1, path2]
 
 const paymentMandatoryFields = new Payment()
 paymentMandatoryFields.setDestination(destination)
-paymentMandatoryFields.setAmount(amount)
+paymentMandatoryFields.setAmount(amountXrp)
+
+const paymentMandatoryFieldsIssuedCurrency = new Payment()
+paymentMandatoryFieldsIssuedCurrency.setDestination(destination)
+paymentMandatoryFieldsIssuedCurrency.setAmount(amountIssuedCurrency)
 
 const paymentAllFields = new Payment()
 paymentAllFields.setDestination(destination)
-paymentAllFields.setAmount(amount)
+paymentAllFields.setAmount(amountXrp)
 paymentAllFields.setDestinationTag(destinationTag)
 paymentAllFields.setInvoiceId(invoiceId)
 paymentAllFields.setDeliverMin(deliverMin)
 paymentAllFields.setSendMax(sendMax)
 paymentAllFields.setPathsList(pathList)
 
-// Transactions
+// Transaction
 
-const testPaymentTransactionMandatoryFields = new Transaction()
-testPaymentTransactionMandatoryFields.setAccount(sender)
-testPaymentTransactionMandatoryFields.setFee(transactionFee)
-testPaymentTransactionMandatoryFields.setSequence(sequence)
-testPaymentTransactionMandatoryFields.setPayment(paymentMandatoryFields)
+/**
+ * Helper function to generate Transaction objects with the standard values from Payment objects.
+ *
+ * @param payment -Payment object to insert into the transaction.
+ * @returns Payment Transaction with the included payment param.
+ */
+function buildStandardTransactionFromPayment(payment: Payment): Transaction {
+  const transaction = new Transaction()
+  transaction.setAccount(accountProto)
+  transaction.setFee(transactionFeeProto)
+  transaction.setSequence(sequenceProto)
+  transaction.setPayment(payment)
+  return transaction
+}
 
-const testPaymentTransactionAllFields = new Transaction()
-testPaymentTransactionAllFields.setAccount(sender)
-testPaymentTransactionAllFields.setFee(transactionFee)
-testPaymentTransactionAllFields.setSequence(sequence)
-testPaymentTransactionAllFields.setPayment(paymentAllFields)
+// Payment Transactions
+const testPaymentTransactionMandatoryFields = buildStandardTransactionFromPayment(
+  paymentMandatoryFields,
+)
+const testPaymentTransactionMandatoryFieldsIssuedCurrency = buildStandardTransactionFromPayment(
+  paymentMandatoryFieldsIssuedCurrency,
+)
+const testTransactionPaymentAllFields = buildStandardTransactionFromPayment(
+  paymentAllFields,
+)
+
+// INVALID OBJECTS =============================================
+
+// Invalid Payments
+const testInvalidPaymentNoAmount = new Payment()
+testInvalidPaymentNoAmount.setDestination(destination)
+
+const testInvalidPaymentNoDestination = new Payment()
+testInvalidPaymentNoDestination.setAmount(amountIssuedCurrency)
+
+const testInvalidPaymentBadDestination = new Payment()
+testInvalidPaymentBadDestination.setAmount(amountIssuedCurrency)
+testInvalidPaymentBadDestination.setDestination(invalidDestination)
+
+const testInvalidPaymentNoSendMax = new Payment()
+testInvalidPaymentNoSendMax.setAmount(amountIssuedCurrency)
+testInvalidPaymentNoSendMax.setDestination(destination)
+
+// Invalid Transactions
+const testInvalidTransactionPaymentNoAmount = buildStandardTransactionFromPayment(
+  testInvalidPaymentNoAmount,
+)
+const testInvalidTransactionPaymentNoDestination = buildStandardTransactionFromPayment(
+  testInvalidPaymentNoDestination,
+)
+const testInvalidTransactionPaymentBadDestination = buildStandardTransactionFromPayment(
+  testInvalidPaymentBadDestination,
+)
 
 export {
   fakeSignature,
   testPaymentTransactionMandatoryFields,
-  testPaymentTransactionAllFields,
+  testPaymentTransactionMandatoryFieldsIssuedCurrency,
+  testTransactionPaymentAllFields,
+  testInvalidTransactionPaymentNoAmount,
+  testInvalidTransactionPaymentNoDestination,
+  testInvalidTransactionPaymentBadDestination,
 }

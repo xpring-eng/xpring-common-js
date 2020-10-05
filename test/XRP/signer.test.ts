@@ -11,19 +11,22 @@ import FakeWallet from './fakes/fake-wallet'
 import {
   fakeSignature,
   testPaymentTransactionMandatoryFields,
-  testPaymentTransactionAllFields,
+  testPaymentTransactionMandatoryFieldsIssuedCurrency,
+  testTransactionPaymentAllFields,
+  testInvalidTransactionPaymentNoAmount,
+  testInvalidTransactionPaymentNoDestination,
+  testInvalidTransactionPaymentBadDestination,
 } from './fakes/fake-xrp-protobufs'
 
 describe('Signer', function (): void {
   it('Sign Payment transaction with mandatory fields', function (): void {
-    // GIVEN a Payment transaction, a wallet and expected signing artifacts.
+    // GIVEN a Payment transaction with mandatory fields, a wallet and expected signing artifacts.
     const wallet = new FakeWallet(fakeSignature)
     // Encode transaction with the expected signature.
     const expectedSignedTransactionJSON = Serializer.transactionToJSON(
       testPaymentTransactionMandatoryFields,
       fakeSignature,
     )
-
     const expectedSignedTransactionHex = rippleCodec.encode(
       expectedSignedTransactionJSON,
     )
@@ -42,13 +45,40 @@ describe('Signer', function (): void {
     assert.deepEqual(signedTransaction, expectedSignedTransaction)
   })
 
+  it('Sign Payment transaction with mandatory fields + issued currency', function (): void {
+    // GIVEN a Payment transaction with mandatory fields + issued currency,
+    // a wallet and expected signing artifacts.
+    const wallet = new FakeWallet(fakeSignature)
+    // Encode transaction with the expected signature.
+    const expectedSignedTransactionJSON = Serializer.transactionToJSON(
+      testPaymentTransactionMandatoryFieldsIssuedCurrency,
+      fakeSignature,
+    )
+    const expectedSignedTransactionHex = rippleCodec.encode(
+      expectedSignedTransactionJSON,
+    )
+    const expectedSignedTransaction = Utils.toBytes(
+      expectedSignedTransactionHex,
+    )
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testPaymentTransactionMandatoryFieldsIssuedCurrency,
+      wallet,
+    )
+
+    // THEN the signing artifacts are as expected.
+    assert.exists(signedTransaction)
+    assert.deepEqual(signedTransaction, expectedSignedTransaction)
+  })
+
   it('Sign Payment transaction with all fields', function (): void {
-    // GIVEN a Payment transaction, a wallet and expected signing artifacts.
+    // GIVEN a Payment transaction with all fields, a wallet and expected signing artifacts.
     const wallet = new FakeWallet(fakeSignature)
 
     // Encode transaction with the expected signature.
     const expectedSignedTransactionJSON = Serializer.transactionToJSON(
-      testPaymentTransactionAllFields,
+      testTransactionPaymentAllFields,
       fakeSignature,
     )
 
@@ -61,13 +91,54 @@ describe('Signer', function (): void {
 
     // WHEN the transaction is signed with the wallet.
     const signedTransaction = Signer.signTransaction(
-      testPaymentTransactionAllFields,
+      testTransactionPaymentAllFields,
       wallet,
     )
 
     // THEN the signing artifacts are as expected.
     assert.exists(signedTransaction)
     assert.deepEqual(signedTransaction, expectedSignedTransaction)
+  })
+
+  it('Sign Payment transaction with no amount', function (): void {
+    // GIVEN a Payment transaction without an amount field and a wallet.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testInvalidTransactionPaymentNoAmount,
+      wallet,
+    )
+
+    // THEN the signing artifacts are undefined.
+    assert.isUndefined(signedTransaction)
+  })
+
+  it('Sign Payment transaction with no destination', function (): void {
+    // GIVEN a Payment transaction without a destination field and a wallet.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testInvalidTransactionPaymentNoDestination,
+      wallet,
+    )
+
+    // THEN the signing artifacts are undefined.
+    assert.isUndefined(signedTransaction)
+  })
+
+  it('Sign Payment transaction with bad destination', function (): void {
+    // GIVEN a Payment transaction with a bad destination field and a wallet.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // WHEN the transaction is signed with the wallet THEN an error is thrown.
+    assert.throws(() => {
+      Signer.signTransaction(
+        testInvalidTransactionPaymentBadDestination,
+        wallet,
+      )
+    }, Error)
   })
 
   it('sign from JSON', function (): void {
