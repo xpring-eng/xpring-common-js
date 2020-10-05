@@ -30,7 +30,9 @@ import xrpTestUtils from '../helpers/xrp-test-utils'
 const fakeSignature = 'DEADBEEF'
 const value = '1000'
 const currencyName = 'BTC'
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
 const currencyCode1 = new Uint8Array([1, 2, 3, 4, 5])
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
 const currencyCode2 = new Uint8Array([4, 5, 6, 7, 8])
 const issuedCurrencyValue = '100'
 const destinationAddress = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
@@ -38,8 +40,6 @@ const issuerAddress = 'rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY'
 const address1 = 'rQ3fNyLjbvcDaPNS4EAJY8aT9zR3uGk17c'
 const address2 = 'r4L6ZLHkTytPqDR81H1ysCr6qGv9oJJAKi'
 const address3 = 'rBM3QGATGQHRCBU8KtAvNvSHZrbJhMhWxA'
-const address4 = 'r4L6ZLHkTytPqDR81H1ysCr6qGv9oJJAKi'
-const address5 = 'rQ3fNyLjbvcDaPNS4EAJY8aT9zR3uGk17c'
 const invalidAddress = 'badAddress'
 const fee = '10'
 const sequenceNumber = 1
@@ -49,6 +49,7 @@ const invoiceIdValue = 'ungWv48Bz+pBQUDeXa4iI7ADYaOWF3qctBD/YfIAFa0='
 const deliverMinValue = '10'
 const sendMaxValue = '13'
 const destinationTagValue = 4
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
 const testMemoData = new Uint8Array([2, 4, 6])
 const sourceTagValue = 5
 const lastLedgerSequenceValue = 78652515
@@ -153,7 +154,7 @@ const path1Element1 = xrpTestUtils.makePathElement(
 const path1Element2 = xrpTestUtils.makePathElement(
   xrpTestUtils.makeAccountAddress(address3),
   currencyCode2,
-  xrpTestUtils.makeAccountAddress(address4),
+  xrpTestUtils.makeAccountAddress(address2),
 )
 
 const path1 = new Payment.Path()
@@ -161,7 +162,7 @@ path1.addElements(path1Element1)
 path1.addElements(path1Element2)
 
 const path2Element1 = xrpTestUtils.makePathElement(
-  xrpTestUtils.makeAccountAddress(address5),
+  xrpTestUtils.makeAccountAddress(address1),
   currencyCode1,
   xrpTestUtils.makeAccountAddress(address3),
 )
