@@ -388,8 +388,8 @@ testInvalidTransactionPaymentNoFee.setSequence(sequenceProto)
 testInvalidTransactionPaymentNoFee.setPayment(paymentMandatoryFields)
 
 const testInvalidTransactionPaymentNoPayment = new Transaction()
-testInvalidTransactionPaymentNoPayment.setFee(transactionFeeProto)
 testInvalidTransactionPaymentNoPayment.setAccount(accountProto)
+testInvalidTransactionPaymentNoPayment.setFee(transactionFeeProto)
 testInvalidTransactionPaymentNoPayment.setSequence(sequenceProto)
 
 export {
