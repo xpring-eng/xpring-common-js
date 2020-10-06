@@ -145,7 +145,7 @@ describe('Signer', function (): void {
   })
 
   it('Sign Payment transaction with no account', function (): void {
-    // GIVEN a Payment transaction without a account field and a wallet.
+    // GIVEN a Payment transaction without an account field and a wallet.
     const wallet = new FakeWallet(fakeSignature)
 
     // WHEN the transaction is signed with the wallet.
