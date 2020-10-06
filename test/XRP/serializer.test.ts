@@ -2674,11 +2674,12 @@ describe('serializer', function (): void {
   })
 
   it('serializes a TrustSet transaction', function (): void {
-    // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP.
+    // GIVEN a transaction which represents the creation of a trust line linking two accounts.
     const currency = 'USD'
+    const currencyIssuer = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
     const transaction = xrpTestUtils.makeTrustSetTransaction(
       currency,
-      destinationXAddressWithoutTag,
+      currencyIssuer,
       value,
       undefined,
       undefined,
@@ -2699,7 +2700,7 @@ describe('serializer', function (): void {
       LastLedgerSequence: lastLedgerSequenceValue,
       LimitAmount: {
         currency,
-        issuer: destinationXAddressWithoutTag,
+        issuer: currencyIssuer,
         value,
       },
       Sequence: sequenceValue,

@@ -1,6 +1,6 @@
-/* eslint-disable max-params -- only for testing purposes */
-/* eslint-disable max-statements -- only for testing purposes */
-/* eslint-disable max-lines -- only for testing purposes */
+/* eslint-disable max-params -- Allow lots of sample data to be used. */
+/* eslint-disable max-statements -- Allow many lines per function. */
+/* eslint-disable max-lines -- Allow many lines of test util functions. */
 import Utils from '../../../src/Common/utils'
 import { AccountAddress } from '../../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
 import {
