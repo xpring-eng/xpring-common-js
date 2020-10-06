@@ -2673,6 +2673,42 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('serializes a TrustSet transaction', function (): void {
+    // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP.
+    const currency = 'USD'
+    const transaction = xrpTestUtils.makeTrustSetTransaction(
+      currency,
+      destinationXAddressWithoutTag,
+      value,
+      undefined,
+      undefined,
+      fee,
+      lastLedgerSequenceValue,
+      sequenceValue,
+      accountClassicAddress,
+      publicKeyHex,
+    )
+
+    // WHEN the transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction)
+
+    // THEN the result is as expected.
+    const expectedJSON: TransactionJSON = {
+      Account: accountClassicAddress,
+      Fee: fee.toString(),
+      LastLedgerSequence: lastLedgerSequenceValue,
+      LimitAmount: {
+        currency,
+        issuer: destinationXAddressWithoutTag,
+        value,
+      },
+      Sequence: sequenceValue,
+      TransactionType: 'TrustSet',
+      SigningPubKey: publicKeyHex,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
   it('Serializes a SignerEntry', function (): void {
     // GIVEN a SignerEntry
     const account = new Account()

@@ -294,7 +294,7 @@ const xrpTestUtils = {
     senderAddress: string | undefined,
     publicKey: string,
   ): Transaction {
-    const accountSet = this.makeTrustSet(
+    const trustSet = this.makeTrustSet(
       limitAmountCurrency,
       limitAmountIssuer,
       limitAmountValue,
@@ -308,7 +308,7 @@ const xrpTestUtils = {
       senderAddress,
       publicKey,
     )
-    transaction.setAccountSet(accountSet)
+    transaction.setTrustSet(trustSet)
 
     return transaction
   },
