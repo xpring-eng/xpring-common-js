@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- lots of test data */
 /* eslint-disable max-len -- long variable names and function names */
 import { AccountAddress } from '../../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
 import {
@@ -18,13 +19,37 @@ import {
   MemoData,
   LastLedgerSequence,
   SourceTag,
+  ClearFlag,
+  Domain,
+  EmailHash,
+  MessageKey,
+  SetFlag,
+  TickSize,
+  TransferRate,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
+  AccountSet,
   Payment,
   Transaction,
   Memo,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import xrpTestUtils from '../helpers/xrp-test-utils'
+
+// Constant generator
+/**
+ * Helper function for generating sample data.
+ *
+ * @param arrayLength - The desired array length.
+ *
+ * @returns A UInt8Array with random data with the given length.
+ */
+function generateValidUint8Array(arrayLength: number): Uint8Array {
+  const numbers = new Array(arrayLength)
+  for (let index = 0; index < arrayLength; index++) {
+    numbers[index] = index + 1
+  }
+  return new Uint8Array(numbers)
+}
 
 // Constants
 const fakeSignature = 'DEADBEEF'
@@ -53,6 +78,14 @@ const destinationTagValue = 4
 const testMemoData = new Uint8Array([2, 4, 6])
 const sourceTagValue = 5
 const lastLedgerSequenceValue = 78652515
+const clearFlagValue = 5
+const domainValue = 'testdomain'
+const HASH_LENGTH = 16
+const emailHashValue = generateValidUint8Array(HASH_LENGTH)
+const messageKeyValue = generateValidUint8Array(3)
+const setFlagValue = 4
+const transferRateValue = 1234567890
+const tickSizeValue = 7
 
 // Objects for Transactions
 
@@ -172,6 +205,42 @@ path2.addElements(path2Element1)
 
 const pathList = [path1, path2]
 
+// AccountSets
+const clearFlag = new ClearFlag()
+clearFlag.setValue(clearFlagValue)
+
+const domain = new Domain()
+domain.setValue(domainValue)
+
+const emailHash = new EmailHash()
+emailHash.setValue(emailHashValue)
+
+const messageKey = new MessageKey()
+messageKey.setValue(messageKeyValue)
+
+const setFlag = new SetFlag()
+setFlag.setValue(setFlagValue)
+
+const transferRate = new TransferRate()
+transferRate.setValue(transferRateValue)
+
+const tickSize = new TickSize()
+tickSize.setValue(tickSizeValue)
+
+const accountSetAllFields = new AccountSet()
+accountSetAllFields.setClearFlag(clearFlag)
+accountSetAllFields.setDomain(domain)
+accountSetAllFields.setEmailHash(emailHash)
+accountSetAllFields.setMessageKey(messageKey)
+accountSetAllFields.setSetFlag(setFlag)
+accountSetAllFields.setTransferRate(transferRate)
+accountSetAllFields.setTickSize(tickSize)
+
+const accountSetOneFieldSet = new AccountSet()
+accountSetOneFieldSet.setClearFlag(clearFlag)
+
+const accountSetEmpty = new AccountSet()
+
 // Payments
 const paymentMandatoryFields = new Payment()
 paymentMandatoryFields.setDestination(destination)
@@ -194,27 +263,56 @@ paymentAllFields.setPathsList(pathList)
 
 /**
  * Helper function to generate Transaction objects with the standard values from Payment objects.
+ * There must be at most one of accountSet or payment.
  *
+ * @param accountSet -AccountSet object to insert into the transaction.
  * @param payment -Payment object to insert into the transaction.
  * @returns Payment Transaction with the included payment param.
  */
-function buildStandardTransactionFromPayment(payment: Payment): Transaction {
+function buildStandardTestTransaction(
+  accountSet?: AccountSet,
+  payment?: Payment,
+): Transaction {
   const transaction = new Transaction()
   transaction.setAccount(accountProto)
   transaction.setFee(transactionFeeProto)
   transaction.setSequence(sequenceProto)
-  transaction.setPayment(payment)
+  if (accountSet) {
+    transaction.setAccountSet(accountSet)
+  }
+  if (payment) {
+    transaction.setPayment(payment)
+  }
   return transaction
 }
 
+// AccountSet Transactions
+const testTransactionAccountSetAllFields = buildStandardTestTransaction(
+  accountSetAllFields,
+  undefined,
+)
+
+const testTransactionAccountSetOneField = buildStandardTestTransaction(
+  accountSetOneFieldSet,
+  undefined,
+)
+
+const testTransactionAccountSetEmpty = buildStandardTestTransaction(
+  accountSetEmpty,
+  undefined,
+)
+
 // Payment Transactions
-const testTransactionPaymentMandatoryFields = buildStandardTransactionFromPayment(
+const testTransactionPaymentMandatoryFields = buildStandardTestTransaction(
+  undefined,
   paymentMandatoryFields,
 )
-const testTransactionPaymentMandatoryFieldsIssuedCurrency = buildStandardTransactionFromPayment(
+const testTransactionPaymentMandatoryFieldsIssuedCurrency = buildStandardTestTransaction(
+  undefined,
   paymentMandatoryFieldsIssuedCurrency,
 )
-const testTransactionPaymentAllFields = buildStandardTransactionFromPayment(
+const testTransactionPaymentAllFields = buildStandardTestTransaction(
+  undefined,
   paymentAllFields,
 )
 testTransactionPaymentAllFields.addMemos(memo)
@@ -239,13 +337,16 @@ testInvalidPaymentNoSendMax.setAmount(amountIssuedCurrency)
 testInvalidPaymentNoSendMax.setDestination(destination)
 
 // Invalid Transactions
-const testInvalidTransactionPaymentNoAmount = buildStandardTransactionFromPayment(
+const testInvalidTransactionPaymentNoAmount = buildStandardTestTransaction(
+  undefined,
   testInvalidPaymentNoAmount,
 )
-const testInvalidTransactionPaymentNoDestination = buildStandardTransactionFromPayment(
+const testInvalidTransactionPaymentNoDestination = buildStandardTestTransaction(
+  undefined,
   testInvalidPaymentNoDestination,
 )
-const testInvalidTransactionPaymentBadDestination = buildStandardTransactionFromPayment(
+const testInvalidTransactionPaymentBadDestination = buildStandardTestTransaction(
+  undefined,
   testInvalidPaymentBadDestination,
 )
 
@@ -260,8 +361,8 @@ testInvalidTransactionPaymentNoFee.setSequence(sequenceProto)
 testInvalidTransactionPaymentNoFee.setPayment(paymentMandatoryFields)
 
 const testInvalidTransactionPaymentNoPayment = new Transaction()
-testInvalidTransactionPaymentNoPayment.setAccount(accountProto)
 testInvalidTransactionPaymentNoPayment.setFee(transactionFeeProto)
+testInvalidTransactionPaymentNoPayment.setAccount(accountProto)
 testInvalidTransactionPaymentNoPayment.setSequence(sequenceProto)
 
 export {
@@ -275,4 +376,7 @@ export {
   testInvalidTransactionPaymentNoAccount,
   testInvalidTransactionPaymentNoFee,
   testInvalidTransactionPaymentNoPayment,
+  testTransactionAccountSetAllFields,
+  testTransactionAccountSetOneField,
+  testTransactionAccountSetEmpty,
 }
