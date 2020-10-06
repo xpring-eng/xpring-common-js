@@ -40,12 +40,16 @@ import xrpTestUtils from '../helpers/xrp-test-utils'
  * Helper function for generating sample data.
  *
  * @param arrayLength - The desired array length.
+ * @param startValue - The first value in the array.
  *
  * @returns A UInt8Array with random data with the given length.
  */
-function generateValidUint8Array(arrayLength: number): Uint8Array {
+function generateValidUint8Array(
+  arrayLength: number,
+  startValue = 0,
+): Uint8Array {
   const numbers = new Array(arrayLength)
-  for (let index = 0; index < arrayLength; index++) {
+  for (let index = startValue; index < arrayLength; index++) {
     numbers[index] = index + 1
   }
   return new Uint8Array(numbers)
@@ -56,9 +60,9 @@ const fakeSignature = 'DEADBEEF'
 const value = '1000'
 const currencyName = 'BTC'
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
-const currencyCode1 = new Uint8Array([1, 2, 3, 4, 5])
+const currencyCode1 = generateValidUint8Array(5)
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
-const currencyCode2 = new Uint8Array([4, 5, 6, 7, 8])
+const currencyCode2 = generateValidUint8Array(5, 4)
 const issuedCurrencyValue = '100'
 const destinationAddress = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
 const issuerAddress = 'rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY'
@@ -75,13 +79,14 @@ const deliverMinValue = '10'
 const sendMaxValue = '13'
 const destinationTagValue = 4
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
-const testMemoData = new Uint8Array([2, 4, 6])
+const testMemoData = generateValidUint8Array(3, 10)
 const sourceTagValue = 5
 const lastLedgerSequenceValue = 78652515
 const clearFlagValue = 5
 const domainValue = 'testdomain'
 const HASH_LENGTH = 16
 const emailHashValue = generateValidUint8Array(HASH_LENGTH)
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
 const messageKeyValue = generateValidUint8Array(3)
 const setFlagValue = 4
 const transferRateValue = 1234567890
