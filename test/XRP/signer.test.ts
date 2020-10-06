@@ -21,6 +21,7 @@ import {
   testInvalidTransactionPaymentNoAccount,
   testInvalidTransactionPaymentNoFee,
   testInvalidTransactionPaymentNoPayment,
+  testTransactionAccountSetSpecialCases,
 } from './fakes/fake-xrp-protobufs'
 
 describe('Signer', function (): void {
@@ -308,6 +309,34 @@ describe('Signer', function (): void {
     // WHEN the transaction is signed with the wallet.
     const signedTransaction = Signer.signTransaction(
       testTransactionAccountSetOneField,
+      wallet,
+    )
+
+    // THEN the signing artifacts are as expected.
+    assert.exists(signedTransaction)
+    assert.deepEqual(signedTransaction, expectedSignedTransaction)
+  })
+
+  it('Sign AccountSet transaction with special case fields', function (): void {
+    // GIVEN a AccountSet transaction with fields set with special values, a wallet and expected signing artifacts.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // Encode transaction with the expected signature.
+    const expectedSignedTransactionJSON = Serializer.transactionToJSON(
+      testTransactionAccountSetSpecialCases,
+      fakeSignature,
+    )
+
+    const expectedSignedTransactionHex = rippleCodec.encode(
+      expectedSignedTransactionJSON,
+    )
+    const expectedSignedTransaction = Utils.toBytes(
+      expectedSignedTransactionHex,
+    )
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testTransactionAccountSetSpecialCases,
       wallet,
     )
 

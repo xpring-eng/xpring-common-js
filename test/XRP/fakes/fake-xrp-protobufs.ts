@@ -85,7 +85,9 @@ const emailHashValue = generateValidUint8Array(HASH_LENGTH)
 const messageKeyValue = generateValidUint8Array(3)
 const setFlagValue = 4
 const transferRateValue = 1234567890
+const transferRateValueNoFee = 0
 const tickSizeValue = 7
+const tickSizeValueDisable = 0
 
 // Objects for Transactions
 
@@ -143,25 +145,37 @@ amountXrp.setValue(currencyAmountXrp)
 const amountIssuedCurrency = new Amount()
 amountIssuedCurrency.setValue(currencyAmountIssuedCurrency)
 
-// Transaction Fee
-const transactionFeeProto = new XRPDropsAmount()
-transactionFeeProto.setDrops(fee)
-
-// Sequence
-const sequenceProto = new Sequence()
-sequenceProto.setValue(sequenceNumber)
-
-// InvoiceID
-const invoiceId = new InvoiceID()
-invoiceId.setValue(invoiceIdValue)
+// ClearFlag
+const clearFlag = new ClearFlag()
+clearFlag.setValue(clearFlagValue)
 
 // DeliverMin
 const deliverMin = new DeliverMin()
 deliverMin.setValue(xrpTestUtils.makeXrpCurrencyAmount(deliverMinValue))
 
+// Domain
+const domain = new Domain()
+domain.setValue(domainValue)
+
+// EmailHash
+const emailHash = new EmailHash()
+emailHash.setValue(emailHashValue)
+
+// InvoiceID
+const invoiceId = new InvoiceID()
+invoiceId.setValue(invoiceIdValue)
+
 // SendMax
 const sendMax = new SendMax()
 sendMax.setValue(xrpTestUtils.makeXrpCurrencyAmount(sendMaxValue))
+
+// Sequence
+const sequenceProto = new Sequence()
+sequenceProto.setValue(sequenceNumber)
+
+// Transaction Fee
+const transactionFeeProto = new XRPDropsAmount()
+transactionFeeProto.setDrops(fee)
 
 // LastLedgerSequence
 const lastLedgerSequence = new LastLedgerSequence()
@@ -174,9 +188,31 @@ memoData.setValue(testMemoData)
 const memo = new Memo()
 memo.setMemoData(memoData)
 
+// MessageKey
+const messageKey = new MessageKey()
+messageKey.setValue(messageKeyValue)
+
+// SetFlag
+const setFlag = new SetFlag()
+setFlag.setValue(setFlagValue)
+
 // SourceTag
 const sourceTag = new SourceTag()
 sourceTag.setValue(sourceTagValue)
+
+// TransferRate
+const transferRate = new TransferRate()
+transferRate.setValue(transferRateValue)
+
+const transferRateNoFee = new TransferRate()
+transferRateNoFee.setValue(transferRateValueNoFee)
+
+// TickSize
+const tickSize = new TickSize()
+tickSize.setValue(tickSizeValue)
+
+const tickSizeDisable = new TickSize()
+tickSizeDisable.setValue(tickSizeValueDisable)
 
 // PathElements and Paths
 const path1Element1 = xrpTestUtils.makePathElement(
@@ -206,26 +242,6 @@ path2.addElements(path2Element1)
 const pathList = [path1, path2]
 
 // AccountSets
-const clearFlag = new ClearFlag()
-clearFlag.setValue(clearFlagValue)
-
-const domain = new Domain()
-domain.setValue(domainValue)
-
-const emailHash = new EmailHash()
-emailHash.setValue(emailHashValue)
-
-const messageKey = new MessageKey()
-messageKey.setValue(messageKeyValue)
-
-const setFlag = new SetFlag()
-setFlag.setValue(setFlagValue)
-
-const transferRate = new TransferRate()
-transferRate.setValue(transferRateValue)
-
-const tickSize = new TickSize()
-tickSize.setValue(tickSizeValue)
 
 const accountSetAllFields = new AccountSet()
 accountSetAllFields.setClearFlag(clearFlag)
@@ -240,6 +256,10 @@ const accountSetOneFieldSet = new AccountSet()
 accountSetOneFieldSet.setClearFlag(clearFlag)
 
 const accountSetEmpty = new AccountSet()
+
+const accountSetSpecialCases = new AccountSet()
+accountSetSpecialCases.setTransferRate(transferRateNoFee)
+accountSetSpecialCases.setTickSize(tickSizeDisable)
 
 // Payments
 const paymentMandatoryFields = new Payment()
@@ -291,14 +311,16 @@ const testTransactionAccountSetAllFields = buildStandardTestTransaction(
   accountSetAllFields,
   undefined,
 )
-
 const testTransactionAccountSetOneField = buildStandardTestTransaction(
   accountSetOneFieldSet,
   undefined,
 )
-
 const testTransactionAccountSetEmpty = buildStandardTestTransaction(
   accountSetEmpty,
+  undefined,
+)
+const testTransactionAccountSetSpecialCases = buildStandardTestTransaction(
+  accountSetSpecialCases,
   undefined,
 )
 
@@ -379,4 +401,5 @@ export {
   testTransactionAccountSetAllFields,
   testTransactionAccountSetOneField,
   testTransactionAccountSetEmpty,
+  testTransactionAccountSetSpecialCases,
 }
