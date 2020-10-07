@@ -12,6 +12,7 @@ import {
   fakeSignature,
   testTransactionAccountSetAllFields,
   testTransactionAccountSetOneField,
+  testTransactionAccountSetEmpty,
   testTransactionAccountSetSpecialCases,
   testTransactionPaymentMandatoryFields,
   testTransactionPaymentMandatoryFieldsIssuedCurrency,
@@ -295,7 +296,7 @@ describe('Signer', function (): void {
 
     // Encode transaction with the expected signature.
     const expectedSignedTransactionJSON = Serializer.transactionToJSON(
-      testTransactionAccountSetOneField,
+      testTransactionAccountSetEmpty,
       fakeSignature,
     )
 
@@ -308,7 +309,7 @@ describe('Signer', function (): void {
 
     // WHEN the transaction is signed with the wallet.
     const signedTransaction = Signer.signTransaction(
-      testTransactionAccountSetOneField,
+      testTransactionAccountSetEmpty,
       wallet,
     )
 
