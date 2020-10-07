@@ -329,56 +329,69 @@ trustSetSpecial.setQualityOut(qualityOutSpecial)
  * Helper function to generate Transaction objects with the standard values from Payment objects.
  * There must be at most one of accountSet or payment.
  *
- * @param accountSet -AccountSet object to insert into the transaction.
- * @param payment -Payment object to insert into the transaction.
+ * @param transactionType - The type of transaction that is created.
+ * @param object - The object to be inserted into the transaction based on the transaction type.
  * @returns Payment Transaction with the included payment param.
+ * @throws Error if given bad data.
  */
 function buildStandardTestTransaction(
-  accountSet?: AccountSet,
-  payment?: Payment,
+  transactionType: Transaction.TransactionDataCase,
+  object: AccountSet | Payment | TrustSet,
 ): Transaction {
   const transaction = new Transaction()
   transaction.setAccount(accountProto)
   transaction.setFee(transactionFeeProto)
   transaction.setSequence(sequenceProto)
-  if (accountSet) {
-    transaction.setAccountSet(accountSet)
-  }
-  if (payment) {
-    transaction.setPayment(payment)
+  switch (transactionType) {
+    case Transaction.TransactionDataCase.PAYMENT: {
+      if (!(object instanceof Payment)) {
+        throw new Error('Expected Payment type')
+      }
+      transaction.setPayment(object)
+      break
+    }
+    case Transaction.TransactionDataCase.ACCOUNT_SET: {
+      if (!(object instanceof AccountSet)) {
+        throw new Error('Expected AccountSet type')
+      }
+      transaction.setAccountSet(object)
+      break
+    }
+    default:
+      throw new Error('Unexpected transactionDataCase')
   }
   return transaction
 }
 
 // AccountSet Transactions
 const testTransactionAccountSetAllFields = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.ACCOUNT_SET,
   accountSetAllFields,
-  undefined,
 )
 const testTransactionAccountSetOneField = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.ACCOUNT_SET,
   accountSetOneFieldSet,
-  undefined,
 )
 const testTransactionAccountSetEmpty = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.ACCOUNT_SET,
   accountSetEmpty,
-  undefined,
 )
 const testTransactionAccountSetSpecialCases = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.ACCOUNT_SET,
   accountSetSpecialCases,
-  undefined,
 )
 
 // Payment Transactions
 const testTransactionPaymentMandatoryFields = buildStandardTestTransaction(
-  undefined,
+  Transaction.TransactionDataCase.PAYMENT,
   paymentMandatoryFields,
 )
 const testTransactionPaymentMandatoryFieldsIssuedCurrency = buildStandardTestTransaction(
-  undefined,
+  Transaction.TransactionDataCase.PAYMENT,
   paymentMandatoryFieldsIssuedCurrency,
 )
 const testTransactionPaymentAllFields = buildStandardTestTransaction(
-  undefined,
+  Transaction.TransactionDataCase.PAYMENT,
   paymentAllFields,
 )
 testTransactionPaymentAllFields.addMemos(memo)
@@ -404,15 +417,15 @@ testInvalidPaymentNoSendMax.setDestination(destination)
 
 // Invalid Transactions
 const testInvalidTransactionPaymentNoAmount = buildStandardTestTransaction(
-  undefined,
+  Transaction.TransactionDataCase.PAYMENT,
   testInvalidPaymentNoAmount,
 )
 const testInvalidTransactionPaymentNoDestination = buildStandardTestTransaction(
-  undefined,
+  Transaction.TransactionDataCase.PAYMENT,
   testInvalidPaymentNoDestination,
 )
 const testInvalidTransactionPaymentBadDestination = buildStandardTestTransaction(
-  undefined,
+  Transaction.TransactionDataCase.PAYMENT,
   testInvalidPaymentBadDestination,
 )
 
