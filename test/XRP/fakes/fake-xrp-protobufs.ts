@@ -1,3 +1,4 @@
+/* eslint-disable max-statements -- long functions are fine here */
 /* eslint-disable max-lines -- lots of test data */
 /* eslint-disable max-len -- long variable names and function names */
 import { AccountAddress } from '../../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
@@ -26,12 +27,16 @@ import {
   SetFlag,
   TickSize,
   TransferRate,
+  LimitAmount,
+  QualityIn,
+  QualityOut,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Payment,
   Transaction,
   Memo,
+  TrustSet,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import xrpTestUtils from '../helpers/xrp-test-utils'
 
@@ -93,6 +98,10 @@ const transferRateValue = 1234567890
 const transferRateValueNoFee = 0
 const tickSizeValue = 7
 const tickSizeValueDisable = 0
+const qualityInValue = 5
+const qualityInZero = 0
+const qualityOutValue = 7
+const qualityOutZero = 0
 
 // Objects for Transactions
 
@@ -186,6 +195,10 @@ transactionFeeProto.setDrops(fee)
 const lastLedgerSequence = new LastLedgerSequence()
 lastLedgerSequence.setValue(lastLedgerSequenceValue)
 
+// LimitAmount
+const limitAmount = new LimitAmount()
+limitAmount.setValue(currencyAmountIssuedCurrency)
+
 // Memo
 const memoData = new MemoData()
 memoData.setValue(testMemoData)
@@ -219,6 +232,19 @@ tickSize.setValue(tickSizeValue)
 const tickSizeDisable = new TickSize()
 tickSizeDisable.setValue(tickSizeValueDisable)
 
+// Quality In/Out
+const qualityIn = new QualityIn()
+qualityIn.setValue(qualityInValue)
+
+const qualityInSpecial = new QualityIn()
+qualityInSpecial.setValue(qualityInZero)
+
+const qualityOut = new QualityOut()
+qualityOut.setValue(qualityOutValue)
+
+const qualityOutSpecial = new QualityOut()
+qualityOutSpecial.setValue(qualityOutZero)
+
 // PathElements and Paths
 const path1Element1 = xrpTestUtils.makePathElement(
   xrpTestUtils.makeAccountAddress(address1),
@@ -247,7 +273,6 @@ path2.addElements(path2Element1)
 const pathList = [path1, path2]
 
 // AccountSets
-
 const accountSetAllFields = new AccountSet()
 accountSetAllFields.setClearFlag(clearFlag)
 accountSetAllFields.setDomain(domain)
@@ -284,7 +309,21 @@ paymentAllFields.setDeliverMin(deliverMin)
 paymentAllFields.setSendMax(sendMax)
 paymentAllFields.setPathsList(pathList)
 
-// Transaction
+// TrustSets
+const trustSetMandatoryFields = new TrustSet()
+trustSetMandatoryFields.setLimitAmount(limitAmount)
+
+const trustSetAllFields = new TrustSet()
+trustSetAllFields.setLimitAmount(limitAmount)
+trustSetAllFields.setQualityIn(qualityIn)
+trustSetAllFields.setQualityOut(qualityOut)
+
+const trustSetSpecial = new TrustSet()
+trustSetSpecial.setLimitAmount(limitAmount)
+trustSetSpecial.setQualityIn(qualityInSpecial)
+trustSetSpecial.setQualityOut(qualityOutSpecial)
+
+// Transactions
 
 /**
  * Helper function to generate Transaction objects with the standard values from Payment objects.
