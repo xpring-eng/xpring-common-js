@@ -1,3 +1,6 @@
+/* eslint-disable max-params -- Allow lots of sample data to be used. */
+/* eslint-disable max-statements -- Allow many lines per function. */
+/* eslint-disable max-lines -- Allow many lines of test util functions. */
 import Utils from '../../../src/Common/utils'
 import { AccountAddress } from '../../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
 import {
@@ -21,12 +24,16 @@ import {
   SetFlag,
   TransferRate,
   TickSize,
+  LimitAmount,
+  QualityIn,
+  QualityOut,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Payment,
   Transaction,
   DepositPreauth,
   AccountSet,
+  TrustSet,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 
 const xrpTestUtils = {
@@ -258,6 +265,105 @@ const xrpTestUtils = {
     }
 
     return accountSet
+  },
+
+  /**
+   * Make a Transaction representing a TrustSet operation.
+   *
+   * @param limitAmountCurrency - The currency name to use for the LimitAmount for the TrustSet.
+   * @param limitAmountIssuer - The issuer address to use for the LimitAmount for the TrustSet.
+   * @param limitAmountValue - The value to use for the LimitAmount for the TrustSet.
+   * @param qualityInValue - The QualityIn value to use for the LimitAmount for the TrustSet.
+   * @param qualityOutValue - The QualityOut value to use for the LimitAmount for the TrustSet.
+   * @param fee - The amount of XRP to use as a fee, in drops.
+   * @param lastLedgerSequenceNumber - The last ledger sequence the transaction will be valid in.
+   * @param sequenceNumber - The sequence number for the sending account.
+   * @param senderAddress - The address of the sending account.
+   * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
+   * @returns A new `Transaction` object comprised of the provided properties.
+   */
+  makeTrustSetTransaction(
+    limitAmountCurrency: string,
+    limitAmountIssuer: string,
+    limitAmountValue: string,
+    qualityInValue: number | undefined,
+    qualityOutValue: number | undefined,
+    fee: string,
+    lastLedgerSequenceNumber: number,
+    sequenceNumber: number,
+    senderAddress: string | undefined,
+    publicKey: string,
+  ): Transaction {
+    const trustSet = this.makeTrustSet(
+      limitAmountCurrency,
+      limitAmountIssuer,
+      limitAmountValue,
+      qualityInValue,
+      qualityOutValue,
+    )
+    const transaction = this.makeBaseTransaction(
+      fee,
+      lastLedgerSequenceNumber,
+      sequenceNumber,
+      senderAddress,
+      publicKey,
+    )
+    transaction.setTrustSet(trustSet)
+
+    return transaction
+  },
+
+  /**
+   * Make a TrustSet protocol buffer from the given inputs.
+   *
+   * @param limitAmountCurrency - The currency name to use for the LimitAmount for the TrustSet.
+   * @param limitAmountIssuer - The issuer address to use for the LimitAmount for the TrustSet.
+   * @param limitAmountValue - The value to use for the LimitAmount for the TrustSet.
+   * @param qualityInValue - The QualityIn value to use for the LimitAmount for the TrustSet.
+   * @param qualityOutValue - The QualityOut value to use for the LimitAmount for the TrustSet.
+   * @returns A TrustSet protocol buffer from the given inputs.
+   */
+  makeTrustSet(
+    limitAmountCurrency: string,
+    limitAmountIssuer: string,
+    limitAmountValue: string,
+    qualityInValue: number | undefined,
+    qualityOutValue: number | undefined,
+  ): TrustSet {
+    const trustSet = new TrustSet()
+
+    const currency = new Currency()
+    currency.setName(limitAmountCurrency)
+
+    const issuerAccountAddress = new AccountAddress()
+    issuerAccountAddress.setAddress(limitAmountIssuer)
+
+    const issuedCurrencyAmount = new IssuedCurrencyAmount()
+    issuedCurrencyAmount.setCurrency(currency)
+    issuedCurrencyAmount.setIssuer(issuerAccountAddress)
+    issuedCurrencyAmount.setValue(limitAmountValue)
+
+    const currencyAmount = new CurrencyAmount()
+    currencyAmount.setIssuedCurrencyAmount(issuedCurrencyAmount)
+
+    const limitAmount = new LimitAmount()
+    limitAmount.setValue(currencyAmount)
+
+    trustSet.setLimitAmount(limitAmount)
+
+    if (qualityInValue !== undefined) {
+      const qualityIn = new QualityIn()
+      qualityIn.setValue(qualityInValue)
+      trustSet.setQualityIn(qualityIn)
+    }
+
+    if (qualityOutValue !== undefined) {
+      const qualityOut = new QualityOut()
+      qualityOut.setValue(qualityOutValue)
+      trustSet.setQualityOut(qualityOut)
+    }
+
+    return trustSet
   },
 
   /**

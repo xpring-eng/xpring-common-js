@@ -2673,6 +2673,65 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('serializes a TrustSet transaction', function (): void {
+    // GIVEN a transaction which represents the creation of a trust line linking two accounts.
+    const currency = 'USD'
+    const currencyIssuer = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
+    const transaction = xrpTestUtils.makeTrustSetTransaction(
+      currency,
+      currencyIssuer,
+      value,
+      undefined,
+      undefined,
+      fee,
+      lastLedgerSequenceValue,
+      sequenceValue,
+      accountClassicAddress,
+      publicKeyHex,
+    )
+
+    // WHEN the transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction)
+
+    // THEN the result is as expected.
+    const expectedJSON: TransactionJSON = {
+      Account: accountClassicAddress,
+      Fee: fee.toString(),
+      LastLedgerSequence: lastLedgerSequenceValue,
+      LimitAmount: {
+        currency,
+        issuer: currencyIssuer,
+        value,
+      },
+      Sequence: sequenceValue,
+      TransactionType: 'TrustSet',
+      SigningPubKey: publicKeyHex,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('serializes a faulty TrustSet transaction', function (): void {
+    // GIVEN a bad transaction which represents the creation of a trust line linking two accounts.
+    const transaction = xrpTestUtils.makeTrustSetTransaction(
+      '',
+      '',
+      value,
+      undefined,
+      undefined,
+      fee,
+      lastLedgerSequenceValue,
+      sequenceValue,
+      accountClassicAddress,
+      publicKeyHex,
+    )
+
+    // WHEN the transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
   it('Serializes a SignerEntry', function (): void {
     // GIVEN a SignerEntry
     const account = new Account()
