@@ -343,6 +343,13 @@ function buildStandardTestTransaction(
   transaction.setFee(transactionFeeProto)
   transaction.setSequence(sequenceProto)
   switch (transactionType) {
+    case Transaction.TransactionDataCase.ACCOUNT_SET: {
+      if (!(object instanceof AccountSet)) {
+        throw new Error('Expected AccountSet type')
+      }
+      transaction.setAccountSet(object)
+      break
+    }
     case Transaction.TransactionDataCase.PAYMENT: {
       if (!(object instanceof Payment)) {
         throw new Error('Expected Payment type')
@@ -350,11 +357,11 @@ function buildStandardTestTransaction(
       transaction.setPayment(object)
       break
     }
-    case Transaction.TransactionDataCase.ACCOUNT_SET: {
-      if (!(object instanceof AccountSet)) {
-        throw new Error('Expected AccountSet type')
+    case Transaction.TransactionDataCase.TRUST_SET: {
+      if (!(object instanceof TrustSet)) {
+        throw new Error('Expected TrustSet type')
       }
-      transaction.setAccountSet(object)
+      transaction.setTrustSet(object)
       break
     }
     default:
@@ -397,6 +404,22 @@ const testTransactionPaymentAllFields = buildStandardTestTransaction(
 testTransactionPaymentAllFields.addMemos(memo)
 testTransactionPaymentAllFields.setLastLedgerSequence(lastLedgerSequence)
 testTransactionPaymentAllFields.setSourceTag(sourceTag)
+
+// TrustSet Transactions
+const testTransactionTrustSetMandatoryFields = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.TRUST_SET,
+  trustSetMandatoryFields,
+)
+
+const testTransactionTrustSetAllFields = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.TRUST_SET,
+  trustSetAllFields,
+)
+
+const testTransactionTrustSetSpecialCases = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.TRUST_SET,
+  trustSetSpecial,
+)
 
 // INVALID OBJECTS =============================================
 
@@ -446,17 +469,20 @@ testInvalidTransactionPaymentNoPayment.setSequence(sequenceProto)
 
 export {
   fakeSignature,
+  testTransactionAccountSetAllFields,
+  testTransactionAccountSetOneField,
+  testTransactionAccountSetEmpty,
+  testTransactionAccountSetSpecialCases,
   testTransactionPaymentMandatoryFields,
   testTransactionPaymentMandatoryFieldsIssuedCurrency,
   testTransactionPaymentAllFields,
+  testTransactionTrustSetMandatoryFields,
+  testTransactionTrustSetAllFields,
+  testTransactionTrustSetSpecialCases,
   testInvalidTransactionPaymentNoAmount,
   testInvalidTransactionPaymentNoDestination,
   testInvalidTransactionPaymentBadDestination,
   testInvalidTransactionPaymentNoAccount,
   testInvalidTransactionPaymentNoFee,
   testInvalidTransactionPaymentNoPayment,
-  testTransactionAccountSetAllFields,
-  testTransactionAccountSetOneField,
-  testTransactionAccountSetEmpty,
-  testTransactionAccountSetSpecialCases,
 }

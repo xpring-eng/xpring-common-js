@@ -1,3 +1,6 @@
+/* eslint-disable max-lines --
+ * Allow many lines of tests.
+ */
 import { assert } from 'chai'
 import * as rippleCodec from 'ripple-binary-codec'
 
@@ -17,6 +20,9 @@ import {
   testTransactionPaymentMandatoryFields,
   testTransactionPaymentMandatoryFieldsIssuedCurrency,
   testTransactionPaymentAllFields,
+  testTransactionTrustSetMandatoryFields,
+  testTransactionTrustSetAllFields,
+  testTransactionTrustSetSpecialCases,
   testInvalidTransactionPaymentNoAmount,
   testInvalidTransactionPaymentNoDestination,
   testInvalidTransactionPaymentBadDestination,
@@ -338,6 +344,90 @@ describe('Signer', function (): void {
     // WHEN the transaction is signed with the wallet.
     const signedTransaction = Signer.signTransaction(
       testTransactionAccountSetSpecialCases,
+      wallet,
+    )
+
+    // THEN the signing artifacts are as expected.
+    assert.exists(signedTransaction)
+    assert.deepEqual(signedTransaction, expectedSignedTransaction)
+  })
+
+  it('Sign TrustSet transaction with mandatory fields', function (): void {
+    // GIVEN a TrustSet transaction with mandatory fields, a wallet and expected signing artifacts.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // Encode transaction with the expected signature.
+    const expectedSignedTransactionJSON = Serializer.transactionToJSON(
+      testTransactionTrustSetMandatoryFields,
+      fakeSignature,
+    )
+
+    const expectedSignedTransactionHex = rippleCodec.encode(
+      expectedSignedTransactionJSON,
+    )
+    const expectedSignedTransaction = Utils.toBytes(
+      expectedSignedTransactionHex,
+    )
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testTransactionTrustSetMandatoryFields,
+      wallet,
+    )
+
+    // THEN the signing artifacts are as expected.
+    assert.exists(signedTransaction)
+    assert.deepEqual(signedTransaction, expectedSignedTransaction)
+  })
+
+  it('Sign TrustSet transaction with all fields', function (): void {
+    // GIVEN a TrustSet transaction with all fields, a wallet and expected signing artifacts.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // Encode transaction with the expected signature.
+    const expectedSignedTransactionJSON = Serializer.transactionToJSON(
+      testTransactionTrustSetAllFields,
+      fakeSignature,
+    )
+
+    const expectedSignedTransactionHex = rippleCodec.encode(
+      expectedSignedTransactionJSON,
+    )
+    const expectedSignedTransaction = Utils.toBytes(
+      expectedSignedTransactionHex,
+    )
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testTransactionTrustSetAllFields,
+      wallet,
+    )
+
+    // THEN the signing artifacts are as expected.
+    assert.exists(signedTransaction)
+    assert.deepEqual(signedTransaction, expectedSignedTransaction)
+  })
+
+  it('Sign TrustSet transaction with special-case fields', function (): void {
+    // GIVEN a TrustSet transaction with fields' special cases, a wallet and expected signing artifacts.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // Encode transaction with the expected signature.
+    const expectedSignedTransactionJSON = Serializer.transactionToJSON(
+      testTransactionTrustSetSpecialCases,
+      fakeSignature,
+    )
+
+    const expectedSignedTransactionHex = rippleCodec.encode(
+      expectedSignedTransactionJSON,
+    )
+    const expectedSignedTransaction = Utils.toBytes(
+      expectedSignedTransactionHex,
+    )
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testTransactionTrustSetSpecialCases,
       wallet,
     )
 
