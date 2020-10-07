@@ -29,6 +29,7 @@ import {
   testInvalidTransactionPaymentNoAccount,
   testInvalidTransactionPaymentNoFee,
   testInvalidTransactionPaymentNoPayment,
+  testInvalidTransactionTrustSetNoLimitAmount,
 } from './fakes/fake-xrp-protobufs'
 
 describe('Signer', function (): void {
@@ -434,5 +435,19 @@ describe('Signer', function (): void {
     // THEN the signing artifacts are as expected.
     assert.exists(signedTransaction)
     assert.deepEqual(signedTransaction, expectedSignedTransaction)
+  })
+
+  it('Sign TrustSet transaction with no limitAmount', function (): void {
+    // GIVEN a Payment transaction without a limitAmount field and a wallet.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testInvalidTransactionTrustSetNoLimitAmount,
+      wallet,
+    )
+
+    // THEN the signing artifacts are undefined.
+    assert.isUndefined(signedTransaction)
   })
 })

@@ -438,7 +438,12 @@ const testInvalidPaymentNoSendMax = new Payment()
 testInvalidPaymentNoSendMax.setAmount(amountIssuedCurrency)
 testInvalidPaymentNoSendMax.setDestination(destination)
 
+// Invalid TrustSets
+const testInvalidTrustSetNoLimitAmount = new TrustSet()
+
 // Invalid Transactions
+
+// Invalid Payment Transactions
 const testInvalidTransactionPaymentNoAmount = buildStandardTestTransaction(
   Transaction.TransactionDataCase.PAYMENT,
   testInvalidPaymentNoAmount,
@@ -467,6 +472,12 @@ testInvalidTransactionPaymentNoPayment.setAccount(accountProto)
 testInvalidTransactionPaymentNoPayment.setFee(transactionFeeProto)
 testInvalidTransactionPaymentNoPayment.setSequence(sequenceProto)
 
+// Invalid TrustSet Transactions
+const testInvalidTransactionTrustSetNoLimitAmount = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.TRUST_SET,
+  testInvalidTrustSetNoLimitAmount,
+)
+
 export {
   fakeSignature,
   testTransactionAccountSetAllFields,
@@ -485,4 +496,5 @@ export {
   testInvalidTransactionPaymentNoAccount,
   testInvalidTransactionPaymentNoFee,
   testInvalidTransactionPaymentNoPayment,
+  testInvalidTransactionTrustSetNoLimitAmount,
 }
