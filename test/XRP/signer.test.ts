@@ -438,7 +438,7 @@ describe('Signer', function (): void {
   })
 
   it('Sign TrustSet transaction with no limitAmount', function (): void {
-    // GIVEN a Payment transaction without a limitAmount field and a wallet.
+    // GIVEN a TrustSet transaction without a limitAmount field and a wallet.
     const wallet = new FakeWallet(fakeSignature)
 
     // WHEN the transaction is signed with the wallet.

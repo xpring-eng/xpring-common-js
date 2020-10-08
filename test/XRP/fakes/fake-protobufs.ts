@@ -330,13 +330,13 @@ trustSetSpecial.setQualityOut(qualityOutSpecial)
  * There must be at most one of accountSet or payment.
  *
  * @param transactionType - The type of transaction that is created.
- * @param object - The object to be inserted into the transaction based on the transaction type.
+ * @param transactionData - The object to be inserted into the transaction based on the transaction type.
  * @returns Payment Transaction with the included payment param.
  * @throws Error if given bad data.
  */
 function buildStandardTestTransaction(
   transactionType: Transaction.TransactionDataCase,
-  object: AccountSet | Payment | TrustSet,
+  transactionData: AccountSet | Payment | TrustSet,
 ): Transaction {
   const transaction = new Transaction()
   transaction.setAccount(accountProto)
@@ -344,24 +344,24 @@ function buildStandardTestTransaction(
   transaction.setSequence(sequenceProto)
   switch (transactionType) {
     case Transaction.TransactionDataCase.ACCOUNT_SET: {
-      if (!(object instanceof AccountSet)) {
+      if (!(transactionData instanceof AccountSet)) {
         throw new Error('Expected AccountSet type')
       }
-      transaction.setAccountSet(object)
+      transaction.setAccountSet(transactionData)
       break
     }
     case Transaction.TransactionDataCase.PAYMENT: {
-      if (!(object instanceof Payment)) {
+      if (!(transactionData instanceof Payment)) {
         throw new Error('Expected Payment type')
       }
-      transaction.setPayment(object)
+      transaction.setPayment(transactionData)
       break
     }
     case Transaction.TransactionDataCase.TRUST_SET: {
-      if (!(object instanceof TrustSet)) {
+      if (!(transactionData instanceof TrustSet)) {
         throw new Error('Expected TrustSet type')
       }
-      transaction.setTrustSet(object)
+      transaction.setTrustSet(transactionData)
       break
     }
     default:
