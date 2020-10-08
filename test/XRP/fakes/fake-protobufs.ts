@@ -1,3 +1,4 @@
+/* eslint-disable max-statements -- long functions are fine here */
 /* eslint-disable max-lines -- lots of test data */
 /* eslint-disable max-len -- long variable names and function names */
 import { AccountAddress } from '../../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
@@ -26,12 +27,16 @@ import {
   SetFlag,
   TickSize,
   TransferRate,
+  LimitAmount,
+  QualityIn,
+  QualityOut,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
   Payment,
   Transaction,
   Memo,
+  TrustSet,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import xrpTestUtils from '../helpers/xrp-test-utils'
 
@@ -93,6 +98,10 @@ const transferRateValue = 1234567890
 const transferRateValueNoFee = 0
 const tickSizeValue = 7
 const tickSizeValueDisable = 0
+const qualityInValue = 5
+const qualityInZero = 0
+const qualityOutValue = 7
+const qualityOutZero = 0
 
 // Objects for Transactions
 
@@ -186,6 +195,10 @@ transactionFeeProto.setDrops(fee)
 const lastLedgerSequence = new LastLedgerSequence()
 lastLedgerSequence.setValue(lastLedgerSequenceValue)
 
+// LimitAmount
+const limitAmount = new LimitAmount()
+limitAmount.setValue(currencyAmountIssuedCurrency)
+
 // Memo
 const memoData = new MemoData()
 memoData.setValue(testMemoData)
@@ -219,6 +232,19 @@ tickSize.setValue(tickSizeValue)
 const tickSizeDisable = new TickSize()
 tickSizeDisable.setValue(tickSizeValueDisable)
 
+// Quality In/Out
+const qualityIn = new QualityIn()
+qualityIn.setValue(qualityInValue)
+
+const qualityInSpecial = new QualityIn()
+qualityInSpecial.setValue(qualityInZero)
+
+const qualityOut = new QualityOut()
+qualityOut.setValue(qualityOutValue)
+
+const qualityOutSpecial = new QualityOut()
+qualityOutSpecial.setValue(qualityOutZero)
+
 // PathElements and Paths
 const path1Element1 = xrpTestUtils.makePathElement(
   xrpTestUtils.makeAccountAddress(address1),
@@ -247,7 +273,6 @@ path2.addElements(path2Element1)
 const pathList = [path1, path2]
 
 // AccountSets
-
 const accountSetAllFields = new AccountSet()
 accountSetAllFields.setClearFlag(clearFlag)
 accountSetAllFields.setDomain(domain)
@@ -284,67 +309,117 @@ paymentAllFields.setDeliverMin(deliverMin)
 paymentAllFields.setSendMax(sendMax)
 paymentAllFields.setPathsList(pathList)
 
-// Transaction
+// TrustSets
+const trustSetMandatoryFields = new TrustSet()
+trustSetMandatoryFields.setLimitAmount(limitAmount)
+
+const trustSetAllFields = new TrustSet()
+trustSetAllFields.setLimitAmount(limitAmount)
+trustSetAllFields.setQualityIn(qualityIn)
+trustSetAllFields.setQualityOut(qualityOut)
+
+const trustSetSpecial = new TrustSet()
+trustSetSpecial.setLimitAmount(limitAmount)
+trustSetSpecial.setQualityIn(qualityInSpecial)
+trustSetSpecial.setQualityOut(qualityOutSpecial)
+
+// Transactions
 
 /**
  * Helper function to generate Transaction objects with the standard values from Payment objects.
  * There must be at most one of accountSet or payment.
  *
- * @param accountSet -AccountSet object to insert into the transaction.
- * @param payment -Payment object to insert into the transaction.
+ * @param transactionType - The type of transaction that is created.
+ * @param transactionData - The object to be inserted into the transaction based on the transaction type.
  * @returns Payment Transaction with the included payment param.
+ * @throws Error if given bad data.
  */
 function buildStandardTestTransaction(
-  accountSet?: AccountSet,
-  payment?: Payment,
+  transactionType: Transaction.TransactionDataCase,
+  transactionData: AccountSet | Payment | TrustSet,
 ): Transaction {
   const transaction = new Transaction()
   transaction.setAccount(accountProto)
   transaction.setFee(transactionFeeProto)
   transaction.setSequence(sequenceProto)
-  if (accountSet) {
-    transaction.setAccountSet(accountSet)
-  }
-  if (payment) {
-    transaction.setPayment(payment)
+  switch (transactionType) {
+    case Transaction.TransactionDataCase.ACCOUNT_SET: {
+      if (!(transactionData instanceof AccountSet)) {
+        throw new Error('Expected AccountSet type')
+      }
+      transaction.setAccountSet(transactionData)
+      break
+    }
+    case Transaction.TransactionDataCase.PAYMENT: {
+      if (!(transactionData instanceof Payment)) {
+        throw new Error('Expected Payment type')
+      }
+      transaction.setPayment(transactionData)
+      break
+    }
+    case Transaction.TransactionDataCase.TRUST_SET: {
+      if (!(transactionData instanceof TrustSet)) {
+        throw new Error('Expected TrustSet type')
+      }
+      transaction.setTrustSet(transactionData)
+      break
+    }
+    default:
+      throw new Error('Unexpected transactionDataCase')
   }
   return transaction
 }
 
 // AccountSet Transactions
 const testTransactionAccountSetAllFields = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.ACCOUNT_SET,
   accountSetAllFields,
-  undefined,
 )
 const testTransactionAccountSetOneField = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.ACCOUNT_SET,
   accountSetOneFieldSet,
-  undefined,
 )
 const testTransactionAccountSetEmpty = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.ACCOUNT_SET,
   accountSetEmpty,
-  undefined,
 )
 const testTransactionAccountSetSpecialCases = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.ACCOUNT_SET,
   accountSetSpecialCases,
-  undefined,
 )
 
 // Payment Transactions
 const testTransactionPaymentMandatoryFields = buildStandardTestTransaction(
-  undefined,
+  Transaction.TransactionDataCase.PAYMENT,
   paymentMandatoryFields,
 )
 const testTransactionPaymentMandatoryFieldsIssuedCurrency = buildStandardTestTransaction(
-  undefined,
+  Transaction.TransactionDataCase.PAYMENT,
   paymentMandatoryFieldsIssuedCurrency,
 )
 const testTransactionPaymentAllFields = buildStandardTestTransaction(
-  undefined,
+  Transaction.TransactionDataCase.PAYMENT,
   paymentAllFields,
 )
 testTransactionPaymentAllFields.addMemos(memo)
 testTransactionPaymentAllFields.setLastLedgerSequence(lastLedgerSequence)
 testTransactionPaymentAllFields.setSourceTag(sourceTag)
+
+// TrustSet Transactions
+const testTransactionTrustSetMandatoryFields = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.TRUST_SET,
+  trustSetMandatoryFields,
+)
+
+const testTransactionTrustSetAllFields = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.TRUST_SET,
+  trustSetAllFields,
+)
+
+const testTransactionTrustSetSpecialCases = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.TRUST_SET,
+  trustSetSpecial,
+)
 
 // INVALID OBJECTS =============================================
 
@@ -363,17 +438,22 @@ const testInvalidPaymentNoSendMax = new Payment()
 testInvalidPaymentNoSendMax.setAmount(amountIssuedCurrency)
 testInvalidPaymentNoSendMax.setDestination(destination)
 
+// Invalid TrustSets
+const testInvalidTrustSetNoLimitAmount = new TrustSet()
+
 // Invalid Transactions
+
+// Invalid Payment Transactions
 const testInvalidTransactionPaymentNoAmount = buildStandardTestTransaction(
-  undefined,
+  Transaction.TransactionDataCase.PAYMENT,
   testInvalidPaymentNoAmount,
 )
 const testInvalidTransactionPaymentNoDestination = buildStandardTestTransaction(
-  undefined,
+  Transaction.TransactionDataCase.PAYMENT,
   testInvalidPaymentNoDestination,
 )
 const testInvalidTransactionPaymentBadDestination = buildStandardTestTransaction(
-  undefined,
+  Transaction.TransactionDataCase.PAYMENT,
   testInvalidPaymentBadDestination,
 )
 
@@ -392,19 +472,29 @@ testInvalidTransactionPaymentNoPayment.setAccount(accountProto)
 testInvalidTransactionPaymentNoPayment.setFee(transactionFeeProto)
 testInvalidTransactionPaymentNoPayment.setSequence(sequenceProto)
 
+// Invalid TrustSet Transactions
+const testInvalidTransactionTrustSetNoLimitAmount = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.TRUST_SET,
+  testInvalidTrustSetNoLimitAmount,
+)
+
 export {
   fakeSignature,
+  testTransactionAccountSetAllFields,
+  testTransactionAccountSetOneField,
+  testTransactionAccountSetEmpty,
+  testTransactionAccountSetSpecialCases,
   testTransactionPaymentMandatoryFields,
   testTransactionPaymentMandatoryFieldsIssuedCurrency,
   testTransactionPaymentAllFields,
+  testTransactionTrustSetMandatoryFields,
+  testTransactionTrustSetAllFields,
+  testTransactionTrustSetSpecialCases,
   testInvalidTransactionPaymentNoAmount,
   testInvalidTransactionPaymentNoDestination,
   testInvalidTransactionPaymentBadDestination,
   testInvalidTransactionPaymentNoAccount,
   testInvalidTransactionPaymentNoFee,
   testInvalidTransactionPaymentNoPayment,
-  testTransactionAccountSetAllFields,
-  testTransactionAccountSetOneField,
-  testTransactionAccountSetEmpty,
-  testTransactionAccountSetSpecialCases,
+  testInvalidTransactionTrustSetNoLimitAmount,
 }
