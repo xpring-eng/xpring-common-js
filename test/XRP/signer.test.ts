@@ -10,7 +10,6 @@ import Serializer, { TransactionJSON } from '../../src/XRP/serializer'
 import Signer from '../../src/XRP/signer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
-import FakeWallet from './fakes/fake-wallet'
 import {
   fakeSignature,
   testTransactionAccountSetAllFields,
@@ -30,7 +29,8 @@ import {
   testInvalidTransactionPaymentNoFee,
   testInvalidTransactionPaymentNoPayment,
   testInvalidTransactionTrustSetNoLimitAmount,
-} from './fakes/fake-xrp-protobufs'
+} from './fakes/fake-protobufs'
+import FakeWallet from './fakes/fake-wallet'
 
 describe('Signer', function (): void {
   // Payment Transactions
