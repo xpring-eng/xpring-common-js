@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### [6.2.4] - 2020-10-12
+
+- TrustSet transaction types are now properly serialized.
+
 ### [6.2.3] - 2020-10-02
 
 This minor release contains updated version of dependencies for security and stability.
