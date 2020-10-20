@@ -22,6 +22,7 @@ import {
   testTransactionTrustSetMandatoryFields,
   testTransactionTrustSetAllFields,
   testTransactionTrustSetSpecialCases,
+  testTransactionTrustSetFlagSet,
   testInvalidTransactionPaymentNoAmount,
   testInvalidTransactionPaymentNoDestination,
   testInvalidTransactionPaymentBadDestination,
@@ -449,5 +450,33 @@ describe('Signer', function (): void {
 
     // THEN the signing artifacts are undefined.
     assert.isUndefined(signedTransaction)
+  })
+
+  it.only('Sign TrustSet transaction with flag set', function (): void {
+    // GIVEN a TrustSet transaction with mandatory fields, a wallet and expected signing artifacts.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // Encode transaction with the expected signature.
+    const expectedSignedTransactionJSON = Serializer.transactionToJSON(
+      testTransactionTrustSetFlagSet,
+      fakeSignature,
+    )
+
+    const expectedSignedTransactionHex = rippleCodec.encode(
+      expectedSignedTransactionJSON,
+    )
+    const expectedSignedTransaction = Utils.toBytes(
+      expectedSignedTransactionHex,
+    )
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testTransactionTrustSetFlagSet,
+      wallet,
+    )
+
+    // THEN the signing artifacts are as expected.
+    assert.exists(signedTransaction)
+    assert.deepEqual(signedTransaction, expectedSignedTransaction)
   })
 })

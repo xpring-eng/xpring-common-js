@@ -30,6 +30,7 @@ import {
   LimitAmount,
   QualityIn,
   QualityOut,
+  Flags,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -421,6 +422,16 @@ const testTransactionTrustSetSpecialCases = buildStandardTestTransaction(
   trustSetSpecial,
 )
 
+const testTransactionTrustSetFlagSet = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.TRUST_SET,
+  trustSetMandatoryFields,
+)
+
+const trustSetFlags = new Flags()
+trustSetFlags.setValue(65536)
+
+testTransactionTrustSetFlagSet.setFlags(trustSetFlags)
+
 // INVALID OBJECTS =============================================
 
 // Invalid Payments
@@ -490,6 +501,7 @@ export {
   testTransactionTrustSetMandatoryFields,
   testTransactionTrustSetAllFields,
   testTransactionTrustSetSpecialCases,
+  testTransactionTrustSetFlagSet,
   testInvalidTransactionPaymentNoAmount,
   testInvalidTransactionPaymentNoDestination,
   testInvalidTransactionPaymentBadDestination,
