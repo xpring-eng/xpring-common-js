@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@fintechstudios/eslint-plugin-chai-as-promised": "^3.0.2",
-    "@types/chai": "4.2.13",
+    "@types/chai": "4.2.14",
     "@types/google-protobuf": "^3.7.2",
     "@types/mocha": "8.0.3",
     "@types/node": "^14.0.4",
