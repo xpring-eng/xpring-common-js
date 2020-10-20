@@ -30,7 +30,6 @@ import {
   LimitAmount,
   QualityIn,
   QualityOut,
-  Flags,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,

@@ -2712,7 +2712,7 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized, expectedJSON)
   })
 
-  it.only('serializes a TrustSet transaction with flags set', function (): void {
+  it('serializes a TrustSet transaction with flags set', function (): void {
     // GIVEN a transaction which represents the creation of a trust line linking two accounts.
     const currency = 'USD'
     const currencyIssuer = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
@@ -2728,6 +2728,9 @@ describe('serializer', function (): void {
       accountClassicAddress,
       publicKeyHex,
     )
+    const flags = new Flags()
+    flags.setValue(flagsValue)
+    transaction.setFlags(flags)
 
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction)
