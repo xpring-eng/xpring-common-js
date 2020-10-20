@@ -2713,7 +2713,7 @@ describe('serializer', function (): void {
   })
 
   it('serializes a TrustSet transaction with flags set', function (): void {
-    // GIVEN a transaction which represents the creation of a trust line linking two accounts.
+    // GIVEN a transaction which represents the creation of a trust line linking two accounts, with flags.
     const currency = 'USD'
     const currencyIssuer = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
     const transaction = xrpTestUtils.makeTrustSetTransaction(
