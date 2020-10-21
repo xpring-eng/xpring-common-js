@@ -63,7 +63,6 @@ import {
   QualityOut,
   LimitAmount,
   SignerEntry,
-  Flags,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Memo,
@@ -2690,6 +2689,7 @@ describe('serializer', function (): void {
       sequenceValue,
       accountClassicAddress,
       publicKeyHex,
+      undefined,
     )
 
     // WHEN the transaction is serialized to JSON.
@@ -2727,10 +2727,8 @@ describe('serializer', function (): void {
       sequenceValue,
       accountClassicAddress,
       publicKeyHex,
+      flagsValue,
     )
-    const flags = new Flags()
-    flags.setValue(flagsValue)
-    transaction.setFlags(flags)
 
     // WHEN the transaction is serialized to JSON.
     const serialized = Serializer.transactionToJSON(transaction)
@@ -2766,6 +2764,7 @@ describe('serializer', function (): void {
       sequenceValue,
       accountClassicAddress,
       publicKeyHex,
+      undefined,
     )
 
     // WHEN the transaction is serialized to JSON.
