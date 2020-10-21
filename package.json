@@ -26,12 +26,12 @@
     "google-protobuf": "3.13.0",
     "grpc-web": "1.2.1",
     "ripple-address-codec": "4.1.1",
-    "ripple-binary-codec": "1.0.1",
+    "ripple-binary-codec": "1.0.2",
     "ripple-keypairs": "^1.0.0"
   },
   "devDependencies": {
     "@fintechstudios/eslint-plugin-chai-as-promised": "^3.0.2",
-    "@types/chai": "4.2.13",
+    "@types/chai": "4.2.14",
     "@types/google-protobuf": "^3.7.2",
     "@types/mocha": "8.0.3",
     "@types/node": "^14.0.4",

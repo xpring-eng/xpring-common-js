@@ -27,6 +27,7 @@ import {
   LimitAmount,
   QualityIn,
   QualityOut,
+  Flags,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   Payment,
@@ -84,6 +85,7 @@ const xrpTestUtils = {
       sequenceNumber,
       senderAddress,
       publicKey,
+      undefined,
     )
     transaction.setPayment(payment)
 
@@ -140,6 +142,7 @@ const xrpTestUtils = {
       sequenceNumber,
       senderAddress,
       publicKey,
+      undefined,
     )
     transaction.setDepositPreauth(depositPreauth)
 
@@ -192,6 +195,7 @@ const xrpTestUtils = {
       sequenceNumber,
       senderAddress,
       publicKey,
+      undefined,
     )
     transaction.setAccountSet(accountSet)
 
@@ -280,6 +284,7 @@ const xrpTestUtils = {
    * @param sequenceNumber - The sequence number for the sending account.
    * @param senderAddress - The address of the sending account.
    * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
+   * @param flags - The flags to set on the transaction.
    * @returns A new `Transaction` object comprised of the provided properties.
    */
   makeTrustSetTransaction(
@@ -293,6 +298,7 @@ const xrpTestUtils = {
     sequenceNumber: number,
     senderAddress: string | undefined,
     publicKey: string,
+    flags: number | undefined,
   ): Transaction {
     const trustSet = this.makeTrustSet(
       limitAmountCurrency,
@@ -307,6 +313,7 @@ const xrpTestUtils = {
       sequenceNumber,
       senderAddress,
       publicKey,
+      flags,
     )
     transaction.setTrustSet(trustSet)
 
@@ -374,6 +381,7 @@ const xrpTestUtils = {
    * @param sequenceNumber - The sequence number for the sending account.
    * @param senderAddress - The address of the sending account.
    * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
+   * @param flags - The flags set on the transaction.
    *
    * @returns A transaction with common fields set.
    */
@@ -383,6 +391,7 @@ const xrpTestUtils = {
     sequenceNumber: number,
     senderAddress: string | undefined,
     publicKey: string,
+    flags: number | undefined,
   ): Transaction {
     const transactionFee = new XRPDropsAmount()
     transactionFee.setDrops(fee)
@@ -411,6 +420,12 @@ const xrpTestUtils = {
       senderAccount.setValue(senderAccountAddress)
 
       transaction.setAccount(senderAccount)
+    }
+
+    if (flags !== undefined) {
+      const transactionFlags = new Flags()
+      transactionFlags.setValue(flags)
+      transaction.setFlags(transactionFlags)
     }
 
     return transaction
