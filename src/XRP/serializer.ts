@@ -92,6 +92,7 @@ interface BaseTransactionJSON {
   SigningPubKey: string
   TxnSignature?: string
   Memos?: MemoJSON[]
+  Flags?: FlagsJSON
 }
 
 /**
@@ -251,6 +252,7 @@ type TransactionDataJSON =
   | PaymentChannelCreateJSON
   | PaymentChannelFundJSON
   | SetRegularKeyJSON
+  | TrustSetJSON
 
 /**
  * Individual Transaction Types.
@@ -275,6 +277,7 @@ type PaymentChannelCreateTransactionJSON = BaseTransactionJSON &
 type PaymentChannelFundTransactionJSON = BaseTransactionJSON &
   PaymentChannelFundJSON
 type SetRegularKeyTransactionJSON = BaseTransactionJSON & SetRegularKeyJSON
+type TrustSetTransactionJSON = BaseTransactionJSON & TrustSetJSON
 
 /**
  * All Transactions.
@@ -297,6 +300,7 @@ export type TransactionJSON =
   | PaymentChannelClaimTransactionJSON
   | PaymentChannelFundTransactionJSON
   | SetRegularKeyTransactionJSON
+  | TrustSetTransactionJSON
 
 /**
  * Types for serialized sub-objects.
@@ -377,6 +381,7 @@ type SignerWeightJSON = number
 type QualityInJSON = number
 type QualityOutJSON = number
 type LimitAmountJSON = CurrencyAmountJSON
+type FlagsJSON = number
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -439,6 +444,11 @@ const serializer = {
     const memoList = transaction.getMemosList()
     if (memoList.length > 0) {
       object.Memos = this.memoListToJSON(memoList)
+    }
+
+    const flags = transaction.getFlags()
+    if (flags) {
+      object.Flags = flags.getValue()
     }
 
     const additionalTransactionData = getAdditionalTransactionData(transaction)
@@ -1965,7 +1975,13 @@ function getAdditionalTransactionData(
 
       return serializer.paymentToJSON(payment)
     }
-
+    case Transaction.TransactionDataCase.TRUST_SET: {
+      const trustSet = transaction.getTrustSet()
+      if (trustSet === undefined) {
+        return undefined
+      }
+      return serializer.trustSetToJSON(trustSet)
+    }
     default:
       throw new Error('Unexpected transactionDataCase')
   }
