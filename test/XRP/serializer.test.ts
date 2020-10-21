@@ -128,6 +128,7 @@ const dataForMemo = Utils.toBytes('I forgot to pick up Carl...')
 const typeForMemo = Utils.toBytes('meme')
 const formatForMemo = Utils.toBytes('jaypeg')
 const offerSequenceNumber = 1234
+const flagsValue = 65536
 
 const testAccountAddress = xrpTestUtils.makeAccountAddress(
   destinationClassicAddress,
@@ -2688,6 +2689,7 @@ describe('serializer', function (): void {
       sequenceValue,
       accountClassicAddress,
       publicKeyHex,
+      undefined,
     )
 
     // WHEN the transaction is serialized to JSON.
@@ -2710,6 +2712,45 @@ describe('serializer', function (): void {
     assert.deepEqual(serialized, expectedJSON)
   })
 
+  it('serializes a TrustSet transaction with flags set', function (): void {
+    // GIVEN a transaction which represents the creation of a trust line linking two accounts, with flags.
+    const currency = 'USD'
+    const currencyIssuer = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
+    const transaction = xrpTestUtils.makeTrustSetTransaction(
+      currency,
+      currencyIssuer,
+      value,
+      undefined,
+      undefined,
+      fee,
+      lastLedgerSequenceValue,
+      sequenceValue,
+      accountClassicAddress,
+      publicKeyHex,
+      flagsValue,
+    )
+
+    // WHEN the transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction)
+
+    // THEN the result is as expected.
+    const expectedJSON: TransactionJSON = {
+      Account: accountClassicAddress,
+      Fee: fee.toString(),
+      LastLedgerSequence: lastLedgerSequenceValue,
+      LimitAmount: {
+        currency,
+        issuer: currencyIssuer,
+        value,
+      },
+      Sequence: sequenceValue,
+      TransactionType: 'TrustSet',
+      SigningPubKey: publicKeyHex,
+      Flags: flagsValue,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
   it('serializes a faulty TrustSet transaction', function (): void {
     // GIVEN a bad transaction which represents the creation of a trust line linking two accounts.
     const transaction = xrpTestUtils.makeTrustSetTransaction(
@@ -2723,6 +2764,7 @@ describe('serializer', function (): void {
       sequenceValue,
       accountClassicAddress,
       publicKeyHex,
+      undefined,
     )
 
     // WHEN the transaction is serialized to JSON.
