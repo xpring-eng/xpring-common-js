@@ -1,6 +1,6 @@
 {
   "name": "xpring-common-js",
-  "version": "6.2.2",
+  "version": "6.2.4",
   "description": "Common JavaScript for use within the Xpring Platform",
   "repository": "https://github.com/xpring-eng/xpring-common-js.git",
   "license": "MIT",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@payid-org/utils": "^1.2.0",
-    "bip32": "2.0.5",
+    "bip32": "2.0.6",
     "bip39": "^3.0.2",
     "google-protobuf": "3.13.0",
     "grpc-web": "1.2.1",
@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@fintechstudios/eslint-plugin-chai-as-promised": "^3.0.2",
-    "@types/chai": "4.2.12",
+    "@types/chai": "4.2.14",
     "@types/google-protobuf": "^3.7.2",
     "@types/mocha": "8.0.3",
     "@types/node": "^14.0.4",
