@@ -92,6 +92,7 @@ interface BaseTransactionJSON {
   SigningPubKey: string
   TxnSignature?: string
   Memos?: MemoJSON[]
+  Flags?: FlagsJSON
 }
 
 /**
@@ -380,6 +381,7 @@ type SignerWeightJSON = number
 type QualityInJSON = number
 type QualityOutJSON = number
 type LimitAmountJSON = CurrencyAmountJSON
+type FlagsJSON = number
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -442,6 +444,11 @@ const serializer = {
     const memoList = transaction.getMemosList()
     if (memoList.length > 0) {
       object.Memos = this.memoListToJSON(memoList)
+    }
+
+    const flags = transaction.getFlags()
+    if (flags) {
+      object.Flags = flags.getValue()
     }
 
     const additionalTransactionData = getAdditionalTransactionData(transaction)
