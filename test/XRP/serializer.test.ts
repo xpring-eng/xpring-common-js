@@ -1,6 +1,9 @@
+/* eslint-disable max-statements --
+ * Allow many statements per test function.
+ */
 /* eslint-disable  max-lines --
  * Allow many lines of tests.
- * TODO(keefertaylor): Remove this if hbergren@ agrees to disable this rule for tests globally.
+ * TODO(amiecorso): Remove these if hbergren@ agrees to disable this rule for tests globally.
  */
 
 import 'mocha'
@@ -11,7 +14,6 @@ import Utils from '../../src/Common/utils'
 import { AccountAddress } from '../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
 import {
   CurrencyAmount,
-  XRPDropsAmount,
   Currency,
   IssuedCurrencyAmount,
 } from '../../src/XRP/generated/org/xrpl/rpc/v1/amount_pb'
@@ -65,9 +67,7 @@ import {
 import {
   Memo,
   Payment,
-  Transaction,
   DepositPreauth,
-  AccountSet,
   AccountDelete,
   CheckCancel,
   CheckCash,
@@ -107,6 +107,8 @@ import Serializer, {
 } from '../../src/XRP/serializer'
 import XrpUtils from '../../src/XRP/xrp-utils'
 
+import xrpTestUtils from './helpers/xrp-test-utils'
+
 /** Constants for transactions. */
 const value = '1000'
 const destinationClassicAddress = 'rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh'
@@ -126,396 +128,16 @@ const dataForMemo = Utils.toBytes('I forgot to pick up Carl...')
 const typeForMemo = Utils.toBytes('meme')
 const formatForMemo = Utils.toBytes('jaypeg')
 const offerSequenceNumber = 1234
+const flagsValue = 65536
 
-const testAccountAddress = makeAccountAddress(destinationClassicAddress)
-
-// TODO(keefertaylor): Helper functions are becoming unweildy. Refactor to an external helper file.
-
-/* eslint-disable no-shadow, max-params --
- * The values we are shadowing are only used as inputs for this function,
- * and it's fine to have a ton of parameters because this function is only used for testing purposes.
- */
-/**
- * Create a new `Transaction` object with the given inputs.
- *
- * @param value - The amount of XRP to send, in drops.
- * @param destinationAddress - The destination address.
- * @param fee - The amount of XRP to use as a fee, in drops.
- * @param lastLedgerSequenceNumber - The last ledger sequence the transaction will be valid in.
- * @param sequenceNumber - The sequence number for the sending account.
- * @param senderAddress - The address of the sending account.
- * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
- *
- * @returns A new `Transaction` object comprised of the provided Transaction properties.
- */
-function makePaymentTransaction(
-  value: string,
-  destinationAddress: string,
-  fee: string,
-  lastLedgerSequenceNumber: number,
-  sequenceNumber: number,
-  senderAddress: string | undefined,
-  publicKey: string,
-): Transaction {
-  const paymentAmount = new XRPDropsAmount()
-  paymentAmount.setDrops(value)
-
-  const currencyAmount = new CurrencyAmount()
-  currencyAmount.setXrpAmount(paymentAmount)
-
-  const amount = new Amount()
-  amount.setValue(currencyAmount)
-
-  const destinationAccountAddress = new AccountAddress()
-  destinationAccountAddress.setAddress(destinationAddress)
-
-  const destination = new Destination()
-  destination.setValue(destinationAccountAddress)
-
-  const payment = new Payment()
-  payment.setDestination(destination)
-  payment.setAmount(amount)
-
-  const transaction = makeBaseTransaction(
-    fee,
-    lastLedgerSequenceNumber,
-    sequenceNumber,
-    senderAddress,
-    publicKey,
-  )
-  transaction.setPayment(payment)
-
-  return transaction
-}
-
-/**
- * Create a new `DepositPreauth` object with the given inputs.
- *
- * Note: Either the `authorizeAddress` or `unauthorizeAddress`, but not both, must be set to get a
- * valid output. This precondition is not enforced by the function.
- *
- * @param authorizeAddress - The address to authorize.
- * @param unauthorizeAddress - The address to unauthorize.
- * @param fee - The amount of XRP to use as a fee, in drops.
- * @param lastLedgerSequenceNumber - The last ledger sequence the transaction will be valid in.
- * @param sequenceNumber - The sequence number for the sending account.
- * @param senderAddress - The address of the sending account.
- * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
- *
- * @returns A new `Transaction` object comprised of the provided properties.
- */
-function makeDepositPreauth(
-  authorizeAddress: string | undefined,
-  unauthorizeAddress: string | undefined,
-  fee: string,
-  lastLedgerSequenceNumber: number,
-  sequenceNumber: number,
-  senderAddress: string | undefined,
-  publicKey: string,
-): Transaction {
-  const depositPreauth = new DepositPreauth()
-  if (authorizeAddress) {
-    const accountAddress = new AccountAddress()
-    accountAddress.setAddress(authorizeAddress)
-
-    const authorize = new Authorize()
-    authorize.setValue(accountAddress)
-
-    depositPreauth.setAuthorize(authorize)
-  } else if (unauthorizeAddress) {
-    const accountAddress = new AccountAddress()
-    accountAddress.setAddress(unauthorizeAddress)
-
-    const unauthorize = new Unauthorize()
-    unauthorize.setValue(accountAddress)
-
-    depositPreauth.setUnauthorize(unauthorize)
-  }
-
-  const transaction = makeBaseTransaction(
-    fee,
-    lastLedgerSequenceNumber,
-    sequenceNumber,
-    senderAddress,
-    publicKey,
-  )
-  transaction.setDepositPreauth(depositPreauth)
-
-  return transaction
-}
-
-/**
- * Make a Transaction representing an AccountSet operation.
- *
- * @param clearFlagValue - The ClearFlag value to use for the AccountSet.
- * @param domainValue - The Domain value to use for the AccountSet.
- * @param emailHashValue - The EmailHash value to use for the AccountSet.
- * @param messageKeyValue - The MesssageKey value to use for AccountSet.
- * @param setFlagValue - The SetFlag value to use for the AccountSet.
- * @param transferRateValue - The TransferRate value to use for the Accountset.
- * @param tickSizeValue - The TickSize value to use for the AccountSet.
- * @param fee - The amount of XRP to use as a fee, in drops.
- * @param lastLedgerSequenceNumber - The last ledger sequence the transaction will be valid in.
- * @param sequenceNumber - The sequence number for the sending account.
- * @param senderAddress - The address of the sending account.
- * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
- * @returns A new `Transaction` object comprised of the provided properties.
- */
-function makeAccountSetTransaction(
-  clearFlagValue: number | undefined,
-  domainValue: string | undefined,
-  emailHashValue: Uint8Array | undefined,
-  messageKeyValue: Uint8Array | undefined,
-  setFlagValue: number | undefined,
-  transferRateValue: number | undefined,
-  tickSizeValue: number | undefined,
-  fee: string,
-  lastLedgerSequenceNumber: number,
-  sequenceNumber: number,
-  senderAddress: string | undefined,
-  publicKey: string,
-): Transaction {
-  const accountSet = makeAccountSet(
-    clearFlagValue,
-    domainValue,
-    emailHashValue,
-    messageKeyValue,
-    setFlagValue,
-    transferRateValue,
-    tickSizeValue,
-  )
-  const transaction = makeBaseTransaction(
-    fee,
-    lastLedgerSequenceNumber,
-    sequenceNumber,
-    senderAddress,
-    publicKey,
-  )
-  transaction.setAccountSet(accountSet)
-
-  return transaction
-}
-
-/**
- * Make an AccountSet protocol buffer from the given inputs.
- *
- * @param clearFlagValue - The ClearFlag value to use for the AccountSet.
- * @param domainValue - The Domain value to use for the AccountSet.
- * @param emailHashValue - The EmailHash value to use for the AccountSet.
- * @param messageKeyValue - The MesssageKey value to use for AccountSet.
- * @param setFlagValue - The SetFlag value to use for the AccountSet.
- * @param transferRateValue - The TransferRate value to use for the Accountset.
- * @param tickSizeValue - The TickSize value to use for the AccountSet.
- * @returns An AccountSet protocol buffer from the given inputs.
- */
-function makeAccountSet(
-  clearFlagValue: number | undefined,
-  domainValue: string | undefined,
-  emailHashValue: Uint8Array | undefined,
-  messageKeyValue: Uint8Array | undefined,
-  setFlagValue: number | undefined,
-  transferRateValue: number | undefined,
-  tickSizeValue: number | undefined,
-): AccountSet {
-  const accountSet = new AccountSet()
-  accountSet.setClearFlag()
-
-  if (clearFlagValue !== undefined) {
-    const clearFlag = new ClearFlag()
-    clearFlag.setValue(clearFlagValue)
-    accountSet.setClearFlag(clearFlag)
-  }
-
-  if (domainValue !== undefined) {
-    const domain = new Domain()
-    domain.setValue(domainValue)
-    accountSet.setDomain(domain)
-  }
-
-  if (emailHashValue !== undefined) {
-    const emailHash = new EmailHash()
-    emailHash.setValue(emailHashValue)
-    accountSet.setEmailHash(emailHash)
-  }
-
-  if (messageKeyValue !== undefined) {
-    const messageKey = new MessageKey()
-    messageKey.setValue(messageKeyValue)
-    accountSet.setMessageKey(messageKey)
-  }
-
-  if (setFlagValue !== undefined) {
-    const setFlag = new SetFlag()
-    setFlag.setValue(setFlagValue)
-    accountSet.setSetFlag(setFlag)
-  }
-
-  if (transferRateValue !== undefined) {
-    const transferRate = new TransferRate()
-    transferRate.setValue(transferRateValue)
-    accountSet.setTransferRate(transferRate)
-  }
-
-  if (tickSizeValue !== undefined) {
-    const tickSize = new TickSize()
-    tickSize.setValue(tickSizeValue)
-    accountSet.setTickSize(tickSize)
-  }
-
-  return accountSet
-}
-
-/**
- * Make a transaction protocol buffer containing all the common fields.
- *
- * @param fee - The amount of XRP to use as a fee, in drops.
- * @param lastLedgerSequenceNumber - The last ledger sequence the transaction will be valid in.
- * @param sequenceNumber - The sequence number for the sending account.
- * @param senderAddress - The address of the sending account.
- * @param publicKey - The public key of the sending account, encoded as a hexadecimal string.
- *
- * @returns A transaction with common fields set.
- */
-function makeBaseTransaction(
-  fee: string,
-  lastLedgerSequenceNumber: number,
-  sequenceNumber: number,
-  senderAddress: string | undefined,
-  publicKey: string,
-): Transaction {
-  const transactionFee = new XRPDropsAmount()
-  transactionFee.setDrops(fee)
-
-  const sequence = new Sequence()
-  sequence.setValue(sequenceNumber)
-
-  const lastLedgerSequence = new Sequence()
-  lastLedgerSequence.setValue(lastLedgerSequenceNumber)
-
-  const signingPublicKey = new SigningPublicKey()
-  signingPublicKey.setValue(Utils.toBytes(publicKey))
-
-  const transaction = new Transaction()
-  transaction.setFee(transactionFee)
-  transaction.setSequence(sequence)
-  transaction.setSigningPublicKey(signingPublicKey)
-  transaction.setLastLedgerSequence(lastLedgerSequence)
-
-  // Account is an optional input so that malformed transaction serialization can be tested.
-  if (senderAddress) {
-    const senderAccountAddress = new AccountAddress()
-    senderAccountAddress.setAddress(senderAddress)
-
-    const senderAccount = new Account()
-    senderAccount.setValue(senderAccountAddress)
-
-    transaction.setAccount(senderAccount)
-  }
-
-  return transaction
-}
-/* eslint-enable no-shadow, max-params */
-
-/**
- * Make a PathElement.
- *
- * Note: A valid path element should have either an account OR a currency and issuer but never both.
- *
- * @param account - The account to ripple through. Must not be provided if currency and issuer are provided.
- * @param currencyCode - The currency code of the new currency on the path. Must not be provided if account is provided.
- * @param issuer - The issuer of the new currency. Must not be provided if account is provided.
- * @returns A PathElement with the given properties.
- */
-function makePathElement(
-  account: AccountAddress | undefined,
-  currencyCode: Uint8Array | undefined,
-  issuer: AccountAddress | undefined,
-) {
-  const pathElement = new Payment.PathElement()
-
-  if (account !== undefined) {
-    pathElement.setAccount(account)
-  }
-
-  if (currencyCode !== undefined) {
-    const currency = new Currency()
-    currency.setCode(currencyCode)
-    pathElement.setCurrency(currency)
-  }
-
-  if (issuer !== undefined) {
-    pathElement.setIssuer(issuer)
-  }
-
-  return pathElement
-}
-
-/**
- * Make an XRPDropsAmount.
- *
- * @param drops - A numeric string representing the number of drops.
- * @returns A new XRPDropsAmount.
- */
-function makeXrpDropsAmount(drops: string) {
-  const xrpDropsAmount = new XRPDropsAmount()
-  xrpDropsAmount.setDrops(drops)
-
-  return xrpDropsAmount
-}
-
-/**
- * Make an IssuedCurrencyAmount.
- *
- * @param accountAddress - The account address.
- * @param issuedCurrencyValue - The value.
- * @param currency - The currency.
- * @returns A new IssuedCurrencyAmount.
- */
-function makeIssuedCurrencyAmount(
-  accountAddress: AccountAddress,
-  issuedCurrencyValue: string,
-  currency: Currency,
-) {
-  const issuedCurrency = new IssuedCurrencyAmount()
-  issuedCurrency.setIssuer(accountAddress)
-  issuedCurrency.setValue(issuedCurrencyValue)
-  issuedCurrency.setCurrency(currency)
-
-  return issuedCurrency
-}
-
-/**
- * Returns a CurrencyAmount representing drops of XRP.
- *
- * @param drops - The number of drops to represent.
- * @returns A CurrencyAmount representing the input.
- */
-function makeXrpCurrencyAmount(drops: string): CurrencyAmount {
-  const xrpDropsAmount = makeXrpDropsAmount(drops)
-
-  const currencyAmount = new CurrencyAmount()
-  currencyAmount.setXrpAmount(xrpDropsAmount)
-
-  return currencyAmount
-}
-
-/**
- * Returns a new account address.
- *
- * @param address - The address to wrap.
- * @returns The requested object.
- */
-function makeAccountAddress(address: string): AccountAddress {
-  const accountAddress = new AccountAddress()
-  accountAddress.setAddress(address)
-
-  return accountAddress
-}
+const testAccountAddress = xrpTestUtils.makeAccountAddress(
+  destinationClassicAddress,
+)
 
 describe('serializer', function (): void {
   it('serializes a payment in XRP from a classic address', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
-    const transaction = makePaymentTransaction(
+    const transaction = xrpTestUtils.makePaymentTransaction(
       value,
       destinationClassicAddress,
       fee,
@@ -544,7 +166,7 @@ describe('serializer', function (): void {
 
   it('serializes a payment in XRP from an X-Address with no tag', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
-    const transaction = makePaymentTransaction(
+    const transaction = xrpTestUtils.makePaymentTransaction(
       value,
       destinationClassicAddress,
       fee,
@@ -574,7 +196,7 @@ describe('serializer', function (): void {
   it('fails to serializes a payment in XRP from an X-Address with a tag', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP from a sender with a tag.
     const account = XrpUtils.encodeXAddress(accountClassicAddress, tag)
-    const transaction = makePaymentTransaction(
+    const transaction = xrpTestUtils.makePaymentTransaction(
       value,
       destinationClassicAddress,
       fee,
@@ -593,7 +215,7 @@ describe('serializer', function (): void {
 
   it('fails to serializes a payment in XRP when account is undefined', function (): void {
     // GIVEN a transaction which represents a payment denominated in XRP.
-    const transaction = makePaymentTransaction(
+    const transaction = xrpTestUtils.makePaymentTransaction(
       value,
       destinationClassicAddress,
       fee,
@@ -612,7 +234,7 @@ describe('serializer', function (): void {
 
   it('serializes a payment to an X-address with a tag in XRP', function (): void {
     // GIVEN a transaction which represents a payment to a destination and tag, denominated in XRP.
-    const transaction = makePaymentTransaction(
+    const transaction = xrpTestUtils.makePaymentTransaction(
       value,
       destinationXAddressWithTag,
       fee,
@@ -641,7 +263,7 @@ describe('serializer', function (): void {
 
   it('serializes a payment to an X-address without a tag in XRP', function (): void {
     // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP.
-    const transaction = makePaymentTransaction(
+    const transaction = xrpTestUtils.makePaymentTransaction(
       value,
       destinationXAddressWithoutTag,
       fee,
@@ -671,7 +293,7 @@ describe('serializer', function (): void {
   it('serializes a payment with a memo', function (): void {
     // GIVEN a transaction which represents a payment to a destination without a tag, denominated in XRP, with a dank
     // meme for a memo
-    const transaction = makePaymentTransaction(
+    const transaction = xrpTestUtils.makePaymentTransaction(
       value,
       destinationXAddressWithoutTag,
       fee,
@@ -718,10 +340,6 @@ describe('serializer', function (): void {
       ],
     }
     assert.deepEqual(serialized, expectedJSON)
-  })
-
-  it('serializes empty or blank memo arrays or objects to undefined', function (): void {
-    assert.isUndefined(Serializer.memosToJSON([]))
   })
 
   it('serializes both memos with empty fields and complete fields correctly', function (): void {
@@ -823,7 +441,7 @@ describe('serializer', function (): void {
   it('serializes a transaction representing a well formed DepositPreAuth', function (): void {
     // GIVEN a transaction representing a well formed DepositPreauth.
     const address = 'rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh'
-    const transaction = makeDepositPreauth(
+    const transaction = xrpTestUtils.makeDepositPreauth(
       address,
       undefined,
       fee,
@@ -840,7 +458,7 @@ describe('serializer', function (): void {
   it('serializes a transaction representing a malformed DepositPreAuth', function (): void {
     // GIVEN a transaction representing a malformed DepositPreauth.
     // Neither `authorizeAddress` or `unauthorizeAddress` are defined which creates a malformed transaction.
-    const transaction = makeDepositPreauth(
+    const transaction = xrpTestUtils.makeDepositPreauth(
       undefined,
       undefined,
       fee,
@@ -856,7 +474,7 @@ describe('serializer', function (): void {
 
   it('serializes an AccountSet with no fields set', function (): void {
     // GIVEN an AccountSet with no fields set.
-    const accountSet = makeAccountSet(
+    const accountSet = xrpTestUtils.makeAccountSet(
       undefined,
       undefined,
       undefined,
@@ -888,7 +506,7 @@ describe('serializer', function (): void {
     const setFlagValue = 1
     const transferRateValue = 2
     const tickSizeValue = 3
-    const accountSet = makeAccountSet(
+    const accountSet = xrpTestUtils.makeAccountSet(
       clearFlagValue,
       domainValue,
       emailHashValue,
@@ -918,7 +536,7 @@ describe('serializer', function (): void {
 
   it('serializes an AccountSet Transaction', function (): void {
     // GIVEN an AccountSet with no fields set.
-    const transaction = makeAccountSetTransaction(
+    const transaction = xrpTestUtils.makeAccountSetTransaction(
       undefined,
       undefined,
       undefined,
@@ -939,7 +557,7 @@ describe('serializer', function (): void {
 
   it('serializes a PathElement with account', function (): void {
     // GIVEN a PathElement with an account set.
-    const pathElement = makePathElement(
+    const pathElement = xrpTestUtils.makePathElement(
       testAccountAddress,
       undefined,
       undefined,
@@ -959,7 +577,7 @@ describe('serializer', function (): void {
   it('serializes a PathElement with issued currency', function (): void {
     // GIVEN a PathElement with a currency code and an issuer.
     const currencyCode = new Uint8Array([0, 1, 2, 3])
-    const pathElement = makePathElement(
+    const pathElement = xrpTestUtils.makePathElement(
       undefined,
       currencyCode,
       testAccountAddress,
@@ -989,14 +607,14 @@ describe('serializer', function (): void {
 
   it('serializes a Path with multiple elements.', function (): void {
     // GIVEN a Path with two elements.
-    const pathElement1 = makePathElement(
+    const pathElement1 = xrpTestUtils.makePathElement(
       testAccountAddress,
       undefined,
       undefined,
     )
 
     const currencyCode = new Uint8Array([0, 1, 2, 3])
-    const pathElement2 = makePathElement(
+    const pathElement2 = xrpTestUtils.makePathElement(
       undefined,
       currencyCode,
       testAccountAddress,
@@ -1020,7 +638,7 @@ describe('serializer', function (): void {
     const currency = new Currency()
     currency.setName('USD')
 
-    const issuedCurrency = makeIssuedCurrencyAmount(
+    const issuedCurrency = xrpTestUtils.makeIssuedCurrencyAmount(
       testAccountAddress,
       value,
       currency,
@@ -1052,7 +670,7 @@ describe('serializer', function (): void {
     // GIVEN an IssuedCurrencyAmount with a malformed Currency.
     const currency = new Currency()
 
-    const issuedCurrency = makeIssuedCurrencyAmount(
+    const issuedCurrency = xrpTestUtils.makeIssuedCurrencyAmount(
       testAccountAddress,
       value,
       currency,
@@ -1282,7 +900,7 @@ describe('serializer', function (): void {
   it('Serializes a CurrencyAmount with an XRPDropsAmount', function (): void {
     // GIVEN an CurrencyAmount with an XRPDropsAmount.
     const dropsValue = '123'
-    const xrpDropsAmount = makeXrpDropsAmount(dropsValue)
+    const xrpDropsAmount = xrpTestUtils.makeXrpDropsAmount(dropsValue)
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpDropsAmount)
@@ -1299,7 +917,7 @@ describe('serializer', function (): void {
     const currency = new Currency()
     currency.setName('USD')
 
-    const issuedCurrencyAmount = makeIssuedCurrencyAmount(
+    const issuedCurrencyAmount = xrpTestUtils.makeIssuedCurrencyAmount(
       testAccountAddress,
       value,
       currency,
@@ -1385,7 +1003,7 @@ describe('serializer', function (): void {
   it('Serializes an Amount with a CurrencyAmount', function (): void {
     // GIVEN an Amount wrapping a CurrencyAmount.
     const dropsValue = '123'
-    const xrpDropsAmount = makeXrpDropsAmount(dropsValue)
+    const xrpDropsAmount = xrpTestUtils.makeXrpDropsAmount(dropsValue)
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpDropsAmount)
@@ -1470,7 +1088,7 @@ describe('serializer', function (): void {
 
   it('Serializes a DeliverMin', function (): void {
     // GIVEN a DeliverMin.
-    const xrpDropsAmount = makeXrpDropsAmount('10')
+    const xrpDropsAmount = xrpTestUtils.makeXrpDropsAmount('10')
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpDropsAmount)
@@ -1544,7 +1162,7 @@ describe('serializer', function (): void {
 
   it('Serializes a SendMax', function (): void {
     // GIVEN a SendMax.
-    const xrpDropsAmount = makeXrpDropsAmount('10')
+    const xrpDropsAmount = xrpTestUtils.makeXrpDropsAmount('10')
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpDropsAmount)
@@ -1657,7 +1275,7 @@ describe('serializer', function (): void {
     const currency = new Currency()
     currency.setCode('USD')
 
-    const issuedCurrencyAmount = makeIssuedCurrencyAmount(
+    const issuedCurrencyAmount = xrpTestUtils.makeIssuedCurrencyAmount(
       testAccountAddress,
       '123',
       currency,
@@ -1695,7 +1313,7 @@ describe('serializer', function (): void {
     const currency = new Currency()
     currency.setCode('USD')
 
-    const issuedCurrencyAmount = makeIssuedCurrencyAmount(
+    const issuedCurrencyAmount = xrpTestUtils.makeIssuedCurrencyAmount(
       testAccountAddress,
       '123',
       currency,
@@ -1867,7 +1485,7 @@ describe('serializer', function (): void {
 
   it('Serializes a Payment with only mandatory fields set', function (): void {
     // GIVEN a Payment with only mandatory fields.
-    const xrpAmount = makeXrpDropsAmount('10')
+    const xrpAmount = xrpTestUtils.makeXrpDropsAmount('10')
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpAmount)
@@ -1896,7 +1514,7 @@ describe('serializer', function (): void {
 
   it('Serializes a Payment with all fields set', function (): void {
     // GIVEN a Payment with all fields.
-    const transactionAmount = makeXrpCurrencyAmount('10')
+    const transactionAmount = xrpTestUtils.makeXrpCurrencyAmount('10')
 
     const amount = new Amount()
     amount.setValue(transactionAmount)
@@ -1910,35 +1528,35 @@ describe('serializer', function (): void {
     const invoiceId = new InvoiceID()
     invoiceId.setValue(new Uint8Array([1, 2, 3, 4]))
 
-    const deliverMinAmount = makeXrpCurrencyAmount('12')
+    const deliverMinAmount = xrpTestUtils.makeXrpCurrencyAmount('12')
 
     const deliverMin = new DeliverMin()
     deliverMin.setValue(deliverMinAmount)
 
-    const sendMaxAmount = makeXrpCurrencyAmount('13')
+    const sendMaxAmount = xrpTestUtils.makeXrpCurrencyAmount('13')
 
     const sendMax = new SendMax()
     sendMax.setValue(sendMaxAmount)
 
-    const path1Element1 = makePathElement(
-      makeAccountAddress('r1'),
+    const path1Element1 = xrpTestUtils.makePathElement(
+      xrpTestUtils.makeAccountAddress('r1'),
       new Uint8Array([1, 2, 3]),
-      makeAccountAddress('r2'),
+      xrpTestUtils.makeAccountAddress('r2'),
     )
-    const path1Element2 = makePathElement(
-      makeAccountAddress('r3'),
+    const path1Element2 = xrpTestUtils.makePathElement(
+      xrpTestUtils.makeAccountAddress('r3'),
       new Uint8Array([4, 5, 6]),
-      makeAccountAddress('r4'),
+      xrpTestUtils.makeAccountAddress('r4'),
     )
 
     const path1 = new Payment.Path()
     path1.addElements(path1Element1)
     path1.addElements(path1Element2)
 
-    const path2Element1 = makePathElement(
-      makeAccountAddress('r5'),
+    const path2Element1 = xrpTestUtils.makePathElement(
+      xrpTestUtils.makeAccountAddress('r5'),
       new Uint8Array([7, 8, 9]),
-      makeAccountAddress('r6'),
+      xrpTestUtils.makeAccountAddress('r6'),
     )
 
     const path2 = new Payment.Path()
@@ -2066,7 +1684,7 @@ describe('serializer', function (): void {
 
   it('Serializes a CheckCash with an Amount', function (): void {
     // GIVEN a CheckCash with an Amount
-    const xrpDropsAmount = makeXrpDropsAmount('10')
+    const xrpDropsAmount = xrpTestUtils.makeXrpDropsAmount('10')
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpDropsAmount)
@@ -2095,7 +1713,7 @@ describe('serializer', function (): void {
 
   it('Serializes a CheckCash with a DeliverMin', function (): void {
     // GIVEN a CheckCash with all fields set.
-    const xrpDropsAmount = makeXrpDropsAmount('10')
+    const xrpDropsAmount = xrpTestUtils.makeXrpDropsAmount('10')
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpDropsAmount)
@@ -2155,7 +1773,7 @@ describe('serializer', function (): void {
     const destination = new Destination()
     destination.setValue(testAccountAddress)
 
-    const xrpDropsAmount = makeXrpDropsAmount('10')
+    const xrpDropsAmount = xrpTestUtils.makeXrpDropsAmount('10')
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpDropsAmount)
 
@@ -2183,7 +1801,7 @@ describe('serializer', function (): void {
     const destination = new Destination()
     destination.setValue(testAccountAddress)
 
-    const xrpDropsAmount = makeXrpDropsAmount('10')
+    const xrpDropsAmount = xrpTestUtils.makeXrpDropsAmount('10')
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpDropsAmount)
 
@@ -2223,7 +1841,7 @@ describe('serializer', function (): void {
 
   it('Fails to Serialize a CheckCreate without a Destination', function (): void {
     // GIVEN a CheckCreate without a destination.
-    const xrpDropsAmount = makeXrpDropsAmount('10')
+    const xrpDropsAmount = xrpTestUtils.makeXrpDropsAmount('10')
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpDropsAmount)
 
@@ -2272,10 +1890,10 @@ describe('serializer', function (): void {
   it('Serializes an OfferCreate with only mandatory fields', function (): void {
     // GIVEN a OfferCreate with mandatory fields set.
     const takerPays = new TakerPays()
-    takerPays.setValue(makeXrpCurrencyAmount('1'))
+    takerPays.setValue(xrpTestUtils.makeXrpCurrencyAmount('1'))
 
     const takerGets = new TakerGets()
-    takerGets.setValue(makeXrpCurrencyAmount('2'))
+    takerGets.setValue(xrpTestUtils.makeXrpCurrencyAmount('2'))
 
     const offerCreate = new OfferCreate()
     offerCreate.setTakerGets(takerGets)
@@ -2295,10 +1913,10 @@ describe('serializer', function (): void {
   it('Serializes an OfferCreate with all fields', function (): void {
     // GIVEN a OfferCreate with all fields set.
     const takerPays = new TakerPays()
-    takerPays.setValue(makeXrpCurrencyAmount('1'))
+    takerPays.setValue(xrpTestUtils.makeXrpCurrencyAmount('1'))
 
     const takerGets = new TakerGets()
-    takerGets.setValue(makeXrpCurrencyAmount('2'))
+    takerGets.setValue(xrpTestUtils.makeXrpCurrencyAmount('2'))
 
     const expiration = new Expiration()
     expiration.setValue(3)
@@ -2330,7 +1948,7 @@ describe('serializer', function (): void {
     const takerPays = new TakerPays()
 
     const takerGets = new TakerGets()
-    takerGets.setValue(makeXrpCurrencyAmount('2'))
+    takerGets.setValue(xrpTestUtils.makeXrpCurrencyAmount('2'))
 
     const expiration = new Expiration()
     expiration.setValue(3)
@@ -2367,7 +1985,7 @@ describe('serializer', function (): void {
 
   it('Serializes a Balance', function (): void {
     // GIVEN a Balance.
-    const currencyAmount = makeXrpCurrencyAmount('10')
+    const currencyAmount = xrpTestUtils.makeXrpCurrencyAmount('10')
 
     const balance = new Balance()
     balance.setValue(currencyAmount)
@@ -2392,25 +2010,25 @@ describe('serializer', function (): void {
 
   it('Converts a PathList', function (): void {
     // GIVEN a Path list with two paths.
-    const path1Element1 = makePathElement(
-      makeAccountAddress('r1'),
+    const path1Element1 = xrpTestUtils.makePathElement(
+      xrpTestUtils.makeAccountAddress('r1'),
       new Uint8Array([1, 2, 3]),
-      makeAccountAddress('r2'),
+      xrpTestUtils.makeAccountAddress('r2'),
     )
-    const path1Element2 = makePathElement(
-      makeAccountAddress('r3'),
+    const path1Element2 = xrpTestUtils.makePathElement(
+      xrpTestUtils.makeAccountAddress('r3'),
       new Uint8Array([4, 5, 6]),
-      makeAccountAddress('r4'),
+      xrpTestUtils.makeAccountAddress('r4'),
     )
 
     const path1 = new Payment.Path()
     path1.addElements(path1Element1)
     path1.addElements(path1Element2)
 
-    const path2Element1 = makePathElement(
-      makeAccountAddress('r5'),
+    const path2Element1 = xrpTestUtils.makePathElement(
+      xrpTestUtils.makeAccountAddress('r5'),
       new Uint8Array([7, 8, 9]),
-      makeAccountAddress('r6'),
+      xrpTestUtils.makeAccountAddress('r6'),
     )
 
     const path2 = new Payment.Path()
@@ -2430,7 +2048,7 @@ describe('serializer', function (): void {
 
   it('Serializes an EscrowCreate with required fields', function (): void {
     // GIVEN an EscrowCreate with required fields set.
-    const xrpAmount = makeXrpDropsAmount('10')
+    const xrpAmount = xrpTestUtils.makeXrpDropsAmount('10')
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpAmount)
@@ -2460,7 +2078,7 @@ describe('serializer', function (): void {
 
   it('Serializes an EscrowCreate with all fields', function (): void {
     // GIVEN an EscrowCreate with all fields set.
-    const xrpAmount = makeXrpDropsAmount('10')
+    const xrpAmount = xrpTestUtils.makeXrpDropsAmount('10')
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpAmount)
@@ -2526,7 +2144,7 @@ describe('serializer', function (): void {
 
   it('Fails to serialize an EscrowCreate missing a destination', function (): void {
     // GIVEN an EscrowCreat that's missing a destination.
-    const xrpAmount = makeXrpDropsAmount('10')
+    const xrpAmount = xrpTestUtils.makeXrpDropsAmount('10')
 
     const currencyAmount = new CurrencyAmount()
     currencyAmount.setXrpAmount(xrpAmount)
@@ -2797,7 +2415,7 @@ describe('serializer', function (): void {
   it('Serializes a PaymentChannelFund with mandatory fields set.', function (): void {
     // GIVEN a PaymentChannelFund with mandatory fields set.
     const amount = new Amount()
-    amount.setValue(makeXrpCurrencyAmount('10'))
+    amount.setValue(xrpTestUtils.makeXrpCurrencyAmount('10'))
 
     const channel = new Channel()
     channel.setValue(new Uint8Array([1, 2, 3, 4]))
@@ -2840,7 +2458,7 @@ describe('serializer', function (): void {
   it('Serializes a PaymentChannelFund with all fields set.', function (): void {
     // GIVEN a PaymentChannelFund with all fields set.
     const amount = new Amount()
-    amount.setValue(makeXrpCurrencyAmount('10'))
+    amount.setValue(xrpTestUtils.makeXrpCurrencyAmount('10'))
 
     const channel = new Channel()
     channel.setValue(new Uint8Array([1, 2, 3, 4]))
@@ -2901,7 +2519,7 @@ describe('serializer', function (): void {
     channel.setValue(new Uint8Array([1, 2, 3, 4]))
 
     const balance = new Balance()
-    balance.setValue(makeXrpCurrencyAmount('5'))
+    balance.setValue(xrpTestUtils.makeXrpCurrencyAmount('5'))
 
     const paymentChannelSignature = new PaymentChannelSignature()
     paymentChannelSignature.setValue(new Uint8Array([5, 6, 7, 8]))
@@ -2910,7 +2528,7 @@ describe('serializer', function (): void {
     publicKey.setValue(new Uint8Array([9, 10, 11, 12]))
 
     const amount = new Amount()
-    amount.setValue(makeXrpCurrencyAmount('6'))
+    amount.setValue(xrpTestUtils.makeXrpCurrencyAmount('6'))
 
     const paymentChannelClaim = new PaymentChannelClaim()
     paymentChannelClaim.setChannel(channel)
@@ -2949,7 +2567,7 @@ describe('serializer', function (): void {
 
   it('Serializes a LimitAmount', function (): void {
     // GIVEN a LimitAmount
-    const currencyAmount = makeXrpCurrencyAmount('10')
+    const currencyAmount = xrpTestUtils.makeXrpCurrencyAmount('10')
 
     const limitAmount = new LimitAmount()
     limitAmount.setValue(currencyAmount)
@@ -2977,7 +2595,7 @@ describe('serializer', function (): void {
 
   it('Serializes a TrustSet with required fields', function (): void {
     // GIVEN a TrustSet with required fields.
-    const currencyAmount = makeXrpCurrencyAmount('10')
+    const currencyAmount = xrpTestUtils.makeXrpCurrencyAmount('10')
 
     const limitAmount = new LimitAmount()
     limitAmount.setValue(currencyAmount)
@@ -2999,7 +2617,7 @@ describe('serializer', function (): void {
 
   it('Serializes a TrustSet with all fields', function (): void {
     // GIVEN a TrustSet with all fields.
-    const currencyAmount = makeXrpCurrencyAmount('10')
+    const currencyAmount = xrpTestUtils.makeXrpCurrencyAmount('10')
 
     const limitAmount = new LimitAmount()
     limitAmount.setValue(currencyAmount)
@@ -3056,6 +2674,106 @@ describe('serializer', function (): void {
     assert.isUndefined(serialized)
   })
 
+  it('serializes a TrustSet transaction', function (): void {
+    // GIVEN a transaction which represents the creation of a trust line linking two accounts.
+    const currency = 'USD'
+    const currencyIssuer = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
+    const transaction = xrpTestUtils.makeTrustSetTransaction(
+      currency,
+      currencyIssuer,
+      value,
+      undefined,
+      undefined,
+      fee,
+      lastLedgerSequenceValue,
+      sequenceValue,
+      accountClassicAddress,
+      publicKeyHex,
+      undefined,
+    )
+
+    // WHEN the transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction)
+
+    // THEN the result is as expected.
+    const expectedJSON: TransactionJSON = {
+      Account: accountClassicAddress,
+      Fee: fee.toString(),
+      LastLedgerSequence: lastLedgerSequenceValue,
+      LimitAmount: {
+        currency,
+        issuer: currencyIssuer,
+        value,
+      },
+      Sequence: sequenceValue,
+      TransactionType: 'TrustSet',
+      SigningPubKey: publicKeyHex,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('serializes a TrustSet transaction with flags set', function (): void {
+    // GIVEN a transaction which represents the creation of a trust line linking two accounts, with flags.
+    const currency = 'USD'
+    const currencyIssuer = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
+    const transaction = xrpTestUtils.makeTrustSetTransaction(
+      currency,
+      currencyIssuer,
+      value,
+      undefined,
+      undefined,
+      fee,
+      lastLedgerSequenceValue,
+      sequenceValue,
+      accountClassicAddress,
+      publicKeyHex,
+      flagsValue,
+    )
+
+    // WHEN the transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction)
+
+    // THEN the result is as expected.
+    const expectedJSON: TransactionJSON = {
+      Account: accountClassicAddress,
+      Fee: fee.toString(),
+      LastLedgerSequence: lastLedgerSequenceValue,
+      LimitAmount: {
+        currency,
+        issuer: currencyIssuer,
+        value,
+      },
+      Sequence: sequenceValue,
+      TransactionType: 'TrustSet',
+      SigningPubKey: publicKeyHex,
+      Flags: flagsValue,
+    }
+    assert.deepEqual(serialized, expectedJSON)
+  })
+
+  it('serializes a faulty TrustSet transaction', function (): void {
+    // GIVEN a bad transaction which represents the creation of a trust line linking two accounts.
+    const transaction = xrpTestUtils.makeTrustSetTransaction(
+      '',
+      '',
+      value,
+      undefined,
+      undefined,
+      fee,
+      lastLedgerSequenceValue,
+      sequenceValue,
+      accountClassicAddress,
+      publicKeyHex,
+      undefined,
+    )
+
+    // WHEN the transaction is serialized to JSON.
+    const serialized = Serializer.transactionToJSON(transaction)
+
+    // THEN the result is undefined.
+    assert.isUndefined(serialized)
+  })
+
   it('Serializes a SignerEntry', function (): void {
     // GIVEN a SignerEntry
     const account = new Account()
@@ -3082,7 +2800,7 @@ describe('serializer', function (): void {
   it('Serializes a PaymentChannelCreate with mandatory fields', function (): void {
     // GIVEN a PaymentChannelCreate with only mandatory fields set.
     const amount = new Amount()
-    amount.setValue(makeXrpCurrencyAmount('11'))
+    amount.setValue(xrpTestUtils.makeXrpCurrencyAmount('11'))
 
     const destination = new Destination()
     destination.setValue(testAccountAddress)
@@ -3118,7 +2836,7 @@ describe('serializer', function (): void {
   it('Serializes a PaymentChannelCreate with all fields', function (): void {
     // GIVEN a PaymentChannelCreate with all fields set.
     const amount = new Amount()
-    amount.setValue(makeXrpCurrencyAmount('11'))
+    amount.setValue(xrpTestUtils.makeXrpCurrencyAmount('11'))
 
     const destination = new Destination()
     destination.setValue(testAccountAddress)
@@ -3182,7 +2900,7 @@ describe('serializer', function (): void {
   it('Serializes a list of signer entries', function (): void {
     // GIVEN a list of signer entries.
     const account1 = new Account()
-    account1.setValue(makeAccountAddress('r1'))
+    account1.setValue(xrpTestUtils.makeAccountAddress('r1'))
 
     const signerWeight1 = new SignerWeight()
     signerWeight1.setValue(1)
@@ -3192,7 +2910,7 @@ describe('serializer', function (): void {
     signerEntry1.setSignerWeight(signerWeight1)
 
     const account2 = new Account()
-    account2.setValue(makeAccountAddress('r2'))
+    account2.setValue(xrpTestUtils.makeAccountAddress('r2'))
 
     const signerWeight2 = new SignerWeight()
     signerWeight2.setValue(2)
@@ -3217,7 +2935,7 @@ describe('serializer', function (): void {
   it('Fails to serialize a list of signer entries where an entry is malformed', function (): void {
     // GIVEN a list of signer entries with a malformed second entry..
     const account1 = new Account()
-    account1.setValue(makeAccountAddress('r1'))
+    account1.setValue(xrpTestUtils.makeAccountAddress('r1'))
 
     const signerWeight1 = new SignerWeight()
     signerWeight1.setValue(1)
@@ -3294,7 +3012,7 @@ describe('serializer', function (): void {
     signerQuorum.setValue(1)
 
     const account1 = new Account()
-    account1.setValue(makeAccountAddress('r1'))
+    account1.setValue(xrpTestUtils.makeAccountAddress('r1'))
 
     const signerWeight1 = new SignerWeight()
     signerWeight1.setValue(1)
@@ -3304,7 +3022,7 @@ describe('serializer', function (): void {
     signerEntry1.setSignerWeight(signerWeight1)
 
     const account2 = new Account()
-    account2.setValue(makeAccountAddress('r2'))
+    account2.setValue(xrpTestUtils.makeAccountAddress('r2'))
 
     const signerWeight2 = new SignerWeight()
     signerWeight2.setValue(2)

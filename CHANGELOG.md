@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### [6.2.5] - 2020-10-21
+
+- Flags are now properly serialized in Transactions.
+
+### [6.2.4] - 2020-10-12
+
+- TrustSet transaction types are now properly serialized.
+
+### [6.2.3] - 2020-10-02
+
+This minor release contains updated version of dependencies for security and stability.
+
+### [6.2.2] - 2020-09-11
+
+This minor release contains the newest version of the ripple-binary-codec (v1.0.1).
+
 ### [6.2.1] - 2020-09-02
 
 This release contains updated versions of dependencies for security and stability.

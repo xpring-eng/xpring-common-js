@@ -92,6 +92,7 @@ interface BaseTransactionJSON {
   SigningPubKey: string
   TxnSignature?: string
   Memos?: MemoJSON[]
+  Flags?: FlagsJSON
 }
 
 /**
@@ -380,6 +381,7 @@ type SignerWeightJSON = number
 type QualityInJSON = number
 type QualityOutJSON = number
 type LimitAmountJSON = CurrencyAmountJSON
+type FlagsJSON = number
 
 /**
  * Provides functionality to serialize from protocol buffers to JSON objects.
@@ -439,7 +441,15 @@ const serializer = {
       object.TxnSignature = signature
     }
 
-    Object.assign(object, this.memosToJSON(transaction.getMemosList()))
+    const memoList = transaction.getMemosList()
+    if (memoList.length > 0) {
+      object.Memos = this.memoListToJSON(memoList)
+    }
+
+    const flags = transaction.getFlags()
+    if (flags) {
+      object.Flags = flags.getValue()
+    }
 
     const additionalTransactionData = getAdditionalTransactionData(transaction)
     if (additionalTransactionData === undefined) {
@@ -808,13 +818,9 @@ const serializer = {
    *
    * @returns An array of the Memos in JSON format, or undefined.
    */
-  memosToJSON(memos: Memo[]): { Memos: MemoJSON[] } | undefined {
-    if (!memos.length) {
-      return undefined
-    }
-
-    const convertedMemos = memos.map((memo) => this.memoToJSON(memo))
-    return { Memos: convertedMemos }
+  memoListToJSON(memos: Memo[]): MemoJSON[] {
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- Manually assigning `this`.
+    return memos.map(this.memoToJSON, this)
   },
 
   /**
@@ -2058,6 +2064,7 @@ function getAdditionalTransactionData(
       }
       return serializer.signerListSetToJSON(signerListSet)
     }
+
     case Transaction.TransactionDataCase.TRUST_SET: {
       const trustSet = transaction.getTrustSet()
       if (trustSet === undefined) {
