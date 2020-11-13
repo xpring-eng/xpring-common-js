@@ -1,3 +1,4 @@
+/* eslint-disable complexity -- long functions are fine here */
 /* eslint-disable max-statements -- long functions are fine here */
 /* eslint-disable max-lines -- lots of test data */
 /* eslint-disable max-len -- long variable names and function names */
@@ -30,6 +31,10 @@ import {
   LimitAmount,
   QualityIn,
   QualityOut,
+  TakerGets,
+  TakerPays,
+  OfferSequence,
+  Expiration,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/common_pb'
 import {
   AccountSet,
@@ -37,6 +42,8 @@ import {
   Transaction,
   Memo,
   TrustSet,
+  OfferCreate,
+  OfferCancel,
 } from '../../../src/XRP/generated/org/xrpl/rpc/v1/transaction_pb'
 import xrpTestUtils from '../helpers/xrp-test-utils'
 
@@ -102,6 +109,8 @@ const qualityInValue = 5
 const qualityInZero = 0
 const qualityOutValue = 7
 const qualityOutZero = 0
+const offerSequenceValue = 1
+const expirationValue = 1146684800 // units are seconds since the ripple epoch
 
 // Objects for Transactions
 
@@ -272,6 +281,22 @@ path2.addElements(path2Element1)
 
 const pathList = [path1, path2]
 
+// TakerGets
+const takerGets = new TakerGets()
+takerGets.setValue(currencyAmountIssuedCurrency)
+
+// TakerPays
+const takerPays = new TakerPays()
+takerPays.setValue(currencyAmountXrp)
+
+// OfferSequence
+const offerSequence = new OfferSequence()
+offerSequence.setValue(offerSequenceValue)
+
+// Expiration
+const expiration = new Expiration()
+expiration.setValue(expirationValue)
+
 // AccountSets
 const accountSetAllFields = new AccountSet()
 accountSetAllFields.setClearFlag(clearFlag)
@@ -290,6 +315,19 @@ const accountSetEmpty = new AccountSet()
 const accountSetSpecialCases = new AccountSet()
 accountSetSpecialCases.setTransferRate(transferRateNoFee)
 accountSetSpecialCases.setTickSize(tickSizeDisable)
+
+// OfferCancels
+
+const offerCancelAllFields = new OfferCancel()
+offerCancelAllFields.setOfferSequence(offerSequence)
+
+// OfferCreates
+
+const offerCreateAllFields = new OfferCreate()
+offerCreateAllFields.setTakerGets(takerGets)
+offerCreateAllFields.setTakerPays(takerPays)
+offerCreateAllFields.setOfferSequence(offerSequence)
+offerCreateAllFields.setExpiration(expiration)
 
 // Payments
 const paymentMandatoryFields = new Payment()
@@ -326,8 +364,7 @@ trustSetSpecial.setQualityOut(qualityOutSpecial)
 // Transactions
 
 /**
- * Helper function to generate Transaction objects with the standard values from Payment objects.
- * There must be at most one of accountSet or payment.
+ * Helper function to generate Transaction protobuf objects.
  *
  * @param transactionType - The type of transaction that is created.
  * @param transactionData - The object to be inserted into the transaction based on the transaction type.
@@ -336,7 +373,7 @@ trustSetSpecial.setQualityOut(qualityOutSpecial)
  */
 function buildStandardTestTransaction(
   transactionType: Transaction.TransactionDataCase,
-  transactionData: AccountSet | Payment | TrustSet,
+  transactionData: AccountSet | OfferCancel | OfferCreate | Payment | TrustSet,
 ): Transaction {
   const transaction = new Transaction()
   transaction.setAccount(accountProto)
@@ -348,6 +385,20 @@ function buildStandardTestTransaction(
         throw new Error('Expected AccountSet type')
       }
       transaction.setAccountSet(transactionData)
+      break
+    }
+    case Transaction.TransactionDataCase.OFFER_CANCEL: {
+      if (!(transactionData instanceof OfferCancel)) {
+        throw new Error('Expected OfferCancel type')
+      }
+      transaction.setOfferCancel(transactionData)
+      break
+    }
+    case Transaction.TransactionDataCase.OFFER_CREATE: {
+      if (!(transactionData instanceof OfferCreate)) {
+        throw new Error('Expected OfferCreate type')
+      }
+      transaction.setOfferCreate(transactionData)
       break
     }
     case Transaction.TransactionDataCase.PAYMENT: {
@@ -386,6 +437,18 @@ const testTransactionAccountSetEmpty = buildStandardTestTransaction(
 const testTransactionAccountSetSpecialCases = buildStandardTestTransaction(
   Transaction.TransactionDataCase.ACCOUNT_SET,
   accountSetSpecialCases,
+)
+
+// OfferCancel Transactions
+const testTransactionOfferCancelAllFields = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.OFFER_CANCEL,
+  offerCancelAllFields,
+)
+
+// OfferCreate Transactions
+const testTransactionOfferCreateAllFields = buildStandardTestTransaction(
+  Transaction.TransactionDataCase.OFFER_CREATE,
+  offerCreateAllFields,
 )
 
 // Payment Transactions
@@ -484,6 +547,8 @@ export {
   testTransactionAccountSetOneField,
   testTransactionAccountSetEmpty,
   testTransactionAccountSetSpecialCases,
+  testTransactionOfferCancelAllFields,
+  testTransactionOfferCreateAllFields,
   testTransactionPaymentMandatoryFields,
   testTransactionPaymentMandatoryFieldsIssuedCurrency,
   testTransactionPaymentAllFields,

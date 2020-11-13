@@ -16,6 +16,8 @@ import {
   testTransactionAccountSetOneField,
   testTransactionAccountSetEmpty,
   testTransactionAccountSetSpecialCases,
+  testTransactionOfferCancelAllFields,
+  testTransactionOfferCreateAllFields,
   testTransactionPaymentMandatoryFields,
   testTransactionPaymentMandatoryFieldsIssuedCurrency,
   testTransactionPaymentAllFields,
@@ -449,5 +451,61 @@ describe('Signer', function (): void {
 
     // THEN the signing artifacts are undefined.
     assert.isUndefined(signedTransaction)
+  })
+
+  it('Sign OfferCancel transaction with all fields', function (): void {
+    // GIVEN an OfferCancel transaction with all fields, a wallet and expected signing artifacts.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // Encode transaction with the expected signature.
+    const expectedSignedTransactionJSON = Serializer.transactionToJSON(
+      testTransactionOfferCancelAllFields,
+      fakeSignature,
+    )
+
+    const expectedSignedTransactionHex = rippleCodec.encode(
+      expectedSignedTransactionJSON,
+    )
+    const expectedSignedTransaction = Utils.toBytes(
+      expectedSignedTransactionHex,
+    )
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testTransactionOfferCancelAllFields,
+      wallet,
+    )
+
+    // THEN the signing artifacts are as expected.
+    assert.exists(signedTransaction)
+    assert.deepEqual(signedTransaction, expectedSignedTransaction)
+  })
+
+  it('Sign OfferCreate transaction with all fields', function (): void {
+    // GIVEN an OfferCreate transaction with all fields, a wallet and expected signing artifacts.
+    const wallet = new FakeWallet(fakeSignature)
+
+    // Encode transaction with the expected signature.
+    const expectedSignedTransactionJSON = Serializer.transactionToJSON(
+      testTransactionOfferCreateAllFields,
+      fakeSignature,
+    )
+
+    const expectedSignedTransactionHex = rippleCodec.encode(
+      expectedSignedTransactionJSON,
+    )
+    const expectedSignedTransaction = Utils.toBytes(
+      expectedSignedTransactionHex,
+    )
+
+    // WHEN the transaction is signed with the wallet.
+    const signedTransaction = Signer.signTransaction(
+      testTransactionOfferCreateAllFields,
+      wallet,
+    )
+
+    // THEN the signing artifacts are as expected.
+    assert.exists(signedTransaction)
+    assert.deepEqual(signedTransaction, expectedSignedTransaction)
   })
 })
