@@ -213,6 +213,7 @@ export interface OfferCreateJSON {
   OfferSequence?: OfferSequenceJSON
   TakerGets: TakerGetsJSON
   TakerPays: TakerPaysJSON
+  TransactionType: 'OfferCreate'
 }
 
 export interface SignerListSetJSON {
@@ -1595,6 +1596,7 @@ const serializer = {
     const json: OfferCreateJSON = {
       TakerGets: takerGetsJSON,
       TakerPays: takerPaysJSON,
+      TransactionType: 'OfferCreate',
     }
 
     // Process optional fields.
