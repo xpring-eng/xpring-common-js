@@ -1906,6 +1906,7 @@ describe('serializer', function (): void {
     const expected: OfferCreateJSON = {
       TakerGets: Serializer.takerGetsToJSON(takerGets)!,
       TakerPays: Serializer.takerPaysToJSON(takerPays)!,
+      TransactionType: 'OfferCreate',
     }
     assert.deepEqual(serialized, expected)
   })
@@ -1939,6 +1940,7 @@ describe('serializer', function (): void {
       TakerPays: Serializer.takerPaysToJSON(takerPays)!,
       Expiration: Serializer.expirationToJSON(expiration),
       OfferSequence: Serializer.offerSequenceToJSON(offerSequence),
+      TransactionType: 'OfferCreate',
     }
     assert.deepEqual(serialized, expected)
   })
