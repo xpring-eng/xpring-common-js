@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### [6.2.6] - 2020-11-12
+
+- All transaction types can now be handled by the Serializer.
+
 ### [6.2.5] - 2020-10-21
 
 - Flags are now properly serialized in Transactions.
