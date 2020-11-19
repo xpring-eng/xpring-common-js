@@ -17,8 +17,7 @@
     "prepublishOnly": "npm run test && npm run build",
     "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit",
     "test": "nyc mocha",
-    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && webpack && copyfiles -u 3 './src/XRP/generated/**/*' ./dist/XRP/generated",
-    "webpack-node": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && webpack --config webpack.config.node.js && copyfiles -u 3 './src/XRP/generated/**/*' ./dist/XRP/generated"
+    "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && webpack && copyfiles -u 3 './src/XRP/generated/**/*' ./dist/XRP/generated"
   },
   "dependencies": {
     "@payid-org/utils": "^1.2.0",
