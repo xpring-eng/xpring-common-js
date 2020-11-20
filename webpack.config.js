@@ -1,8 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path')
 
 module.exports = {
-  target: 'web',
+  target: process.env.NODE_TARGET === 'node' ? 'node' : 'web',
   mode: 'production',
   entry: './src/index.ts',
   devtool: 'source-map',
