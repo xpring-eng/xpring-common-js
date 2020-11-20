@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### [6.2.7] - 2020-11-13
+- Fixes a bug in which `PathElement` protocol buffers were not correctly serialized to JSON.
+
+### [6.2.7] - 2020-11-13
 - Fixes a bug in which `OfferCreate` transactions could not be properly serialized.
 
 ### [6.2.6] - 2020-11-12
