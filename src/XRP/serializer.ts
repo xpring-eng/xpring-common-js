@@ -324,7 +324,7 @@ interface MemoDetailsJSON {
 interface PathElementJSON {
   account?: string
   issuer?: string
-  currencyCode?: CurrencyJSON
+  currency?: CurrencyJSON
 }
 
 interface IssuedCurrencyAmountJSON {
@@ -799,7 +799,7 @@ const serializer = {
 
     const currency = pathElement.getCurrency()
     if (currency) {
-      json.currencyCode = this.currencyToJSON(currency)
+      json.currency = this.currencyToJSON(currency)
     }
 
     const account = pathElement.getAccount()?.getAddress()

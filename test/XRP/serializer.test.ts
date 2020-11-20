@@ -570,13 +570,16 @@ describe('serializer', function (): void {
     assert.equal(serialized.account, testAccountAddress.getAddress())
 
     // AND the currency and issuer fields are undefined.
-    assert.isUndefined(serialized.currencyCode)
+    assert.isUndefined(serialized.currency)
     assert.isUndefined(serialized.issuer)
   })
 
   it('serializes a PathElement with issued currency', function (): void {
     // GIVEN a PathElement with a currency code and an issuer.
-    const currencyCode = new Uint8Array([0, 1, 2, 3])
+    // Valid hex code required by signer, pulled from https://xrpl.org/currency-formats.html#currency-codes
+    const currencyCode = Utils.toBytes(
+      '0158415500000000C1F76FF6ECB0BAC600000000',
+    )
     const pathElement = xrpTestUtils.makePathElement(
       undefined,
       currencyCode,
@@ -587,7 +590,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.pathElementToJSON(pathElement)
 
     // THEN the currency and issuer fields are set.
-    assert.deepEqual(serialized.currencyCode, Utils.toHex(currencyCode))
+    assert.deepEqual(serialized.currency, Utils.toHex(currencyCode))
     assert.equal(serialized.issuer, testAccountAddress.getAddress())
 
     // AND the account is undefined.
