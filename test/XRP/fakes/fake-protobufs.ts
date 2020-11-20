@@ -2,6 +2,7 @@
 /* eslint-disable max-statements -- long functions are fine here */
 /* eslint-disable max-lines -- lots of test data */
 /* eslint-disable max-len -- long variable names and function names */
+import Utils from '../../../src/Common/utils'
 import { AccountAddress } from '../../../src/XRP/generated/org/xrpl/rpc/v1/account_pb'
 import {
   CurrencyAmount,
@@ -71,10 +72,9 @@ function generateValidUint8Array(
 const fakeSignature = 'DEADBEEF'
 const value = '1000'
 const currencyName = 'BTC'
-// eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
-const currencyCode1 = generateValidUint8Array(5)
-// eslint-disable-next-line @typescript-eslint/no-magic-numbers -- sample data
-const currencyCode2 = generateValidUint8Array(5, 4)
+// Valid hex code required by signer, pulled from https://xrpl.org/currency-formats.html#currency-codes
+const currencyCode1 = Utils.toBytes('0158415500000000C1F76FF6ECB0BAC600000000')
+const currencyCode2 = Utils.toBytes('0158415500000000C1F76FF6ECB0BAC600000000')
 const issuedCurrencyValue = '100'
 const destinationAddress = 'XVPcpSm47b1CZkf5AkKM9a84dQHe3m4sBhsrA4XtnBECTAc'
 const issuerAddress = 'rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY'

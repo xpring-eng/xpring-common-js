@@ -576,7 +576,10 @@ describe('serializer', function (): void {
 
   it('serializes a PathElement with issued currency', function (): void {
     // GIVEN a PathElement with a currency code and an issuer.
-    const currencyCode = new Uint8Array([0, 1, 2, 3])
+    // Valid hex code required by signer, pulled from https://xrpl.org/currency-formats.html#currency-codes
+    const currencyCode = Utils.toBytes(
+      '0158415500000000C1F76FF6ECB0BAC600000000',
+    )
     const pathElement = xrpTestUtils.makePathElement(
       undefined,
       currencyCode,

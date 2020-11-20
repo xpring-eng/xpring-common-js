@@ -518,7 +518,7 @@ const serializer = {
         return this.pathToJSON(path)
       })
     }
-    
+
     return json
   },
 
