@@ -570,7 +570,7 @@ describe('serializer', function (): void {
     assert.equal(serialized.account, testAccountAddress.getAddress())
 
     // AND the currency and issuer fields are undefined.
-    assert.isUndefined(serialized.currencyCode)
+    assert.isUndefined(serialized.currency)
     assert.isUndefined(serialized.issuer)
   })
 
@@ -587,7 +587,7 @@ describe('serializer', function (): void {
     const serialized = Serializer.pathElementToJSON(pathElement)
 
     // THEN the currency and issuer fields are set.
-    assert.deepEqual(serialized.currencyCode, Utils.toHex(currencyCode))
+    assert.deepEqual(serialized.currency, Utils.toHex(currencyCode))
     assert.equal(serialized.issuer, testAccountAddress.getAddress())
 
     // AND the account is undefined.
