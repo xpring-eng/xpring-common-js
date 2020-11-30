@@ -14,13 +14,14 @@
     "clean": "rm -rf ./src/generated ./dist ./build",
     "lint": "eslint . --ext .ts --fix",
     "lintNoFix": "eslint . --ext .ts",
+    "prepare": "npm run build",
     "prepublishOnly": "npm run test && npm run build",
     "pretest": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit",
     "test": "nyc mocha",
     "webpack": "npm run clean && ./scripts/regenerate_protos.sh && npm run lint && tsc --noEmit && webpack && copyfiles -u 3 './src/XRP/generated/**/*' ./dist/XRP/generated"
   },
   "dependencies": {
-    "@payid-org/utils": "^1.2.0",
+    "@payid-org/utils": "payid-org/utils#cbdc-demo",
     "bip32": "2.0.6",
     "bip39": "^3.0.2",
     "google-protobuf": "3.13.0",
