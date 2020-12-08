@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-### [6.2.7] - 2020-11-13
+### [6.2.9] - 2020-12-8
+- Fixes browser compatibility problems by altering related dependency versions.
+
+### [6.2.8] - 2020-11-13
 - Fixes a bug in which `PathElement` protocol buffers were not correctly serialized to JSON.
 
 ### [6.2.7] - 2020-11-13
