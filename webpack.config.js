@@ -21,10 +21,6 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
   },
-  node: {
-    // @payid-org/utils has a dependency on fs
-    fs: 'empty',
-  },
   output: {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
