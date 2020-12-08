@@ -1,6 +1,6 @@
 {
   "name": "xpring-common-js",
-  "version": "6.3.8-beta1",
+  "version": "6.2.8",
   "description": "Common JavaScript for use within the Xpring Platform",
   "repository": "https://github.com/xpring-eng/xpring-common-js.git",
   "license": "MIT",
